@@ -1,0 +1,84 @@
+---
+- name: Run Cat 1 STIG tasks
+  ansible.builtin.include_tasks:
+    file: RHEL-09-211010.yml
+
+- name: Run Cat 1 STIG tasks
+  ansible.builtin.include_tasks:
+    file: RHEL-09-211045.yml
+
+- name: Run Cat 1 STIG tasks
+  ansible.builtin.include_tasks:
+    file: RHEL-09-211050.yml
+
+- name: Run Cat 1 STIG tasks
+  ansible.builtin.include_tasks:
+    file: RHEL-09-212020.yml
+
+- name: Run Cat 1 STIG tasks
+  ansible.builtin.include_tasks:
+    file: RHEL-09-214015.yml
+
+- name: Run Cat 1 STIG tasks
+  ansible.builtin.include_tasks:
+    file: RHEL-09-214020.yml
+
+- name: Run Cat 1 STIG tasks
+  ansible.builtin.include_tasks:
+    file: RHEL-09-214025.yml
+
+- name: Run Cat 1 STIG tasks
+  ansible.builtin.include_tasks:
+    file: RHEL-09-215015.yml
+
+- name: Run Cat 1 STIG tasks
+  ansible.builtin.include_tasks:
+    file: RHEL-09-215060.yml
+
+- name: Run Cat 1 STIG tasks
+  ansible.builtin.include_tasks:
+    file: RHEL-09-231190.yml
+
+- name: Run Cat 1 STIG tasks
+  ansible.builtin.include_tasks:
+    file: RHEL-09-252070.yml
+
+- name: Run Cat 1 STIG tasks
+  ansible.builtin.include_tasks:
+    file: RHEL-09-252075.yml
+
+- name: Run Cat 1 STIG tasks
+  ansible.builtin.include_tasks:
+    file: RHEL-09-255040.yml
+
+- name: Run Cat 1 STIG tasks
+  ansible.builtin.include_tasks:
+    file: RHEL-09-255050.yml
+
+- name: Run Cat 1 STIG tasks
+  ansible.builtin.include_tasks:
+    file: RHEL-09-271040.yml
+
+- name: Run Cat 1 STIG tasks
+  ansible.builtin.include_tasks:
+    file: RHEL-09-411100.yml
+
+- name: Run Cat 1 STIG tasks
+  ansible.builtin.include_tasks:
+    file: RHEL-09-431010.yml
+
+- name: Run Cat 1 STIG tasks
+  ansible.builtin.include_tasks:
+    file: RHEL-09-611025.yml
+
+- name: Run Cat 1 STIG tasks
+  ansible.builtin.include_tasks:
+    file: RHEL-09-671010.yml
+
+- name: Run Cat 1 STIG tasks
+  ansible.builtin.include_tasks:
+    file: RHEL-09-672015.yml
+
+- name: Run Cat 1 STIG tasks
+  ansible.builtin.include_tasks:
+    file: RHEL-09-672030.yml

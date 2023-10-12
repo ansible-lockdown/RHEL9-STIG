@@ -1,0 +1,232 @@
+---
+# Preliminary tasks that should always be run
+# List users in order to look files inside each home directory
+- name: PRELIM | List users accounts
+  ansible.builtin.shell: "awk -F: '{print $1}' /etc/passwd"
+  changed_when: false
+  check_mode: false
+  register: users
+  tags:
+    - users
+
+- name: PRELIM | capture /etc/password variables
+  ansible.builtin.include_tasks: parse_etc_password.yml
+  tags:
+    - always
+
+- name: PRELIM | Interactive User accounts
+  ansible.builtin.shell: 'cat /etc/passwd | grep -Ev "nologin|/sbin" | cut -d: -f6'
+  changed_when: false
+  register: rhel9stig_interactive_users_home
+  tags:
+    - always
+
+- name: PRELIM | Gather accounts with empty password fields
+  ansible.builtin.shell: "cat /etc/shadow | awk -F: '($2 == \"\" ) {j++;print $1; } END {exit j}'"
+  changed_when: false
+  check_mode: false
+  register: rhel9stig_empty_password_accounts
+  tags:
+    - passwords
+
+- name: PRELIM | Gather UID 0 accounts other than root
+  ansible.builtin.shell: "cat /etc/passwd | awk -F: '($3 == 0 && $1 != \"root\") {i++;print $1 } END {exit i}'"
+  changed_when: false
+  check_mode: false
+  register: rhel9stig_uid_zero_accounts_except_root
+  tags:
+    - level1-server
+    - level1-workstation
+    - users
+
+- name: PRELIM | Setup crypto-policy
+  when:
+    - rhel_09_672030
+  ansible.builtin.package:
+    name:
+      - crypto-policies
+      - crypto-policies-scripts
+    state: present
+  tags:
+    - cat1
+    - RHEL-09-672030
+    - crypto
+
+# - name: "PRELIM | if systemd coredump"
+#   ansible.builtin.stat:
+#       path: /etc/systemd/coredump.conf
+#   register: systemd_coredump
+#   when:
+#       - rhel9cis_rule_1_5_1
+#   tags:
+#       - level1-server
+#       - level1-workstation
+#       - rule_1.5.1
+#       - systemd
+
+- name: PRELIM | Create list of mount points
+  ansible.builtin.set_fact:
+    mount_names: "{{ ansible_mounts | map(attribute='mount') | list }}"
+  tags:
+    - always
+
+- name: PRELIM | Ensure python3-libselinux is installed
+  when:
+    - '"python3-libselinux" not in ansible_facts.packages'
+  ansible.builtin.package:
+    name: python3-libselinux
+    state: present
+
+- name: PRELIM | Set facts based on boot type
+  block:
+    - name: PRELIM | Check whether machine is UEFI-based
+      ansible.builtin.stat:
+        path: /sys/firmware/efi
+      register: rhel_09_efi_boot
+
+    - name: PRELIM | set legacy boot and grub path | Bios
+      ansible.builtin.set_fact:
+        rhel9cis_legacy_boot: true
+        grub2_path: /etc/grub2.cfg
+      when: not rhel_09_efi_boot.stat.exists
+
+    - name: PRELIM | set grub fact | UEFI
+      ansible.builtin.set_fact:
+        grub2_path: /etc/grub2-efi.cfg
+      when: rhel_09_efi_boot.stat.exists
+
+- name: PRELIM | Update to latest gpg keys
+  ansible.builtin.package:
+    name: "{{ gpg_key_package }}"
+    state: latest
+  when:
+    - ansible_facts.distribution != 'RedHat'
+    - ansible_facts.distribution != 'OracleLinux'
+
+- name: PRELIM | Configure System Accounting (auditd)
+  when:
+    - '"auditd" not in ansible_facts.packages'
+  ansible.builtin.package:
+    name: audit
+    state: present
+  tags:
+    - cat2
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000038-GPOS-00016
+    - SRG-OS-000039-GPOS-00017
+    - SRG-OS-000040-GPOS-00018
+    - SRG-OS-000041-GPOS-00019
+    - SRG-OS-000042-GPOS-00021
+    - SRG-OS-000051-GPOS-00024
+    - SRG-OS-000054-GPOS-00025
+    - SRG-OS-000122-GPOS-00063
+    - SRG-OS-000254-GPOS-00095
+    - SRG-OS-000255-GPOS-00096
+    - SRG-OS-000337-GPOS-00129
+    - SRG-OS-000348-GPOS-00136
+    - SRG-OS-000349-GPOS-00137
+    - SRG-OS-000350-GPOS-00138
+    - SRG-OS-000351-GPOS-00139
+    - SRG-OS-000352-GPOS-00140
+    - SRG-OS-000353-GPOS-00141
+    - SRG-OS-000354-GPOS-00142
+    - SRG-OS-000358-GPOS-00145
+    - SRG-OS-000365-GPOS-00152
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000475-GPOS-00220
+    - auditd
+
+# - name: "PRELIM | Audit conf and rules files | list files"
+#   ansible.builtin.find:
+#     path: /etc/audit
+#     file_type: file
+#     recurse: true
+#     patterns: '*.conf,*.rules'
+#   register: auditd_conf_files
+#   when:
+#       - rhel9_09_653105
+#   tags:
+#       - cat2
+#       - auditd
+#       - RHEL-09-653105
+
+# - name: "PRELIM | Configure cron"
+#   ansible.builtin.package:
+#       name: cronie
+#       state: present
+#   become: true
+#   when:
+#       - '"cronie" not in ansible_facts.packages'
+#   tags:
+#       - cron
+
+# Added to ensure ssh drop in file exists if not default /etc/ssh/sshd_config
+- name: PRELIM | SSH
+  ansible.builtin.file:
+    path: "{{ rhel9stig_sshd_config_file }}"
+    owner: root
+    group: root
+    mode: "0600"
+    state: touch
+  when:
+    - rhel9stig_sshd_config_file != '/etc/ssh/sshd_config'
+    - "'openssh-server' in ansible_facts.packages"
+  tags:
+    - ssh
+
+# - name: "PRELIM | Install authconfig"
+#   ansible.builtin.package:
+#       name: authconfig
+#       state: present
+#   become: true
+#   when:
+#        '"authconfig" not in ansible_facts.packages or
+#        "auditd-lib" not in ansible_facts.packages'
+#   tags:
+#       - authconfig
+#       - auditd
+
+- name: PRELIM | Find all sudoers files.
+  ansible.builtin.shell: find /etc/sudoers /etc/sudoers.d/ -type f ! -name '*~' ! -name '*.*'
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  register: rhel9stig_sudoers_files
+  tags:
+    - sudoers
+
+- name: PRELIM | Discover Interactive UID MIN and MIN from logins.def
+  block:
+    - name: PRELIM | Capture UID_MIN information from logins.def
+      ansible.builtin.shell: grep -w "^UID_MIN" /etc/login.defs | awk '{print $NF}'
+      changed_when: false
+      register: uid_min_id
+
+    - name: PRELIM | Capture UID_MAX information from logins.def
+      ansible.builtin.shell: grep -w "^UID_MAX" /etc/login.defs | awk '{print $NF}'
+      changed_when: false
+      register: uid_max_id
+
+    - name: PRELIM | Capture GID_MIN information from logins.def
+      ansible.builtin.shell: grep -w "^GID_MIN" /etc/login.defs | awk '{print $NF}'
+      changed_when: false
+      register: gid_min_id
+
+    - name: PRELIM | set_facts for interactive uid/gid
+      ansible.builtin.set_fact:
+        min_int_uid: "{{ uid_min_id.stdout }}"
+        max_int_uid: "{{ uid_max_id.stdout }}"
+        min_int_gid: "{{ gid_min_id.stdout }}"
+
+- name: PRELIM | Output of uid findings
+  when:
+    - not discover_int_uid
+  ansible.builtin.debug:
+    msg: "{{ min_int_uid }} {{ max_int_uid }}"
+
+- name: PRELIM | Gather the package facts after prelim
+  ansible.builtin.package_facts:
+    manager: auto
+  tags:
+    - always

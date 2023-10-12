@@ -1,0 +1,9 @@
+---
+
+- name: Systemd_daemon_reload
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Change_requires_reboot
+  ansible.builtin.set_fact:
+    change_requires_reboot: true

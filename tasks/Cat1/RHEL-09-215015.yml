@@ -1,0 +1,22 @@
+---
+- name: HIGH | RHEL-09-215015 | PATCH | RHEL 9 must not have a File Transfer Protocol (FTP) server package installed.
+  when:
+    - "'vsftpd' in ansible_facts.packages"
+    - rhel_09_215015
+  ansible.builtin.package:
+    name: vsftpd
+    state: absent
+  tags:
+    - RHEL-09-215015
+    - CAT1
+    - CCI-000197
+    - CCI-000366
+    - CCI-000381
+    - SRG-OS-000074-GPOS-00042
+    - SRG-OS-000095-GPOS-00049
+    - SRG-OS-000480-GPOS-00227
+    - SV-257826r925465_rule
+    - V-257826
+    - NIST800-53R4_IA-5
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_CM-7

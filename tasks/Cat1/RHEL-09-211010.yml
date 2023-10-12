@@ -1,0 +1,15 @@
+---
+- name: HIGH | RHEL-09-211010 | AUDIT | RHEL 9 must be a vendor-supported release.
+  when:
+    - rhel_09_211010
+  ansible.builtin.debug:
+    msg: Minimum supported version of {{ ansible_facts.distribution }} is {{ rhel9stig_min_supported_os_ver[ansible_facts.distribution] }}
+  changed_when: ansible_facts.distribution_version is not version_compare(rhel9stig_min_supported_os_ver[ansible_facts.distribution], '>=')
+  tags:
+    - RHEL-09-211010
+    - CAT1
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257777r925318_rule
+    - V-257777
+    - NIST800-53R4_CM-6b

@@ -1,0 +1,25 @@
+---
+- name: HIGH | RHEL-09-271040 | PATCH | RHEL 9 must not allow unattended or automatic logon via the graphical user interface.
+  when:
+    - "'gdm' in ansible_facts.packages"
+    - rhel_09_271040
+  ansible.builtin.lineinfile:
+    insertafter: "{{ autologin.after | default(omit) }}"
+    line: "{{ autologin.line }}"
+    path: /etc/gdm/custom.conf
+    regexp: "{{ autologin.regexp }}"
+    validate: sshd -t -f %s
+  loop:
+    - { regexp: "[daemon]", line: "[daemon]" }
+    - { regexp: "(?i)^AutomaticLoginEnable=false", line: AutomaticLoginEnable=false, after: "[daemon]" }
+  loop_control:
+    label: "{{ autologin.line }}"
+    loop_var: autologin
+  tags:
+    - RHEL-09-271040
+    - CAT1
+    - CCI-000366
+    - SRG-OS-000480-GPOS-0022
+    - SV-258018r926041_rule
+    - V-258018
+    - NIST800-53R4_CM-6

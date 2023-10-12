@@ -1,0 +1,22 @@
+---
+- name: HIGH | RHEL-09-211045 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled
+  when:
+    - rhel_09_211045
+  ansible.builtin.lineinfile:
+    create: true
+    line: CtrlAltDelBurstAction=none
+    path: /etc/systemd/system.conf
+    regexp: ^CtrlAltDelBurstAction=none
+  notify: Systemd_daemon_reload
+
+  tags:
+    - RHEL-09-211045
+    - CAT1
+    - CCI-000366
+    - CCI-002235
+    - SRG-OS-000324-GPOS-00125
+    - SRG-OS-000480-GPOS-00227
+    - SV-257784r925339_rule
+    - V-257784
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_AC-6

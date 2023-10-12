@@ -1,0 +1,35 @@
+---
+- name: HIGH | RHEL-09-252075 | There must be no .shosts files on RHEL 9.
+  when:
+    - rhel9stig_disruption_high
+    - rhel_09_252075
+  vars:
+    warn_control_id: RHEL-09-252075
+  tags:
+    - RHEL-09-252075
+    - CAT1
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257956r925855_rule
+    - V-257956
+    - NIST800-53R4_CM-6
+  block:
+    - name: HIGH | RHEL-09-252075 | AUDIT | There must be no .shosts files on RHEL 9. | find files
+      ansible.builtin.find:
+        path: /
+        pattern: .shosts
+      register: dot_shosts
+
+    - name: HIGH | RHEL-09-252075 | PATCH | There must be no .shosts files on RHEL 9. | Remove files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop: "{{ dot_shosts.files }}"
+      when:
+        - rhel9stig_disruption_high
+
+    - name: HIGH | RHEL-09-252075 | PATCH | There must be no .shosts files on RHEL 9. | Warn if not removing files found
+      ansible.builtin.import_tasks: warning_facts.yml
+      when:
+        - .shosts.files | length > 0
+        - not rhel9stig_disruption_high

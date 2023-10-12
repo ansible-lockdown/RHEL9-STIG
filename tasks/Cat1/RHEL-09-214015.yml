@@ -1,0 +1,16 @@
+---
+- name: HIGH | RHEL-09-214015 | PATCH | RHEL 9 must check the GPG signature of software packages originating from external software repositories before installation.
+  when:
+    - rhel_09_214015
+  ansible.builtin.lineinfile:
+    line: gpgcheck=1
+    path: /etc/dnf/dnf.conf
+    regexp: ^gpgcheck
+  tags:
+    - RHEL-09-214015
+    - CAT1
+    - CCI-001749
+    - SRG-OS-000366-GPOS-00153
+    - SV-257820r925447_rule
+    - V-257820
+    - NIST800-53R4_CM-5

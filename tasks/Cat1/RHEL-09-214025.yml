@@ -1,0 +1,28 @@
+---
+- name: HIGH | RHEL-09-214025 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation.
+  when:
+    - rhel_09_214025
+  tags:
+    - RHEL-09-214025
+    - CAT1
+    - CCI-001749
+    - SRG-OS-000366-GPOS-00153
+    - SV-257822r925453_rule
+    - V-257822
+    - NIST800-53R4_CM-5
+  block:
+    - name: HIGH | RHEL-09-214025 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation. | find repo files
+      ansible.builtin.find:
+        contains: gpgcheck
+        file_type: file
+        path: /etc/yum.repos.d
+        patterns: "*.repo"
+        use_regex: true
+      register: repo_list
+
+    - name: HIGH | RHEL-09-214025 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation. | Set gpgcheck
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: ^gpgcheck
+        replace: gpgcheck=1
+      loop: "{{ repo_list.files }}"

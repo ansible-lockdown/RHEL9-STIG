@@ -1,0 +1,32 @@
+---
+- name: HIGH | RHEL-09-672015 | RHEL 9 crypto policy files must match files shipped with the operating system.
+  when:
+    - rhel_09_672015
+    - "'crypto-policies' in ansible_facts.packages"
+  notify: Change_requires_reboot
+  tags:
+    - RHEL-09-672015
+    - CAT1
+    - CCI-02450
+    - SRG-OS-000478-GPOS-00223
+    - SRG-OS-000396-GPOS-00176
+    - SV-258235r926692_rule
+    - V-258235
+    - NIST800-53R4_SC-13
+  block:
+    - name: HIGH | RHEL-09-672015 | AUDIT | RHEL 9 crypto policy files must match files shipped with the operating system. | Capture state
+      ansible.builtin.shell: rpm -V crypto-policies
+      changed_when: false
+      register: crypto_policies_modified
+
+    - name: HIGH | RHEL-09-672015 | AUDIT | RHEL 9 crypto policy files must match files shipped with the operating system. | Remove crypto-policies if modified
+      when: crypto_policies_modified.stdout | length > 0
+      ansible.builtin.package:
+        name: crypto-policies
+        state: absent
+
+    - name: HIGH | RHEL-09-672015 | AUDIT | RHEL 9 crypto policy files must match files shipped with the operating system. | Reinstall crypto-policies if modified
+      when: crypto_policies_modified.stdout | length > 0
+      ansible.builtin.package:
+        name: crypto-policies
+        state: present

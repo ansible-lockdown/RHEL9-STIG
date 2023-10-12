@@ -1,0 +1,24 @@
+---
+- name: HIGH | RHEL-09-611025 | PATCH |  RHEL 9 must not allow blank or null passwords.
+  when:
+    - rhel_09_611025
+  ansible.builtin.replace:
+    path: "{{ null_pass }}"
+    regexp: (.*) nullok(.*)
+    replace: \1\2
+  loop:
+    - /etc/pam.d/system-auth
+    - /etc/pam.d/password-auth
+  loop_control:
+    loop_var: null_pass
+  tags:
+    - RHEL-09-611025
+    - CAT1
+    - CCI-01084
+    - CCI-02696
+    - SRG-OS-000445-GPOS-00199
+    - SRG-OS-000134-GPOS-00068
+    - SV-258078r926221_rule
+    - V-258078
+    - NIST800-53R4_SC-3
+    - NIST800-53R4_SI-6

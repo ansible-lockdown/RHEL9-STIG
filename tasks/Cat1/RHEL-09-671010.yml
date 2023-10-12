@@ -1,0 +1,42 @@
+---
+- name: HIGH | RHEL-09-671010 | PATCH | RHEL 9 must enable FIPS mode.
+  when:
+    - rhel_09_671010
+    - not ansible_fips
+  tags:
+    - RHEL-09-671010
+    - CAT1
+    - CCI-00068
+    - CCI-00877
+    - CCI-002418
+    - CCI-002450
+    - SRG-OS-000033-GPOS-00014
+    - SRG-OS-000125-GPOS-00065
+    - SRG-OS-000396-GPOS-00176
+    - SRG-OS-000423-GPOS-00187
+    - SRG-OS-000478-GPOS-00223
+    - SV-258230r926677_rule
+    - V-258230
+    - NIST800-53R4_AC-17
+    - NIST800-53R4_MA-4
+    - NIST800-53R4_SC-8
+    - NIST800-53R4_SC-13
+  block:
+    - name: HIGH | RHEL-09-671010 | PATCH | RHEL 9 must enable FIPS mode.
+      when:
+        - rhel9stig_disruption_high
+      ansible.builtin.shell: fips-mode-setup --enable
+      notify: Change_requires_reboot
+
+    - name: HIGH | RHEL-09-671010 | WARN | RHEL 9 must enable FIPS mode. | Give Warning
+      when:
+        - not rhel9stig_disruption_high
+      ansible.builtin.debug:
+        msg: WARNING!! - FIPS mode not setup
+
+    - name: HIGH | RHEL-09-671010 | WARN | RHEL 9 must enable FIPS mode. | Warning Count
+      when:
+        - not rhel9stig_disruption_high
+      ansible.builtin.import_tasks: warning_facts.yml
+      vars:
+        warn_control_id: RHEL-09-671010

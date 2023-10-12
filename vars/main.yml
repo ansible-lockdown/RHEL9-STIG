@@ -1,0 +1,20 @@
+---
+# vars file for RHEL9-STIG
+
+min_ansible_version: 2.15.1
+
+rhel9stig_min_supported_os_ver:
+    RedHat: "9.2"
+    CentOS: "9.2"
+    Rocky: "9.2"
+    AlmaLinux: "9.2"
+    OracleLinux: "9.2"
+
+# Used to control warning summary
+warn_control_list: ""
+warn_count: 0
+
+gpg_key_package: "{{ ansible_distribution | lower }}-gpg-keys"
+
+# Allow automated discovery of uids
+discover_int_uid: true
