@@ -28,7 +28,7 @@ This role is based on RHEL 9 DISA STIG: [Version 1, Rel 1 released on Sept 22, 2
 ![Issues Closed](https://img.shields.io/github/issues-closed-raw/ansible-lockdown/RHEL9-STIG?label=Closed%20Issues&&color=success)
 ![Pull Requests](https://img.shields.io/github/issues-pr/ansible-lockdown/RHEL9-STIG?label=Pull%20Requests)
 
-![License](https://img.shields.io/github/license/ansible-lockdown/RHEL8-STIG?label=License)
+![License](https://img.shields.io/github/license/ansible-lockdown/RHEL9-STIG?label=License)
 
 
 ---
@@ -45,9 +45,9 @@ On our [Discord Server](https://www.lockdownenterprise.com/discord) to ask quest
 
 ---
 
-Configure a RHEL/Rocky 8 system to be DISA STIG compliant.
+Configure a RHEL/Rocky/Alma 9 system to be DISA STIG compliant.
 Non-disruptive CAT I, CAT II, and CAT III findings will be corrected by default.
-Disruptive finding remediation can be enabled by setting `rhel8stig_disruption_high` to `true`.
+Disruptive finding remediation can be enabled by setting `rhel9stig_disruption_high` to `true`.
 
 ## Updating
 
@@ -75,7 +75,7 @@ This audit will not only check the config has the correct setting but aims to ca
 
 ## Requirements
 
-- RHEL/Rocky/AlmaLinux/OL 8 - Other versions are not supported.
+- RHEL/Rocky/AlmaLinux/OL 9 - Other versions are not supported.
 - Other OSs can be checked by changing the skip_os_check to true for testing purposes.
 - Access to download or add the goss binary and content to the system if using auditing. options are available on how to get the content to the system.
 
@@ -103,7 +103,7 @@ opposite can also happen where you run only controls tagged with ssh.
 
 ```sh
 tags:
-    - RHEL-08-010050
+    - RHEL-9-010050
     - ssh
     - dod_logon_banner
 ```
@@ -121,7 +121,7 @@ ok: [rocky9_efi] =>
   - Full breakdown can be found in /opt
 
 PLAY RECAP ****************************************************************************************************************
-rocky8_efi                 : ok=482  changed=269  unreachable=0    failed=0    skipped=207  rescued=0    ignored=0
+rocky9_efi                 : ok=482  changed=269  unreachable=0    failed=0    skipped=207  rescued=0    ignored=0
 ```
 
 ## Branches
@@ -166,7 +166,7 @@ uses:
 
 ## Known Issues
 
-If adopting stig rule RHEL-08-040134
+If adopting stig rule RHEL-09-xxxxx
 
 This will affect cloud init as per [bug 1839899](https://bugs.launchpad.net/cloud-init/+bug/1839899)
 
