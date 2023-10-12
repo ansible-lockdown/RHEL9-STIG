@@ -27,19 +27,17 @@
       ansible.builtin.shell: fips-mode-setup --enable
       notify: Change_requires_reboot
 
-    - name: HIGH | RHEL-09-672030 | WARN | RHEL 9 must implement DOD-approved TLS encryption in the GnuTLS package.
-      block:
-        - name: HIGH | RHEL-09-672030 | WARN | RHEL 9 must implement DOD-approved TLS encryption in the GnuTLS package. | Give Warning
-          when:
-            - not "'FIPS' in crypto_policies_state.stdout"
-            - not rhel9stig_disruption_high
-          ansible.builtin.debug:
-            msg: WARNING!! - Crypto-Policies is not set to FIPS
+    - name: HIGH | RHEL-09-672030 | WARN | RHEL 9 must implement DOD-approved TLS encryption in the GnuTLS package. | Give Warning
+      when:
+        - not "'FIPS' in crypto_policies_state.stdout"
+        - not rhel9stig_disruption_high
+      ansible.builtin.debug:
+        msg: WARNING!! - Crypto-Policies is not set to FIPS
 
-        - name: HIGH | RHEL-09-672030 | WARN | RHEL 9 must implement DOD-approved TLS encryption in the GnuTLS package. | Warning Count
-          when:
-            - not "'FIPS' in crypto_policies_state.stdout"
-            - not rhel9stig_disruption_high
-          ansible.builtin.import_tasks: warning_facts.yml
-          vars:
-            warn_control_id: RHEL-09-672030
+    - name: HIGH | RHEL-09-672030 | WARN | RHEL 9 must implement DOD-approved TLS encryption in the GnuTLS package. | Warning Count
+      when:
+        - not "'FIPS' in crypto_policies_state.stdout"
+        - not rhel9stig_disruption_high
+      ansible.builtin.import_tasks: warning_facts.yml
+      vars:
+        warn_control_id: RHEL-09-672030

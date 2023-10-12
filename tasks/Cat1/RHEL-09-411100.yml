@@ -18,20 +18,18 @@
       register: rhel9stig_uid_zero_accounts_except_root
 
     - name: HIGH | RHEL-09-0411100 | WARN | The root account must be the only account having unrestricted access to RHEL 9 system.
-      block:
-        - name: HIGH | RHEL-09-0411100 | WARN | The root account must be the only account having unrestricted access to RHEL 9 system.
-          when:
-            - rhel9stig_uid_zero_accounts_except_root is defined
-            - rhel9stig_uid_zero_accounts_except_root.stdout | length > 0
-          ansible.builtin.debug:
-            msg:
-              - WARNING!! - The following account(s) should not have a UID of 0 - Please Resolve
-              - "{{ rhel9stig_uid_zero_accounts_except_root.stdout }}"
+      when:
+        - rhel9stig_uid_zero_accounts_except_root is defined
+        - rhel9stig_uid_zero_accounts_except_root.stdout | length > 0
+      ansible.builtin.debug:
+        msg:
+          - WARNING!! - The following account(s) should not have a UID of 0 - Please Resolve
+          - "{{ rhel9stig_uid_zero_accounts_except_root.stdout }}"
 
-        - name: HIGH | RHEL-09-0411100 | WARN | The root account must be the only account having unrestricted access to RHEL 9 system.
-          when:
-            - rhel9stig_uid_zero_accounts_except_root is defined
-            - rhel9stig_uid_zero_accounts_except_root.stdout | length > 0
-          ansible.builtin.import_tasks: warning_facts.yml
-          vars:
-            warn_control_id: RHEL-09-411100
+    - name: HIGH | RHEL-09-0411100 | WARN | The root account must be the only account having unrestricted access to RHEL 9 system.
+      when:
+        - rhel9stig_uid_zero_accounts_except_root is defined
+        - rhel9stig_uid_zero_accounts_except_root.stdout | length > 0
+      ansible.builtin.import_tasks: warning_facts.yml
+      vars:
+        warn_control_id: RHEL-09-411100
