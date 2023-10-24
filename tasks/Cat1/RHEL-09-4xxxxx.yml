@@ -1,4 +1,5 @@
 ---
+
 - name: HIGH | RHEL-09-0411100 | The root account must be the only account having unrestricted access to RHEL 9 system.
   when:
     - rhel_09_411100
@@ -33,3 +34,22 @@
       ansible.builtin.import_tasks: warning_facts.yml
       vars:
         warn_control_id: RHEL-09-411100
+
+- name: HIGH | RHEL-09-431010 | PATCH | RHEL 9 must use a Linux Security Module configured to enforce limits on system services.
+  when:
+    - rhel_09_431010
+  ansible.builtin.lineinfile:
+    line: SELINUX=enforcing
+    path: /etc/selinux/config
+    regexp: (i)^selinux=
+  tags:
+    - RHEL-09-431010
+    - CAT1
+    - CCI-01084
+    - CCI-02696
+    - SRG-OS-000445-GPOS-00199
+    - SRG-OS-000134-GPOS-00068
+    - SV-258078r926221_rule
+    - V-258078
+    - NIST800-53R4_SC-3
+    - NIST800-53R4_SI-6

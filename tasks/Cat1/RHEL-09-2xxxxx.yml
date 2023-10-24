@@ -1,0 +1,362 @@
+---
+
+- name: HIGH | RHEL-09-211010 | AUDIT | RHEL 9 must be a vendor-supported release.
+  when:
+    - rhel_09_211010
+  tags:
+    - RHEL-09-211010
+    - CAT1
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257777r925318_rule
+    - V-257777
+    - NIST800-53R4_CM-6b
+  ansible.builtin.debug:
+    msg: Minimum supported version of {{ ansible_facts.distribution }} is {{ rhel9stig_min_supported_os_ver[ansible_facts.distribution] }}
+  changed_when: ansible_facts.distribution_version is not version_compare(rhel9stig_min_supported_os_ver[ansible_facts.distribution], '>=')
+
+- name: HIGH | RHEL-09-211045 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled
+  when:
+    - rhel_09_211045
+  tags:
+    - RHEL-09-211045
+    - CAT1
+    - CCI-000366
+    - CCI-002235
+    - SRG-OS-000324-GPOS-00125
+    - SRG-OS-000480-GPOS-00227
+    - SV-257784r925339_rule
+    - V-257784
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_AC-6
+  ansible.builtin.lineinfile:
+    create: true
+    line: CtrlAltDelBurstAction=none
+    path: /etc/systemd/system.conf
+    regexp: ^CtrlAltDelBurstAction=none
+  notify: Systemd_daemon_reload
+
+- name: HIGH | RHEL-09-211050 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled
+  when:
+    - rhel_09_211050
+  tags:
+    - RHEL-09-211050
+    - CAT1
+    - CCI-000366
+    - CCI-002235
+    - SRG-OS-000324-GPOS-00125
+    - SRG-OS-000480-GPOS-00227
+    - SV-257785r925342_rule
+    - V-257785
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_AC-6
+  notify: Systemd_reload
+  block:
+    - name: HIGH | RHEL-09-211050 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled | systemctl disable
+      ansible.builtin.systemd:
+        enabled: false
+        masked: true
+        name: ctrl-alt-del.target
+        state: stopped
+      notify: Systemd_daemon_reload
+
+    - name: HIGH | RHEL-09-211050 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled | Create symlink to /dev/null
+      ansible.builtin.file:
+        dest: /etc/systemd/system/ctrl-alt-del.target
+        src: /dev/null
+        state: link
+      notify: Systemd_daemon_reload
+
+- name: HIGH | RHEL-09-212020 | PATCH | RHEL 9 must require a unique superusers name upon booting into single-user and maintenance modes.
+  when:
+    - rhel_09_212020
+  tags:
+    - RHEL-09-212020
+    - CAT1
+    - CCI-000213
+    - SRG-OS-000080-GPOS-00048
+    - SV-257789r925354_rule
+    - V-257789
+    - NIST800-53R4_AC-3
+  ansible.builtin.lineinfile:
+    insertafter: "{{ grub_superusers.after }}"
+    line: "{{ grub_superusers.line }}"
+    path: /etc/grub2.cfg
+    regexp: "{{ grub_superusers.regexp }}"
+  loop:
+    - regexp: ^set_superusers=
+      line: set superusers="{{ rhel9stig_grub_superuser }}
+      after: "### BEGIN /etc/grub.d/01_users ###"
+    - { regexp: export superusers, line: export superusers, after: set_superusers= }
+  loop_control:
+    label: "{{ grub_superusers.line }}"
+    loop_var: grub_superusers
+
+- name: HIGH | RHEL-09-214015 | PATCH | RHEL 9 must check the GPG signature of software packages originating from external software repositories before installation.
+  when:
+    - rhel_09_214015
+  tags:
+    - RHEL-09-214015
+    - CAT1
+    - CCI-001749
+    - SRG-OS-000366-GPOS-00153
+    - SV-257820r925447_rule
+    - V-257820
+    - NIST800-53R4_CM-5
+  ansible.builtin.lineinfile:
+    line: gpgcheck=1
+    path: /etc/dnf/dnf.conf
+    regexp: ^gpgcheck
+
+- name: HIGH | RHEL-09-214020 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation.
+  when:
+    - rhel_09_214020
+  tags:
+    - RHEL-09-214020
+    - CAT1
+    - CCI-001749
+    - SRG-OS-000366-GPOS-00153
+    - SV-257821r925450_rule
+    - V-257821
+    - NIST800-53R4_CM-5
+  ansible.builtin.lineinfile:
+    line: localpkg_gpgcheck=1
+    path: /etc/dnf/dnf.conf
+    regexp: ^localpkg_gpgcheck
+
+- name: HIGH | RHEL-09-214025 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation.
+  when:
+    - rhel_09_214025
+  tags:
+    - RHEL-09-214025
+    - CAT1
+    - CCI-001749
+    - SRG-OS-000366-GPOS-00153
+    - SV-257822r925453_rule
+    - V-257822
+    - NIST800-53R4_CM-5
+  block:
+    - name: HIGH | RHEL-09-214025 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation. | find repo files
+      ansible.builtin.find:
+        contains: gpgcheck
+        file_type: file
+        path: /etc/yum.repos.d
+        patterns: "*.repo"
+        use_regex: true
+      register: repo_list
+
+    - name: HIGH | RHEL-09-214025 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation. | Set gpgcheck
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: ^gpgcheck
+        replace: gpgcheck=1
+      loop: "{{ repo_list.files }}"
+
+- name: HIGH | RHEL-09-215015 | PATCH | RHEL 9 must not have a File Transfer Protocol (FTP) server package installed.
+  when:
+    - "'vsftpd' in ansible_facts.packages"
+    - rhel_09_215015
+  tags:
+    - RHEL-09-215015
+    - CAT1
+    - CCI-000197
+    - CCI-000366
+    - CCI-000381
+    - SRG-OS-000074-GPOS-00042
+    - SRG-OS-000095-GPOS-00049
+    - SRG-OS-000480-GPOS-00227
+    - SV-257826r925465_rule
+    - V-257826
+    - NIST800-53R4_IA-5
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_CM-7
+  ansible.builtin.package:
+    name: vsftpd
+    state: absent
+
+- name: HIGH | RHEL-09-215060 | PATCH | RHEL 9 must not have a Trivial File Transfer Protocol (TFTP) server package installed.
+  when:
+    - "'tftp' in ansible_facts.packages"
+    - rhel_09_215060
+  tags:
+    - RHEL-09-215060
+    - CAT1
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257835r925492_rule
+    - V-257835
+    - NIST800-53R4_CM-6
+  ansible.builtin.package:
+    name: tftp
+    state: absent
+
+- name: MEDIUM | RHEL-08-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
+    of all information that requires at rest protection.
+  when:
+    - rhel_09_231190
+  tags:
+    - RHEL-09-231190
+    - CAT1
+    - CCI-001199
+    - CCI-002475
+    - CCI-002476
+    - SRG-OS-000405-GPOS-00184
+    - SRG-OS-000185-GPOS-00079
+    - SRG-OS-000404-GPOS-0018
+    - SV-257879r925624_rule
+    - V-257879
+    - NIST800-53R4_SC-28
+  vars:
+    warn_control_id: RHEL-09-231190
+  block:
+    - name: MEDIUM | RHEL-08-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
+        of all information that requires at rest protection. | Get partition layout
+      ansible.builtin.shell: blkid
+      changed_when: false
+      failed_when: false
+      register: rhel_09_231190_partition_layout
+
+    - name: MEDIUM | RHEL-08-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
+        of all information that requires at rest protection. | Message out warning
+      ansible.builtin.debug:
+        msg:
+          - WARNING!! Below is the partition layout. Please run the "blkid" command to confirm every persistent disk partition has an entry for TYPE=crypto_LUKS.
+          - If partitions other than pseudo file systems (such as /proc or /sys or tmpfs) this is a finding
+          - "{{ rhel_09_231190_partition_layout.stdout_lines }}"
+
+    - name: MEDIUM | RHEL-08-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
+        of all information that requires at rest protection. | Message out warning
+      ansible.builtin.import_tasks: warning_facts.yml
+
+- name: HIGH | RHEL-09-252070 | There must be no shosts.equiv files on RHEL 9.
+  when:
+    - rhel9stig_disruption_high
+    - rhel_09_252070
+  tags:
+    - RHEL-09-252070
+    - CAT1
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257955r925852_rule
+    - V-257955
+    - NIST800-53R4_CM-6
+  vars:
+    warn_control_id: RHEL-09-252070
+  block:
+    - name: HIGH | RHEL-09-252070 | AUDIT | There must be no shosts.equiv files on RHEL 9. | find files
+      ansible.builtin.find:
+        path: /
+        pattern: shosts.equiv
+      register: shosts_equiv
+
+    - name: HIGH | RHEL-09-252070 | PATCH | There must be no shosts.equiv files on RHEL 9. | Remove files
+      when:
+        - rhel9stig_disruption_high
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop: "{{ shosts_equiv.files }}"
+
+    - name: HIGH | RHEL-09-252070 | PATCH | There must be no shosts.equiv files on RHEL 9. | Warn if not removing files found
+      when:
+        - shosts_equiv.files | length > 0
+        - not rhel9stig_disruption_high
+      ansible.builtin.import_tasks: warning_facts.yml
+
+- name: HIGH | RHEL-09-252075 | There must be no .shosts files on RHEL 9.
+  when:
+    - rhel9stig_disruption_high
+    - rhel_09_252075
+  tags:
+    - RHEL-09-252075
+    - CAT1
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257956r925855_rule
+    - V-257956
+    - NIST800-53R4_CM-6
+  vars:
+    warn_control_id: RHEL-09-252075
+  block:
+    - name: HIGH | RHEL-09-252075 | AUDIT | There must be no .shosts files on RHEL 9. | find files
+      ansible.builtin.find:
+        path: /
+        pattern: .shosts
+      register: dot_shosts
+
+    - name: HIGH | RHEL-09-252075 | PATCH | There must be no .shosts files on RHEL 9. | Remove files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop: "{{ dot_shosts.files }}"
+      when:
+        - rhel9stig_disruption_high
+
+    - name: HIGH | RHEL-09-252075 | PATCH | There must be no .shosts files on RHEL 9. | Warn if not removing files found
+      ansible.builtin.import_tasks: warning_facts.yml
+      when:
+        - .shosts.files | length > 0
+        - not rhel9stig_disruption_high
+
+- name: HIGH | RHEL-09-255040 | PATCH | RHEL 9 SSHD must not allow blank passwords.
+  when:
+    - rhel_09_255040
+  tags:
+    - RHEL-09-255040
+    - CAT1
+    - CCI-000366
+    - CCI-000766
+    - SRG-OS-000106-GPOS-00053
+    - SRG-OS-000480-GPOS-00229
+    - SRG-OS-000480-GPOS-00227
+    - SV-257984r925939_rule
+    - V-257984
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_IA-2
+  ansible.builtin.lineinfile:
+    line: PermitEmptyPasswords no
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: (?i)^(#|)PermitEmptyPasswords
+    validate: sshd -t -f %s
+
+- name: HIGH | RHEL-09-255050 | PATCH | RHEL 9 must enable the Pluggable Authentication Module (PAM) interface for SSHD.
+  when:
+    - rhel_09_255050
+  tags:
+    - RHEL-09-255050
+    - CAT1
+    - CCI-000877
+    - SRG-OS-000125-GPOS-00065
+    - SV-257986r925945_rule
+    - V-257986
+    - NIST800-53R4_MA-4
+  ansible.builtin.lineinfile:
+    line: UsePAM yes
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: (?i)^(#|)usepam
+    validate: sshd -t -f %s
+
+- name: HIGH | RHEL-09-271040 | PATCH | RHEL 9 must not allow unattended or automatic logon via the graphical user interface.
+  when:
+    - "'gdm' in ansible_facts.packages"
+    - rhel_09_271040
+  tags:
+    - RHEL-09-271040
+    - CAT1
+    - CCI-000366
+    - SRG-OS-000480-GPOS-0022
+    - SV-258018r926041_rule
+    - V-258018
+    - NIST800-53R4_CM-6
+  ansible.builtin.lineinfile:
+    insertafter: "{{ autologin.after | default(omit) }}"
+    line: "{{ autologin.line }}"
+    path: /etc/gdm/custom.conf
+    regexp: "{{ autologin.regexp }}"
+    validate: sshd -t -f %s
+  loop:
+    - { regexp: "[daemon]", line: "[daemon]" }
+    - { regexp: "(?i)^AutomaticLoginEnable=false", line: AutomaticLoginEnable=false, after: "[daemon]" }
+  loop_control:
+    label: "{{ autologin.line }}"
+    loop_var: autologin
