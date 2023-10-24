@@ -3,15 +3,6 @@
 - name: HIGH | RHEL-09-611025 | PATCH |  RHEL 9 must not allow blank or null passwords.
   when:
     - rhel_09_611025
-  ansible.builtin.replace:
-    path: "{{ null_pass }}"
-    regexp: (.*) nullok(.*)
-    replace: \1\2
-  loop:
-    - /etc/pam.d/system-auth
-    - /etc/pam.d/password-auth
-  loop_control:
-    loop_var: null_pass
   tags:
     - RHEL-09-611025
     - CAT1
@@ -23,6 +14,15 @@
     - V-258078
     - NIST800-53R4_SC-3
     - NIST800-53R4_SI-6
+  ansible.builtin.replace:
+    path: "{{ null_pass }}"
+    regexp: (.*) nullok(.*)
+    replace: \1\2
+  loop:
+    - /etc/pam.d/system-auth
+    - /etc/pam.d/password-auth
+  loop_control:
+    loop_var: null_pass
 
 - name: HIGH | RHEL-09-671010 | PATCH | RHEL 9 must enable FIPS mode.
   when:

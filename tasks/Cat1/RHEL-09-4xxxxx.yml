@@ -38,10 +38,6 @@
 - name: HIGH | RHEL-09-431010 | PATCH | RHEL 9 must use a Linux Security Module configured to enforce limits on system services.
   when:
     - rhel_09_431010
-  ansible.builtin.lineinfile:
-    line: SELINUX=enforcing
-    path: /etc/selinux/config
-    regexp: (i)^selinux=
   tags:
     - RHEL-09-431010
     - CAT1
@@ -53,3 +49,7 @@
     - V-258078
     - NIST800-53R4_SC-3
     - NIST800-53R4_SI-6
+  ansible.builtin.lineinfile:
+    line: SELINUX=enforcing
+    path: /etc/selinux/config
+    regexp: (i)^selinux=
