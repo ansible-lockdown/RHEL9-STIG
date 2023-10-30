@@ -84,10 +84,8 @@
     path: /etc/grub2.cfg
     regexp: "{{ grub_superusers.regexp }}"
   loop:
-    - regexp: ^set_superusers=
-      line: set superusers="{{ rhel9stig_grub_superuser }}
-      after: "### BEGIN /etc/grub.d/01_users ###"
-    - { regexp: export superusers, line: export superusers, after: set_superusers= }
+    - { regexp: '^set_superusers=', line: 'set superusers="{{ rhel9stig_grub_superuser }}"', after: "### BEGIN /etc/grub.d/01_users ###" }
+    - { regexp: export superusers, line: 'export superusers', after: set_superusers= }
   loop_control:
     label: "{{ grub_superusers.line }}"
     loop_var: grub_superusers
