@@ -1,4 +1,5 @@
 ---
+
 - name: Post Audit | Run post_remediation {{ benchmark }} audit
   ansible.builtin.shell: "{{ audit_conf_dir }}/run_audit.sh -v {{ audit_vars_path }} -o {{ post_audit_outfile }} -g {{ group_names }}"
   changed_when: true
@@ -10,7 +11,7 @@
 - name: Post Audit | ensure audit files readable by users
   ansible.builtin.file:
     path: "{{ item }}"
-    mode: "0644"
+    mode: '0644'
     state: file
   loop:
     - "{{ post_audit_outfile }}"

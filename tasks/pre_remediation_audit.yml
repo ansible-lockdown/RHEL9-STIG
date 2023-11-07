@@ -1,8 +1,18 @@
 ---
-- name: Pre Audit Binary Setup | Setup the LE audit
+
+- name: Include audit specific variables
+  when:
+    - run_audit
+    - setup_audit
   tags:
     - setup_audit
+    - run_audit
+  ansible.builtin.include_vars: audit.yml
+
+- name: Pre Audit Setup | Setup the LE audit
   when:
+    - setup_audit
+  tags:
     - setup_audit
   ansible.builtin.include_tasks: LE_audit_setup.yml
 
@@ -10,7 +20,7 @@
   ansible.builtin.file:
     path: "{{ audit_conf_dir }}"
     state: directory
-    mode: "0755"
+    mode: '0755'
 
 - name: Pre Audit Setup | If using git for content set up
   when:
@@ -21,13 +31,13 @@
         name: git
         state: present
 
-    - name: Pre Audit Setup | retrieve audit content files from git
+    - name: Pre Audit Setup | Retrieve audit content files from git
       ansible.builtin.git:
         repo: "{{ audit_file_git }}"
         dest: "{{ audit_conf_dir }}"
         version: "{{ audit_git_version }}"
 
-- name: Pre Audit Setup | copy to audit content files to server
+- name: Pre Audit Setup | Copy to audit content files to server
   when:
     - audit_content == 'copy'
   ansible.builtin.copy:
@@ -35,14 +45,14 @@
     dest: "{{ audit_conf_dest }}"
     mode: preserve
 
-- name: Pre Audit Setup | unarchive audit content files on server
+- name: Pre Audit Setup | Unarchive audit content files on server
   when:
     - audit_content == 'archived'
   ansible.builtin.unarchive:
     src: "{{ audit_conf_copy  }}"
     dest: "{{ audit_conf_dir }}"
 
-- name: Pre Audit Setup | get audit content from url
+- name: Pre Audit Setup | Get audit content from url
   when:
     - audit_content == 'get_url'
   ansible.builtin.get_url:
@@ -73,7 +83,7 @@
   ansible.builtin.template:
     src: ansible_vars_goss.yml.j2
     dest: "{{ audit_vars_path }}"
-    mode: "0600"
+    mode: '0600'
 
 - name: Pre Audit | Run pre_remediation {{ benchmark }} audit
   ansible.builtin.shell: "{{ audit_conf_dir }}/run_audit.sh -v {{ audit_vars_path }} -o {{ pre_audit_outfile }} -g {{ group_names }}"

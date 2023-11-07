@@ -1,4 +1,5 @@
 ---
+
 - name: Pre Audit Setup | Set audit package name
   block:
     - name: Pre Audit Setup | Set audit package name | 64bit
@@ -18,15 +19,15 @@
     owner: root
     group: root
     checksum: "{{ audit_bin_version[audit_pkg_arch_name + '_checksum'] }}"
-    mode: "0555"
+    mode: '0555'
   when:
     - get_audit_binary_method == 'download'
 
-- name: Pre Audit Setup | copy audit binary
+- name: Pre Audit Setup | Copy audit binary
   ansible.builtin.copy:
     src: "{{ audit_bin_copy_location }}"
     dest: "{{ audit_bin }}"
-    mode: "0555"
+    mode: '0555'
     owner: root
     group: root
   when:

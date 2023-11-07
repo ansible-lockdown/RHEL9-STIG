@@ -10,7 +10,7 @@
     - SRG-OS-000480-GPOS-00227
     - SV-257777r925318_rule
     - V-257777
-    - NIST800-53R4_CM-6b
+    - NIST800-53R4_CM-6
   ansible.builtin.debug:
     msg: Minimum supported version of {{ ansible_facts.distribution }} is {{ rhel9stig_min_supported_os_ver[ansible_facts.distribution] }}
   changed_when: ansible_facts.distribution_version is not version_compare(rhel9stig_min_supported_os_ver[ansible_facts.distribution], '>=')
@@ -152,6 +152,7 @@
 
 - name: HIGH | RHEL-09-215015 | PATCH | RHEL 9 must not have a File Transfer Protocol (FTP) server package installed.
   when:
+    - not rhel9stig_is_ftp_server
     - "'vsftpd' in ansible_facts.packages"
     - rhel_09_215015
   tags:
@@ -255,7 +256,7 @@
         state: absent
       loop: "{{ shosts_equiv.files }}"
 
-    - name: HIGH | RHEL-09-252070 | PATCH | There must be no shosts.equiv files on RHEL 9. | Warn if not removing files found
+    - name: HIGH | RHEL-09-252070 | WARN | There must be no shosts.equiv files on RHEL 9. | Warn if not removing files found
       when:
         - shosts_equiv.files | length > 0
         - not rhel9stig_disruption_high
@@ -290,7 +291,7 @@
       when:
         - rhel9stig_disruption_high
 
-    - name: HIGH | RHEL-09-252075 | PATCH | There must be no .shosts files on RHEL 9. | Warn if not removing files found
+    - name: HIGH | RHEL-09-252075 | WARN | There must be no .shosts files on RHEL 9. | Warn if not removing files found
       ansible.builtin.import_tasks: warning_facts.yml
       when:
         - .shosts.files | length > 0

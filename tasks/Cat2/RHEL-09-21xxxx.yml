@@ -1,0 +1,379 @@
+---
+
+- name: "MEDIUM | RHEL-09-211015 | PATCH | RHEL 9 vendor packaged system security patches and updates must be installed and up to date."
+  when:
+    - not system_is_ec2
+    - rhel_09_211015
+  tags:
+    - RHEL-09-211015
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257778r925321_rule
+    - V-257778
+    - NIST800-53R4_CM-6b
+  ansible.builtin.package:
+    name: "*"
+    state: latest
+
+- name: "MEDIUM | RHEL-09-211020 | PATCH | RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system via a command line user logon."
+  when:
+    - rhel_09_211020
+  tags:
+    - RHEL-09-211020
+    - CAT2
+    - CCI-000048
+    - CCI-001384
+    - CCI-001385
+    - CCI-001386
+    - CCI-001387
+    - CCI-001388
+    - SRG-OS-000023-GPOS-00006
+    - SRG-OS-000228-GPOS-00088
+    - SV-257779r925324_rule
+    - V-257779
+    - NIST800-53R4_AC-8
+  block:
+    - name: "MEDIUM | RHEL-09-211020 | PATCH | RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system via a command line user logon. | Uncomment banner keyword and set banner path"
+      ansible.builtin.lineinfile:
+        line: 'Banner /etc/issue'
+        path: /etc/ssh/sshd_config
+        regexp: '(?i)^#?Banner'
+      when:
+        - rhel9stig_ssh_required
+
+    - name: "MEDIUM | RHEL-09-211020 | PATCH | RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system via a command line user logon. | Set banner message"
+      ansible.builtin.copy:  # noqa: template-instead-of-copy
+        content: "{{ rhel9stig_logon_banner }}"
+        dest: "{{ item }}"
+        group: root
+        mode: '0644'
+        owner: root
+      notify: Sshd_restart
+      loop:
+        - /etc/issue
+        - /etc/issue.net
+
+- name: "MEDIUM | RHEL-09-211025 | PATCH | RHEL 9 must implement the Endpoint Security for Linux Threat Prevention tool. | Alert no McAfee"
+  when:
+    - rhel_09_211025
+  tags:
+    - RHEL-09-211025
+    - CAT2
+    - CCI-001233
+    - SRG-OS-000191-GPOS-00080
+    - SV-257780r925327_rule
+    - V-257780
+    - NIST800-53R4_SI-2
+  vars:
+    warn_control_id: RHEL-09-211025
+  block:
+    - name: "MEDIUM | RHEL-09-211025 | AUDIT | RHEL 9 must implement the Endpoint Security for Linux Threat Prevention tool. | McAfee process"
+      community.general.pids:
+        name: "{{ rhel9stig_av_service }}"
+      register: rhel9stig_av_pid
+
+    - name: MEDIUM | RHEL-09-211025 | WARN | RHEL 9 must implement the Endpoint Security for Linux Threat Prevention tool.
+      when:
+        - "'mcafeetp' not in ansible_facts.packages or
+           rhel9stig_av_pid is defined"
+      ansible.builtin.import_tasks: warning_facts.yml
+
+- name: "MEDIUM | RHEL-09-211030 | PATCH | The graphical display manager must not be the default target on RHEL 9 unless approved."
+  when:
+    - rhel_09_211030
+  tags:
+    - RHEL-09-211030
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257781r925330_rule
+    - V-257781
+    - NIST800-53R4_CM-6
+  ansible.builtin.file:
+    dest: /etc/systemd/system/default.target
+    src: /usr/lib/systemd/system/multi-user.target
+    state: link
+
+- name: "MEDIUM | RHEL-09-211040 | PATCH | RHEL 9 systemd-journald service must be enabled."
+  when:
+    - rhel_09_211040
+  tags:
+    - RHEL-09-211040
+    - CAT2
+    - CCI-001665
+    - SRG-OS-000269-GPOS-00103
+    - SV-257783r925336_rule
+    - V-257783
+    - NIST800-53R4_SC-24
+  ansible.builtin.systemd:
+    enabled: true
+    name: systemd-journald
+    state: started
+  notify: Systemd_daemon_reload
+
+- name: "MEDIUM | RHEL-09-211055 | PATCH | RHEL 9 debug-shell systemd service must be disabled."
+  when:
+    - rhel_09_211055
+  tags:
+    - RHEL-09-211055
+    - CAT2
+    - CCI-001665
+    - SRG-OS-000324-GPOS-00125
+    - SRG-OS-000480-GPOS-00227
+    - SV-257786r925345_rule
+    - V-257786
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_AC-6
+  ansible.builtin.systemd:
+    enabled: false
+    masked: true
+    name: debug-shell.service
+    state: stopped
+  notify: Systemd_daemon_reload
+
+- name: "MEDIUM | RHEL-09-212010 | PATCH | RHEL 9 must require a boot loader superuser password."
+  when:
+    - rhel_09_212010
+  tags:
+    - RHEL-09-212010
+    - CAT2
+    - CCI-001665
+    - SRG-OS-000080-GPOS-00048
+    - SV-257787r925348_rule
+    - V-257787
+    - NIST800-53R4_AC-3
+  vars:
+    warn_control_id: 'RHEL-09-212010'
+  block:
+    - name: "MEDIUM | RHEL-09-212010 | PATCH | RHEL 9 must require a boot loader superuser password. | set password for grub2 user"
+      when: rhel9stig_set_bootloader_password
+      ansible.builtin.template:
+        dest: "/{{ item.file }}"
+        group: root
+        mode: "{{ item.mode }}"
+        owner: root
+        src: "{{ item.file }}.j2"
+      loop:
+        - { file: 'boot/grub2/user.cfg', mode: '0644' }
+        - { file: 'etc/grub.d/01_users', mode: '0755' }
+
+    - name: "MEDIUM | RHEL-09-212010 | AUDIT | RHEL 9 must require a boot loader superuser password.| warning"
+      when: not rhel9stig_set_bootloader_password
+      block:
+        - name: "MEDIUM | RHEL-09-212010 | AUDIT | RHEL 9 must require a boot loader superuser password. | Check bootloader password required"
+          ansible.builtin.shell: grep "password_pbkdf2 {{ rhel9stig_grub_superuser }} \${GRUB2_PASSWORD}" /etc/grub2.cfg
+          changed_when: false
+          failed_when: rhel_09_212010_grub_passwd.rc not in [ 0,1 ]
+          register: rhel_09_212010_grub_passwd
+
+        - name: "MEDIUM | RHEL-09-212010 | WARN | RHEL 9 must require a boot loader superuser password. | Absent"
+          when: rhel_09_212010_grub_passwd.rc != 0
+          ansible.builtin.debug:
+            msg: "Warning!! Please check that bootloader superuser and password is set"
+
+        - name: "MEDIUM | RHEL-09-212010 | WARN | RHEL 9 must require a boot loader superuser password. | Warning"
+          when: rhel_09_212010_grub_passwd.rc != 0
+          ansible.builtin.import_tasks: warning_facts.yml
+
+- name: "MEDIUM | RHEL-09-212015 | PATCH | RHEL 9 must disable the ability of systemd to spawn an interactive boot process."
+  when:
+    - rhel_09_212015
+  tags:
+    - RHEL-09-212015
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257788r925351_rule
+    - V-257788
+    - NIST800-53R4_CM-6
+  block:
+    - name: "MEDIUM | RHEL-09-212015 | AUDIT | RHEL 9 must disable the ability of systemd to spawn an interactive boot process."
+      ansible.builtin.shell: grubby --info=ALL | grep args | grep 'systemd.confirm_spawn'
+      changed_when: false
+      failed_when: rhel9stig_212015_systemd_spawn.rc not in [ 0, 1 ]
+      register: rhel9stig_212015_systemd_spawn
+
+    - name: "MEDIUM | RHEL-09-212015 | AUDIT | RHEL 9 must disable the ability of systemd to spawn an interactive boot process."
+      when: rhel9stig_212015_systemd_spawn | length > 0
+      ansible.builtin.shell: grubby --update-kernel=ALL --remove-args="systemd.confirm_spawn"
+
+- name: "MEDIUM | RHEL-09-212025 | PATCH | RHEL 9 /boot/grub2/grub.cfg file must be group-owned by root."
+  when:
+    - rhel_09_212025
+  tags:
+    - RHEL-09-212025
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257790r925357_rule
+    - V-257790
+    - NIST800-53R4_CM-6
+  ansible.builtin.file:
+    group: root
+    path: /boot/grub2/grub.cfg
+    state: file
+
+- name: "MEDIUM | RHEL-09-212030 | PATCH | RHEL 9 /boot/grub2/grub.cfg file must be owned by root."
+  when:
+    - rhel_09_212030
+  tags:
+    - RHEL-09-212030
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257791r925360_rule
+    - V-257791
+    - NIST800-53R4_CM-6
+  ansible.builtin.file:
+    owner: root
+    path: /boot/grub2/grub.cfg
+    state: file
+
+- name: "MEDIUM | RHEL-09-212035 | PATCH | RHEL 9 must disable virtual system calls."
+  when:
+    - rhel_09_212035
+  tags:
+    - RHEL-09-212035
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SRG-OS-000134-GPOS-00068
+    - SV-257792r925363_rule
+    - V-257792
+    - NIST800-53R4_CM-6
+  block:
+    - name: "MEDIUM | RHEL-09-212035 | AUDIT | RHEL 9 must disable virtual system calls. | Capture grubby"
+      ansible.builtin.shell: grubby --info=ALL | grep args | grep 'vsyscall=none'
+      changed_when: false
+      failed_when: rhel9stig_212035_grubby_vsyscall.rc not in [ 0, 1 ]
+      register: rhel9stig_212035_grubby_vsyscall
+
+    - name: "MEDIUM | RHEL-09-212035 | PATCH | RHEL 9 must disable virtual system calls. | Amend grubby"
+      when: rhel9stig_212035_grubby_vsyscall | length == 0
+      ansible.builtin.shell: grubby --update-kernel=ALL --args="vsyscall=none"
+
+    - name: "MEDIUM | RHEL-09-212035 | AUDIT | RHEL 9 must disable virtual system calls. | Capture default grub"
+      ansible.builtin.shell: grep "^GRUB_CMDLINE_LINUX=" /etc/default/grub | cut -f2 -d'"' | grep vsyscall
+      changed_when: false
+      failed_when: rhel9stig_212035_def_grub_vsyscall.rc not in [ 0, 1 ]
+      register: rhel9stig_212035_def_grub_vsyscall
+
+    - name: "MEDIUM | RHEL-09-212035 | PATCH | RHEL 9 must disable virtual system calls. | Set default"
+      when: rhel9stig_212035_def_grub_vsyscall.rc != 0
+      ansible.builtin.lineinfile:
+        backrefs: true
+        line: '\1\2 vsyscall=none'
+        path: /etc/default/grub
+        regexp: ^(GRUB_CMDLINE_LINUX=")(.*)"
+      notify: Rebuild_grub
+
+    - name: "MEDIUM | RHEL-09-212035 | PATCH | RHEL 9 must disable virtual system calls. | Change default"
+      when:
+        - rhel9stig_212035_def_grub_vsyscall.rc == 0
+        - "'vsyscall=none' not in rhel9stig_212035_def_grub_vsyscall.stdout"
+      ansible.builtin.lineinfile:
+        backrefs: true
+        line: '\1\2vsyscall=none\3'
+        path: /etc/default/grub
+        regexp: ^(GRUB_CMDLINE_LINUX=)(".*)vsyscall=\w+(.*")
+      notify: Rebuild_grub
+
+- name: "MEDIUM | RHEL-09-212040 | PATCH | RHEL 9 must clear the page allocator to prevent use-after-free attacks."
+  when:
+    - rhel_09_212040
+  tags:
+    - RHEL-09-212040
+    - CAT2
+    - CCI-000366
+    - CCI-001084
+    - SRG-OS-000480-GPOS-00227
+    - SRG-OS-000134-GPOS-00068
+    - SV-257793r925366_rule
+    - V-257793
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_SC-3
+  block:
+    - name: "MEDIUM | RHEL-09-212040 | AUDIT | RHEL 9 must clear the page allocator to prevent use-after-free attacks. | Capture grubby"
+      ansible.builtin.shell: grubby --info=ALL | grep args | grep 'page_poison=1'
+      changed_when: false
+      failed_when: rhel9stig_212040_grubby_page_alloc.rc not in [ 0, 1 ]
+      register: rhel9stig_212040_grubby_page_alloc
+
+    - name: "MEDIUM | RHEL-09-212040 | PATCH | RHEL 9 must clear the page allocator to prevent use-after-free attacks. | Amend grubby"
+      when: rhel9stig_212040_grubby_page_alloc | length == 0
+      ansible.builtin.shell: grubby --update-kernel=ALL --args="page_poison=1"
+
+    - name: "MEDIUM | RHEL-09-212040 | AUDIT | RHEL 9 must clear the page allocator to prevent use-after-free attacks. | Capture default grub"
+      ansible.builtin.shell: grep "^GRUB_CMDLINE_LINUX=" /etc/default/grub | cut -f2 -d'"' | grep page_poison
+      changed_when: false
+      failed_when: rhel9stig_212040_def_grub_poison.rc not in [ 0 ,1 ]
+      register: rhel9stig_212040_def_grub_poison
+
+    - name: "MEDIUM | RHEL-09-212040 | PATCH | RHEL 9 must clear the page allocator to prevent use-after-free attacks. | Set default"
+      when: rhel9stig_212040_def_grub_poison.rc != 0
+      ansible.builtin.lineinfile:
+        backrefs: true
+        line: '\1\2 page_poison=1"'
+        regexp: ^(GRUB_CMDLINE_LINUX=")(.*)"
+        path: /etc/default/grub
+      notify: Rebuild_grub
+
+    - name: "MEDIUM | RHEL-09-212040 | PATCH | RHEL 9 must clear the page allocator to prevent use-after-free attacks. | Change default"
+      when: rhel9stig_212040_def_grub_poison.rc == 0
+      ansible.builtin.lineinfile:
+        backrefs: true
+        line: '\1\2page_poison=1\4'
+        regexp: ^(GRUB_CMDLINE_LINUX=)(".*)page_poison=\d(.*")
+        path: /etc/default/grub
+      notify: Rebuild_grub
+
+- name: "MEDIUM | RHEL-09-212045 | PATCH |  RHEL 9 must clear SLUB/SLAB objects to prevent use-after-free attacks"
+  when:
+    - rhel_09_212045
+  tags:
+    - RHEL-09-212045
+    - CAT2
+    - CCI-001084
+    - SRG-OS-000433-GPOS-00192
+    - SRG-OS-000134-GPOS-00068
+    - SV-257794r925369_rule
+    - V-257794
+    - NIST800-53R4_SC-3
+    - NIST800-53R4_SI-16
+  block:
+    - name: "MEDIUM | RHEL-09-212045 | AUDIT | RHEL 9 must clear SLUB/SLAB objects to prevent use-after-free attacks | capture grubby"
+      ansible.builtin.shell: grubby --info=ALL | grep args | grep 'slub_debug=P'
+      changed_when: false
+      failed_when: rhel9stig_212045_grubby_slab.rc not in [ 0, 1 ]
+      register: rhel9stig_212045_grubby_slab
+
+    - name: "MEDIUM | RHEL-09-212045 | PATCH | RHEL 9 must clear SLUB/SLAB objects to prevent use-after-free attacks | Amend grubby"
+      when: rhel9stig_212045_grubby_slab | length == 0
+      ansible.builtin.shell: grubby --update-kernel=ALL --args="slub_debug=P"
+
+    - name: "MEDIUM | RHEL-09-212045 | AUDIT | RHEL 9 must clear SLUB/SLAB objects to prevent use-after-free attacks | Capture default grub"
+      ansible.builtin.shell: grep "^GRUB_CMDLINE_LINUX=" /etc/default/grub | cut -f2 -d'"' | grep slub_debug
+      changed_when: false
+      failed_when: rhel9stig_212045_def_grub_slub.rc not in [ 0, 1 ]
+      register: rhel9stig_212045_def_grub_slub
+
+    - name: "MEDIUM | RHEL-09-212045 | PATCH | RHEL 9 must clear SLUB/SLAB objects to prevent use-after-free attacks | Set default"
+      when: rhel9stig_212045_def_grub_slub.rc != 0
+      ansible.builtin.lineinfile:
+        backrefs: true
+        line: \1\2 slub_debug=P"
+        regexp: ^(GRUB_CMDLINE_LINUX=)(.*)"
+        path: /etc/default/grub
+      notify: Rebuild_grub
+
+    - name: "MEDIUM | RHEL-09-212045 | PATCH | RHEL 9 must clear SLUB/SLAB objects to prevent use-after-free attacks | Change default"
+      when:
+        - "'slub_debug=P' not in rhel9stig_212045_def_grub_slub.stdout"
+        - rhel9stig_212045_def_grub_slub.rc == 0
+      ansible.builtin.lineinfile:
+        backrefs: true
+        line: \1slub_debug=P \2
+        regexp: ^(GRUB_CMDLINE_LINUX=")slub_debug=P)(.*")
+        path: /etc/default/grub
+      notify: Rebuild_grub

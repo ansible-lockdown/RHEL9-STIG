@@ -1,13 +1,13 @@
 ---
 
 - name: Run Cat 1 STIG 2xxxxx tasks
-  ansible.builtin.include_tasks:
+  ansible.builtin.import_tasks:
     file: RHEL-09-2xxxxx.yml
 
 - name: Run Cat 1 STIG 4xxxxx tasks
-  ansible.builtin.include_tasks:
+  ansible.builtin.import_tasks:
     file: RHEL-09-4xxxxx.yml
 
 - name: Run Cat 1 STIG 6xxxxx tasks
-  ansible.builtin.include_tasks:
+  ansible.builtin.import_tasks:
     file: RHEL-09-6xxxxx.yml
