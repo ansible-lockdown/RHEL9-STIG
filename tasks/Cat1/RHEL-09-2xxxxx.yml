@@ -294,7 +294,7 @@
     - name: HIGH | RHEL-09-252075 | WARN | There must be no .shosts files on RHEL 9. | Warn if not removing files found
       ansible.builtin.import_tasks: warning_facts.yml
       when:
-        - .shosts.files | length > 0
+        - dot_shosts is defined
         - not rhel9stig_disruption_high
 
 - name: HIGH | RHEL-09-255040 | PATCH | RHEL 9 SSHD must not allow blank passwords.
