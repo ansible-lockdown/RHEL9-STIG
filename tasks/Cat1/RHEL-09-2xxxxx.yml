@@ -315,7 +315,7 @@
   ansible.builtin.lineinfile:
     line: PermitEmptyPasswords no
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: (?i)^(#|)PermitEmptyPasswords
+    regexp: (?i)^(#|)PermitEmptyPasswords yes
     validate: sshd -t -f %s
 
 - name: HIGH | RHEL-09-255050 | PATCH | RHEL 9 must enable the Pluggable Authentication Module (PAM) interface for SSHD.
@@ -352,7 +352,7 @@
     line: "{{ autologin.line }}"
     path: /etc/gdm/custom.conf
     regexp: "{{ autologin.regexp }}"
-    validate: sshd -t -f %s
+    cretae: true
   loop:
     - { regexp: "[daemon]", line: "[daemon]" }
     - { regexp: "(?i)^AutomaticLoginEnable=false", line: AutomaticLoginEnable=false, after: "[daemon]" }

@@ -77,7 +77,7 @@
 - name: Pre Audit Setup | Copy ansible default vars values to test audit
   tags:
     - goss_template
-    - always
+    - run_audit
   when:
     - run_audit
   ansible.builtin.template:
