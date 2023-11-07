@@ -1,4 +1,5 @@
 ---
+
 - name: Check OS version and family
   tags:
     - always
@@ -59,7 +60,7 @@
         fail_msg: You have {{ sudo_password_rule }} enabled but the user = {{ ansible_env.SUDO_USER }} has no password set - It can break access
         success_msg: You have a password set for the {{ ansible_env.SUDO_USER }}
       vars:
-        sudo_password_rule: RHEL-08-010380  # pragma: allowlist secret
+        sudo_password_rule: RHEL-09-010380  # pragma: allowlist secret
 
 - name: Include OS specific variables
   tags:
@@ -72,6 +73,8 @@
   when:
     - not system_is_ec2
     - not system_is_container
+    - rhel_09_212010
+    - rhel9stig_set_bootloader_password
   ansible.builtin.assert:
     that: rhel9stig_bootloader_password_hash != 'grub.pbkdf2.sha512.changethispassword'  # pragma: allowlist secret
     msg: This role will not be able to run single user password commands as rhel9stig_bootloader_password_hash variable has not been set  # pragma: allowlist secret
@@ -103,15 +106,15 @@
   when: rhel9stig_cat1_patch
   ansible.builtin.import_tasks: Cat1/main.yml
 
-# - name: Include CAT II patches
-#   ansible.builtin.import_tasks: fix-cat2.yml
-#   when: rhel9stig_cat2_patch
-#   tags:
-#       - CAT2
-#       - medium
+- name: Include CAT II patches
+  ansible.builtin.import_tasks: Cat2/main.yml
+  when: rhel9stig_cat2_patch
+  tags:
+    - CAT2
+    - medium
 
 # - name: Include CAT III patches
-#   ansible.builtin.import_tasks: fix-cat3.yml
+#   ansible.builtin.import_tasks: Cat3/main.yml
 #   when: rhel9stig_cat3_patch | bool
 #   tags:
 #       - CAT3

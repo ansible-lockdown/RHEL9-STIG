@@ -7,3 +7,11 @@
 - name: Change_requires_reboot
   ansible.builtin.set_fact:
     change_requires_reboot: true
+
+- name: Sshd_restart
+  ansible.builtin.systemd:
+    name: sshd
+    state: restarted
+
+- name: Rebuild_grub
+  ansible.builtin.shell: grub2-mkconfig -o /boot/grub2/grub.cfg

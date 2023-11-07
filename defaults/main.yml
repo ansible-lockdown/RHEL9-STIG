@@ -48,7 +48,12 @@ rhel9stig_skip_reboot: true
 # Defined will change if control requires
 change_requires_reboot: false
 
-### Goss is required on the remote host
+rhel9stig_workaround_for_disa_benchmark: true
+rhel9stig_workaround_for_ssg_benchmark: true
+
+### Goss is required on the remote host ###
+## Refer to vars/auditd.yml for any other settings ##
+
 setup_audit: false
 # How to retrieve audit binary
 # Options are copy or download - detailed settings at the bottom of this file
@@ -64,8 +69,6 @@ run_audit: false
 
 # Run heavy tests - some tests can have more impact on a system enabling these can have greater impact on a system
 audit_run_heavy_tests: true
-# Timeout for those cmds that take longer to run where timeout set
-audit_cmd_timeout: 120000
 
 ### End Goss enablements ####
 
@@ -92,9 +95,67 @@ rhel_09_671010: true
 rhel_09_672015: true
 rhel_09_672030: true
 
+# Cat2
+
+rhel_09_211015: true
+rhel_09_211020: true
+rhel_09_211025: true
+rhel_09_211030: true
+rhel_09_211040: true
+rhel_09_211055: true
+rhel_09_212010: true
+rhel_09_212015: true
+rhel_09_212025: true
+rhel_09_212030: true
+rhel_09_212035: true
+rhel_09_212040: true
+rhel_09_212045: true
+
 ## SSHD
 rhel9stig_sshd_config_file: /etc/ssh/sshd_config
+rhel9stig_ssh_required: true
 
 ## Grub
 rhel9stig_grub_superuser: root
 rhel9stig_bootloader_password_hash: 'grub.pbkdf2.sha512.changethispassword'  # pragma: allowlist secret
+rhel9stig_set_bootloader_password: false
+
+## Banner
+rhel9stig_logon_banner: "{{ rhel9stig_workaround_for_disa_benchmark | ternary(
+        rhel9stig_logon_banner_nice | regex_replace('(?s)(?<!\\n)\\n(?!(\n|$))', ' '),
+        rhel9stig_logon_banner_nice) }}"
+rhel9stig_logon_banner_nice: |
+    You are accessing a U.S. Government (USG) Information System (IS) that is
+    provided for USG-authorized use only.
+
+    By using this IS (which includes any device attached to this IS), you consent
+    to the following conditions:
+
+    -The USG routinely intercepts and monitors communications on this IS for
+    purposes including, but not limited to, penetration testing, COMSEC monitoring,
+    network operations and defense, personnel misconduct (PM), law enforcement
+    (LE), and counterintelligence (CI) investigations.
+
+    -At any time, the USG may inspect and seize data stored on this IS.
+
+    -Communications using, or data stored on, this IS are not private, are subject
+    to routine monitoring, interception, and search, and may be disclosed or used
+    for any USG-authorized purpose.
+
+    -This IS includes security measures (e.g., authentication and access controls)
+    to protect USG interests--not for your personal benefit or privacy.
+
+    -Notwithstanding the above, using this IS does not constitute consent to PM, LE
+    or CI investigative searching or monitoring of the content of privileged
+    communications, or work product, related to personal representation or services
+    by attorneys, psychotherapists, or clergy, and their assistants. Such
+    communications and work product are private and confidential. See User
+    Agreement for details.
+
+# Threat Protection
+rhel9stig_av_pkg: 'mcafeetp'
+rhel9stig_av_service: 'mfetpd'
+
+# Packages and services
+rhel9stig_is_ftp_server: false
+rhel9stig_is_tftp_server: false
