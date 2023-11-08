@@ -196,9 +196,16 @@
       failed_when: rhel9stig_212015_systemd_spawn.rc not in [ 0, 1 ]
       register: rhel9stig_212015_systemd_spawn
 
-    - name: "MEDIUM | RHEL-09-212015 | AUDIT | RHEL 9 must disable the ability of systemd to spawn an interactive boot process."
-      when: rhel9stig_212015_systemd_spawn | length > 0
+    - name: "MEDIUM | RHEL-09-212015 | PATCH | RHEL 9 must disable the ability of systemd to spawn an interactive boot process."
+      when: rhel9stig_212015_systemd_spawn.stdout | length > 0
       ansible.builtin.shell: grubby --update-kernel=ALL --remove-args="systemd.confirm_spawn"
+
+    - name: "MEDIUM | RHEL-09-212015 | PATCH | RHEL 9 must disable the ability of systemd to spawn an interactive boot process."
+      ansible.builtin.replace:
+        path: /etc/default/grub
+        regexp: '(.*)systemd.confirm_spawn=(1|yes|true|on)(.*)'
+        replace: '\1\3'
+      notify: Rebuild_grub
 
 - name: "MEDIUM | RHEL-09-212025 | PATCH | RHEL 9 /boot/grub2/grub.cfg file must be group-owned by root."
   when:
@@ -330,7 +337,7 @@
         path: /etc/default/grub
       notify: Rebuild_grub
 
-- name: "MEDIUM | RHEL-09-212045 | PATCH |  RHEL 9 must clear SLUB/SLAB objects to prevent use-after-free attacks"
+- name: "MEDIUM | RHEL-09-212045 | PATCH | RHEL 9 must clear SLUB/SLAB objects to prevent use-after-free attacks"
   when:
     - rhel_09_212045
   tags:
@@ -379,3 +386,135 @@
         regexp: ^(GRUB_CMDLINE_LINUX=")slub_debug=P)(.*")
         path: /etc/default/grub
       notify: Rebuild_grub
+
+- name: "MEDIUM | RHEL-09-213010 | PATCH | RHEL 9 must restrict access to the kernel message buffer."
+  when:
+    - rhel_09_213010
+  tags:
+    - RHEL-09-213010
+    - CAT2
+    - CCI-001082
+    - CCI-001090
+    - SRG-OS-000132-GPOS-00067
+    - SRG-OS-000138-GPOS-00069
+    - SV-257797r925378_rule
+    - V-257797
+    - NIST800-53R4_SC-2
+    - NIST800-53R4_SC-4
+  ansible.posix.sysctl:
+    name: kernel.dmesg_restrict
+    state: present
+    sysctl_file: "{{ rhel9stig_sysctl_file }}"
+    sysctl_set: true
+    value: '1'
+  notify: Reload_sysctl
+
+- name: "MEDIUM | RHEL-09-213015 | PATCH | RHEL 9 must prevent kernel profiling by nonprivileged users."
+  when:
+    - rhel_09_213015
+  tags:
+    - RHEL-09-213015
+    - CAT2
+    - CCI-001082
+    - CCI-001090
+    - SRG-OS-000132-GPOS-00067
+    - SRG-OS-000138-GPOS-00069
+    - SV-257798r925381_rule
+    - V-257798
+    - NIST800-53R4_SC-2
+    - NIST800-53R4_SC-4
+  ansible.posix.sysctl:
+    name: kernel.perf_event_paranoid
+    state: present
+    sysctl_file: "{{ rhel9stig_sysctl_file }}"
+    sysctl_set: true
+    value: '2'
+  notify: Reload_sysctl
+
+- name: "MEDIUM | RHEL-09-213020 | PATCH | RHEL 9 must prevent the loading of a new kernel for later execution."
+  when:
+    - rhel_09_213020
+  tags:
+    - RHEL-09-213020
+    - CAT2
+    - CCI-000366
+    - CCI-00749
+    - SRG-OS-000480-GPOS-00227
+    - SRG-OS-000366-GPOS-00153
+    - SV-257799r925384_rule
+    - V-257799
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_CM-5
+  ansible.posix.sysctl:
+    name: kernel.kexec_load_disabled
+    state: present
+    sysctl_file: "{{ rhel9stig_sysctl_file }}"
+    sysctl_set: true
+    value: '1'
+  notify: Reload_sysctl
+
+- name: "MEDIUM | RHEL-09-213025 | PATCH | RHEL 9 must restrict exposed kernel pointer addresses access."
+  when:
+    - rhel_09_213025
+  tags:
+    - RHEL-09-213025
+    - CAT2
+    - CCI-000366
+    - CCI-001082
+    - SRG-OS-000132-GPOS-00067
+    - SRG-OS-000433-GPOS-00192
+    - SV-257800r925387_rule
+    - V-257800
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_SC-2
+  ansible.posix.sysctl:
+    name: kernel.kptr_restrict
+    state: present
+    sysctl_file: "{{ rhel9stig_sysctl_file }}"
+    sysctl_set: true
+    value: '1'
+  notify: Reload_sysctl
+
+- name: "MEDIUM | RHEL-09-213035 | PATCH | RHEL 9 must enable kernel parameters to enforce discretionary access control on symlinks."
+  when:
+    - rhel_09_213035
+  tags:
+    - RHEL-09-213035
+    - CAT2
+    - CCI-002165
+    - CCI-002235
+    - SRG-OS-000312-GPOS-00123
+    - SRG-OS-000324-GPOS-00125
+    - SV-257802r925393_rule
+    - V-257802
+    - NIST800-53R4_AC-3
+    - NIST800-53R4_AC-6
+  ansible.posix.sysctl:
+    name: fs.protected_symlinks
+    state: present
+    sysctl_file: "{{ rhel9stig_sysctl_file }}"
+    sysctl_set: true
+    value: '1'
+  notify: Reload_sysctl
+
+- name: "MEDIUM | RHEL-09-213030 | PATCH | RHEL 9 must enable kernel parameters to enforce discretionary access control on hardlinks."
+  when:
+    - rhel_09_213030
+  tags:
+    - RHEL-09-213030
+    - CAT2
+    - CCI-002165
+    - CCI-002235
+    - SRG-OS-000312-GPOS-00123
+    - SRG-OS-000324-GPOS-00125
+    - SV-257801r925390_rule
+    - V-257801
+    - NIST800-53R4_AC-3
+    - NIST800-53R4_AC-6
+  ansible.posix.sysctl:
+    name: fs.protected_hardlinks
+    state: present
+    sysctl_file: "{{ rhel9stig_sysctl_file }}"
+    sysctl_set: true
+    value: '1'
+  notify: Reload_sysctl

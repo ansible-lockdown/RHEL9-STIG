@@ -13,5 +13,9 @@
     name: sshd
     state: restarted
 
+- name: Reload_sysctl
+  ansible.posix.sysctl:
+    reload: true
+
 - name: Rebuild_grub
   ansible.builtin.shell: grub2-mkconfig -o /boot/grub2/grub.cfg

@@ -110,6 +110,12 @@ rhel_09_212030: true
 rhel_09_212035: true
 rhel_09_212040: true
 rhel_09_212045: true
+rhel_09_213010: true
+rhel_09_213015: true
+rhel_09_213020: true
+rhel_09_213025: true
+rhel_09_213030: true
+rhel_09_213035: true
 
 ## SSHD
 rhel9stig_sshd_config_file: /etc/ssh/sshd_config
@@ -159,3 +165,6 @@ rhel9stig_av_service: 'mfetpd'
 # Packages and services
 rhel9stig_is_ftp_server: false
 rhel9stig_is_tftp_server: false
+
+# Sysctl file
+rhel9stig_sysctl_file: /etc/sysctl.d/99-sysctl.conf
