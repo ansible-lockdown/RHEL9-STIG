@@ -1,0 +1,155 @@
+---
+
+## metadata for Audit benchmark
+benchmark_version: '1.1.0'
+
+## Benchmark name used by audting control role
+# The audit variable found at the base
+benchmark: RHEL9-STIG
+
+
+# set to redhat/rocky/alma
+rhel9stig_os_distribution: redhat
+rpm_gpg_key: /etc/pki/rpm-gpg/RPM-GPG-KEY-RPM-GPG-KEY-redhat-release
+gpg_key:
+  - name: 'release key 2'
+    fingerprint: '567E 347A D004 4ADE 55BA  8A5F 199E 2F91 FD43 1D51'
+  - name: 'auxiliary key'
+    fingerprint: '6A6A A7C9 7C88 90AE C6AE  BFE2 F76F 66C3 D409 2792'
+
+##rocky example rocky
+# rhel9stig_os_distribution: rocky
+# rpm_gpg_key: /etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial
+#gpg_key:
+#  - name: 'Release Engineering'
+#    fingerprint: '7051 C470 A929 F454 CEBE  37B7 15AF 5DAC 6D74 5A60'
+
+## Alma
+# rhel9stig_os_distribution: almalinux
+# rpm_gpg_key: /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
+# gpg_key:
+#  - name: 'AlmaLinux'
+#    fingerprint: '5E9B 8F56 17B5 066C E920  57C3 488F CF7C 3ABB 34F8'
+
+## Oracle
+# rhel9stig_os_distribution: almalinux
+# gpg_package: /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
+# gpg_key:
+#  - name: 'AlmaLinux'
+#    fingerprint: '5E9B 8F56 17B5 066C E920  57C3 488F CF7C 3ABB 34F8'
+
+# turn the categories on/off
+rhel9stig_cat1: true
+rhel9stig_cat2: true
+rhel9stig_cat3: true
+
+# Some tests may need to scan every filesystem or have an impact on a system
+# these may need be scheduled to minimise impact
+run_heavy_tests: true
+timeout_ms: 120000
+
+# tweak role to run in a non-privileged container (default value)- dynamically discovered in tasks/main.yml
+system_is_container: false
+
+# Place to find the container yml file for your environment - /vars/...
+container_vars_file: is_container.yml
+
+# rhel8cis/stig is left off the front of this var for consistency in testing pipeline
+# system_is_ec2 toggle will disable tasks that fail on Amazon EC2 instances. Set true to skip and false to run tasks
+system_is_ec2: false
+
+# If using the supplied graphical interface
+rhel9stig_gui: false
+
+# system acts or requires router networking options
+rhel9stig_system_is_router: false
+# Cat 1 rules
+#### CAT 1
+rhel_09_211010: true
+rhel_09_211045: true
+rhel_09_211050: true
+rhel_09_212020: true
+rhel_09_214015: true
+rhel_09_214020: true
+rhel_09_214025: true
+rhel_09_215015: true
+rhel_09_215060: true
+rhel_09_231190: true
+rhel_09_252070: true
+rhel_09_252075: true
+rhel_09_255040: true
+rhel_09_255050: true
+rhel_09_271040: true
+rhel_09_411100: true
+rhel_09_431010: true
+rhel_09_611025: true
+rhel_09_671010: true
+rhel_09_672015: true
+rhel_09_672030: true
+
+# Cat 2 rules
+rhel_09_211015: true
+rhel_09_211020: true
+rhel_09_211025: true
+rhel_09_211030: true
+rhel_09_211040: true
+rhel_09_211055: true
+rhel_09_212010: true
+rhel_09_212015: true
+rhel_09_212025: true
+rhel_09_212030: true
+rhel_09_212035: true
+rhel_09_212040: true
+rhel_09_212045: true
+rhel_09_213010: true
+rhel_09_213015: true
+rhel_09_213020: true
+rhel_09_213025: true
+rhel_09_213030: true
+rhel_09_213035: true
+rhel_09_213040: true
+rhel_09_213045: true
+rhel_09_213050: true
+rhel_09_213055: true
+rhel_09_213060: true
+rhel_09_213065: true
+rhel_09_213070: true
+rhel_09_213075: true
+rhel_09_213080: true
+rhel_09_213085: true
+rhel_09_213090: true
+rhel_09_213095: true
+rhel_09_213100: true
+rhel_09_213105: true
+rhel_09_213110: true
+rhel_09_213115: true
+rhel_09_214010: true
+rhel_09_214030: true
+
+# Cat 3 controls
+
+# Variables
+
+rhel9stig_password_hash: {{ rhel9stig_bootloader_password_hash }}
+rhel9stig_grub_superuser: {{ rhel9stig_grub_superuser }}
+
+## UID:
+MIN_UID: {{ min_int_uid }}
+MAX_UID: {{ max_int_uid }}
+
+rhel9stig_logon_banner:
+  - You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only.
+  - By using this IS (which includes any device attached to this IS), you consent to the following conditions
+  - -The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations.
+  - -At any time, the USG may inspect and seize data stored on this IS.
+  - -Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose.
+  - -This IS includes security measures (e.g., authentication and access controls) to protect USG interests--not for your personal benefit or privacy.
+  - -Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details.
+
+# Packages and services
+rhel9stig_is_ftp_server: {{ rhel9stig_is_ftp_server }}
+rhel9stig_is_tftp_server: {{ rhel9stig_is_tftp_server }}
+
+# Threat Protection
+rhel9stig_av_pkg: {{ rhel9stig_av_pkg }}
+rhel9stig_av_service: {{ rhel9stig_av_service }}
