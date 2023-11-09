@@ -7,6 +7,10 @@ benchmark_version: '1.1.0'
 # The audit variable found at the base
 benchmark: RHEL9-STIG
 
+# turn the categories on/off
+rhel9stig_cat1: true
+rhel9stig_cat2: true
+rhel9stig_cat3: true
 
 # set to redhat/rocky/alma
 rhel9stig_os_distribution: redhat
@@ -38,10 +42,8 @@ gpg_key:
 #  - name: 'AlmaLinux'
 #    fingerprint: '5E9B 8F56 17B5 066C E920  57C3 488F CF7C 3ABB 34F8'
 
-# turn the categories on/off
-rhel9stig_cat1: true
-rhel9stig_cat2: true
-rhel9stig_cat3: true
+# If using the supplied graphical interface
+rhel9stig_gui: {{ rhel9stig_gui }}
 
 # Some tests may need to scan every filesystem or have an impact on a system
 # these may need be scheduled to minimise impact
@@ -63,6 +65,7 @@ rhel9stig_gui: false
 
 # system acts or requires router networking options
 rhel9stig_system_is_router: false
+
 # Cat 1 rules
 #### CAT 1
 rhel_09_211010: true
@@ -130,6 +133,7 @@ rhel_09_214030: true
 
 # Variables
 
+## Bootloader Settings
 rhel9stig_password_hash: {{ rhel9stig_bootloader_password_hash }}
 rhel9stig_grub_superuser: {{ rhel9stig_grub_superuser }}
 

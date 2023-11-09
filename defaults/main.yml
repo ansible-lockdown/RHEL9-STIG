@@ -135,11 +135,14 @@ rhel_09_213115: true
 rhel_09_214010: true
 rhel_09_214030: true
 
+## Grahical/Gnome interface required
+rhel9stig_gui: false
+
 ## SSHD
 rhel9stig_sshd_config_file: /etc/ssh/sshd_config
 rhel9stig_ssh_required: true
 
-## Grub
+## Bootloader/Grub settings
 rhel9stig_grub_superuser: root
 rhel9stig_bootloader_password_hash: 'grub.pbkdf2.sha512.changethispassword'  # pragma: allowlist secret
 rhel9stig_set_bootloader_password: false
