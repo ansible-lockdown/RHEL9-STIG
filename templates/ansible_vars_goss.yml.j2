@@ -8,12 +8,12 @@ benchmark_version: '1.1.0'
 benchmark: RHEL9-STIG
 
 # turn the categories on/off
-rhel9stig_cat1: true
-rhel9stig_cat2: true
-rhel9stig_cat3: true
+rhel9stig_cat1: {{ rhel_09_211010 }}
+rhel9stig_cat2: {{ rhel_09_211010 }}
+rhel9stig_cat3: {{ rhel_09_211010 }}
 
 # set to redhat/rocky/alma
-rhel9stig_os_distribution: redhat
+rhel9stig_os_distribution: {{ ansible_facts.distribution | lower }}
 rpm_gpg_key: /etc/pki/rpm-gpg/RPM-GPG-KEY-RPM-GPG-KEY-redhat-release
 gpg_key:
   - name: 'release key 2'
@@ -47,7 +47,7 @@ rhel9stig_gui: {{ rhel9stig_gui }}
 
 # Some tests may need to scan every filesystem or have an impact on a system
 # these may need be scheduled to minimise impact
-run_heavy_tests: true
+run_heavy_tests: {{ rhel_09_211010 }}
 timeout_ms: 120000
 
 # tweak role to run in a non-privileged container (default value)- dynamically discovered in tasks/main.yml
@@ -57,7 +57,7 @@ system_is_container: false
 container_vars_file: is_container.yml
 
 # rhel8cis/stig is left off the front of this var for consistency in testing pipeline
-# system_is_ec2 toggle will disable tasks that fail on Amazon EC2 instances. Set true to skip and false to run tasks
+# system_is_ec2 toggle will disable tasks that fail on Amazon EC2 instances. Set {{ rhel_09_211010 }} to skip and false to run tasks
 system_is_ec2: false
 
 # If using the supplied graphical interface
@@ -68,66 +68,82 @@ rhel9stig_system_is_router: false
 
 # Cat 1 rules
 #### CAT 1
-rhel_09_211010: true
-rhel_09_211045: true
-rhel_09_211050: true
-rhel_09_212020: true
-rhel_09_214015: true
-rhel_09_214020: true
-rhel_09_214025: true
-rhel_09_215015: true
-rhel_09_215060: true
-rhel_09_231190: true
-rhel_09_252070: true
-rhel_09_252075: true
-rhel_09_255040: true
-rhel_09_255050: true
-rhel_09_271040: true
-rhel_09_411100: true
-rhel_09_431010: true
-rhel_09_611025: true
-rhel_09_671010: true
-rhel_09_672015: true
-rhel_09_672030: true
+rhel_09_211010: {{ rhel_09_211010 }}
+rhel_09_211045: {{ rhel_09_211045 }}
+rhel_09_211050: {{ rhel_09_211050 }}
+rhel_09_212020: {{ rhel_09_212020 }}
+rhel_09_214015: {{ rhel_09_214015 }}
+rhel_09_214020: {{ rhel_09_214020 }}
+rhel_09_214025: {{ rhel_09_214025 }}
+rhel_09_215015: {{ rhel_09_215015 }}
+rhel_09_215060: {{ rhel_09_215060 }}
+rhel_09_231190: {{ rhel_09_231190 }}
+rhel_09_252070: {{ rhel_09_252070 }}
+rhel_09_252075: {{ rhel_09_252075 }}
+rhel_09_255040: {{ rhel_09_255040 }}
+rhel_09_255050: {{ rhel_09_255050 }}
+rhel_09_271040: {{ rhel_09_271040 }}
+rhel_09_411100: {{ rhel_09_411100 }}
+rhel_09_431010: {{ rhel_09_431010 }}
+rhel_09_611025: {{ rhel_09_611025 }}
+rhel_09_671010: {{ rhel_09_671010 }}
+rhel_09_672015: {{ rhel_09_672015 }}
+rhel_09_672030: {{ rhel_09_672030 }}
 
 # Cat 2 rules
-rhel_09_211015: true
-rhel_09_211020: true
-rhel_09_211025: true
-rhel_09_211030: true
-rhel_09_211040: true
-rhel_09_211055: true
-rhel_09_212010: true
-rhel_09_212015: true
-rhel_09_212025: true
-rhel_09_212030: true
-rhel_09_212035: true
-rhel_09_212040: true
-rhel_09_212045: true
-rhel_09_213010: true
-rhel_09_213015: true
-rhel_09_213020: true
-rhel_09_213025: true
-rhel_09_213030: true
-rhel_09_213035: true
-rhel_09_213040: true
-rhel_09_213045: true
-rhel_09_213050: true
-rhel_09_213055: true
-rhel_09_213060: true
-rhel_09_213065: true
-rhel_09_213070: true
-rhel_09_213075: true
-rhel_09_213080: true
-rhel_09_213085: true
-rhel_09_213090: true
-rhel_09_213095: true
-rhel_09_213100: true
-rhel_09_213105: true
-rhel_09_213110: true
-rhel_09_213115: true
-rhel_09_214010: true
-rhel_09_214030: true
+rhel_09_211015: {{ rhel_09_211015 }}
+rhel_09_211020: {{ rhel_09_211020 }}
+rhel_09_211025: {{ rhel_09_211025 }}
+rhel_09_211030: {{ rhel_09_211030 }}
+rhel_09_211040: {{ rhel_09_211040 }}
+rhel_09_211055: {{ rhel_09_211055 }}
+rhel_09_212010: {{ rhel_09_212010 }}
+rhel_09_212015: {{ rhel_09_212015 }}
+rhel_09_212025: {{ rhel_09_212025 }}
+rhel_09_212030: {{ rhel_09_212030 }}
+rhel_09_212035: {{ rhel_09_212035 }}
+rhel_09_212040: {{ rhel_09_212040 }}
+rhel_09_212045: {{ rhel_09_212045 }}
+rhel_09_213010: {{ rhel_09_213010 }}
+rhel_09_213015: {{ rhel_09_213015 }}
+rhel_09_213020: {{ rhel_09_213020 }}
+rhel_09_213025: {{ rhel_09_213025 }}
+rhel_09_213030: {{ rhel_09_213030 }}
+rhel_09_213035: {{ rhel_09_213035 }}
+rhel_09_213040: {{ rhel_09_213040 }}
+rhel_09_213045: {{ rhel_09_213045 }}
+rhel_09_213050: {{ rhel_09_213050 }}
+rhel_09_213055: {{ rhel_09_213055 }}
+rhel_09_213060: {{ rhel_09_213060 }}
+rhel_09_213065: {{ rhel_09_213065 }}
+rhel_09_213070: {{ rhel_09_213070 }}
+rhel_09_213075: {{ rhel_09_213075 }}
+rhel_09_213080: {{ rhel_09_213080 }}
+rhel_09_213085: {{ rhel_09_213085 }}
+rhel_09_213090: {{ rhel_09_213090 }}
+rhel_09_213095: {{ rhel_09_213095 }}
+rhel_09_213100: {{ rhel_09_213100 }}
+rhel_09_213105: {{ rhel_09_213105 }}
+rhel_09_213110: {{ rhel_09_213110 }}
+rhel_09_213115: {{ rhel_09_213115 }}
+rhel_09_214010: {{ rhel_09_214010 }}
+rhel_09_214030: {{ rhel_09_214030 }}
+rhel_09_215010: {{ rhel_09_215010 }}
+rhel_09_215020: {{ rhel_09_215020 }}
+rhel_09_215025: {{ rhel_09_215025 }}
+rhel_09_215030: {{ rhel_09_215030 }}
+rhel_09_215035: {{ rhel_09_215035 }}
+rhel_09_215040: {{ rhel_09_215040 }}
+rhel_09_215045: {{ rhel_09_215045 }}
+rhel_09_215050: {{ rhel_09_215050 }}
+rhel_09_215055: {{ rhel_09_215055 }}
+rhel_09_215065: {{ rhel_09_215065 }}
+rhel_09_215070: {{ rhel_09_215070 }}
+rhel_09_215075: {{ rhel_09_215075 }}
+rhel_09_215080: {{ rhel_09_215080 }}
+rhel_09_215085: {{ rhel_09_215085 }}
+rhel_09_215090: {{ rhel_09_215090 }}
+rhel_09_215095: {{ rhel_09_215095 }}
 
 # Cat 3 controls
 
@@ -153,6 +169,17 @@ rhel9stig_logon_banner:
 # Packages and services
 rhel9stig_is_ftp_server: {{ rhel9stig_is_ftp_server }}
 rhel9stig_is_tftp_server: {{ rhel9stig_is_tftp_server }}
+rhel9stig_sendmail_required: {{ rhel9stig_sendmail_required }}
+rhel9stig_nfs_utils_required: {{ rhel9stig_nfs_utils_required }}
+rhel9stig_ypserv_required: {{ rhel9stig_ypserv_required }}
+rhel9stig_rsh_server_required: {{ rhel9stig_rsh_server_required }}
+rhel9stig_telnet_server_required: {{ rhel9stig_telnet_server_required }}
+rhel9stig_gssproxy_required: {{ rhel9stig_gssproxy_required }}
+rhel9stig_iprutils_required: {{ rhel9stig_iprutils_required }}
+rhel9stig_tuned_required: {{ rhel9stig_tuned_required }}
+rhel9stig_quagga_required: {{ rhel9stig_quagga_required }}
+
+
 
 # Threat Protection
 rhel9stig_av_pkg: {{ rhel9stig_av_pkg }}

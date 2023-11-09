@@ -134,6 +134,22 @@ rhel_09_213110: true
 rhel_09_213115: true
 rhel_09_214010: true
 rhel_09_214030: true
+rhel_09_215010: true
+rhel_09_215020: true
+rhel_09_215025: true
+rhel_09_215030: true
+rhel_09_215035: true
+rhel_09_215040: true
+rhel_09_215045: true
+rhel_09_215050: true
+rhel_09_215055: true
+rhel_09_215065: true
+rhel_09_215070: true
+rhel_09_215075: true
+rhel_09_215080: true
+rhel_09_215085: true
+rhel_09_215090: true
+rhel_09_215095: true
 
 ## Grahical/Gnome interface required
 rhel9stig_gui: false
@@ -186,6 +202,15 @@ rhel9stig_av_service: 'mfetpd'
 # Packages and services
 rhel9stig_is_ftp_server: false
 rhel9stig_is_tftp_server: false
+rhel9stig_sendmail_required: false
+rhel9stig_nfs_utils_required: false
+rhel9stig_ypserv_required: false
+rhel9stig_rsh_server_required: false
+rhel9stig_telnet_server_required: false
+rhel9stig_gssproxy_required: false
+rhel9stig_iprutils_required: false
+rhel9stig_tuned_required: false
+rhel9stig_quagga_required: false
 
 # Sysctl file
 rhel9stig_sysctl_file: /etc/sysctl.d/99-sysctl.conf

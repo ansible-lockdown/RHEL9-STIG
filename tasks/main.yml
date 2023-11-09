@@ -6,8 +6,8 @@
   ansible.builtin.assert:
     that: (ansible_distribution != 'CentOS' and ansible_os_family == 'RedHat' or ansible_os_family == "Rocky") and ansible_distribution_major_version is version_compare('9',
       '==')
-    fail_msg: This role can only be run against RHEL/Rocky 9 families. {{ ansible_distribution }} {{ ansible_distribution_major_version }} is not supported.
-    success_msg: This role is running against a supported OS {{ ansible_distribution }} {{ ansible_distribution_major_version }}
+    fail_msg: This role can only be run against RHEL/Rocky 9 families. {{ ansible_facts.distribution }} {{ ansible_facts.distribution_major_version }} is not supported.
+    success_msg: This role is running against a supported OS {{ ansible_facts.distribution }} {{ ansible_facts.distribution_major_version }}
   when:
     - not skip_os_check
 
