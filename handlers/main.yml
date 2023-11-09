@@ -14,8 +14,7 @@
     state: restarted
 
 - name: Reload_sysctl
-  ansible.posix.sysctl:
-    reload: true
+  ansible.builtin.shell: sysctl --system
 
 - name: Rebuild_grub
   ansible.builtin.shell: grub2-mkconfig -o /boot/grub2/grub.cfg

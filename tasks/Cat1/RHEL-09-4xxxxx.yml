@@ -33,11 +33,12 @@
         - rhel9stig_uid_zero_accounts_except_root.stdout | length > 0
       ansible.builtin.import_tasks: warning_facts.yml
       vars:
-        warn_control_id: RHEL-09-411100
+        warn_control_id: "HIGH | RHEL-09-411100"
 
 - name: HIGH | RHEL-09-431010 | PATCH | RHEL 9 must use a Linux Security Module configured to enforce limits on system services.
   when:
     - rhel_09_431010
+  notify: Change_requires_reboot
   tags:
     - RHEL-09-431010
     - CAT1

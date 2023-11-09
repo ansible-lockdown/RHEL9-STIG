@@ -64,7 +64,7 @@
         - not rhel9stig_disruption_high
       ansible.builtin.import_tasks: warning_facts.yml
       vars:
-        warn_control_id: RHEL-09-671010
+        warn_control_id: "HIGH | RHEL-09-671010"
 
 - name: HIGH | RHEL-09-672015 | RHEL 9 crypto policy files must match files shipped with the operating system.
   when:
@@ -139,4 +139,4 @@
         - not rhel9stig_disruption_high
       ansible.builtin.import_tasks: warning_facts.yml
       vars:
-        warn_control_id: RHEL-09-672030
+        warn_control_id: "HIGH | RHEL-09-672030"

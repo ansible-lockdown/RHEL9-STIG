@@ -103,27 +103,27 @@
   tags:
     - CAT1
     - high
-  when: rhel9stig_cat1_patch
+  when: rhel9stig_cat1
   ansible.builtin.import_tasks: Cat1/main.yml
 
 - name: Include CAT II patches
   ansible.builtin.import_tasks: Cat2/main.yml
-  when: rhel9stig_cat2_patch
+  when: rhel9stig_cat2
   tags:
     - CAT2
     - medium
 
 # - name: Include CAT III patches
 #   ansible.builtin.import_tasks: Cat3/main.yml
-#   when: rhel9stig_cat3_patch | bool
+#   when: rhel9stig_cat3
 #   tags:
 #       - CAT3
 #       - low
 
-- name: flush handlers
+- name: Flush handlers
   ansible.builtin.meta: flush_handlers
 
-- name: reboot system
+- name: Reboot system
   when:
     - change_requires_reboot
     - not rhel9stig_skip_reboot

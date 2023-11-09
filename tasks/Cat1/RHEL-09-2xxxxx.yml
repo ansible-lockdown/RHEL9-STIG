@@ -89,6 +89,7 @@
   loop_control:
     label: "{{ grub_superusers.line }}"
     loop_var: grub_superusers
+  notify: Rebuild_grub
 
 - name: HIGH | RHEL-09-214015 | PATCH | RHEL 9 must check the GPG signature of software packages originating from external software repositories before installation.
   when:
@@ -189,7 +190,7 @@
     name: tftp
     state: absent
 
-- name: MEDIUM | RHEL-08-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
+- name: HIGH | RHEL-08-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
     of all information that requires at rest protection.
   when:
     - rhel_09_231190
@@ -206,16 +207,16 @@
     - V-257879
     - NIST800-53R4_SC-28
   vars:
-    warn_control_id: RHEL-09-231190
+    warn_control_id: "HIGH | RHEL-09-231190"
   block:
-    - name: MEDIUM | RHEL-08-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
+    - name: HIGH | RHEL-08-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
         of all information that requires at rest protection. | Get partition layout
       ansible.builtin.shell: blkid
       changed_when: false
       failed_when: false
       register: rhel_09_231190_partition_layout
 
-    - name: MEDIUM | RHEL-08-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
+    - name: HIGH | RHEL-08-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
         of all information that requires at rest protection. | Message out warning
       ansible.builtin.debug:
         msg:
@@ -223,7 +224,7 @@
           - If partitions other than pseudo file systems (such as /proc or /sys or tmpfs) this is a finding
           - "{{ rhel_09_231190_partition_layout.stdout_lines }}"
 
-    - name: MEDIUM | RHEL-08-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
+    - name: HIGH | RHEL-08-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
         of all information that requires at rest protection. | Message out warning
       ansible.builtin.import_tasks: warning_facts.yml
 
@@ -240,7 +241,7 @@
     - V-257955
     - NIST800-53R4_CM-6
   vars:
-    warn_control_id: RHEL-09-252070
+    warn_control_id: "HIGH | RHEL-09-252070"
   block:
     - name: HIGH | RHEL-09-252070 | AUDIT | There must be no shosts.equiv files on RHEL 9. | find files
       ansible.builtin.find:
@@ -275,7 +276,7 @@
     - V-257956
     - NIST800-53R4_CM-6
   vars:
-    warn_control_id: RHEL-09-252075
+    warn_control_id: "HIGH | RHEL-09-252075"
   block:
     - name: HIGH | RHEL-09-252075 | AUDIT | There must be no .shosts files on RHEL 9. | find files
       ansible.builtin.find:
@@ -317,6 +318,7 @@
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)PermitEmptyPasswords yes
     validate: sshd -t -f %s
+  notify: Sshd_restart
 
 - name: HIGH | RHEL-09-255050 | PATCH | RHEL 9 must enable the Pluggable Authentication Module (PAM) interface for SSHD.
   when:
@@ -334,6 +336,7 @@
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)usepam
     validate: sshd -t -f %s
+  notify: Sshd_restart
 
 - name: HIGH | RHEL-09-271040 | PATCH | RHEL 9 must not allow unattended or automatic logon via the graphical user interface.
   when:

@@ -4,6 +4,7 @@
   when:
     - not system_is_ec2
     - rhel_09_211015
+  notify: Change_requires_reboot
   tags:
     - RHEL-09-211015
     - CAT2
@@ -66,7 +67,7 @@
     - V-257780
     - NIST800-53R4_SI-2
   vars:
-    warn_control_id: RHEL-09-211025
+    warn_control_id: "MEDIUM | RHEL-09-211025"
   block:
     - name: "MEDIUM | RHEL-09-211025 | AUDIT | RHEL 9 must implement the Endpoint Security for Linux Threat Prevention tool. | McAfee process"
       ansible.builtin.shell:
@@ -146,10 +147,11 @@
     - V-257787
     - NIST800-53R4_AC-3
   vars:
-    warn_control_id: 'RHEL-09-212010'
+    warn_control_id: "MEDIUM | RHEL-09-212010"
   block:
     - name: "MEDIUM | RHEL-09-212010 | PATCH | RHEL 9 must require a boot loader superuser password. | set password for grub2 user"
       when: rhel9stig_set_bootloader_password
+      notify: Rebuild_grub
       ansible.builtin.template:
         dest: "/{{ item.file }}"
         group: root
@@ -259,7 +261,7 @@
       register: rhel9stig_212035_grubby_vsyscall
 
     - name: "MEDIUM | RHEL-09-212035 | PATCH | RHEL 9 must disable virtual system calls. | Amend grubby"
-      when: rhel9stig_212035_grubby_vsyscall | length == 0
+      when: rhel9stig_212035_grubby_vsyscall.stdout | length == 0
       ansible.builtin.shell: grubby --update-kernel=ALL --args="vsyscall=none"
 
     - name: "MEDIUM | RHEL-09-212035 | AUDIT | RHEL 9 must disable virtual system calls. | Capture default grub"
@@ -310,7 +312,7 @@
       register: rhel9stig_212040_grubby_page_alloc
 
     - name: "MEDIUM | RHEL-09-212040 | PATCH | RHEL 9 must clear the page allocator to prevent use-after-free attacks. | Amend grubby"
-      when: rhel9stig_212040_grubby_page_alloc | length == 0
+      when: rhel9stig_212040_grubby_page_alloc.stdout | length == 0
       ansible.builtin.shell: grubby --update-kernel=ALL --args="page_poison=1"
 
     - name: "MEDIUM | RHEL-09-212040 | AUDIT | RHEL 9 must clear the page allocator to prevent use-after-free attacks. | Capture default grub"
@@ -332,7 +334,7 @@
       when: rhel9stig_212040_def_grub_poison.rc == 0
       ansible.builtin.lineinfile:
         backrefs: true
-        line: '\1\2page_poison=1\4'
+        line: '\1\2page_poison=1\3'
         regexp: ^(GRUB_CMDLINE_LINUX=)(".*)page_poison=\d(.*")
         path: /etc/default/grub
       notify: Rebuild_grub
@@ -358,7 +360,7 @@
       register: rhel9stig_212045_grubby_slab
 
     - name: "MEDIUM | RHEL-09-212045 | PATCH | RHEL 9 must clear SLUB/SLAB objects to prevent use-after-free attacks | Amend grubby"
-      when: rhel9stig_212045_grubby_slab | length == 0
+      when: rhel9stig_212045_grubby_slab.stdout | length == 0
       ansible.builtin.shell: grubby --update-kernel=ALL --args="slub_debug=P"
 
     - name: "MEDIUM | RHEL-09-212045 | AUDIT | RHEL 9 must clear SLUB/SLAB objects to prevent use-after-free attacks | Capture default grub"
@@ -371,8 +373,8 @@
       when: rhel9stig_212045_def_grub_slub.rc != 0
       ansible.builtin.lineinfile:
         backrefs: true
-        line: \1\2 slub_debug=P"
-        regexp: ^(GRUB_CMDLINE_LINUX=)(.*)"
+        line: '\1\2 slub_debug=P"'
+        regexp: ^(GRUB_CMDLINE_LINUX=")(.*)"
         path: /etc/default/grub
       notify: Rebuild_grub
 
@@ -382,8 +384,8 @@
         - rhel9stig_212045_def_grub_slub.rc == 0
       ansible.builtin.lineinfile:
         backrefs: true
-        line: \1slub_debug=P \2
-        regexp: ^(GRUB_CMDLINE_LINUX=")slub_debug=P)(.*")
+        line: '\1\2slub_debug=P\3'
+        regexp: ^(GRUB_CMDLINE_LINUX=)(".*)slub_debug=\w+\b(.*")
         path: /etc/default/grub
       notify: Rebuild_grub
 
@@ -554,6 +556,7 @@
   ansible.builtin.template:
     dest: "/etc/modprobe.d/{{ blacklist }}.conf"
     src: etc/modprobe.d/module.conf.j2
+  notify: Change_requires_reboot
 
 - name: "MEDIUM | RHEL-09-213050 | PATCH | RHEL 9 must be configured to disable the Controller Area Network kernel module."
   when:
@@ -571,6 +574,7 @@
   ansible.builtin.template:
     dest: "/etc/modprobe.d/{{ blacklist }}.conf"
     src: etc/modprobe.d/module.conf.j2
+  notify: Change_requires_reboot
 
 - name: "MEDIUM | RHEL-09-213055 | PATCH | RHEL 9 must be configured to disable the FireWire kernel module."
   when:
@@ -585,10 +589,11 @@
     - NIST800-53R4_CM-7
   vars:
     blacklist: 'firewire-core'
-    mod_value: true
+    mod_value: 'true'
   ansible.builtin.template:
     dest: "/etc/modprobe.d/{{ blacklist }}.conf"
     src: etc/modprobe.d/module.conf.j2
+  notify: Change_requires_reboot
 
 - name: "MEDIUM | RHEL-09-213060 | PATCH | RHEL 9 must disable the Stream Control Transmission Protocol (SCTP) kernel module."
   when:
@@ -606,6 +611,7 @@
   ansible.builtin.template:
     dest: "/etc/modprobe.d/{{ blacklist }}.conf"
     src: etc/modprobe.d/module.conf.j2
+  notify: Change_requires_reboot
 
 - name: "MEDIUM | RHEL-09-213065 | PATCH | RHEL 9 must disable the Transparent Inter Process Communication (TIPC) kernel module."
   when:
@@ -623,6 +629,7 @@
   ansible.builtin.template:
     dest: "/etc/modprobe.d/{{ blacklist }}.conf"
     src: etc/modprobe.d/module.conf.j2
+  notify: Change_requires_reboot
 
 - name: "MEDIUM | RHEL-09-213070 | PATCH | RHEL 9 must implement address space layout randomization (ASLR) to protect its memory from unauthorized code execution."
   when:
@@ -780,6 +787,7 @@
 - name: "MEDIUM | RHEL-09-213110 | PATCH | RHEL 9 must implement nonexecutable data to protect its memory from unauthorized code execution."
   when:
     - rhel_09_213110
+  notify: Change_requires_reboot
   tags:
     - RHEL-09-213110
     - CAT2
@@ -829,7 +837,7 @@
     - V-257819
     - NIST800-53R4_CM-5
   vars:
-    warn_control_id: RHEL-09-214010
+    warn_control_id: "MEDIUM | RHEL-09-214010"
   block:
     - name: "MEDIUM | RHEL-09-214010 | AUDIT | RHEL 9 must ensure cryptographic verification of vendor software packages. | find keys"
       ansible.builtin.shell: "rpm -qa | grep {{ os_gpg_key_pubkey_name }}"
@@ -870,7 +878,7 @@
     - V-257823
     - NIST800-53R4_CM-5
   vars:
-    warn_control_id: RHEL-09-214030
+    warn_control_id: "MEDIUM | RHEL-09-214030"
   block:
     - name: "MEDIUM | RHEL-09-214030 | AUDIT | RHEL 9 must be configured so that the cryptographic hashes of system files match vendor values."
       ansible.builtin.shell: rpm -Va --noconfig | awk '$1 ~ /..5/ && $2 != "c"'
