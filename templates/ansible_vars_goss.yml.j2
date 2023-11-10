@@ -1,70 +1,59 @@
 ---
 
 ## metadata for Audit benchmark
-benchmark_version: '1.1.0'
+benchmark_version: {{ benchmark_version }}
 
 ## Benchmark name used by audting control role
 # The audit variable found at the base
 benchmark: RHEL9-STIG
 
 # turn the categories on/off
-rhel9stig_cat1: {{ rhel_09_211010 }}
-rhel9stig_cat2: {{ rhel_09_211010 }}
-rhel9stig_cat3: {{ rhel_09_211010 }}
+rhel9stig_cat1: {{ rhel9stig_cat1 }}
+rhel9stig_cat2: {{ rhel9stig_cat2 }}
+rhel9stig_cat3: {{ rhel9stig_cat3 }}
 
 # set to redhat/rocky/alma
 rhel9stig_os_distribution: {{ ansible_facts.distribution | lower }}
+
+{% if ansible_facts.distribution == "RedHat" %}
+# RHEL
 rpm_gpg_key: /etc/pki/rpm-gpg/RPM-GPG-KEY-RPM-GPG-KEY-redhat-release
 gpg_key:
   - name: 'release key 2'
     fingerprint: '567E 347A D004 4ADE 55BA  8A5F 199E 2F91 FD43 1D51'
   - name: 'auxiliary key'
     fingerprint: '6A6A A7C9 7C88 90AE C6AE  BFE2 F76F 66C3 D409 2792'
-
-##rocky example rocky
-# rhel9stig_os_distribution: rocky
-# rpm_gpg_key: /etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial
-#gpg_key:
-#  - name: 'Release Engineering'
-#    fingerprint: '7051 C470 A929 F454 CEBE  37B7 15AF 5DAC 6D74 5A60'
-
-## Alma
-# rhel9stig_os_distribution: almalinux
-# rpm_gpg_key: /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
-# gpg_key:
-#  - name: 'AlmaLinux'
-#    fingerprint: '5E9B 8F56 17B5 066C E920  57C3 488F CF7C 3ABB 34F8'
-
-## Oracle
-# rhel9stig_os_distribution: almalinux
-# gpg_package: /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
-# gpg_key:
-#  - name: 'AlmaLinux'
-#    fingerprint: '5E9B 8F56 17B5 066C E920  57C3 488F CF7C 3ABB 34F8'
+{% elif ansible_facts.distribution == "Rocky" %}
+# rocky
+rpm_gpg_key: /etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial
+gpg_key:
+  - name: 'Release Engineering'
+    fingerprint: '7051 C470 A929 F454 CEBE  37B7 15AF 5DAC 6D74 5A60'
+{% elif ansible_facts.distribution == "AlmaLinux" %}
+# Alma
+rpm_gpg_key: /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
+gpg_key:
+ - name: 'AlmaLinux'
+   fingerprint: '5E9B 8F56 17B5 066C E920  57C3 488F CF7C 3ABB 34F8'
+{% endif %}
 
 # If using the supplied graphical interface
 rhel9stig_gui: {{ rhel9stig_gui }}
 
 # Some tests may need to scan every filesystem or have an impact on a system
 # these may need be scheduled to minimise impact
-run_heavy_tests: {{ rhel_09_211010 }}
-timeout_ms: 120000
+run_heavy_tests: {{ audit_run_heavy_tests }}
+timeout_ms: {{ audit_cmd_timeout }}
 
 # tweak role to run in a non-privileged container (default value)- dynamically discovered in tasks/main.yml
-system_is_container: false
-
-# Place to find the container yml file for your environment - /vars/...
-container_vars_file: is_container.yml
+system_is_container: {{ system_is_container }}
 
 # rhel8cis/stig is left off the front of this var for consistency in testing pipeline
 # system_is_ec2 toggle will disable tasks that fail on Amazon EC2 instances. Set {{ rhel_09_211010 }} to skip and false to run tasks
-system_is_ec2: false
-
-# If using the supplied graphical interface
-rhel9stig_gui: false
+system_is_ec2: {{ system_is_ec2 }}
 
 # system acts or requires router networking options
-rhel9stig_system_is_router: false
+rhel9stig_system_is_router: {{ rhel9stig_system_is_router }}
 
 # Cat 1 rules
 #### CAT 1
@@ -145,6 +134,14 @@ rhel_09_215085: {{ rhel_09_215085 }}
 rhel_09_215090: {{ rhel_09_215090 }}
 rhel_09_215095: {{ rhel_09_215095 }}
 
+rhel_09_231010: {{ rhel_09_231010 }}
+rhel_09_231015: {{ rhel_09_231015 }}
+rhel_09_231035: {{ rhel_09_231035 }}
+rhel_09_231040: {{ rhel_09_231040 }}
+rhel_09_231045: {{ rhel_09_231045 }}
+rhel_09_231050: {{ rhel_09_231050 }}
+rhel_09_231055: {{ rhel_09_231055 }}
+
 # Cat 3 controls
 
 # Variables
@@ -179,8 +176,9 @@ rhel9stig_iprutils_required: {{ rhel9stig_iprutils_required }}
 rhel9stig_tuned_required: {{ rhel9stig_tuned_required }}
 rhel9stig_quagga_required: {{ rhel9stig_quagga_required }}
 
-
-
 # Threat Protection
 rhel9stig_av_pkg: {{ rhel9stig_av_pkg }}
 rhel9stig_av_service: {{ rhel9stig_av_service }}
+
+# Filesystem and mount options
+rhel9stig_home_filesystem: {{ rhel9stig_home_filesystem }}

@@ -1,0 +1,159 @@
+---
+
+- name: "MEDIUM | RHEL-09-231010 | PATCH | A separate RHEL 9 file system must be used for user home directories (such as /home or an equivalent)."
+  when:
+    - rhel_09_231010
+    - rhel9stig_home_filesystem not in ansible_facts.mounts.mount
+  tags:
+    - RHEL-09-231010
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257843r925516_rule
+    - V-257843
+    - NIST800-53R4_CM-6
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-231010"
+  block:
+    - name: "MEDIUM | RHEL-09-231010 | PATCH | A separate RHEL 9 file system must be used for user home directories (such as /home or an equivalent)."
+      ansible.builtin.debug:
+        msg: "Warning!! The designated /home directory is not a seperate filesystem"
+
+    - name: "MEDIUM | RHEL-09-231010 | PATCH | A separate RHEL 9 file system must be used for user home directories (such as /home or an equivalent)."
+      ansible.builtin.import_tasks: warning_facts.yml
+
+- name: "MEDIUM | RHEL-09-231015 | PATCH | RHEL 9 must use a separate file system for /tmp."
+  when:
+    - rhel_09_231015
+    - "'/tmp' not in ansible_facts.mounts.mount"
+  tags:
+    - RHEL-09-231015
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257844r925519_rule
+    - V-257844
+    - NIST800-53R4_CM-6
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-231015"
+  block:
+    - name: "MEDIUM | RHEL-09-231015 | PATCH | RHEL 9 must use a separate file system for /tmp.."
+      ansible.builtin.debug:
+        msg: "Warning!! /tmp directory is not a seperate filesystem"
+
+    - name: "MEDIUM | RHEL-09-231015 | PATCH | RHEL 9 must use a separate file system for /tmp."
+      ansible.builtin.import_tasks: warning_facts.yml
+
+- name: "MEDIUM | RHEL-09-231035 | PATCH | RHEL 9 must use a separate file system for /var/tmp."
+  when:
+    - rhel_09_231035
+    - "'/var/tmp' not in ansible_facts.mounts.mount"
+  tags:
+    - RHEL-09-231035
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257848r925531_rule
+    - V-257848
+    - NIST800-53R4_CM-6
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-231035"
+  block:
+    - name: "MEDIUM | RHEL-09-231035 | PATCH | RHEL 9 must use a separate file system for /var/tmp."
+      ansible.builtin.debug:
+        msg: "Warning!! /tmp directory is not a seperate filesystem"
+
+    - name: "MEDIUM | RHEL-09-231035 | PATCH | RHEL 9 must use a separate file system for /var/tmp."
+      ansible.builtin.import_tasks: warning_facts.yml
+
+- name: "MEDIUM | RHEL-09-231040 | PATCH | RHEL 9 file system automount function must be disabled unless required."
+  when:
+    - rhel_09_231040
+  tags:
+    - RHEL-09-231040
+    - CAT2
+    - CCI-000366
+    - CCI-000778
+    - CCI-001958
+    - SRG-OS-000114-GPOS-00059
+    - SRG-OS-000378-GPOS-00163
+    - SRG-OS-000480-GPOS-00227
+    - SV-257849r925534_rule
+    - V-257849
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_IA-3
+  ansible.builtin.systemd:
+    daemon_reload: true
+    enabled: false
+    masked: true
+    name: autofs.service
+    state: stopped
+
+- name: "MEDIUM | RHEL-09-231045 | PATCH | RHEL 9 must prevent device files from being interpreted on file systems that contain user home directories."
+  when:
+    - rhel_09_231045
+    - (item.mount == rhel9stig_home_filesystem and "'nodev' not in item.options")
+  tags:
+    - RHEL-09-231045
+    - CAT2
+    - CCI-001764
+    - SRG-OS-000368-GPOS-00154
+    - SV-257850r925537_rule
+    - V-257850
+    - NIST800-53R4_CM-7
+  ansible.posix.mount:
+    fstype: "{{ item.fstype }}"
+    name: "{{ rhel9stig_home_filesystem }}"
+    opt: "{{ item.options }},nodev"
+    src: "{{ item.device }}"
+    state: present
+  loop: "{{ ansible_facts.mounts }}"
+  loop_control:
+    label: "{{ item.device }}"
+
+- name: "MEDIUM | RHEL-09-231050 | PATCH | RHEL 9 must prevent files with the setuid and setgid bit set from being executed on file systems that contain user home directories."
+  when:
+    - rhel_09_231050
+    - (item.mount == rhel9stig_home_filesystem and "'nosuid' not in item.options")
+  tags:
+    - RHEL-09-231050
+    - CAT2
+    - CCI-000366
+    - CCI-001764
+    - SRG-OS-000368-GPOS-00154
+    - SRG-OS-000480-GPOS-00227
+    - SV-257851r925540_rule
+    - V-257851
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_CM-7
+  ansible.posix.mount:
+    fstype: "{{ item.fstype }}"
+    name: "{{ rhel9stig_home_filesystem }}"
+    opt: "{{ item.options }}{% if rhel_09_231045 %},nodev{% endif %},nosuid"
+    src: "{{ item.device }}"
+    state: present
+  loop: "{{ ansible_facts.mounts }}"
+  loop_control:
+    label: "{{ item.device }}"
+
+- name: "MEDIUM | RHEL-09-231055 | PATCH | RHEL 9 must prevent code from being executed on file systems that contain user home directories."
+  when:
+    - rhel_09_231055
+    - (item.mount == rhel9stig_home_filesystem and "'noexec' not in item.options")
+  tags:
+    - RHEL-09-231055
+    - CAT2
+    - CCI-0003664
+    - SRG-OS-000480-GPOS-00227
+    - SV-257852r925543_rule
+    - V-257852
+    - NIST800-53R4_CM-6
+  ansible.posix.mount:
+    fstype: "{{ item.fstype }}"
+    name: "{{ rhel9stig_home_filesystem }}"
+    opt: "{{ item.options }}{% if rhel_09_231045 %},nodev{% endif %}{% if rhel_09_231050 %},nosuid{% endif %},noexec"
+    src: "{{ item.device }}"
+    state: present
+  loop: "{{ ansible_facts.mounts }}"
+  loop_control:
+    label: "{{ item.device }}"
