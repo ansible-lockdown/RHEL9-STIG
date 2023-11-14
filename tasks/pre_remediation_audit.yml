@@ -120,3 +120,8 @@
     - name: Pre Audit | Capture pre-audit result | documentation format
       ansible.builtin.set_fact:
         pre_audit_summary: "{{ pre_audit.stdout_lines }}"
+
+- name: Audit_Only | Run Audit Only
+  when:
+    - audit_only
+  ansible.builtin.import_tasks: audit_only.yml
