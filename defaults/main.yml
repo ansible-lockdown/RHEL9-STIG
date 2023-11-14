@@ -71,6 +71,8 @@ audit_content: git
 # enable audits to run - this  runs the audit and get the latest content
 run_audit: false
 
+# Only run Audit do not remediate
+audit_only: false
 # Run heavy tests - some tests can have more impact on a system enabling these can have greater impact on a system
 audit_run_heavy_tests: true
 
@@ -162,6 +164,32 @@ rhel_09_231040: true
 rhel_09_231045: true
 rhel_09_231050: true
 rhel_09_231055: true
+rhel_09_231060: true
+rhel_09_231065: true
+rhel_09_231070: true
+rhel_09_231075: true
+rhel_09_231080: true
+rhel_09_231085: true
+rhel_09_231090: true
+rhel_09_231095: true
+rhel_09_231100: true
+rhel_09_231105: true
+rhel_09_231110: true
+rhel_09_231115: true
+rhel_09_231120: true
+rhel_09_231125: true
+rhel_09_231130: true
+rhel_09_231135: true
+rhel_09_231140: true
+rhel_09_231145: true
+rhel_09_231150: true
+rhel_09_231155: true
+rhel_09_231160: true
+rhel_09_231165: true
+rhel_09_231170: true
+rhel_09_231175: true
+rhel_09_231180: true
+rhel_09_231185: true
 
 ## Grahical/Gnome interface required
 rhel9stig_gui: false
@@ -174,6 +202,7 @@ rhel9stig_ssh_required: true
 rhel9stig_grub_superuser: root
 rhel9stig_bootloader_password_hash: 'grub.pbkdf2.sha512.changethispassword'  # pragma: allowlist secret
 rhel9stig_set_bootloader_password: false
+rhel9stig_grub2_path: /etc/grub2.cfg
 
 ## Banner
 rhel9stig_logon_banner: "{{ rhel9stig_workaround_for_disa_benchmark | ternary(
@@ -228,4 +257,4 @@ rhel9stig_quagga_required: false
 rhel9stig_sysctl_file: /etc/sysctl.d/99-sysctl.conf
 
 ## 23xxxx
-rhel9stig_home_filesystem: /home
+rhel9stig_home_filesystem: '/home'

@@ -10,6 +10,9 @@ rhel9stig_min_supported_os_ver:
     AlmaLinux: "9.2"
     OracleLinux: "9.2"
 
+# Set dynamically if discovered to be non UEFI boot
+rhel9stig_legacy_boot: false
+
 # Used to control warning summary
 warn_control_list: ""
 warn_count: 0

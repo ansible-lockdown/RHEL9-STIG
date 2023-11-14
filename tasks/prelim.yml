@@ -87,13 +87,7 @@
     - name: PRELIM | set legacy boot and grub path | Bios
       ansible.builtin.set_fact:
         rhel9cis_legacy_boot: true
-        grub2_path: /etc/grub2.cfg
       when: not rhel_09_efi_boot.stat.exists
-
-    - name: PRELIM | set grub fact | UEFI
-      ansible.builtin.set_fact:
-        grub2_path: /etc/grub2-efi.cfg
-      when: rhel_09_efi_boot.stat.exists
 
 - name: PRELIM | Update to latest gpg keys
   ansible.builtin.package:
@@ -196,6 +190,14 @@
   tags:
     - sudoers
 
+- name: PRELIM | Discover removable devices
+  when: item.value.removable == '1'
+  tags:
+    - always
+  ansible.builtin.set_fact:
+    rhel9stig_discovered_removable_storage: "{{ rhel9stig_discovered_removable_storage |default([]) + [item.key] }}"
+  loop: "{{ ansible_facts['devices'] | dict2items }}"
+
 - name: PRELIM | Discover Interactive UID MIN and MIN from logins.def
   block:
     - name: PRELIM | Capture UID_MIN information from logins.def
@@ -218,12 +220,6 @@
         min_int_uid: "{{ uid_min_id.stdout }}"
         max_int_uid: "{{ uid_max_id.stdout }}"
         min_int_gid: "{{ gid_min_id.stdout }}"
-
-- name: PRELIM | Output of uid findings
-  when:
-    - not discover_int_uid
-  ansible.builtin.debug:
-    msg: "{{ min_int_uid }} {{ max_int_uid }}"
 
 - name: PRELIM | Gather the package facts after prelim
   ansible.builtin.package_facts:
