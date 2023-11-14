@@ -169,6 +169,13 @@
   tags:
     - ssh
 
+- name: "PRELIM | Interactive User accounts"
+  ansible.builtin.shell: 'cat /etc/passwd | grep -Ev "nologin|/sbin" | cut -d: -f6'
+  changed_when: false
+  register: rhel9stig_interactive_users_home
+  tags:
+    - always
+
 # - name: "PRELIM | Install authconfig"
 #   ansible.builtin.package:
 #       name: authconfig
