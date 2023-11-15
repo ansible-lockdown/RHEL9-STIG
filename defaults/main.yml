@@ -58,7 +58,15 @@ rhel9stig_system_is_router: false
 ### Goss is required on the remote host ###
 ## Refer to vars/auditd.yml for any other settings ##
 
+# Allow audit to setup the requirements including installing git (if option chosen and downloading and adding goss binary to system)
 setup_audit: false
+
+# enable audits to run - this runs the audit and get the latest content
+run_audit: false
+
+# Only run Audit do not remediate
+audit_only: false
+
 # How to retrieve audit binary
 # Options are copy or download - detailed settings at the bottom of this file
 # you will need to access to either github or the file already dowmloaded
@@ -68,11 +76,6 @@ get_audit_binary_method: download
 # options are git/copy/get_url other e.g. if you wish to run from already downloaded conf
 audit_content: git
 
-# enable audits to run - this  runs the audit and get the latest content
-run_audit: false
-
-# Only run Audit do not remediate
-audit_only: false
 # Run heavy tests - some tests can have more impact on a system enabling these can have greater impact on a system
 audit_run_heavy_tests: true
 
@@ -225,6 +228,20 @@ rhel_09_232155: true
 rhel_09_232160: true
 rhel_09_232165: true
 rhel_09_232170: true
+rhel_09_232175: true
+rhel_09_232180: true
+rhel_09_232185: true
+rhel_09_232190: true
+rhel_09_232195: true
+rhel_09_232200: true
+rhel_09_232205: true
+rhel_09_232210: true
+rhel_09_232215: true
+rhel_09_232220: true
+rhel_09_232225: true
+rhel_09_232230: true
+rhel_09_232235: true
+rhel_09_232240: true
 
 ## Grahical/Gnome interface required
 rhel9stig_gui: false
