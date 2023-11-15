@@ -93,13 +93,21 @@
     - run_audit
   ansible.builtin.import_tasks: prelim.yml
 
-- name: Include pre-remediation tasks
+- name: Include audit specific variables
+  when:
+    - run_audit or audit_only
+    - setup_audit
+  tags:
+    - setup_audit
+    - run_audit
+  ansible.builtin.include_vars: audit.yml
+
+- name: Include pre-remediation audit tasks
+  when:
+    - run_audit or audit_only
+    - setup_audit
   tags:
     - run_audit
-  when:
-    - run_audit
-    - setup_audit
-    - audit_only
   ansible.builtin.import_tasks: pre_remediation_audit.yml
 
 - name: Include CAT I patches

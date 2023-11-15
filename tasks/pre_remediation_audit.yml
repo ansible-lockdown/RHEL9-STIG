@@ -1,14 +1,5 @@
 ---
 
-- name: Include audit specific variables
-  when:
-    - run_audit
-    - setup_audit
-  tags:
-    - setup_audit
-    - run_audit
-  ansible.builtin.include_vars: audit.yml
-
 - name: Pre Audit Setup | Setup the LE audit
   when:
     - setup_audit
