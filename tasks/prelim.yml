@@ -78,6 +78,8 @@
     state: present
 
 - name: PRELIM | Set facts based on boot type
+  tags:
+    - always
   block:
     - name: PRELIM | Check whether machine is UEFI-based
       ansible.builtin.stat:
