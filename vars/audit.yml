@@ -39,8 +39,8 @@ post_audit_outfile: "{{ audit_out_dir }}/{{ ansible_facts.hostname }}-{{ benchma
 
 ### Audit binary settings ###
 audit_bin_version:
-    release: v0.4.3
-    AMD64_checksum: 'sha256:5c9b7d3a6e40fc7d6d80a84e2d4a4eadc8dd68224566741e8c32e073075adb1f'
+    release: v0.4.4
+    AMD64_checksum: 'sha256:1c4f54b22fde9d4d5687939abc2606b0660a5d14a98afcd09b04b793d69acdc5'
 audit_bin_path: /usr/local/bin/
 audit_bin: "{{ audit_bin_path }}goss"
 audit_format: json
