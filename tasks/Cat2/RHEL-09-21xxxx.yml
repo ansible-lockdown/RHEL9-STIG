@@ -160,7 +160,6 @@
         src: "{{ item.file }}.j2"
       loop:
         - { file: 'boot/grub2/user.cfg', mode: '0644' }
-        - { file: 'etc/grub.d/01_users', mode: '0755' }
 
     - name: "MEDIUM | RHEL-09-212010 | AUDIT | RHEL 9 must require a boot loader superuser password.| warning"
       when: not rhel9stig_set_bootloader_password
