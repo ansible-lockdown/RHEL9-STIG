@@ -20,7 +20,8 @@
         msg: "Warning!! The designated /home directory is not a seperate filesystem"
 
     - name: "MEDIUM | RHEL-09-231010 | PATCH | A separate RHEL 9 file system must be used for user home directories (such as /home or an equivalent)."
-      ansible.builtin.import_tasks: warning_facts.yml
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-231015 | PATCH | RHEL 9 must use a separate file system for /tmp."
   when:
@@ -42,7 +43,8 @@
         msg: "Warning!! /tmp directory is not a seperate filesystem"
 
     - name: "MEDIUM | RHEL-09-231015 | PATCH | RHEL 9 must use a separate file system for /tmp."
-      ansible.builtin.import_tasks: warning_facts.yml
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-231035 | PATCH | RHEL 9 must use a separate file system for /var/tmp."
   when:
@@ -64,7 +66,8 @@
         msg: "Warning!! /var/tmp directory is not a seperate filesystem"
 
     - name: "MEDIUM | RHEL-09-231035 | PATCH | RHEL 9 must use a separate file system for /var/tmp."
-      ansible.builtin.import_tasks: warning_facts.yml
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-231040 | PATCH | RHEL 9 file system automount function must be disabled unless required."
   when:
@@ -282,11 +285,14 @@
     warn_control_id: "MEDIUM | RHEL-09-231080"
   block:
     - name: "MEDIUM | RHEL-09-231080 | WARN | RHEL 9 must prevent code from being executed on file systems that are used with removable media."
+      when: rhel9stig_discovered_removable_storage | length > 0
       ansible.builtin.debug:
-        msg: "Warning!! You have removable devices attached manually check noexec is set in mount options :- device IDs:{{ rhel9stig_discovered_removable_storage}}"
+        msg: "Warning!! You have removable devices attached manually check noexec is set in mount options :- device IDs:{{ rhel9stig_discovered_removable_storage }}"
 
     - name: "MEDIUM | RHEL-09-231080 | WARN | RHEL 9 must prevent code from being executed on file systems that are used with removable media."
-      ansible.builtin.import_tasks: warning_facts.yml
+      when: rhel9stig_discovered_removable_storage | length > 0
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-231085 | WARN | RHEL 9 must prevent special devices on file systems that are used with removable media."
   when:
@@ -304,11 +310,14 @@
     warn_control_id: "MEDIUM | RHEL-09-231085"
   block:
     - name: "MEDIUM | RHEL-09-231085 | WARN | RHEL 9 must prevent special devices on file systems that are used with removable media."
+      when: rhel9stig_discovered_removable_storage | length > 0
       ansible.builtin.debug:
-        msg: "Warning!! You have removable devices attached, manually check nodev is set in mount options :- device IDs:{{ rhel9stig_discovered_removable_storage}}"
+        msg: "Warning!! You have removable devices attached, manually check nodev is set in mount options :- device IDs:{{ rhel9stig_discovered_removable_storage }}"
 
     - name: "MEDIUM | RHEL-09-231085 | WARN | RHEL 9 must prevent special devices on file systems that are used with removable media."
-      ansible.builtin.import_tasks: warning_facts.yml
+      when: rhel9stig_discovered_removable_storage | length > 0
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-231090 | WARN | RHEL 9 must prevent files with the setuid and setgid bit set from being executed on file systems that are used with removable media."
   when:
@@ -326,11 +335,14 @@
     warn_control_id: "MEDIUM | RHEL-09-231090"
   block:
     - name: "MEDIUM | RHEL-09-231090 | WARN | RHEL 9 must prevent files with the setuid and setgid bit set from being executed on file systems that are used with removable media."
+      when: rhel9stig_discovered_removable_storage | length > 0
       ansible.builtin.debug:
-        msg: "Warning!! You have removable devices attached, manually check nosuid is set in mount options :- device IDs:{{ rhel9stig_discovered_removable_storage}}"
+        msg: "Warning!! You have removable devices attached, manually check nosuid is set in mount options :- device IDs:{{ rhel9stig_discovered_removable_storage }}"
 
     - name: "MEDIUM | RHEL-09-231090 | WARN | RHEL 9 must prevent files with the setuid and setgid bit set from being executed on file systems that are used with removable media."
-      ansible.builtin.import_tasks: warning_facts.yml
+      when: rhel9stig_discovered_removable_storage | length > 0
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-231095 | PATCH | RHEL 9 must mount /boot with the nodev option. | BIOS based OS"
   when:
@@ -463,7 +475,8 @@
          MEDIUM | RHEL-09-231115 | WARN | RHEL 9 must mount /dev/shm with the noexec option.
          MEDIUM | RHEL-09-231120 | WARN | RHEL 9 must mount /dev/shm with the nosuid option."
       when: rhel9stig_231110_dev_shm_status.stdout | length == 0
-      ansible.builtin.import_tasks: warning_facts.yml
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
 
 - name: MEDIUM | RHEL-09-231125 | PATCH | RHEL 9 must mount /tmp with the nodev option.""
   when:
@@ -831,13 +844,14 @@
       register: rhel9stig_non_root_missing_nodev
 
     - name: "MEDIUM | RHEL-09-231200 | WARN | RHEL 9 must prevent special devices on non-root local partitions."
+      when: rhel9stig_non_root_missing_nodev.stdout | length > 0
       ansible.builtin.debug:
         msg: "Warning!! The following filesystems are missing the nodev option {{ rhel9stig_non_root_missing_nodev.stdout_lines }}"
-      when: rhel9stig_non_root_missing_nodev.stdout | length > 0
 
     - name: "MEDIUM | RHEL-09-231200 | WARN | RHEL 9 must prevent special devices on non-root local partitions."
-      ansible.builtin.import_tasks: warning_facts.yml
       when: rhel9stig_non_root_missing_nodev.stdout | length > 0
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-232010 | PATCH | RHEL 9 system commands must have mode 755 or less permissive."
   when:
@@ -1557,7 +1571,9 @@
              {{ rhel9stig_sys_commands_group.stdout_lines }}"
 
     - name: "RHEL-09-232195 | WARN | RHEL 9 system commands must be group-owned by root or a system account."
-      ansible.builtin.import_tasks: warning_facts.yml
+      when: rhel9stig_sys_commands_group.stdout | length > 0
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
 
 - name: "RHEL-09-232200 | PATCH | RHEL 9 library files must be owned by root."
   when:
@@ -1613,7 +1629,9 @@
              {{ rhel9stig_lib_files_group.stdout_lines }}"
 
     - name: "RHEL-09-232205 | WARN | RHEL 9 library files must be group-owned by root or a system account."
-      ansible.builtin.import_tasks: warning_facts.yml
+      when: rhel9stig_lib_files_group.stdout | length > 0
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
 
 - name: "RHEL-09-232210 | PATCH | RHEL 9 library directories must be owned by root."
   when:
@@ -1663,7 +1681,9 @@
              {{ rhel9stig_lib_dirs_group.stdout_lines }}"
 
     - name: "RHEL-09-232215 | WARN | RHEL 9 library directories must be group-owned by root or a system account."
-      ansible.builtin.import_tasks: warning_facts.yml
+      when: rhel9stig_lib_dirs_group.stdout | length > 0
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
 
 - name: "RHEL-09-232220 | PATCH | RHEL 9 audit tools must be owned by root."
   when:
@@ -1756,3 +1776,249 @@
     - '/etc/cron.monthly'
     - '/etc/cron.weekly'
     - '/etc/crontab'
+
+- name: "RHEL-09-232240 | PATCH | All RHEL 9 world-writable directories must be owned by root, sys, bin, or an application user."
+  when:
+    - rhel_09_232240
+    - rhel9stig_disruption_high
+  tags:
+    - RHEL-09-232240
+    - CAT2
+    - CCI-000366
+    - CCI-001090
+    - SRG-OS-000480-GPOS-00227
+    - SRG-OS-000138-GPOS-00069
+    - SV-257928r925771_rule
+    - V-257928
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_SC-4
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-232240"
+  block:
+    - name: "RHEL-09-232240 | AUDIT | All RHEL 9 world-writable directories must be owned by root, sys, bin, or an application user."
+      ansible.builtin.shell: df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d -perm -0002 -uid +0
+      changed_when: false
+      failed_when: rhel9stig_worldwide_dir_owners.rc not in [ 0, 1 ]
+      register: rhel9stig_worldwide_dir_owners
+
+    - name: "RHEL-09-232240 | WARN | All RHEL 9 world-writable directories must be owned by root, sys, bin, or an application user."
+      when: rhel9stig_worldwide_dir_owners.stdout | length > 0
+      ansible.builtin.debug:
+        msg: |
+             "Warning!! The following Directories do not match requirements for RHEL_09_232240
+             {{ rhel9stig_worldwide_dir_owners.stdout_lines }}"
+
+    - name: "RHEL-09-232240 | WARN | All RHEL 9 world-writable directories must be owned by root, sys, bin, or an application user."
+      when: rhel9stig_worldwide_dir_owners.stdout | length > 0
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "RHEL-09-232245 | PATCH | A sticky bit must be set on all RHEL 9 public directories."
+  when:
+    - rhel_09_232245
+    - rhel9stig_disruption_high
+  tags:
+    - RHEL-09-232245
+    - CAT2
+    - CCI-001090
+    - SRG-OS-000138-GPOS-00069
+    - SV-257929r925774_rule
+    - V-257929
+    - NIST800-53R4_SC-4
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-232245"
+  block:
+    - name: "RHEL-09-232245 | AUDIT | A sticky bit must be set on all RHEL 9 public directories."
+      ansible.builtin.shell: df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d -perm -0002 -a ! -perm -1000 2>/dev/null
+      changed_when: false
+      failed_when: rhel9stig_public_dirs_stickybit.rc not in [ 0, 1 ]
+      register: rhel9stig_public_dirs_stickybit
+
+    - name: "RHEL-09-232245 | PATCH | A sticky bit must be set on all RHEL 9 public directories."
+      when:
+        - rhel9stig_disruption_high
+        - rhel9stig_public_dirs_stickybit.stdout | length > 0
+      ansible.builtin.file:
+        path: "{{ item }}"
+        mode: +t
+      loop:
+        - "{{ rhel9stig_public_dirs_stickybit.stdout_lines }}"
+
+    - name: "RHEL-09-232245 | WARN | A sticky bit must be set on all RHEL 9 public directories."
+      when:
+        - not rhel9stig_disruption_high
+        - rhel9stig_public_dirs_stickybit.stdout | length > 0
+      ansible.builtin.debug:
+        msg: |
+            "Warning!! The following file require sticky bit to be set
+            {{ rhel9stig_public_dirs_stickybit.stdout_lines }}"
+
+    - name: "RHEL-09-232245 | WARN | A sticky bit must be set on all RHEL 9 public directories."
+      when:
+        - not rhel9stig_disruption_high
+        - rhel9stig_public_dirs_stickybit.stdout | length > 0
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "RHEL-09-232250 | PATCH | All RHEL 9 local files and directories must have a valid group owner."
+  when:
+    - rhel_09_232250
+  tags:
+    - RHEL-09-232250
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257930r925777_rule
+    - V-257930
+    - NIST800-53R4_CM-6
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-232250"
+  block:
+    - name: "RHEL-09-232250 | AUDIT | All RHEL 9 local files and directories must have a valid group owner."
+      when:
+        - not item['device'].startswith('/dev')
+        - not 'bind' in item['options']
+      ansible.builtin.shell: find "{{ item.mount }}" -xdev -nogroup
+      check_mode: false
+      failed_when: false
+      changed_when: false
+      register: rhel9stig_ungrouped_files_dirs_audit
+      loop: "{{ ansible_facts.mounts }}"
+      loop_control:
+        label: "{{ item.mount }}"
+
+    - name: "RHEL-09-232250 | AUDIT | All RHEL 9 local files and directories must have a valid group owner."
+      ansible.builtin.set_fact:
+        rhel9stig_ungrouped_files_found: true
+      loop: "{{ rhel9stig_ungrouped_files_dirs_audit.results }}"
+      when:
+        - item | length > 0
+        - item.stdout is defined  # skipped items are part of results list, but don't have the registered module properties
+        - item.stdout | length > 0
+
+    - name: "RHEL-09-232250 | WARN | All RHEL 9 local files and directories must have a valid group owner."
+      when: rhel9stig_ungrouped_files_found is defined
+      ansible.builtin.debug:
+        msg: "Warning!! Missing group on items in {{ rhel9stig_ungrouped_files_dirs_audit | json_query('results[*].stdout_lines[*]') | flatten }}"  # noqa jinja[invalid]
+
+    - name: "RHEL-09-232250 | WARN | All RHEL 9 local files and directories must have a valid group owner."
+      when: rhel9stig_ungrouped_files_found is defined
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "RHEL-09-232255 | PATCH | All RHEL 9 local files and directories must have a valid owner."
+  when:
+    - rhel_09_232255
+  tags:
+    - RHEL-09-232255
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257931r925780_rule
+    - V-257931
+    - NIST800-53R4_CM-6
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-232255"
+  block:
+    - name: "RHEL-09-232255 | AUDIT | All RHEL 9 local files and directories must have a valid owner."
+      when:
+        - not item['device'].startswith('/dev')
+        - not 'bind' in item['options']
+      ansible.builtin.shell: find "{{ item.mount }}" -xdev -nogroup
+      check_mode: false
+      failed_when: false
+      changed_when: false
+      register: rhel9stig_unowned_files_dirs_audit
+      loop: "{{ ansible_facts.mounts }}"
+      loop_control:
+        label: "{{ item.mount }}"
+
+    - name: "RHEL-09-232255 | AUDIT | All RHEL 9 local files and directories must have a valid owner."
+      ansible.builtin.set_fact:
+        rhel9stig_unowned_files_found: true
+      loop: "{{ rhel9stig_unowned_files_dirs_audit.results }}"
+      when:
+        - item | length > 0
+        - item.stdout is defined  # skipped items are part of results list, but don't have the registered module properties
+        - item.stdout | length > 0
+
+    - name: "RHEL-09-232255 | WARN | All RHEL 9 local files and directories must have a valid owner."
+      when: rhel9stig_unowned_files_found is defined
+      ansible.builtin.debug:
+        msg: "Warning!! Missing group on items in {{ rhel9stig_ungrouped_files_dirs_audit | json_query('results[*].stdout_lines[*]') | flatten }}"  # noqa jinja[invalid]
+
+    - name: "RHEL-09-232255 | WARN | All RHEL 9 local files and directories must have a valid owner."
+      when: rhel9stig_unowned_files_found is defined
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "RHEL-09-232260 | PATCH | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification."
+  when:
+    - rhel_09_232260
+  tags:
+    - RHEL-09-232260
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257932r925783_rule
+    - V-257932
+    - NIST800-53R4_CM-6
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-232260"
+  block:
+    - name: "RHEL-09-232260 | AUDIT | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification. | / scan"
+      ansible.builtin.shell: find / -context *:unlabeled_t:* \( -type c -o -type b \) -printf "%p %Z"
+      changed_when: false
+      failed_when: rhel9stig_unlabelled_files.rc not in [ 0, 1 ]
+      register: rhel9stig_unlabelled_files
+
+    - name: "RHEL-09-232260 | AUDIT | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification. | / scan"
+      when:
+        - rhel9stig_unlabelled_files.stdout | length > 0
+        - rhel9stig_disruption_high
+      ansible.builtin.shell: "restorecon -v {{ item }}"
+      loop: "{{ rhel9stig_unlabelled_files.stdout_lines }}"
+
+    - name: "RHEL-09-232260 | WARN | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification."
+      when:
+        - rhel9stig_unlabelled_files.stdout | length > 0
+        - not rhel9stig_disruption_high
+      ansible.builtin.debug:
+        msg: "Warning!! Unlabelled device files found on the system {{ rhel9stig_unlabelled_files }}"
+
+    - name: "RHEL-09-232260 | WARN | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification."
+      when:
+        - rhel9stig_unlabelled_files.stdout | length > 0
+        - not rhel9stig_disruption_high
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "RHEL-09-232265 | PATCH | RHEL 9 /etc/crontab file must have mode 0600."
+  when:
+    - rhel_09_232265
+  tags:
+    - RHEL-09-232265
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257933r925786_rule
+    - V-257933
+    - NIST800-53R4_CM-6
+  ansible.builtin.file:
+    path: /etc/crontab
+    mode: '0600'
+
+- name: "RHEL-09-232270 | PATCH | RHEL 9 /etc/shadow file must have mode 0000 to prevent unauthorized access."
+  when:
+    - rhel_09_232270
+  tags:
+    - RHEL-09-232270
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257934r925789_rule
+    - V-257934
+    - NIST800-53R4_CM-6
+  ansible.builtin.file:
+    path: /etc/shadow
+    mode: '0000'
