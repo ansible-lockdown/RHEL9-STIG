@@ -66,6 +66,11 @@ run_audit: false
 
 # Only run Audit do not remediate
 audit_only: false
+# As part of audit_only
+# This will enable files to be copied back to control node
+fetch_audit_files: false
+# Path to copy the files to will create dir structure
+audit_capture_files_dir: /some/location to copy to on control node
 
 # How to retrieve audit binary
 # Options are copy or download - detailed settings at the bottom of this file
@@ -78,6 +83,11 @@ audit_content: git
 
 # Run heavy tests - some tests can have more impact on a system enabling these can have greater impact on a system
 audit_run_heavy_tests: true
+
+# This variable specifies the timeout (in ms) for audit commands that
+# take a very long time: if a command takes too long to complete,
+# it will be forcefully terminated after the specified duration.
+audit_cmd_timeout: 120000
 
 ### End Goss enablements ####
 
