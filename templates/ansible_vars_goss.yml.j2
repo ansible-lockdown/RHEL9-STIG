@@ -7,6 +7,8 @@ benchmark_version: {{ benchmark_version }}
 # The audit variable found at the base
 benchmark: RHEL9-STIG
 
+timeout_ms: {{ audit_cmd_timeout }}
+
 # turn the categories on/off
 rhel9stig_cat1: {{ rhel9stig_cat1 }}
 rhel9stig_cat2: {{ rhel9stig_cat2 }}
