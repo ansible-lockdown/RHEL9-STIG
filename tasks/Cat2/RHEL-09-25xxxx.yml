@@ -1,0 +1,92 @@
+---
+
+- name: "MEDIUM | RHEL-09-251010 | PATCH | RHEL 9 must have the firewalld package installed."
+  when:
+    - rhel_09_251010
+  tags:
+    - RHEL-09-251010
+    - CAT2
+    - CCI-000366
+    - CCI-000382
+    - CCI-002314
+    - CCI-002322
+    - SRG-OS-000096-GPOS-00050
+    - SRG-OS-000297-GPOS-00115
+    - SRG-OS-000298-GPOS-00116
+    - SRG-OS-000480-GPOS-00227
+    - SRG-OS-000480-GPOS-00232
+    - SV-257936r925795_rule
+    - V-257936
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_CM-7
+    - NIST800-53R4_AC-17
+  ansible.builtin.package:
+    name: "firewalld"
+    state: present
+
+- name: "MEDIUM | RHEL-09-251015 | PATCH | The firewalld service on RHEL 9 must be active"
+  when:
+    - rhel_09_251015
+  tags:
+    - RHEL-09-251015
+    - CAT2
+    - CCI-000366
+    - CCI-000382
+    - CCI-002314
+    - CCI-002322
+    - SRG-OS-000096-GPOS-00050
+    - SRG-OS-000297-GPOS-00115
+    - SRG-OS-000298-GPOS-00116
+    - SRG-OS-000480-GPOS-00227
+    - SRG-OS-000480-GPOS-00232
+    - SV-257936r925795_rule
+    - V-257936
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_CM-7
+    - NIST800-53R4_AC-17
+  ansible.builtin.systemd:
+    name: "firewalld"
+    enabled: true
+    state: started
+
+- name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems."
+  when:
+    - rhel_09_251020
+  notify: Firewalld_reload
+  tags:
+    - RHEL-09-251020
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257937r925798_rule
+    - V-257937
+    - NIST800-53R4_CM-6
+  block:
+    - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Setup Connections"
+      ansible.posix.firewalld:
+        zone: "{{ rhel9stig_custom_firewall.zone }}"
+        permanent: true
+        state: enabled
+        service: "{{ (item == (item | regex_search('^[a-z]+$'))) | bool | ternary(item, omit) }}"
+        port: "{{ (item == (item | regex_search('^[0-9]+/[a-z]+$'))) | bool | ternary(item, omit) }}"
+      with_items:
+        - "{{ rhel9stig_white_list_services }}"
+
+    - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems."
+      ansible.posix.firewalld:
+        zone: "{{ rhel9stig_custom_firewall.zone }}"
+        permanent: true
+        state: enabled
+        target: DROP
+
+    - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems."
+      ansible.builtin.shell: "firewall-cmd --set-default-zone={{ rhel8stig_custom_firewall_zone }}"
+
+    - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Setup Connections"
+      ansible.posix.firewalld:
+        zone: "{{ rhel9stig_custom_firewall.zone }}"
+        permanent: true
+        state: present
+        interface: "{{ item }}"
+      loop:
+        - "{{ rhel9stig_custom_firewall.interface }}"

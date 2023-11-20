@@ -48,3 +48,6 @@
 
 - name: Rebuild_grub
   ansible.builtin.shell: grub2-mkconfig -o /boot/grub2/grub.cfg
+
+- name: Firewalld_reload
+  ansible.builtin.shell: firewall-cmd reload

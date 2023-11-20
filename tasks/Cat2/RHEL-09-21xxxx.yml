@@ -2,7 +2,6 @@
 
 - name: "MEDIUM | RHEL-09-211015 | PATCH | RHEL 9 vendor packaged system security patches and updates must be installed and up to date."
   when:
-    - not system_is_ec2
     - rhel_09_211015
   notify: Change_requires_reboot
   tags:
