@@ -90,3 +90,164 @@
         interface: "{{ item }}"
       loop:
         - "{{ rhel9stig_custom_firewall.interface }}"
+
+- name: "MEDIUM | RHEL-09-251025 | AUDIT | RHEL 9 must control remote access methods."
+  when:
+    - rhel_09_251025
+  tags:
+    - RHEL-09-251025
+    - CAT2
+    - CCI-000382
+    - CCI-002314
+    - SRG-OS-000096-GPOS-00050
+    - SRG-OS-000297-GPOS-00115
+    - SV-257938r925801_rule
+    - V-257938
+    - NIST800-53R4_CM-7
+    - NIST800-53R4_AC-17
+  block:
+    - name: "MEDIUM | RHEL-09-251025 | AUDIT | RHEL 9 must control remote access methods. | Get services using firewalld"
+      ansible.builtin.shell: firewall-cmd --list-all | grep services | cut -d ':' -f 2 | tr " " "\n" | sed '/^$/d' | sort -u
+      register: rhel9stig_ppsm_clsa_check_firewalld
+      changed_when: false
+      failed_when: false
+      check_mode: false
+
+    - name: "MEDIUM | RHEL-09-251025 | AUDIT | RHEL 9 must control remote access methods. | Message out findings"
+      when:
+        - rhel9stig_ppsm_clsa_check_firewalld.stdout_lines is defined
+      ansible.builtin.debug:
+        msg:
+          - "The following output is what firewalld is accepting on service ports to {{ ansible_hostname }}."
+          - "{{ rhel9stig_ppsm_clsa_check_firewalld.stdout_lines }}"
+      changed_when: true
+
+- name: "MEDIUM | RHEL-09-251030 | AUDIT |  RHEL 9 must protect against or limit the effects of denial-of-service (DoS) attacks by ensuring rate-limiting measures on impacted network interfaces are implemented."
+  when:
+    - rhel_09_251030
+  tags:
+    - RHEL-09-251030
+    - CAT2
+    - CCI-002385
+    - SRG-OS-000420-GPOS-00186
+    - SV-257939r925804_rule
+    - V-257939
+    - NIST800-53R4_SC-5
+  ansible.builtin.lineinfile:
+    line: FirewallBackend=nftables
+    regexp: ^(#|)FirewallBackend=.*
+    path: /etc/firewalld/firewalld.conf
+
+- name: "MEDIUM | RHEL-09-251035 | AUDIT | To prevent unauthorized connection of devices, unauthorized transfer of information, or unauthorized tunneling (i.e., embedding of data types within data types), organizations must disable or restrict unused or unnecessary physical and logical ports/protocols on information systems."
+  when:
+    - rhel_09_251035
+  tags:
+    - RHEL-09-251035
+    - CAT2
+    - CCI-000382
+    - SRG-OS-000096-GPOS-00050
+    - SV-257940r925807_rule
+    - V-257940
+    - NIST800-53R4_CM-7
+  block:
+    - name: "MEDIUM | RHEL-09-251035 | AUDIT | To prevent unauthorized connection of devices, unauthorized transfer of information, or unauthorized tunneling (i.e., embedding of data types within data types), organizations must disable or restrict unused or unnecessary physical and logical ports/protocols on information systems.. | Get services using firewalld"
+      ansible.builtin.shell: firewall-cmd --list-all
+      register: rhel9stig_ppsm_clsa_zone_config
+      changed_when: false
+      failed_when: false
+      check_mode: false
+
+    - name: "MEDIUM | RHEL-09-251035 | AUDIT | To prevent unauthorized connection of devices, unauthorized transfer of information, or unauthorized tunneling (i.e., embedding of data types within data types), organizations must disable or restrict unused or unnecessary physical and logical ports/protocols on information systems. | Message out findings"
+      when:
+        - rhel9stig_ppsm_clsa_zone_config.stdout_lines is defined
+      ansible.builtin.debug:
+        msg:
+          - "The following output is what firewalld is configured for {{ ansible_hostname }}."
+          - "{{ rhel9stig_ppsm_clsa_zone_config.stdout_lines }}"
+      changed_when: true
+
+- name: "MEDIUM | RHEL-09-251040 | AUDIT | RHEL 9 network interfaces must not be in promiscuous mode."
+  when:
+    - rhel_09_251040
+  tags:
+    - RHEL-09-251040
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257941r925810_rule
+    - V-257941
+    - NIST800-53R4_CM-5
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-251040"
+  block:
+    - name: "MEDIUM | RHEL-09-251040 | PATCH | RHEL 9 network interfaces must not be in promiscuous mode."
+      when:
+        - item not in rhel9stig_promisc_if
+        - rhel9stig_disruption_high
+      ansible.builtin.lineinfile:
+        line: PROMISC=NO
+        regexp: ^(?i)PROMISC=(YES|TRUE|NO|FALSE)
+        path: "/etc/sysconfig/network-scripts/ifcfg-{{ item }}"
+      notify: NetworkManager_restart
+      loop: "{{ ansible_facts.interfaces }}"
+
+    - name: "MEDIUM | RHEL-09-251040 | PATCH | RHEL 9 network interfaces must not be in promiscuous mode."
+      when:
+        - item not in rhel9stig_promisc_if
+        - not rhel9stig_disruption_high
+      ansible.builtin.debug:
+        msg: "Warning!! You have interfaces set to promicious mode no in the exception list"
+
+    - name: "MEDIUM | RHEL-09-251040 | PATCH | RHEL 9 network interfaces must not be in promiscuous mode."
+      when:
+        - item not in rhel9stig_promisc_if
+        - not rhel9stig_disruption_high
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "MEDIUM | RHEL-09-251045 | PATCH | RHEL 9 must enable hardening for the Berkeley Packet Filter just-in-time compiler."
+  when:
+    - rhel_09_251045
+  tags:
+    - RHEL-09-251045
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257942r925813_rule
+    - V-257942
+    - NIST800-53R4_CM-5
+  ansible.posix.sysctl:
+    name: net.core.bpf_jit_harden
+    reload: true
+    sysctl_file: "{{ sysctl_file.network }}"
+    value: '2'
+
+- name: "MEDIUM | RHEL-09-252010 | PATCH | RHEL 9 must have the chrony package installed."
+  when:
+    - rhel_09_252010
+  tags:
+    - RHEL-09-252010
+    - CAT2
+    - CCI-001891
+    - SRG-OS-000355-GPOS-00143
+    - SV-257943r925816_rule
+    - V-257943
+    - NIST800-53R4_AU-8
+  ansible.builtin.package:
+    name: chrony
+
+- name: "MEDIUM | RHEL-09-252015 | PATCH | RHEL 9 must have the chrony package installed."
+  when:
+    - rhel_09_252015
+  tags:
+    - RHEL-09-252015
+    - CAT2
+    - CCI-001891
+    - SRG-OS-000355-GPOS-00143
+    - SV-257944r925819_rule
+    - V-257944
+    - NIST800-53R4_AU-8
+  ansible.builtin.systemd:
+    enabled: true
+    name: chronyd
+    state: started
