@@ -259,6 +259,17 @@ rhel_09_232260: true
 rhel_09_232265: true
 rhel_09_232270: true
 
+rhel_09_251010: true
+rhel_09_251015: true
+rhel_09_251020: true
+rhel_09_251025: true
+rhel_09_251030: true
+rhel_09_251035: true
+rhel_09_251040: true
+rhel_09_251045: true
+rhel_09_252010: true
+rhel_09_252015: true
+
 ## Grahical/Gnome interface required
 rhel9stig_gui: false
 
@@ -322,7 +333,7 @@ rhel9stig_tuned_required: false
 rhel9stig_quagga_required: false
 
 # Sysctl file
-rhel9stig_sysctl_file: /etc/sysctl.d/99-sysctl.conf
+rhel9stig_sysctl_file_default: /etc/sysctl.d/99-sysctl.conf
 
 ## 23xxxx
 rhel9stig_home_filesystem: '/home'
@@ -340,3 +351,12 @@ rhel9stig_custom_firewall:
 # This can also be a port number if no service exists
 rhelstig_white_list_services:
 - sshd
+
+## Interface list allowed to have promiscuous mode set
+rhel9stig_promisc_if:
+- none
+
+# Set sysctl files
+rhel9stig_sysctl_file:
+  kernel: "{{ rhel9stig_sysctl_file_default }}"
+  network: "{{ rhel9stig_sysctl_file_default }}"
