@@ -317,6 +317,7 @@ rhel_09_255085: true
 rhel_09_255090: true
 rhel_09_255095: true
 rhel_09_255100: true
+rhel_09_255105: true
 rhel_09_255110: true
 rhel_09_255115: true
 rhel_09_255120: true
@@ -329,6 +330,7 @@ rhel_09_255150: true
 rhel_09_255155: true
 rhel_09_255160: true
 rhel_09_255165: true
+rhel_09_255170: true
 rhel_09_255175: true
 rhel_09_271010: true
 rhel_09_271015: true
@@ -362,24 +364,24 @@ rhel9stig_sshd_config:
   ciphers: "{{ rhel9stig_dod_ciphers }}"
   clientalivecountmax: 1
   clientaliveinterval: 600  # max 600
-  compress: no  # yamllint disable-line
-  gssapiauth: no  # yamllint disable-line
-  hostauth: no  # yamllint disable-line
-  ignoreknownhosts: yes  # yamllint disable-line
-  ignorerhosts: yes  # yamllint disable-line
+  compress: 'no'
+  gssapiauth: 'no'
+  hostauth: 'no'
+  ignoreknownhosts: 'yes'
+  ignorerhosts: 'yes'
   include_conf: /etc/ssh/sshd_config.d/*.conf
-  kerbauth: no  # yamllint disable-line
-  lastlog: yes  # yamllint disable-line
+  kerbauth: 'no'
+  lastlog: 'yes'
   loglevel: VERBOSE
-  MACs: "{{ rhel9stig_dod_macs }}"
-  pubkeyauth: yes  # yamllint disable-line
-  permitroot: no  # yamllint disable-line
+  macs: "{{ rhel9stig_dod_macs }}"
+  pubkeyauth: 'yes'
+  permitroot: 'no'
   privsep: sandbox
   rekeylimit: '1G 1h'
-  strictmodes: yes  # yamllint disable-line
-  userenv: no  # yamllint disable-line
-  x11forward: no  # yamllint disable-line
-  x11uselocal: yes  # yamllint disable-line
+  strictmodes: 'yes'
+  userenv: 'no'
+  x11forward: 'no'
+  x11uselocal: 'yes'
 
 ## Bootloader/Grub settings
 rhel9stig_grub_superuser: root
@@ -453,8 +455,8 @@ rhel9stig_custom_firewall:
 # rhel9stig_white_list_services is the services that you want to allow through initially for teh new firewall zone
 # http and ssh need to be enabled for the role to run.
 # This can also be a port number if no service exists
-rhelstig_white_list_services:
-- sshd
+rhel9stig_white_list_services:
+- ssh
 
 ## Interface list allowed to have promiscuous mode set
 rhel9stig_promisc_if:
@@ -467,8 +469,8 @@ rhel9stig_sysctl_file:
 
 ## Chrony
 rhel9stig_time_synchronization_servers:
-- 0.us.pool.ntp.mil
-- 1.us.pool.ntp.mil
+- '0.us.pool.ntp.mil'
+- '1.us.pool.ntp.mil'
 rhel9stig_chrony_server_options: "iburst maxpoll 16"  # Max Settings is maxpoll 16
 
 ## DNS
@@ -478,8 +480,8 @@ rhel9stig_dns_ip4_servers:
 - 8.8.4.4
 
 # rhel9stig_dns_ip6_servers:
-#   - 2001:4860:4860::8888
-#   - 2001:4860:4860::8844
+#   - '2001:4860:4860::8888'
+#   - '2001:4860:4860::8844'
 
 ## Optional settings Please adjust accordingly for your environment
 # rhel9stig_resolv_domains:

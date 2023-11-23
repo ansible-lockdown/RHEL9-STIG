@@ -53,12 +53,12 @@ logdir /var/log/chrony
 # Select which information is logged.
 #log measurements statistics tracking
 
-{% if rhel9stig-09-0252025 %}
+{% if rhel_09_252025 %}
 # Disable Chrony from acting as a Server
 port 0
 {% endif %}
 
-{% if rhel9stig-09-0252030 %}
+{% if rhel_09_252030 %}
 # Disable network management of chrony
 cmdport 0
 {% endif %}

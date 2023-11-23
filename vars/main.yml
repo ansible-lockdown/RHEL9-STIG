@@ -26,6 +26,15 @@ gpg_key_package: "{{ ansible_distribution | lower }}-gpg-keys"
 discover_int_uid: true
 
 # DOD encryption
-rhel9stig_dod_ciphers: aes-256-gcm@openssh.com, chacha20-poly1305@openssh.com, aes256-ctr,aes128-gcm@openssh.com,aes128-ctr
-rhel9stig_dod_macs: hmac-sha2-256-etm@openssh.com,hmac-sha2-256,hmac-sha2-512-etm@openssh.com,hmac-sha2-512
+rhel9stig_dod_ciphers:
+- aes256-gcm@openssh.com
+- chacha20-poly1305@openssh.com
+- aes256-ctr
+- aes128-gcm@openssh.com
+- aes128-ctr
+rhel9stig_dod_macs:
+- hmac-sha2-256-etm@openssh.com
+- hmac-sha2-256
+- hmac-sha2-512-etm@openssh.com
+- hmac-sha2-512
 rhel9stig_dod_kex:

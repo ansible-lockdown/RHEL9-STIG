@@ -50,7 +50,7 @@
   ansible.builtin.shell: grub2-mkconfig -o /boot/grub2/grub.cfg
 
 - name: Firewalld_reload
-  ansible.builtin.shell: firewall-cmd reload
+  ansible.builtin.shell: firewall-cmd --reload
 
 - name: Restart_NetworkManager
   ansible.builtin.systemd:
