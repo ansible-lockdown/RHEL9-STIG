@@ -178,6 +178,17 @@
   tags:
     - always
 
+- name: "PRELIM | Capture NetworkManager DNS state"
+  when:
+    - rhel_09_252035 or
+      rhel_09_252040
+  tags:
+    - always
+  ansible.builtin.shell: grep -E "dns\s*=" /etc/NetworkManager/NetworkManager.conf | cut -d = -f2 | sed s/" "//g
+  changed_when: false
+  failed_when: rhel9stig_network_manager_dns.rc not in [ 0, 1 ]
+  register: rhel9stig_network_manager_dns
+
 # - name: "PRELIM | Install authconfig"
 #   ansible.builtin.package:
 #       name: authconfig
@@ -189,6 +200,22 @@
 #   tags:
 #       - authconfig
 #       - auditd
+
+- name: PRELIM | Discover dconf systemdb
+  when:
+    - rhel9stig_gui
+  ansible.builtin.shell: grep system-db /etc/dconf/profile/user | cut -d ':' -f2
+  changed_when: false
+  failed_when: rhel9stig_dconf_db.rc not in [ 0, 1 ]
+  register: rhel9stig_dconf_db
+
+- name: PRELIM | Discover dconf db files
+  when:
+    - rhel9stig_gui
+  ansible.builtin.find:
+    path: /etc/dconf/db/local.d
+    pattern: '*'
+  register: rhel9stig_dconf_locald_files
 
 - name: PRELIM | Find all sudoers files.
   ansible.builtin.shell: find /etc/sudoers /etc/sudoers.d/ -type f ! -name '*~' ! -name '*.*'

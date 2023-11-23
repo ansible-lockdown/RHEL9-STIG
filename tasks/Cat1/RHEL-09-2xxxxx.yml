@@ -230,7 +230,6 @@
 
 - name: HIGH | RHEL-09-252070 | There must be no shosts.equiv files on RHEL 9.
   when:
-    - rhel9stig_disruption_high
     - rhel_09_252070
   tags:
     - RHEL-09-252070
@@ -247,25 +246,25 @@
       ansible.builtin.find:
         path: /
         pattern: shosts.equiv
-      register: shosts_equiv
+      register: rhel9stig_shosts_equiv
 
     - name: HIGH | RHEL-09-252070 | PATCH | There must be no shosts.equiv files on RHEL 9. | Remove files
       when:
+        - rhel9stig_shosts_equiv.files | length > 0
         - rhel9stig_disruption_high
       ansible.builtin.file:
         path: "{{ item }}"
         state: absent
-      loop: "{{ shosts_equiv.files }}"
+      loop: "{{ rhel9stig_shosts_equiv.files }}"
 
     - name: HIGH | RHEL-09-252070 | WARN | There must be no shosts.equiv files on RHEL 9. | Warn if not removing files found
       when:
-        - shosts_equiv.files | length > 0
+        - rhel9stig_shosts_equiv.files | length > 0
         - not rhel9stig_disruption_high
       ansible.builtin.import_tasks: warning_facts.yml
 
 - name: HIGH | RHEL-09-252075 | There must be no .shosts files on RHEL 9.
   when:
-    - rhel9stig_disruption_high
     - rhel_09_252075
   tags:
     - RHEL-09-252075
@@ -280,23 +279,25 @@
   block:
     - name: HIGH | RHEL-09-252075 | AUDIT | There must be no .shosts files on RHEL 9. | find files
       ansible.builtin.find:
+        hidden: true
         path: /
         pattern: .shosts
-      register: dot_shosts
+      register: rhel9stig_dot_shosts
 
     - name: HIGH | RHEL-09-252075 | PATCH | There must be no .shosts files on RHEL 9. | Remove files
+      when:
+        - rhel9stig_dot_shosts is defined
+        - rhel9stig_disruption_high
       ansible.builtin.file:
         path: "{{ item }}"
         state: absent
-      loop: "{{ dot_shosts.files }}"
-      when:
-        - rhel9stig_disruption_high
+      loop: "{{ rhel9stig_dot_shosts.files }}"
 
     - name: HIGH | RHEL-09-252075 | WARN | There must be no .shosts files on RHEL 9. | Warn if not removing files found
-      ansible.builtin.import_tasks: warning_facts.yml
       when:
-        - dot_shosts is defined
+        - rhel9stig_dot_shosts is defined
         - not rhel9stig_disruption_high
+      ansible.builtin.import_tasks: warning_facts.yml
 
 - name: HIGH | RHEL-09-255040 | PATCH | RHEL 9 SSHD must not allow blank passwords.
   when:

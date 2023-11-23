@@ -225,6 +225,49 @@ rhel_09_232260: {{ rhel_09_232260 }}
 rhel_09_232265: {{ rhel_09_232265 }}
 rhel_09_232270: {{ rhel_09_232270 }}
 
+rhel_09_251010: {{ rhel_09_251010 }}
+rhel_09_251015: {{ rhel_09_251015 }}
+rhel_09_251020: {{ rhel_09_251020 }}
+rhel_09_251025: {{ rhel_09_251025 }}
+rhel_09_251030: {{ rhel_09_251030 }}
+rhel_09_251035: {{ rhel_09_251035 }}
+rhel_09_251040: {{ rhel_09_251040 }}
+rhel_09_251045: {{ rhel_09_251045 }}
+rhel_09_252010: {{ rhel_09_252010 }}
+rhel_09_252015: {{ rhel_09_252015 }}
+rhel_09_252020: {{ rhel_09_252020 }}
+rhel_09_252025: {{ rhel_09_252025 }}
+rhel_09_252030: {{ rhel_09_252030 }}
+rhel_09_252035: {{ rhel_09_252035 }}
+rhel_09_252040: {{ rhel_09_252040 }}
+rhel_09_252045: {{ rhel_09_252045 }}
+rhel_09_252050: {{ rhel_09_252050 }}
+rhel_09_252055: {{ rhel_09_252055 }}
+rhel_09_252060: {{ rhel_09_252060 }}
+rhel_09_252065: {{ rhel_09_252065 }}
+rhel_09_253010: {{ rhel_09_253010 }}
+rhel_09_253015: {{ rhel_09_253015 }}
+rhel_09_253020: {{ rhel_09_253020 }}
+rhel_09_253025: {{ rhel_09_253025 }}
+rhel_09_253030: {{ rhel_09_253030 }}
+rhel_09_253035: {{ rhel_09_253035 }}
+rhel_09_253040: {{ rhel_09_253040 }}
+rhel_09_253045: {{ rhel_09_253045 }}
+rhel_09_253050: {{ rhel_09_253050 }}
+rhel_09_253055: {{ rhel_09_253055 }}
+rhel_09_253060: {{ rhel_09_253060 }}
+rhel_09_253065: {{ rhel_09_253065 }}
+rhel_09_253070: {{ rhel_09_253070 }}
+rhel_09_253075: {{ rhel_09_253075 }}
+rhel_09_254010: {{ rhel_09_254010 }}
+rhel_09_254015: {{ rhel_09_254015 }}
+rhel_09_254020: {{ rhel_09_254020 }}
+rhel_09_254025: {{ rhel_09_254025 }}
+rhel_09_254030: {{ rhel_09_254030 }}
+rhel_09_254035: {{ rhel_09_254035 }}
+rhel_09_254040: {{ rhel_09_254040 }}
+
+
 # Cat 3 controls
 
 # Variables
@@ -264,5 +307,44 @@ rhel9stig_quagga_required: {{ rhel9stig_quagga_required }}
 rhel9stig_av_pkg: {{ rhel9stig_av_pkg }}
 rhel9stig_av_service: {{ rhel9stig_av_service }}
 
+# Sysctl file
+rhel9stig_sysctl_file_default: {{ rhel9stig_sysctl_file_default }}
+
 # Filesystem and mount options
 rhel9stig_home_filesystem: {{ rhel9stig_home_filesystem }}
+
+## 25xxxx
+## Firewalld
+# rhel9stig_custom_firewall_zone is the desired name for the firewall zone
+rhel9stig_custom_firewall:
+  zone: {{ rhel9stig_custom_firewall.zone }}
+  interface:
+  {% for if in rhel9stig_custom_firewall.interface %}
+  - "{{ if }}"
+  {% endfor %}
+
+# rhel9stig_white_list_services is the services that you want to allow through initially for teh new firewall zone
+# http and ssh need to be enabled for the role to run.
+# This can also be a port number if no service exists
+rhelstig_white_list_services:
+{% for service in rhelstig_white_list_services %}
+- {{ service }}
+{% endfor %}
+
+## Interface list allowed to have promiscuous mode set
+rhel9stig_promisc_if:
+{% for prom_if in rhel9stig_promisc_if %}
+- {{ prom_if }}
+{% endfor %}
+
+# Set sysctl files
+rhel9stig_sysctl_file:
+  kernel: "{{ rhel9stig_sysctl_file_default }}"
+  network: "{{ rhel9stig_sysctl_file_default }}"
+
+# Chrony
+rhel9stig_time_synchronization_servers:
+{% for time_server in rhel9stig_time_synchronization_servers %}
+  - {{ time_server }}
+{% endfor %}
+rhel9stig_chrony_server_options: "{{ rhel9stig_chrony_server_options }}"  # Max Settings is maxpoll 16

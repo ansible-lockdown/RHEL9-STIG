@@ -219,7 +219,7 @@
   ansible.posix.sysctl:
     name: net.core.bpf_jit_harden
     reload: true
-    sysctl_file: "{{ sysctl_file.network }}"
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '2'
 
 - name: "MEDIUM | RHEL-09-252010 | PATCH | RHEL 9 must have the chrony package installed."
@@ -251,3 +251,1217 @@
     enabled: true
     name: chronyd
     state: started
+
+- name: |
+    "MEDIUM | RHEL-09-252020 | PATCH | RHEL 9 must securely compare internal information system clocks at least every 24 hours.
+     MEDIUM | RHEL-09-252025 | PATCH | RHEL 9 must disable the chrony daemon from acting as a server.
+     MEDIUM | RHEL-09-252030 | PATCH | RHEL 9 must disable network management of the chrony daemon."
+  when:
+    - rhel_09_252020 or
+      rhel_09_252025 or
+      rhel_09_252030
+  tags:
+    - RHEL-09-252020
+    - RHEL-09-252025
+    - RHEL-09-252030
+    - CAT2
+    - CCI-000366
+    - CCI-000381
+    - CCI-000382
+    - CCI-001890
+    - CCI-001891
+    - CCI-002046
+    - SRG-OS-000096-GPOS-00050
+    - SRG-OS-000095-GPOS-00049
+    - SRG-OS-000355-GPOS-00143
+    - SRG-OS-000356-GPOS-00144
+    - SRG-OS-000359-GPOS-00146
+    - SV-257945r925822_rule
+    - SV-257946r925825_rule
+    - SV-257947r925828_rule
+    - V-257945
+    - V-257946
+    - V-257947
+    - NIST800-53R4_AU-8
+    - NIST800-53R4_CM-7
+  ansible.builtin.template:
+    dest: /etc/chrony.conf
+    src: etc/chrony.conf.j2
+    mode: '0644'
+
+# Required before 252035 to set DNS value in NetworkManager
+- name: "MEDIUM | RHEL-09-252040 | PATCH | RHEL 9 must configure a DNS processing mode set be Network Manager."
+  when:
+    - rhel_09_252040
+  tags:
+    - RHEL-09-252040
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257949r925834_rule
+    - V-257949
+    - NIST800-53R4_CM-6
+  community.general.ini_file:
+    option: dns
+    path: /etc/NetworkManager/NetworkManager.conf
+    section: main
+    state: present
+    value: none
+  register: rhel09stig_dns_nm_set
+
+- name: "MEDIUM | RHEL-09-252035 | PATCH | RHEL 9 systems using Domain Name Servers (DNS) resolution must have at least two name servers configured."
+  when:
+    - rhel_09_252035
+  tags:
+    - RHEL-09-252035
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257948r925831_rule
+    - V-257948
+    - NIST800-53R4_CM-6
+  block:
+    - name: "MEDIUM | RHEL-09-252035 | PATCH | RHEL 9 systems using Domain Name Servers (DNS) resolution must have at least two name servers configured."
+      when:
+        - rhel09stig_dns_nm_set is defined or
+          rhel9stig_network_manager_dns.stdout == 'none' or
+          rhel9stig_network_manager_dns.stdout == 'unmanaged'
+        - item not in ansible_facts.dns.nameservers
+      ansible.builtin.template:
+        dest: /etc/resolv.conf.j2
+        mode: '0644'
+        src: /etc/resolv.conf
+
+    - name: "MEDIUM | RHEL-09-252035 | PATCH | RHEL 9 systems using Domain Name Servers (DNS) resolution must have at least two name servers configured."
+      when:
+        - not rhel_09_252040
+        - rhel9stig_network_manager_dns.stdout != 'none'
+        - rhel9stig_network_manager_dns.stdout != 'unmanaged'
+      notify: Restart_NetworkManager
+      community.general.nmcli:
+        conn_name: "{{ ansible_default_ipv4.interface }}"
+        type: ethernet
+        dns4:
+          - "{{ rhel9stig_dns_ip4_servers }}"
+        state: present
+
+- name: "MEDIUM | RHEL-09-252045 | AUDIT | RHEL 9 must not have unauthorized IP tunnels configured."
+  when:
+    - rhel_09_252045
+    - "'ipsec' in ansible_facts.packages"
+  tags:
+    - RHEL-09-252045
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257950r925837_rule
+    - V-257950
+    - NIST800-53R4_CM-6
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-252045"
+  block:
+    - name: "MEDIUM | RHEL-09-252045 | AUDIT | RHEL 9 must not have unauthorized IP tunnels configured. | check ipsec connections"
+      ansible.builtin.shell: 'systemctl status ipsec | grep ": active" > /dev/null && grep server /etc/resolv.conf'
+      changed_when: false
+      failed_when: rhel9stig_ipsec_connections.rc not in [ 0, 1, 2]
+      register: rhel9stig_ipsec_connections
+
+    - name: "MEDIUM | RHEL-09-252045 | WARN | RHEL 9 must not have unauthorized IP tunnels configured. | Alert Warning"
+      when: rhel9stig_ipsec_connections.stdout | length > 0
+      ansible.builtin.debug:
+        msg: |
+          "Warning!! The following Ipsec tunnels have been discovered please confirm with ISSO these are accepted and documented
+          {{ rhel9stig_ipsec_connections.stdout_lines }}"
+
+    - name: "MEDIUM | RHEL-09-252045 | WARN | RHEL 9 must not have unauthorized IP tunnels configured. | Warning Count"
+      when: rhel9stig_ipsec_connections.stdout | length > 0
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "MEDIUM | RHEL-09-252050 | PATCH | RHEL 9 must be configured to prevent unrestricted mail relaying."
+  when:
+    - rhel_09_252050
+    - "'postfix' in ansible_facts.packages"
+  tags:
+    - RHEL-09-252050
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257951r925840_rule
+    - V-257951
+    - NIST800-53R4_CM-6
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-252050"
+  block:
+    - name: "MEDIUM | RHEL-09-252050 | AUDIT | RHEL 9 must be configured to prevent unrestricted mail relaying."
+      ansible.builtin.shell: postconf -n smtpd_client_restrictions
+      changed_when: false
+      failed_when: postfix_client_restrict.rc not in [ 0, 1 ]
+      register: postfix_client_restrict
+
+    - name: "MEDIUM | RHEL-09-252050 | PATCH | RHEL 9 must be configured to prevent unrestricted mail relaying. | configure postfix"
+      when:
+        - rhel9stig_disruption_high
+        - "rhel9stig_postfix_client_conf not in postfix_client_restrict"
+      ansible.builtin.shell: "postconf -e 'smtpd_client_restrictions = {{ rhel9stig_postfix_client_conf }}'"
+
+    - name: "MEDIUM | RHEL-09-252050 | PATCH | RHEL 9 must be configured to prevent unrestricted mail relaying. | Alert Warning"
+      when: rhel9stig_postfix_client_conf not in postfix_client_restrict
+      ansible.builtin.debug:
+        msg: "Warning!! Please check postfix client restriction configurations"
+
+    - name: "MEDIUM | RHEL-09-252050 | PATCH | RHEL 9 must be configured to prevent unrestricted mail relaying. | Warning Count"
+      when: rhel9stig_postfix_client_conf not in postfix_client_restrict
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "MEDIUM | RHEL-09-252055 | PATCH | If the Trivial File Transfer Protocol (TFTP) server is required, RHEL 9 TFTP daemon must be configured to operate in secure mode."
+  when:
+    - rhel_09_252050
+    - "'tftp-server' in ansible_facts.packages"
+  tags:
+    - RHEL-09-252050
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257952r925843_rule
+    - V-257952
+    - NIST800-53R4_CM-6
+  block:
+    - name: "MEDIUM | RHEL-09-252055 | AUDIT | If the Trivial File Transfer Protocol (TFTP) server is required, RHEL 9 TFTP daemon must be configured to operate in secure mode."
+      ansible.builtin.shell: systemctl show tftp | grep FragmentPath= | cut -d = -f 2
+      changed_when: false
+      failed_when: rhel9stig_tftp_systemd_file.rc not in [ 0, 1 ]
+      register: rhel9stig_tftp_systemd_file
+
+    - name: "MEDIUM | RHEL-09-252055 | PATCH | If the Trivial File Transfer Protocol (TFTP) server is required, RHEL 9 TFTP daemon must be configured to operate in secure mode."
+      ansible.builtin.lineinfile:
+        line: ExecStart=/usr/sbin/in.tftpd -s /var/lib/tftpboot
+        path: "{{ rhel9stig_tftp_systemd_file.stdout }}"
+        regexp: ^ExecStart
+
+- name: "MEDIUM | RHEL-09-252060 | PATCH | RHEL 9 must forward mail from postmaster to the root account using a postfix alias."
+  when:
+    - rhel_09_252060
+    - "'postfix' in ansible_facts.packages"
+  tags:
+    - RHEL-09-252060
+    - CAT2
+    - CCI-000139
+    - SRG-OS-000046-GPOS-00022
+    - SV-257953r925846_rule
+    - V-257953
+    - NIST800-53R4_AU-5
+  notify: Update_aliases
+  ansible.builtin.lineinfile:
+    create: true
+    line: 'postmaster: root'
+    path: /etc/aliases
+    regexp: postmaster:\s*root
+
+- name: "MEDIUM | RHEL-09-252065 | PATCH | RHEL 9 libreswan package must be installed."
+  when:
+    - rhel_09_252065
+    - "'libreswan' not in ansible_facts.packages"
+  tags:
+    - RHEL-09-252065
+    - CAT2
+    - CCI-000366
+    - CCI-000803
+    - SRG-OS-000480-GPOS-00227
+    - SRG-OS-000120-GPOS-00061
+    - SV-257954r925849_rule
+    - V-257954
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_IA-7
+  ansible.builtin.package:
+    name: libreswan
+    state: present
+
+- name: "MEDIUM | RHEL-09-253010 | PATCH | RHEL 9 must be configured to use TCP syncookies."
+  when:
+    - rhel_09_253010
+  tags:
+    - RHEL-09-253010
+    - CAT2
+    - CCI-000366
+    - CCI-001095
+    - CCI-002385
+    - SRG-OS-000480-GPOS-00227
+    - SRG-OS-000420-GPOS-00186
+    - SRG-OS-000142-GPOS-00071
+    - SV-257957r925858_rule
+    - V-257957
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_SC-5
+  ansible.posix.sysctl:
+    name: net.ipv4.tcp_syncookies
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '1'
+
+- name: "MEDIUM | RHEL-09-253015 | PATCH | RHEL 9 must ignore Internet Protocol version 4 (IPv4) Internet Control Message Protocol (ICMP) redirect messages."
+  when:
+    - rhel_09_253015
+  tags:
+    - RHEL-09-253015
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257958r925861_rule
+    - V-257958
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.all.accept_redirects
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-253020 | PATCH | RHEL 9 must not forward Internet Protocol version 4 (IPv4) source-routed packets."
+  when:
+    - rhel_09_253020
+  tags:
+    - RHEL-09-253020
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257959r925864_rule
+    - V-257959
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.all.accept_source_route
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-253025 | PATCH | RHEL 9 must log IPv4 packets with impossible addresses."
+  when:
+    - rhel_09_253025
+  tags:
+    - RHEL-09-253025
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257960r925867_rule
+    - V-257960
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.all.log_martians
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '1'
+
+- name: "MEDIUM | RHEL-09-253030 | PATCH | RHEL 9 must log IPv4 packets with impossible addresses by default."
+  when:
+    - rhel_09_253030
+  tags:
+    - RHEL-09-253030
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257961r925870_rule
+    - V-257961
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.default.log_martians
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '1'
+
+- name: "MEDIUM | RHEL-09-253035 | PATCH | RHEL 9 must use reverse path filtering on all IPv4 interfaces."
+  when:
+    - rhel_09_253035
+  tags:
+    - RHEL-09-253035
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257962r925873_rule
+    - V-257962
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.all.rp_filter
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '1'
+
+- name: "MEDIUM | RHEL-09-253040 | PATCH | RHEL 9 must prevent IPv4 Internet Control Message Protocol (ICMP) redirect messages from being accepted."
+  when:
+    - rhel_09_253040
+  tags:
+    - RHEL-09-253040
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257963r925876_rule
+    - V-257963
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.default.accept_redirects
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-253045 | PATCH | RHEL 9 must not forward IPv4 source-routed packets by default."
+  when:
+    - rhel_09_253045
+  tags:
+    - RHEL-09-253045
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257964r925879_rule
+    - V-257964
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.default.accept_source_route
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-253050 | PATCH | RHEL 9 must use a reverse-path filter for IPv4 network traffic when possible by default."
+  when:
+    - rhel_09_253050
+  tags:
+    - RHEL-09-253050
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257965r925882_rule
+    - V-257965
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.default.rp_filter
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '1'
+
+- name: "MEDIUM | RHEL-09-253055 | PATCH | RHEL 9 must not respond to Internet Control Message Protocol (ICMP) echoes sent to a broadcast address."
+  when:
+    - rhel_09_253055
+  tags:
+    - RHEL-09-253055
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257966r925885_rule
+    - V-257966
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.icmp_echo_ignore_broadcasts
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '1'
+
+- name: "MEDIUM | RHEL-09-253060 | PATCH | RHEL 9 must limit the number of bogus Internet Control Message Protocol (ICMP) response errors logs."
+  when:
+    - rhel_09_253060
+  tags:
+    - RHEL-09-253060
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257967r925888_rule
+    - V-257967
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.icmp_ignore_bogus_error_responses
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '1'
+
+- name: "MEDIUM | RHEL-09-253065 | PATCH | RHEL 9 must not send Internet Control Message Protocol (ICMP) redirects."
+  when:
+    - rhel_09_253065
+  tags:
+    - RHEL-09-253065
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257968r925891_rule
+    - V-257968
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.all.send_redirects
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-253070 | PATCH | RHEL 9 must not allow interfaces to perform Internet Control Message Protocol (ICMP) redirects by default."
+  when:
+    - rhel_09_253070
+  tags:
+    - RHEL-09-253070
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257969r925894_rule
+    - V-257969
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.default.send_redirects
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-253075 | PATCH | RHEL 9 must not enable IPv4 packet forwarding unless the system is a router."
+  when:
+    - rhel_09_253075
+    - not rhel9stig_system_is_router
+  tags:
+    - RHEL-09-253075
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257970r925897_rule
+    - V-257970
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.all.forwarding
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-254010 | PATCH | RHEL 9 must not accept router advertisements on all IPv6 interfaces."
+  when:
+    - rhel_09_254010
+  tags:
+    - RHEL-09-254010
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257971r925900_rule
+    - V-257971
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.all.accept_ra
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-254015 | PATCH | RHEL 9 must ignore IPv6 Internet Control Message Protocol (ICMP) redirect messages."
+  when:
+    - rhel_09_254015
+  tags:
+    - RHEL-09-254015
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257972r925903_rule
+    - V-257972
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.all.accept_redirects
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-254020 | PATCH | RHEL 9 must not forward IPv6 source-routed packets."
+  when:
+    - rhel_09_254020
+  tags:
+    - RHEL-09-254020
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257973r925906_rule
+    - V-257973
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.all.accept_source_route
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-254025 | PATCH | RHEL 9 must not enable IPv6 packet forwarding unless the system is a router."
+  when:
+    - rhel_09_254025
+    - not rhel9stig_system_is_router
+  tags:
+    - RHEL-09-254025
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257974r925909_rule
+    - V-257974
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.all.forwarding
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-254030 | PATCH | RHEL 9 must not accept router advertisements on all IPv6 interfaces by default."
+  when:
+    - rhel_09_254030
+  tags:
+    - RHEL-09-254030
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257975r925912_rule
+    - V-257975
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.default.accept_ra
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-254035 | PATCH | RHEL 9 must prevent IPv6 Internet Control Message Protocol (ICMP) redirect messages from being accepted."
+  when:
+    - rhel_09_254035
+  tags:
+    - RHEL-09-254035
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257976r925915_rule
+    - V-257976
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.default.accept_redirects
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-254040 | PATCH | RHEL 9 must not forward IPv6 source-routed packets by default"
+  when:
+    - rhel_09_254040
+  tags:
+    - RHEL-09-254040
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257977r925918_rule
+    - V-257977
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.default.accept_source_route
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-255010 | PATCH | All RHEL 9 networked systems must have SSH installed."
+  when:
+    - rhel_09_255010
+    - "'openssh-server' not in ansible_facts.packages"
+  tags:
+    - RHEL-09-255010
+    - CAT2
+    - CCI-002418
+    - CCI-002420
+    - CCI-002421
+    - CCI-002422
+    - SRG-OS-000423-GPOS-00187
+    - SRG-OS-000424-GPOS-00188
+    - SRG-OS-000425-GPOS-00189
+    - SRG-OS-000426-GPOS-00190
+    - SV-257978r925921_rule
+    - V-257978
+    - NIST800-53R4_SC-8
+  ansible.builtin.package:
+    name: openssh-server
+    state: present
+
+- name: "MEDIUM | RHEL-09-255015 | PATCH | All RHEL 9 networked systems must have and implement SSH to protect the confidentiality and integrity of transmitted and received information, as well as information during preparation for transmission."
+  when:
+    - rhel_09_255015
+  tags:
+    - RHEL-09-255015
+    - CAT2
+    - CCI-002418
+    - CCI-002420
+    - CCI-002421
+    - CCI-002422
+    - SRG-OS-000423-GPOS-00187
+    - SRG-OS-000424-GPOS-00188
+    - SRG-OS-000425-GPOS-00189
+    - SV-257979r925924_rule
+    - V-257979
+    - NIST800-53R4_SC-8
+  ansible.builtin.systemd:
+    enabled: true
+    name: sshd
+    state: started
+
+- name: "MEDIUM | RHEL-09-255020 | PATCH | RHEL 9 must have the openssh-clients package installed"
+  when:
+    - rhel_09_255020
+    - "'openssh-clients' not in ansible_facts.packages"
+  tags:
+    - RHEL-09-255020
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257980r928960_rule
+    - V-257980
+    - NIST800-53R4_SC-8
+  ansible.builtin.package:
+    name: openssh-clients
+    state: present
+
+- name: "MEDIUM | RHEL-09-255025 | PATCH | RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system via a SSH logon."
+  when:
+    - rhel_09_255025
+  tags:
+    - RHEL-09-255025
+    - CAT2
+    - CCI-000048
+    - CCI-001384
+    - CCI-001385
+    - CCI-001386
+    - CCI-001387
+    - CCI-001388
+    - SRG-OS-000023-GPOS-00006
+    - SRG-OS-000228-GPOS-00088
+    - SV-257981r925930_rule
+    - V-257981
+    - NIST800-53R4_AC-8
+  notify: Restart_ssh
+  ansible.builtin.lineinfile:
+    create: true
+    line: "banner {{ rhel9stig_sshd_config.banner_file }}"
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: ^(?i)(#|)banner \/.*\/.*
+
+- name: "MEDIUM | RHEL-09-255030 | PATCH | RHEL 9 must log SSH connection attempts and failures to the server."
+  when:
+    - rhel_09_255030
+  tags:
+    - RHEL-09-255030
+    - CAT2
+    - CCI-000067
+    - SRG-OS-000032-GPOS-00013
+    - SV-257982r925933_rule
+    - V-257982
+    - NIST800-53R4_AC-17
+  notify: Restart_ssh
+  ansible.builtin.lineinfile:
+    create: true
+    line: "LogLevel {{ rhel9stig_sshd_config.loglevel }}"
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: ^(?i)(#|)LogLevel.*
+
+- name: "MEDIUM | RHEL-09-255035 | PATCH | RHEL 9 SSHD must accept public key authentication"
+  when:
+    - rhel_09_255035
+  tags:
+    - RHEL-09-255035
+    - CAT2
+    - CCI-000765
+    - CCI-000766
+    - CCI-000767
+    - CCI-000768
+    - SRG-OS-000105-GPOS-00052
+    - SRG-OS-000106-GPOS-00053
+    - SRG-OS-000107-GPOS-00054
+    - SRG-OS-000108-GPOS-00055
+    - SV-257983r925936_rule
+    - V-257983
+    - NIST800-53R4_IA-2
+  notify: Restart_ssh
+  ansible.builtin.lineinfile:
+    create: true
+    line: "PubkeyAuthentication {{ rhel9stig_sshd_config.pubkeyauth }}"
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: ^(?i)(#|)PubkeyAuthentication\s*(yes|no)
+
+- name: "MEDIUM | RHEL-09-255045 | PATCH | RHEL 9 must not permit direct logons to the root account using remote access via SSH."
+  when:
+    - rhel_09_255045
+  tags:
+    - RHEL-09-255045
+    - CAT2
+    - CCI-000366
+    - CCI-000770
+    - SRG-OS-000109-GPOS-00056
+    - SRG-OS-000480-GPOS-00227
+    - SV-257985r928961_rule
+    - V-257985
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_IA-2
+  notify: Restart_ssh
+  ansible.builtin.lineinfile:
+    create: true
+    line: "PermitRootLogin {{ rhel9stig_sshd_config.permitroot }}"
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: ^(?i)(#|)PermitRootLogin\s*(yes|no)
+
+- name: "MEDIUM | RHEL-09-255055 | PATCH | RHEL 9 SSH daemon must be configured to use system-wide crypto policies."
+  when:
+    - rhel_09_255055
+  tags:
+    - RHEL-09-255055
+    - CAT2
+    - CCI-001453
+    - SRG-OS-000250-GPOS-00093
+    - SV-257987r925948_rule
+    - V-257987
+    - NIST800-53R4_AC-17
+  notify: Restart_sshd
+  ansible.builtin.lineinfile:
+    create: true
+    line: "Include {{ rhel9stig_sshd_config.include_conf }}"
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: ^(?i)(#|)Include.*
+
+- name: "MEDIUM | RHEL-09-255060 | PATCH | RHEL 9 must implement DOD-approved encryption ciphers to protect the confidentiality of SSH client connections."
+  when:
+    - rhel_09_255060
+  tags:
+    - RHEL-09-255060
+    - CAT2
+    - CCI-001453
+    - SRG-OS-000250-GPOS-00093
+    - SV-257988r925951_rule
+    - V-257988
+    - NIST800-53R4_AC-17
+  notify: Restart_sshd
+  ansible.builtin.lineinfile:
+    create: true
+    line: "Include {{ rhel9stig_sshd_config.include_conf }}"
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: ^(?i)(#|)Include.*
+
+- name: "MEDIUM | RHEL-09-255065 | PATCH | RHEL 9 must implement DOD-approved encryption ciphers to protect the confidentiality of SSH server connections."
+  when:
+    - rhel_09_255065
+  tags:
+    - RHEL-09-255065
+    - CAT2
+    - CCI-001453
+    - SRG-OS-000250-GPOS-00093
+    - SV-257989r925954_rule
+    - V-257989
+    - NIST800-53R4_AC-17
+  notify: Change_requires_reboot
+  ansible.builtin.lineinfile:
+    create: true
+    line: "Ciphers {{ rhel9stig_sshd_config.ciphers }}"
+    path: /etc/crypto-policies/back-ends/openssh.config
+    regexp: ^Ciphers.*
+
+- name: "MEDIUM | RHEL-09-255070 | PATCH | RHEL 9 SSH client must be configured to use only Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms."
+  when:
+    - rhel_09_255070
+  tags:
+    - RHEL-09-255070
+    - CAT2
+    - CCI-001453
+    - SRG-OS-000250-GPOS-00093
+    - SV-257990r925957_rule
+    - V-257990
+    - NIST800-53R4_AC-17
+  notify: Change_requires_reboot
+  ansible.builtin.lineinfile:
+    create: true
+    line: "MACs {{ rhel9stig_sshd_config.macs }}"
+    path: /etc/crypto-policies/back-ends/openssh.config
+    regexp: ^MACs.*
+
+- name: "MEDIUM | RHEL-09-255075 | PATCH | RHEL 9 SSH server must be configured to use only Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms."
+  when:
+    - rhel_09_255075
+  tags:
+    - RHEL-09-255075
+    - CAT2
+    - CCI-001453
+    - SRG-OS-000250-GPOS-00093
+    - SV-257991r925960_rule
+    - V-257991
+    - NIST800-53R4_AC-17
+  notify: Change_requires_reboot
+  ansible.builtin.lineinfile:
+    create: true
+    line: "MACs {{ rhel9stig_sshd_config.macs }}"
+    path: /etc/crypto-policies/back-ends/openssh.config
+    regexp: ^MACs.*
+
+- name: "MEDIUM | RHEL-09-255080 | PATCH | RHEL 9 must not allow a noncertificate trusted host SSH logon to the system."
+  when:
+    - rhel_09_255080
+  tags:
+    - RHEL-09-255080
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257992r925963_rule
+    - V-257992
+    - NIST800-53R4_CM-6
+  notify: Restart_ssh
+  ansible.builtin.lineinfile:
+    create: true
+    line: "HostbasedAuthentication {{ rhel9stig_sshd_config.hostauth }}"
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: ^(?i)(#|)HostbasedAuthentication\s*(yes|no)
+
+- name: "MEDIUM | RHEL-09-255085 | PATCH | RHEL 9 must not allow users to override SSH environment variables."
+  when:
+    - rhel_09_255085
+  tags:
+    - RHEL-09-255085
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00229
+    - SV-257993r925966_rule
+    - V-257993
+    - NIST800-53R4_CM-6
+  notify: Restart_ssh
+  ansible.builtin.lineinfile:
+    create: true
+    line: "PermitUserEnvironment {{ rhel9stig_sshd_config.userenv }}"
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: ^(?i)(#|)PermitUserEnvironments\s*(yes|no)
+
+- name: "MEDIUM | RHEL-09-255090 | PATCH | RHEL 9 must force a frequent session key renegotiation for SSH connections to the server."
+  when:
+    - rhel_09_255090
+  tags:
+    - RHEL-09-255090
+    - CAT2
+    - CCI-000068
+    - CCI-002418
+    - CCI-002421
+    - SRG-OS-000423-GPOS-00187
+    - SRG-OS-000033-GPOS-00014
+    - SRG-OS-000424-GPOS-00188
+    - SV-257994r925969_rule
+    - V-257994
+    - NIST800-53R4_AC-17
+    - NIST800-53R4_SC-8
+  notify: Restart_ssh
+  ansible.builtin.lineinfile:
+    create: true
+    line: "RekeyLimit {{ rhel9stig_sshd_config.rekeylimit }}"
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: ^(?i)(#|)RekeyLimit.*
+
+- name: "MEDIUM | RHEL-09-255095 | PATCH | RHEL 9 must be configured so that all network connections associated with SSH traffic terminate after becoming unresponsive."
+  when:
+    - rhel_09_255095
+  tags:
+    - RHEL-09-255095
+    - CAT2
+    - CCI-001133
+    - CCI-002361
+    - CCI-002421
+    - SRG-OS-000163-GPOS-00072
+    - SRG-OS-000279-GPOS-00109
+    - SV-257995r925972_rule
+    - V-257995
+    - NIST800-53R4_SC-10
+    - NIST800-53R4_AC-12
+  notify: Restart_ssh
+  ansible.builtin.lineinfile:
+    create: true
+    line: "ClientAliveCountMax {{ rhel9stig_sshd_config.clientalivecountmax }}"
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: ^(?i)(#|)ClientAliveCountMax\s\d*
+
+- name: "MEDIUM | RHEL-09-255100 | PATCH | RHEL 9 must be configured so that all network connections associated with SSH traffic are terminated after 10 minutes of becoming unresponsive."
+  when:
+    - rhel_09_255100
+  tags:
+    - RHEL-09-255100
+    - CAT2
+    - CCI-000879
+    - CCI-001133
+    - CCI-002361
+    - CCI-002891
+    - SRG-OS-000126-GPOS-00066
+    - SRG-OS-000163-GPOS-00072
+    - SRG-OS-000279-GPOS-00109
+    - SRG-OS-000395-GPOS-00175
+    - SV-257996r925975_rule
+    - V-257996
+    - NIST800-53R4_MA-4
+    - NIST800-53R4_SC-10
+    - NIST800-53R4_AC-12
+  notify: Restart_ssh
+  ansible.builtin.lineinfile:
+    create: true
+    line: "ClientAliveInterval {{ rhel9stig_sshd_config.clientaliveinterval }}"
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: ^(?i)(#|)ClientAliveInterval\s\d*
+
+- name: "MEDIUM | RHEL-09-255105 | PATCH | RHEL 9 SSH server configuration file must be group-owned by root."
+  when:
+    - rhel_09_255105
+  tags:
+    - RHEL-09-255105
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257997r925978_rule
+    - V-257997
+    - NIST800-53R4_CM-6
+  ansible.builtin.file:
+    group: root
+    path: "{{ rhel9stig_sshd_config_file }}"
+
+- name: "MEDIUM | RHEL-09-255110 | PATCH | RHEL 9 SSH server configuration file must be owned by root."
+  when:
+    - rhel_09_255110
+  tags:
+    - RHEL-09-255110
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257998r925981_rule
+    - V-257998
+    - NIST800-53R4_CM-6
+  ansible.builtin.file:
+    owner: root
+    path: "{{ rhel9stig_sshd_config_file }}"
+
+- name: "MEDIUM | RHEL-09-255115 | PATCH | RHEL 9 SSH server configuration file must have mode 0600 or less permissive"
+  when:
+    - rhel_09_255115
+  tags:
+    - RHEL-09-255115
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257999r925984_rule
+    - V-257999
+    - NIST800-53R4_CM-6
+  ansible.builtin.file:
+    mode: go-rwx
+    path: "{{ rhel9stig_sshd_config_file }}"
+
+- name: "MEDIUM | RHEL-09-255120 | PATCH | RHEL 9 SSH private host key files must have mode 0640 or less permissive."
+  when:
+    - rhel_09_255120
+  tags:
+    - RHEL-09-255120
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-25800r925987_rule
+    - V-258000
+    - NIST800-53R4_CM-6
+  block:
+    - name: "MEDIUM | RHEL-09-255120 | AUDIT | RHEL 9 SSH private host key files must have mode 0640 or less permissive."
+      ansible.builtin.find:
+        path: /etc/ssh
+        pattern: '*.key'
+      register: rhel9stig_private_ssh_keys
+
+    - name: "MEDIUM | RHEL-09-255120 | PATCH | RHEL 9 SSH private host key files must have mode 0640 or less permissive."
+      ansible.builtin.file:
+        mode: g-wx,o-rwx
+        path: "{{ item.path }}"
+      loop:
+        - "{{ rhel9stig_private_ssh_keys.files }}"
+
+- name: "MEDIUM | RHEL-09-255125 | PATCH | RHEL 9 SSH private host key files must have mode 0640 or less permissive."
+  when:
+    - rhel_09_255125
+  tags:
+    - RHEL-09-255125
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-258001r925990_rule
+    - V-258001
+    - NIST800-53R4_CM-6
+  block:
+    - name: "MEDIUM | RHEL-09-255120 | AUDIT | RHEL 9 SSH public host key files must have mode 0644 or less permissive."
+      ansible.builtin.find:
+        path: /etc/ssh
+        pattern: '*.pub'
+      register: rhel9stig_pub_ssh_keys
+
+    - name: "MEDIUM | RHEL-09-255120 | PATCH | RHEL 9 SSH public host key files must have mode 0644 or less permissive."
+      ansible.builtin.file:
+        mode: g-wx,o-wx
+        path: "{{ item.path }}"
+      loop:
+        - "{{ rhel9stig_pub_ssh_keys.files }}"
+
+- name: "MEDIUM | RHEL-09-255130 | PATCH | RHEL 9 SSH daemon must not allow compression or must only allow compression after successful authentication."
+  when:
+    - rhel_09_255130
+  tags:
+    - RHEL-09-255130
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-258002r925993_rule
+    - V-258002
+    - NIST800-53R4_CM-6
+  notify: Restart_ssh
+  ansible.builtin.lineinfile:
+    create: true
+    line: "Compression {{ rhel9stig_sshd_config.ccompression }}"
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: ^(?i)(#|)Compression\s*(yes|no)
+
+- name: "MEDIUM | RHEL-09-255135 | PATCH | RHEL 9 SSH daemon must not allow GSSAPI authentication."
+  when:
+    - rhel_09_255135
+  tags:
+    - RHEL-09-255135
+    - CAT2
+    - CCI-000366
+    - CCI-001813
+    - SRG-OS-000364-GPOS-00151
+    - SRG-OS-000480-GPOS-00227
+    - SV-258003r925996_rule
+    - V-258003
+    - NIST800-53R4_CM-5
+    - NIST800-53R4_CM-6
+  notify: Restart_ssh
+  ansible.builtin.lineinfile:
+    create: true
+    line: "GSSAPIAuthentication {{ rhel9stig_sshd_config.gssapiauth }}"
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: ^(?i)(#|)GSSAPIAuthentication\s*(yes|no)
+
+- name: "MEDIUM | RHEL-09-255140 | PATCH | RHEL 9 SSH daemon must not allow Kerberos authentication."
+  when:
+    - rhel_09_255140
+  tags:
+    - RHEL-09-255140
+    - CAT2
+    - CCI-000366
+    - CCI-001813
+    - SRG-OS-000364-GPOS-00151
+    - SRG-OS-000480-GPOS-00227
+    - SV-258004r925999_rule
+    - V-258004
+    - NIST800-53R4_CM-5
+    - NIST800-53R4_CM-6
+  notify: Restart_ssh
+  ansible.builtin.lineinfile:
+    create: true
+    line: "KerberosAuthentication {{ rhel9stig_sshd_config.gssapiauth }}"
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: ^(?i)(#|)KerberosAuthentication\s*(yes|no)
+
+- name: "MEDIUM | RHEL-09-255145 | PATCH | RHEL 9 SSH daemon must not allow rhosts authentication"
+  when:
+    - rhel_09_255145
+  tags:
+    - RHEL-09-255145
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-258005r926002_rule
+    - V-258005
+    - NIST800-53R4_CM-6
+  notify: Restart_ssh
+  ansible.builtin.lineinfile:
+    create: true
+    line: "IgnoreRhosts {{ rhel9stig_sshd_config.ignorerhosts }}"
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: ^(?i)(#|)IgnoreRhosts\s*(yes|no)
+
+- name: "MEDIUM | RHEL-09-255150 | PATCH | RHEL 9 SSH daemon must not allow known hosts authentication."
+  when:
+    - rhel_09_255150
+  tags:
+    - RHEL-09-255150
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-258006r926005rule
+    - V-258006
+    - NIST800-53R4_CM-6
+  notify: Restart_ssh
+  ansible.builtin.lineinfile:
+    create: true
+    line: "IgnoreUserKnownHosts {{ rhel9stig_sshd_config.ignoreknownhosts }}"
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: ^(?i)(#|)IgnoreUserKnownHosts\s*(yes|no)
+
+- name: "MEDIUM | RHEL-09-255155 | PATCH | RHEL 9 SSH daemon must disable remote X connections for interactive users."
+  when:
+    - rhel_09_255155
+  tags:
+    - RHEL-09-255155
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-258007r926008rule
+    - V-258007
+    - NIST800-53R4_CM-6
+  notify: Restart_ssh
+  ansible.builtin.lineinfile:
+    create: true
+    line: "X11forwarding {{ rhel9stig_sshd_config.x11forward }}"
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: ^(?i)(#|)X11forwarding\s*(yes|no)
+
+- name: "MEDIUM | RHEL-09-255160 | PATCH | RHEL 9 SSH daemon must perform strict mode checking of home directory configuration files."
+  when:
+    - rhel_09_255160
+  tags:
+    - RHEL-09-255160
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-258008r926011rule
+    - V-258008
+    - NIST800-53R4_CM-6
+  notify: Restart_ssh
+  ansible.builtin.lineinfile:
+    create: true
+    line: "StrictModes {{ rhel9stig_sshd_config.strictmodes }}"
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: ^(?i)(#|)StrictModes\s*(yes|no)
+
+- name: "MEDIUM | RHEL-09-255165 | PATCH | RHEL 9 SSH daemon must display the date and time of the last successful account logon upon an SSH logon."
+  when:
+    - rhel_09_255165
+  tags:
+    - RHEL-09-255165
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-258009r926014rule
+    - V-258009
+    - NIST800-53R4_CM-6
+  notify: Restart_ssh
+  ansible.builtin.lineinfile:
+    create: true
+    line: "PrintLastLog {{ rhel9stig_sshd_config.lastlog }}"
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: ^(?i)(#|)PrintLastLog\s*(yes|no)
+
+- name: "MEDIUM | RHEL-09-255170 | PATCH | RHEL 9 SSH daemon must display the date and time of the last successful account logon upon an SSH logon."
+  when:
+    - rhel_09_255170
+  tags:
+    - RHEL-09-255170
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-258010r926017rule
+    - V-258010
+    - NIST800-53R4_CM-6
+  notify: Restart_ssh
+  ansible.builtin.lineinfile:
+    create: true
+    line: "UsePrivilegeSeparation {{ rhel9stig_sshd_config.privsep }}"
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: ^(?i)(#|)UsePrivilegeSeparation\s*(yes|no)
+
+- name: "MEDIUM | RHEL-09-255175 | PATCH | RHEL 9 SSH daemon must prevent remote hosts from connecting to the proxy display."
+  when:
+    - rhel_09_255175
+  tags:
+    - RHEL-09-255175
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-258011r926020rule
+    - V-258011
+    - NIST800-53R4_CM-6
+  notify: Restart_ssh
+  ansible.builtin.lineinfile:
+    create: true
+    line: "X11UseLocalhost {{ rhel9stig_sshd_config.x11uselocal }}"
+    path: "{{ rhel9stig_sshd_config_file }}"
+    regexp: ^(?i)(#|)X11UseLocalhost\s*(yes|no)

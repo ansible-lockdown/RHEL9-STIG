@@ -7,3 +7,13 @@
 - name: Run Cat 2 STIG 23xxxx tasks
   ansible.builtin.import_tasks:
     file: RHEL-09-23xxxx.yml
+
+- name: Run Cat 2 STIG 25xxxx tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-25xxxx.yml
+
+- name: Run Cat 2 STIG 27xxxx tasks
+  when:
+    - rhel9stig_gui
+  ansible.builtin.import_tasks:
+    file: RHEL-09-27xxxx.yml

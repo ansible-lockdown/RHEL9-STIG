@@ -51,3 +51,19 @@
 
 - name: Firewalld_reload
   ansible.builtin.shell: firewall-cmd reload
+
+- name: Restart_NetworkManager
+  ansible.builtin.systemd:
+    name: NetworkManager
+    state: restarted
+
+- name: Restart_ssh
+  ansible.builtin.systemd:
+    name: sshd
+    state: restarted
+
+- name: Update_aliases
+  ansible.builtin.shell: newaliases
+
+- name: Update_dconf
+  ansible.builtin.shell: dconf update

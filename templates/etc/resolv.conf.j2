@@ -1,0 +1,29 @@
+# Configured as Part of Ansible-Locksdown
+# https://github.com/ansible-lockdown
+# Sponsored by MindPointGroup.com
+{% if rhel9stig_resolv_domains is defined %}
+# Domains
+{% for domains in rhel9stig_resolv_domains
+domain {{ rhel9stig_resolv_domains }}
+{% endfor %}
+{% endif %}
+{% if rhel9stig_resolv_search_options is defined %}
+# Search
+search {{ rhel9stig_resolv_search_options }}
+{% endif %}
+{% if rhel9stig_dns_ip4_servers is defined %}
+# IPv4
+{% for nameserver in rhel9stig_dns_ip4_servers %}
+nameserver {{ nameserver }}
+{% endfor %}
+{% endif %}
+{% if rhel9stig_dns_ip6_servers is defined %}
+# IPv6
+{% for nameserver in rhel9stig_dns_ip6_servers %}
+nameserver {{ nameserver }}
+{% endfor %}
+{% endif %}
+{% if rhel9stig_resolv_dns_options is defined %}
+# Options
+options: rhel9stig_resolv_dns_options
+{% endif %}

@@ -32,8 +32,8 @@ rhel9stig_disruption_high: false
 # tweak role to run in a chroot, such as in kickstart %post script
 rhel9stig_system_is_chroot: "{{ ansible_is_chroot | default(False) }}"
 
-# tweak role to run in a non-privileged container (default value)- dynamically discovered in tasks/main.yml
-system_is_container: false
+# Set if system uses ipv6
+rhel9stig_system_uses_ipv6: false
 
 # Place to find the container yml file for your environment - /vars/...
 container_vars_file: is_container.yml
@@ -269,6 +269,87 @@ rhel_09_251040: true
 rhel_09_251045: true
 rhel_09_252010: true
 rhel_09_252015: true
+rhel_09_252020: true
+rhel_09_252025: true
+rhel_09_252030: true
+rhel_09_252035: true
+rhel_09_252040: true
+rhel_09_252045: true
+rhel_09_252050: true
+rhel_09_252055: true
+rhel_09_252060: true
+rhel_09_252065: true
+rhel_09_253010: true
+rhel_09_253015: true
+rhel_09_253020: true
+rhel_09_253025: true
+rhel_09_253030: true
+rhel_09_253035: true
+rhel_09_253040: true
+rhel_09_253045: true
+rhel_09_253050: true
+rhel_09_253055: true
+rhel_09_253060: true
+rhel_09_253065: true
+rhel_09_253070: true
+rhel_09_253075: true
+rhel_09_254010: true
+rhel_09_254015: true
+rhel_09_254020: true
+rhel_09_254025: true
+rhel_09_254030: true
+rhel_09_254035: true
+rhel_09_254040: true
+rhel_09_255010: true
+rhel_09_255015: true
+rhel_09_255020: true
+rhel_09_255025: true
+rhel_09_255030: true
+rhel_09_255035: true
+rhel_09_255045: true
+rhel_09_255055: true
+rhel_09_255060: true
+rhel_09_255065: true
+rhel_09_255070: true
+rhel_09_255075: true
+rhel_09_255080: true
+rhel_09_255085: true
+rhel_09_255090: true
+rhel_09_255095: true
+rhel_09_255100: true
+rhel_09_255110: true
+rhel_09_255115: true
+rhel_09_255120: true
+rhel_09_255125: true
+rhel_09_255130: true
+rhel_09_255135: true
+rhel_09_255140: true
+rhel_09_255145: true
+rhel_09_255150: true
+rhel_09_255155: true
+rhel_09_255160: true
+rhel_09_255165: true
+rhel_09_255175: true
+rhel_09_271010: true
+rhel_09_271015: true
+rhel_09_271020: true
+rhel_09_271025: true
+rhel_09_271030: true
+rhel_09_271035: true
+rhel_09_271045: true
+rhel_09_271050: true
+rhel_09_271055: true
+rhel_09_271060: true
+rhel_09_271065: true
+rhel_09_271070: true
+rhel_09_271075: true
+rhel_09_271080: true
+rhel_09_271085: true
+rhel_09_271090: true
+rhel_09_271100: true
+rhel_09_271105: true
+rhel_09_271110: true
+rhel_09_271115: true
 
 ## Grahical/Gnome interface required
 rhel9stig_gui: false
@@ -276,6 +357,29 @@ rhel9stig_gui: false
 ## SSHD
 rhel9stig_sshd_config_file: /etc/ssh/sshd_config
 rhel9stig_ssh_required: true
+rhel9stig_sshd_config:
+  banner_file: /etc/issue
+  ciphers: "{{ rhel9stig_dod_ciphers }}"
+  clientalivecountmax: 1
+  clientaliveinterval: 600  # max 600
+  compress: no  # yamllint disable-line
+  gssapiauth: no  # yamllint disable-line
+  hostauth: no  # yamllint disable-line
+  ignoreknownhosts: yes  # yamllint disable-line
+  ignorerhosts: yes  # yamllint disable-line
+  include_conf: /etc/ssh/sshd_config.d/*.conf
+  kerbauth: no  # yamllint disable-line
+  lastlog: yes  # yamllint disable-line
+  loglevel: VERBOSE
+  MACs: "{{ rhel9stig_dod_macs }}"
+  pubkeyauth: yes  # yamllint disable-line
+  permitroot: no  # yamllint disable-line
+  privsep: sandbox
+  rekeylimit: '1G 1h'
+  strictmodes: yes  # yamllint disable-line
+  userenv: no  # yamllint disable-line
+  x11forward: no  # yamllint disable-line
+  x11uselocal: yes  # yamllint disable-line
 
 ## Bootloader/Grub settings
 rhel9stig_grub_superuser: root
@@ -360,3 +464,28 @@ rhel9stig_promisc_if:
 rhel9stig_sysctl_file:
   kernel: "{{ rhel9stig_sysctl_file_default }}"
   network: "{{ rhel9stig_sysctl_file_default }}"
+
+## Chrony
+rhel9stig_time_synchronization_servers:
+- 0.us.pool.ntp.mil
+- 1.us.pool.ntp.mil
+rhel9stig_chrony_server_options: "iburst maxpoll 16"  # Max Settings is maxpoll 16
+
+## DNS
+# Please adjust accordingly for ipv4 or ipv6
+rhel9stig_dns_ip4_servers:
+- 8.8.8.8
+- 8.8.4.4
+
+# rhel9stig_dns_ip6_servers:
+#   - 2001:4860:4860::8888
+#   - 2001:4860:4860::8844
+
+## Optional settings Please adjust accordingly for your environment
+# rhel9stig_resolv_domains:
+# - example.com
+# rhel9stig_resolv_search_options: example.com example1.com
+# rhel9stig_resolv_dns_options: 'timeout:2 rotate'
+
+## Mail Settings
+rhel9stig_postfix_client_conf: permit_mynetworks,reject
