@@ -32,9 +32,14 @@ rhel9stig_dod_ciphers:
 - aes256-ctr
 - aes128-gcm@openssh.com
 - aes128-ctr
-rhel9stig_dod_macs:
+rhel9stig_dod_macs_clients:
 - hmac-sha2-256-etm@openssh.com
 - hmac-sha2-256
 - hmac-sha2-512-etm@openssh.com
 - hmac-sha2-512
+rhel9stig_dod_macs_server:  # Server also has client mac listed above don't duplicate
+- hmac-sha1-etm@openssh.com
+- umac-128-etm@openssh.com
+- hmac-sha1
+- umac-128@openssh.com
 rhel9stig_dod_kex:

@@ -45,7 +45,6 @@ rhel9stig_gui: {{ rhel9stig_gui }}
 # Some tests may need to scan every filesystem or have an impact on a system
 # these may need be scheduled to minimise impact
 run_heavy_tests: {{ audit_run_heavy_tests }}
-timeout_ms: {{ audit_cmd_timeout }}
 
 # tweak role to run in a non-privileged container (default value)- dynamically discovered in tasks/main.yml
 system_is_container: {{ system_is_container }}
@@ -266,6 +265,58 @@ rhel_09_254025: {{ rhel_09_254025 }}
 rhel_09_254030: {{ rhel_09_254030 }}
 rhel_09_254035: {{ rhel_09_254035 }}
 rhel_09_254040: {{ rhel_09_254040 }}
+rhel_09_255010: {{ rhel_09_255010 }}
+rhel_09_255015: {{ rhel_09_255015 }}
+rhel_09_255020: {{ rhel_09_255020 }}
+rhel_09_255025: {{ rhel_09_255025 }}
+rhel_09_255030: {{ rhel_09_255030 }}
+rhel_09_255035: {{ rhel_09_255035 }}
+rhel_09_255045: {{ rhel_09_255045 }}
+rhel_09_255055: {{ rhel_09_255055 }}
+rhel_09_255060: {{ rhel_09_255060 }}
+rhel_09_255065: {{ rhel_09_255065 }}
+rhel_09_255070: {{ rhel_09_255070 }}
+rhel_09_255075: {{ rhel_09_255075 }}
+rhel_09_255080: {{ rhel_09_255080 }}
+rhel_09_255085: {{ rhel_09_255085 }}
+rhel_09_255090: {{ rhel_09_255090 }}
+rhel_09_255095: {{ rhel_09_255095 }}
+rhel_09_255100: {{ rhel_09_255100 }}
+rhel_09_255105: {{ rhel_09_255105 }}
+rhel_09_255110: {{ rhel_09_255110 }}
+rhel_09_255115: {{ rhel_09_255115 }}
+rhel_09_255120: {{ rhel_09_255120 }}
+rhel_09_255125: {{ rhel_09_255125 }}
+rhel_09_255130: {{ rhel_09_255130 }}
+rhel_09_255135: {{ rhel_09_255135 }}
+rhel_09_255140: {{ rhel_09_255140 }}
+rhel_09_255145: {{ rhel_09_255145 }}
+rhel_09_255150: {{ rhel_09_255150 }}
+rhel_09_255155: {{ rhel_09_255155 }}
+rhel_09_255160: {{ rhel_09_255160 }}
+rhel_09_255165: {{ rhel_09_255165 }}
+rhel_09_255170: {{ rhel_09_255170 }}
+rhel_09_255175: {{ rhel_09_255175 }}
+rhel_09_271010: {{ rhel_09_271010 }}
+rhel_09_271015: {{ rhel_09_271015 }}
+rhel_09_271020: {{ rhel_09_271020 }}
+rhel_09_271025: {{ rhel_09_271025 }}
+rhel_09_271030: {{ rhel_09_271030 }}
+rhel_09_271035: {{ rhel_09_271035 }}
+rhel_09_271045: {{ rhel_09_271045 }}
+rhel_09_271050: {{ rhel_09_271050 }}
+rhel_09_271055: {{ rhel_09_271055 }}
+rhel_09_271060: {{ rhel_09_271060 }}
+rhel_09_271065: {{ rhel_09_271065 }}
+rhel_09_271070: {{ rhel_09_271070 }}
+rhel_09_271075: {{ rhel_09_271075 }}
+rhel_09_271080: {{ rhel_09_271080 }}
+rhel_09_271085: {{ rhel_09_271085 }}
+rhel_09_271090: {{ rhel_09_271090 }}
+rhel_09_271100: {{ rhel_09_271100 }}
+rhel_09_271105: {{ rhel_09_271105 }}
+rhel_09_271110: {{ rhel_09_271110 }}
+rhel_09_271115: {{ rhel_09_271115 }}
 
 
 # Cat 3 controls
@@ -326,8 +377,8 @@ rhel9stig_custom_firewall:
 # rhel9stig_white_list_services is the services that you want to allow through initially for teh new firewall zone
 # http and ssh need to be enabled for the role to run.
 # This can also be a port number if no service exists
-rhelstig_white_list_services:
-{% for service in rhelstig_white_list_services %}
+rhel9stig_white_list_services:
+{% for service in rhel9stig_white_list_services %}
 - {{ service }}
 {% endfor %}
 
@@ -348,3 +399,60 @@ rhel9stig_time_synchronization_servers:
   - {{ time_server }}
 {% endfor %}
 rhel9stig_chrony_server_options: "{{ rhel9stig_chrony_server_options }}"  # Max Settings is maxpoll 16
+
+# DNS
+{% if rhel9stig_dns_ip4_servers is defined %}
+rhel9stig_dns_servers:
+{% for server in rhel9stig_dns_ip4_servers %}
+- nameserver {{ server }}
+{% endfor %}
+{% endif %}
+{% if rhel9stig_dns_ip6_servers is defined %}
+rhel9stig_dns_servers:
+{% for server in rhel9stig_dns_ip6_servers %}
+- nameserver {{ server }}
+{% endfor %}
+{% endif %}
+
+# Mail
+rhel9stig_postfix_client_conf: {{ rhel9stig_postfix_client_conf }}
+
+## SSHD
+rhel9stig_sshd_config_file: {{ rhel9stig_sshd_config_file }}
+rhel9stig_ssh_required: {{ rhel9stig_ssh_required }}
+rhel9stig_sshd_config:
+  banner_file: {{ rhel9stig_sshd_config.banner_file }}
+  ciphers:
+  {% for cipher in rhel9stig_sshd_config.ciphers %}
+  - {{ cipher }}
+  {% endfor -%}
+
+  clientalivecountmax: {{ rhel9stig_sshd_config.clientalivecountmax }}
+  clientaliveinterval: {{ rhel9stig_sshd_config.clientaliveinterval }}  # max 600
+  compress: {{ rhel9stig_sshd_config.compress }}
+  gssapiauth: {{ rhel9stig_sshd_config.gssapiauth }}
+  hostauth: {{ rhel9stig_sshd_config.hostauth }}
+  ignoreknownhosts: {{ rhel9stig_sshd_config.ignoreknownhosts }}
+  ignorerhosts: {{ rhel9stig_sshd_config.ignorerhosts }}
+  include_conf: {{ rhel9stig_sshd_config.include_conf }}
+  kerbauth: {{ rhel9stig_sshd_config.kerbauth }}
+  lastlog: {{ rhel9stig_sshd_config.lastlog }}
+  loglevel: {{ rhel9stig_sshd_config.loglevel }}
+  macs_clients:
+  {% for macs in rhel9stig_sshd_config.macs_clients %}
+  - {{ macs }}
+  {% endfor -%}
+
+  macs_server:
+  {% for macs in rhel9stig_sshd_config.macs_server %}
+  - {{ macs }}
+  {% endfor -%}
+
+  pubkeyauth: {{ rhel9stig_sshd_config.pubkeyauth }}
+  permitroot: {{ rhel9stig_sshd_config.permitroot }}
+  privsep: {{ rhel9stig_sshd_config.privsep }}
+  rekeylimit: {{ rhel9stig_sshd_config.rekeylimit }}
+  strictmodes: {{ rhel9stig_sshd_config.strictmodes }}
+  userenv: {{ rhel9stig_sshd_config.userenv }}
+  x11forward: {{ rhel9stig_sshd_config.x11forward }}
+  x11uselocal: {{ rhel9stig_sshd_config.x11uselocal }}

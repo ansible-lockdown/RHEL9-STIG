@@ -361,7 +361,7 @@
     warn_control_id: "MEDIUM | RHEL-09-252045"
   block:
     - name: "MEDIUM | RHEL-09-252045 | AUDIT | RHEL 9 must not have unauthorized IP tunnels configured. | check ipsec connections"
-      ansible.builtin.shell: 'systemctl status ipsec | grep ": active" > /dev/null && grep server /etc/resolv.conf'
+      ansible.builtin.shell: 'systemctl status ipsec | grep ": active" > /dev/null && grep -rni conn /etc/ipsec.conf /etc/ipsec.d/'
       changed_when: false
       failed_when: rhel9stig_ipsec_connections.rc not in [ 0, 1, 2]
       register: rhel9stig_ipsec_connections
@@ -1038,7 +1038,7 @@
   notify: Change_requires_reboot
   ansible.builtin.lineinfile:
     line: "Ciphers {{ rhel9stig_sshd_config.ciphers | join(',') }}"
-    path: /etc/crypto-policies/back-ends/openssh.config
+    path: /etc/crypto-policies/back-ends/opensshserver.config
     regexp: ^Ciphers
 
 - name: "MEDIUM | RHEL-09-255070 | PATCH | RHEL 9 SSH client must be configured to use only Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms."
@@ -1054,7 +1054,7 @@
     - NIST800-53R4_AC-17
   notify: Change_requires_reboot
   ansible.builtin.lineinfile:
-    line: "MACs {{ rhel9stig_sshd_config.macs | join(',') }}"
+    line: "MACs {{ rhel9stig_sshd_config.macs_clients | join(',') }}"
     path: /etc/crypto-policies/back-ends/openssh.config
     regexp: ^MACs
 
@@ -1071,8 +1071,8 @@
     - NIST800-53R4_AC-17
   notify: Change_requires_reboot
   ansible.builtin.lineinfile:
-    line: "MACs {{ rhel9stig_sshd_config.macs | join(',') }}"
-    path: /etc/crypto-policies/back-ends/openssh.config
+    line: "MACs {{ rhel9stig_sshd_config.macs_clients | join(',') + ',' + rhel9stig_sshd_config.macs_server | join(',') }}"
+    path: /etc/crypto-policies/back-ends/opensshserver.config
     regexp: ^MACs
 
 - name: "MEDIUM | RHEL-09-255080 | PATCH | RHEL 9 must not allow a noncertificate trusted host SSH logon to the system."

@@ -372,7 +372,7 @@
 - name: "MEDIUM | RHEL-09-231100 | PATCH | RHEL 9 must prevent files with the setuid and setgid bit set from being executed on the /boot directory. | BIOS based OS"
   when:
     - rhel_09_231100
-    - rhel9cis_legacy_boot
+    - rhel9stig_legacy_boot
     - (item.mount == '/boot' and "'nosuid' not in item.options")
   notify:
     - Change_requires_reboot

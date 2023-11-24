@@ -373,7 +373,8 @@ rhel9stig_sshd_config:
   kerbauth: 'no'
   lastlog: 'yes'
   loglevel: VERBOSE
-  macs: "{{ rhel9stig_dod_macs }}"
+  macs_clients: "{{ rhel9stig_dod_macs_clients }}"
+  macs_server: "{{ rhel9stig_dod_macs_server }}"
   pubkeyauth: 'yes'
   permitroot: 'no'
   privsep: sandbox
@@ -438,9 +439,6 @@ rhel9stig_iprutils_required: false
 rhel9stig_tuned_required: false
 rhel9stig_quagga_required: false
 
-# Sysctl file
-rhel9stig_sysctl_file_default: /etc/sysctl.d/99-sysctl.conf
-
 ## 23xxxx
 rhel9stig_home_filesystem: '/home'
 
@@ -463,9 +461,13 @@ rhel9stig_promisc_if:
 - none
 
 # Set sysctl files
+# Sysctl file
+rhel9stig_sysctl_file_default: /etc/sysctl.d/99-sysctl.conf
 rhel9stig_sysctl_file:
+  fs: "{{ rhel9stig_sysctl_file_default }}"
   kernel: "{{ rhel9stig_sysctl_file_default }}"
   network: "{{ rhel9stig_sysctl_file_default }}"
+  user: "{{ rhel9stig_sysctl_file_default }}"
 
 ## Chrony
 rhel9stig_time_synchronization_servers:

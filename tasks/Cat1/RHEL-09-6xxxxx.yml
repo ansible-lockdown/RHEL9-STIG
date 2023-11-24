@@ -50,6 +50,7 @@
     - name: HIGH | RHEL-09-671010 | PATCH | RHEL 9 must enable FIPS mode.
       when:
         - rhel9stig_disruption_high
+        - not ansible_facts.fips
       ansible.builtin.shell: fips-mode-setup --enable
       notify: Change_requires_reboot
 
@@ -84,19 +85,12 @@
     - name: HIGH | RHEL-09-672015 | AUDIT | RHEL 9 crypto policy files must match files shipped with the operating system. | Capture state
       ansible.builtin.shell: rpm -V crypto-policies
       changed_when: false
+      failed_when: crypto_policies_modified.rc not in [ 0, 1 ]
       register: crypto_policies_modified
-
-    - name: HIGH | RHEL-09-672015 | AUDIT | RHEL 9 crypto policy files must match files shipped with the operating system. | Remove crypto-policies if modified
-      when: crypto_policies_modified.stdout | length > 0
-      ansible.builtin.package:
-        name: crypto-policies
-        state: absent
 
     - name: HIGH | RHEL-09-672015 | AUDIT | RHEL 9 crypto policy files must match files shipped with the operating system. | Reinstall crypto-policies if modified
       when: crypto_policies_modified.stdout | length > 0
-      ansible.builtin.package:
-        name: crypto-policies
-        state: present
+      ansible.builtin.shell: dnf reinstall -y crypto-policies
 
 - name: HIGH | RHEL-09-672030 | RHEL 9 must implement DOD-approved TLS encryption in the GnuTLS package.
   when:

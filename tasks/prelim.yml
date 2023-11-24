@@ -88,7 +88,7 @@
 
     - name: PRELIM | set legacy boot and grub path | Bios
       ansible.builtin.set_fact:
-        rhel9cis_legacy_boot: true
+        rhel9stig_legacy_boot: true
       when: not rhel_09_efi_boot.stat.exists
 
 - name: PRELIM | Update to latest gpg keys
