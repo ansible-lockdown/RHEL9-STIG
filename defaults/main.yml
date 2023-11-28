@@ -382,6 +382,30 @@ rhel_09_411095: true
 rhel_09_411105: true
 rhel_09_411110: true
 rhel_09_411115: true
+rhel_09_412010: true
+rhel_09_412015: true
+rhel_09_412020: true
+rhel_09_412025: true
+rhel_09_412035: true
+rhel_09_412045: true
+rhel_09_412050: true
+rhel_09_412055: true
+rhel_09_412060: true
+rhel_09_412065: true
+rhel_09_412070: true
+rhel_09_412080: true
+rhel_09_431015: true
+rhel_09_431020: true
+rhel_09_431025: true
+rhel_09_431030: true
+rhel_09_432010: true
+rhel_09_432015: true
+rhel_09_432020: true
+rhel_09_432025: true
+rhel_09_432030: true
+rhel_09_432035: true
+rhel_09_433010: true
+rhel_09_433015: true
 
 ### CONTROLS
 
@@ -552,3 +576,9 @@ rhel9stig_unnecessary_accounts:
 - ftp
 - games
 rhel9stig_remove_unnecessary_user_files: false
+
+rhel9stig_login_defs:
+  fail_delay: '4'
+
+rhel9stig_logind_conf:
+  stopsessionidle: '900'

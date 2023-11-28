@@ -217,13 +217,18 @@
   register: rhel9stig_dconf_locald_files
 
 - name: PRELIM | Find all sudoers files.
+  when:
+    - rhel_09_432015
+    - rhel_09_432020
+    - rhel_09_432025
+    - rhel_09_432030
+  tags:
+    - always
   ansible.builtin.shell: find /etc/sudoers /etc/sudoers.d/ -type f ! -name '*~' ! -name '*.*'
   changed_when: false
   failed_when: false
   check_mode: false
   register: rhel9stig_sudoers_files
-  tags:
-    - sudoers
 
 - name: "PRELIM | RHEL-09-411080 | RHEL-09-411080 | RHEL-09-411090 | Setup authselect if setting allow"
   when:

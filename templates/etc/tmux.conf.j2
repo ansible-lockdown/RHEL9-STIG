@@ -1,0 +1,12 @@
+# Tmux configuration created by DISA STIG for RHEL9
+## Supplied by ansible-lockdown
+## Sponsored by MindPointGroup.com
+{% if rhel_09_412020 %}
+# Initiate a session lock
+set -g lock-command vlock
+bind X lock-session
+{% endif %}
+{% if rhel_09_412025 %}
+# session lock after 15 minutes
+set -g lock-after-time 900
+{% endif %}

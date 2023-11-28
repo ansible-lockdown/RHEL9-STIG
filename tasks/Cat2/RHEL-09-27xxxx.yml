@@ -21,11 +21,9 @@
   notify: Update_dconf
   community.general.ini_file:
     option: banner-message-enable
-    path: "{{ item.path }}"
+    path: /etc/dconf/db/local.d/01-banner-message
     section: 'org/gnome/login-screen'
     value: 'true'
-  loop:
-    - "{{ rhel9stig_dconf_locald_files.files }}"
 
 - name: "MEDIUM | RHEL-09-271015 | PATCH | RHEL 9 must prevent a user from overriding the banner-message-enable setting for the graphical user interface."
   when:

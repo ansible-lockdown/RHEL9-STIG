@@ -46,6 +46,9 @@
 - name: Reload_sysctl
   ansible.builtin.shell: sysctl --system
 
+- name: Reload_tmux
+  ansible.builtin.shell: tmux source-file /etc/tmux.conf
+
 - name: Rebuild_grub
   ansible.builtin.shell: grub2-mkconfig -o /boot/grub2/grub.cfg
 

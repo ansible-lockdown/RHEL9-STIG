@@ -346,6 +346,30 @@ rhel_09_411095: {{ rhel_09_411095 }}
 rhel_09_411105: {{ rhel_09_411105 }}
 rhel_09_411110: {{ rhel_09_411110 }}
 rhel_09_411115: {{ rhel_09_411115 }}
+rhel_09_412010: {{ rhel_09_412010 }}
+rhel_09_412015: {{ rhel_09_412015 }}
+rhel_09_412020: {{ rhel_09_412020 }}
+rhel_09_412025: {{ rhel_09_412025 }}
+rhel_09_412035: {{ rhel_09_412035 }}
+rhel_09_412045: {{ rhel_09_412045 }}
+rhel_09_412050: {{ rhel_09_412050 }}
+rhel_09_412055: {{ rhel_09_412055 }}
+rhel_09_412060: {{ rhel_09_412060 }}
+rhel_09_412065: {{ rhel_09_412065 }}
+rhel_09_412070: {{ rhel_09_412070 }}
+rhel_09_412080: {{ rhel_09_412080 }}
+rhel_09_431015: {{ rhel_09_431015 }}
+rhel_09_431020: {{ rhel_09_431020 }}
+rhel_09_431025: {{ rhel_09_431025 }}
+rhel_09_431030: {{ rhel_09_431030 }}
+rhel_09_432010: {{ rhel_09_432010 }}
+rhel_09_432015: {{ rhel_09_432015 }}
+rhel_09_432020: {{ rhel_09_432020 }}
+rhel_09_432025: {{ rhel_09_432025 }}
+rhel_09_432030: {{ rhel_09_432030 }}
+rhel_09_432035: {{ rhel_09_432035 }}
+rhel_09_433010: {{ rhel_09_433010 }}
+rhel_09_433015: {{ rhel_09_433015 }}
 
 # Cat 3 controls
 
@@ -484,6 +508,17 @@ rhel9stig_sshd_config:
   userenv: {{ rhel9stig_sshd_config.userenv }}
   x11forward: {{ rhel9stig_sshd_config.x11forward }}
   x11uselocal: {{ rhel9stig_sshd_config.x11uselocal }}
+
+##27XXXX GUI Settings
+{% if rhel9stig_dconf_locald_files.file is defined %}
+rhel9stig_dconf_locald_files:
+{% for file rhel9stig_dconf_locald_files.files.path %}
+- {{ file }}
+{% endfor %}
+{% endif %}
+
+rhel9stig_dconf_db: {{ rhel9stig_dconf_db.stdout }}
+
 
 # Path to set for users initialization files e.g. echo $PATH expected results
 rhel9stig_env_path: {{ rhel9stig_env_path }}
