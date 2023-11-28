@@ -141,7 +141,7 @@
 - name: Reboot system
   when:
     - change_requires_reboot
-    - not rhel9stig_skip_reboot
+    - not skip_reboot
   block:
     - name: reboot system if not skipped
       ansible.builtin.reboot:
@@ -149,7 +149,7 @@
     - name: Warning a reboot required but skip option set
       when:
         - change_requires_reboot
-        - rhel9stig_skip_reboot
+        - skip_reboot
       ansible.builtin.debug:
         msg: Warning!! changes have been made that require a reboot to be implemented but skip reboot was set - Can affect compliance check results
       changed_when: true

@@ -1,0 +1,131 @@
+---
+
+- name: "MEDIUM | RHEL-09-291010 | PATCH | USB mass storage permits easy introduction of unknown devices, thereby facilitating malicious activity."
+  when:
+    - rhel_09_291010
+  tags:
+    - RHEL-09-291010
+    - CAT2
+    - CCI-000366
+    - CCI-000778
+    - CCI-001958
+    - SRG-OS-000114-GPOS-00059
+    - SRG-OS-000378-GPOS-00163
+    - SRG-OS-000480-GPOS-00227
+    - SV-258034r926089_rule
+    - V-258034
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_IA-3
+  vars:
+    blacklist: 'usb-storage'
+  ansible.builtin.template:
+    dest: "/etc/modprobe.d/{{ blacklist }}.conf"
+    src: etc/modprobe.d/module.conf.j2
+  notify: Change_requires_reboot
+
+- name: "MEDIUM | RHEL-09-291015 | PATCH | RHEL 9 must have the USBGuard package installed."
+  when:
+    - rhel_09_291015
+  tags:
+    - RHEL-09-291015
+    - CAT2
+    - CCI-001958
+    - SRG-OS-000378-GPOS-00163
+    - SV-258035r926092_rule
+    - V-258035
+    - NIST800-53R4_IA-3
+  ansible.builtin.package:
+    name: usbguard
+    state: present
+
+- name: "MEDIUM | RHEL-09-291020 | PATCH | RHEL 9 must have the USBGuard package installed."
+  when:
+    - rhel_09_291020
+  tags:
+    - RHEL-09-291020
+    - CAT2
+    - CCI-001958
+    - SRG-OS-000378-GPOS-00163
+    - SV-258036r926095_rule
+    - V-258036
+    - NIST800-53R4_IA-3
+  ansible.builtin.systemd:
+    enabled: true
+    name: usbguard
+    state: started
+
+- name: "MEDIUM | RHEL-09-291030 | PATCH | RHEL 9 must block unauthorized peripherals before establishing a connection."
+  when:
+    - rhel_09_291030
+  tags:
+    - RHEL-09-291030
+    - CAT2
+    - CCI-001958
+    - SRG-OS-000378-GPOS-00163
+    - SV-258038r926101_rule
+    - V-258038
+    - NIST800-53R4_IA-3
+  block:
+    - name: "MEDIUM | RHEL-09-291030 | AUDIT | RHEL 9 must block unauthorized peripherals before establishing a connection."
+      ansible.builtin.shell: usbguard list-rules
+      changed_when: false
+      failed_when: rhel9stig_usbguard_rules.rc not in [ 0, 1 ]
+      register: rhel9stig_usbguard_rules
+
+    - name: "MEDIUM | RHEL-09-291030 | PATCH | RHEL 9 must block unauthorized peripherals before establishing a connection."
+      when: rhel9stig_usbguard_rules.stdout | length > 0
+      ansible.builtin.shell: usbguard generate-policy --no-hash > /etc/usbguard/rules.conf
+
+- name: "MEDIUM | RHEL-09-291035 | PATCH | RHEL 9 Bluetooth must be disabled."
+  when:
+    - rhel_09_291035
+  tags:
+    - RHEL-09-291035
+    - CAT2
+    - CCI-000381
+    - CCI-001443
+    - SRG-OS-000095-GPOS-00049
+    - SRG-OS-000300-GPOS-00118
+    - SV-258039r926104_rule
+    - V-258039
+    - NIST800-53R4_CM-7
+    - NIST800-53R4_AC-18
+  vars:
+    blacklist: 'bluetooth'
+  ansible.builtin.template:
+    dest: "/etc/modprobe.d/{{ blacklist }}.conf"
+    src: etc/modprobe.d/module.conf.j2
+  notify: Change_requires_reboot
+
+- name: "MEDIUM | RHEL-09-291035 | PATCH | RHEL 9 wireless network adapters must be disabled."
+  when:
+    - rhel_09_291035
+  tags:
+    - RHEL-09-291035
+    - CAT2
+    - CCI-000381
+    - CCI-001443
+    - CCI-002418
+    - CCI-002421
+    - SRG-OS-000299-GPOS-00117
+    - SRG-OS-000300-GPOS-00118
+    - SRG-OS-000424-GPOS-00188
+    - SRG-OS-000481-GPOS-00481
+    - SV-258040r926107_rule
+    - V-258040
+    - NIST800-53R4_SC-8
+    - NIST800-53R4_AC-18
+  block:
+    - name: MEDIUM | RHEL-09-291035 | AUDIT | RHEL 9 wireless network adapters must be disabled.
+      ansible.builtin.shell: nmcli radio wifi | grep -i enabled
+      changed_when: false
+      failed_when: rhel9stig_wifi_enabled.rc not in [ 0, 1 ]
+      register: rhel9stig_wifi_enabled
+
+    - name: "MEDIUM | RHEL-09-291035 | PATCH | RHEL 9 wireless network adapters must be disabled."
+      ansible.builtin.shell: nmcli radio all off
+      when:
+        - rhel9stig_wifi_enabled is defined
+        - rhel9stig_wifi_enabled.stdout | length > 0
+      failed_when: rhel9stig_radio_turned_off.rc not in [ 0, 1 ]
+      register: rhel9stig_radio_turned_off

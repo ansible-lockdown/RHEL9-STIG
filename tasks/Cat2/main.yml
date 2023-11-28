@@ -17,3 +17,13 @@
     - rhel9stig_gui
   ansible.builtin.import_tasks:
     file: RHEL-09-27xxxx.yml
+
+- name: Run Cat 2 STIG 29xxxx tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-29xxxx.yml
+
+- name: Run Cat 2 STIG 4xxxxx tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-4xxxxx.yml
+  tags:
+    - test

@@ -10,7 +10,8 @@
     - users
 
 - name: PRELIM | capture /etc/password variables
-  ansible.builtin.include_tasks: parse_etc_password.yml
+  ansible.builtin.include_tasks:
+    file: parse_etc_password.yml
   tags:
     - always
 
@@ -56,8 +57,6 @@
 #   ansible.builtin.stat:
 #       path: /etc/systemd/coredump.conf
 #   register: systemd_coredump
-#   when:
-#       - rhel9cis_rule_1_5_1
 #   tags:
 #       - level1-server
 #       - level1-workstation
@@ -226,15 +225,42 @@
   tags:
     - sudoers
 
+- name: "PRELIM | RHEL-09-411080 | RHEL-09-411080 | RHEL-09-411090 | Setup authselect if setting allow"
+  when:
+    - rhel_09_411085 or rhel_09_411085 or rhel_09_411090
+    - rhel9stig_authselect_custom_profile is defined
+    - not rhel9stig_add_faillock_without_authselect
+    - rhel9stig_disruption_high
+  tags:
+    - always
+  block:
+    - name: "PRELIM | Setup authselect if setting allow"
+      ansible.builtin.shell: "authselect current | grep with-faillock"
+      failed_when: false
+      changed_when: false
+      check_mode: false
+      register: rhel9stig_authselect_profiles_faillock
+
+    - name: "PRELIM | AUDIT | Setup authselect if setting allow"
+      ansible.builtin.debug:
+        msg:
+          - "Below are the current custom profiles"
+          - "{{ rhel9stig_authselect_profiles_faillock.stdout_lines }}"
+
+    - name: "PRELIM | PATCH | Setup authselect if setting allow | Create custom profiles"
+      ansible.builtin.shell: "authselect select custom/{{ rhel9stig_authselect['custom_profile_name'] }} with-faillock"
+
 - name: PRELIM | Discover removable devices
   when: item.value.removable == '1'
   tags:
     - always
   ansible.builtin.set_fact:
-    rhel9stig_discovered_removable_storage: "{{ rhel9stig_discovered_removable_storage |default([]) + [item.key] }}"
+    rhel9stig_discovered_removable_storage: "{{ rhel9stig_discovered_removable_storage | default([]) + [item.key] }}"
   loop: "{{ ansible_facts['devices'] | dict2items }}"
 
 - name: PRELIM | Discover Interactive UID MIN and MIN from logins.def
+  tags:
+    - always
   block:
     - name: PRELIM | Capture UID_MIN information from logins.def
       ansible.builtin.shell: grep -w "^UID_MIN" /etc/login.defs | awk '{print $NF}'

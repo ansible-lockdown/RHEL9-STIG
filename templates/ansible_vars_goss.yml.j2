@@ -318,6 +318,34 @@ rhel_09_271105: {{ rhel_09_271105 }}
 rhel_09_271110: {{ rhel_09_271110 }}
 rhel_09_271115: {{ rhel_09_271115 }}
 
+rhel_09_291010: {{ rhel_09_291010 }}
+rhel_09_291015: {{ rhel_09_291015 }}
+rhel_09_291020: {{ rhel_09_291020 }}
+rhel_09_291030: {{ rhel_09_291030 }}
+rhel_09_291035: {{ rhel_09_291035 }}
+rhel_09_291040: {{ rhel_09_291040 }}
+
+rhel_09_411010: {{ rhel_09_411010 }}
+rhel_09_411015: {{ rhel_09_411015 }}
+rhel_09_411020: {{ rhel_09_411020 }}
+rhel_09_411025: {{ rhel_09_411025 }}
+rhel_09_411030: {{ rhel_09_411030 }}
+rhel_09_411035: {{ rhel_09_411035 }}
+rhel_09_411040: {{ rhel_09_411040 }}
+rhel_09_411045: {{ rhel_09_411045 }}
+rhel_09_411050: {{ rhel_09_411050 }}
+rhel_09_411055: {{ rhel_09_411055 }}
+rhel_09_411060: {{ rhel_09_411060 }}
+rhel_09_411065: {{ rhel_09_411065 }}
+rhel_09_411070: {{ rhel_09_411070 }}
+rhel_09_411075: {{ rhel_09_411075 }}
+rhel_09_411080: {{ rhel_09_411080 }}
+rhel_09_411085: {{ rhel_09_411085 }}
+rhel_09_411090: {{ rhel_09_411090 }}
+rhel_09_411095: {{ rhel_09_411095 }}
+rhel_09_411105: {{ rhel_09_411105 }}
+rhel_09_411110: {{ rhel_09_411110 }}
+rhel_09_411115: {{ rhel_09_411115 }}
 
 # Cat 3 controls
 
@@ -456,3 +484,31 @@ rhel9stig_sshd_config:
   userenv: {{ rhel9stig_sshd_config.userenv }}
   x11forward: {{ rhel9stig_sshd_config.x11forward }}
   x11uselocal: {{ rhel9stig_sshd_config.x11uselocal }}
+
+# Path to set for users initialization files e.g. echo $PATH expected results
+rhel9stig_env_path: {{ rhel9stig_env_path }}
+
+## PAM and password settings
+rhel9stig_pass:
+  max_days: {{ rhel9stig_pass.max_days }}
+
+rhel9stig_user_inactive_days: {{ rhel9stig_user_inactive_days }}
+
+# Authselect profile settings
+rhel9stig_authselect_custom_profile: {{ rhel9stig_authselect_custom_profile }}
+# If Set to false will use authselect - Can cause disruption to authentication
+rhel9stig_add_faillock_without_authselect: {{ rhel9stig_add_faillock_without_authselect }}
+
+# Faillock settings
+rhel9stig_faillock:
+  - deny: {{ rhel9stig_faillock.deny }}  # 3 or less but not 0
+  - fail_interval: {{ rhel9stig_faillock.fail_interval }}  # 900 or less is required
+  - unlock_time: {{ rhel9stig_faillock.unlock_time }}
+  - dir: {{ rhel9stig_faillock.dir }}
+
+rhel9stig_unnecessary_accounts:
+{% for acct in rhel9stig_unnecessary_accounts %}
+  - {{ acct }}
+{% endfor %}
+
+rhel9stig_remove_unnecessary_user_files: {{ rhel9stig_remove_unnecessary_user_files }}

@@ -38,12 +38,12 @@ rhel9stig_system_uses_ipv6: false
 # Place to find the container yml file for your environment - /vars/...
 container_vars_file: is_container.yml
 
-# rhel8cis/stig is left off the front of this var for consistency in testing pipeline
+# rhel9stig is left off the front of this var for consistency in testing pipeline
 # system_is_ec2 toggle will disable tasks that fail on Amazon EC2 instances. Set true to skip and false to run tasks
 system_is_ec2: false
 
 # Whether to skip the reboot
-rhel9stig_skip_reboot: true
+skip_reboot: true
 
 # Defined will change if control requires
 change_requires_reboot: false
@@ -353,6 +353,38 @@ rhel_09_271105: true
 rhel_09_271110: true
 rhel_09_271115: true
 
+rhel_09_291010: true
+rhel_09_291015: true
+rhel_09_291020: true
+rhel_09_291030: true
+rhel_09_291035: true
+rhel_09_291040: true
+
+## 4xxxxx
+rhel_09_411010: true
+rhel_09_411015: true
+rhel_09_411020: true
+rhel_09_411025: true
+rhel_09_411030: true
+rhel_09_411035: true
+rhel_09_411040: true
+rhel_09_411045: true
+rhel_09_411050: true
+rhel_09_411055: true
+rhel_09_411060: true
+rhel_09_411065: true
+rhel_09_411070: true
+rhel_09_411075: true
+rhel_09_411080: true
+rhel_09_411085: true
+rhel_09_411090: true
+rhel_09_411095: true
+rhel_09_411105: true
+rhel_09_411110: true
+rhel_09_411115: true
+
+### CONTROLS
+
 ## Grahical/Gnome interface required
 rhel9stig_gui: false
 
@@ -493,3 +525,30 @@ rhel9stig_dns_ip4_servers:
 
 ## Mail Settings
 rhel9stig_postfix_client_conf: permit_mynetworks,reject
+
+### ACCOUNTS and AUTH ###
+## PAM and password settings
+rhel9stig_pass:
+  max_days: 60
+
+rhel9stig_user_inactive_days: '35'
+
+# Path to set for users initialization files e.g. echo $PATH expected results
+rhel9stig_env_path: '$PATH:$HOME/.local/bin:$HOME/bin'
+
+# Authselect profile settings
+rhel9stig_authselect_custom_profile: minimal
+# If Set to false will use authselect - Can cause disruption to authentication
+rhel9stig_add_faillock_without_authselect: true
+
+# Faillock settings
+rhel9stig_faillock:
+  deny: '3'  # 3 or less but not 0
+  fail_interval: '900'  # 900 or less is required
+  unlock_time: '0'
+  dir: '/var/log/faillock'
+
+rhel9stig_unnecessary_accounts:
+- ftp
+- games
+rhel9stig_remove_unnecessary_user_files: false
