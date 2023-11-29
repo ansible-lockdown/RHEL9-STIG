@@ -114,8 +114,7 @@ rhel_09_671010: true
 rhel_09_672015: true
 rhel_09_672030: true
 
-# Cat2
-
+#### CAT 2
 rhel_09_211015: true
 rhel_09_211020: true
 rhel_09_211025: true
@@ -360,7 +359,7 @@ rhel_09_291030: true
 rhel_09_291035: true
 rhel_09_291040: true
 
-## 4xxxxx
+## CAT2 4xxxxx
 rhel_09_411010: true
 rhel_09_411015: true
 rhel_09_411020: true
@@ -406,6 +405,21 @@ rhel_09_432030: true
 rhel_09_432035: true
 rhel_09_433010: true
 rhel_09_433015: true
+
+### CAT2 61xxxx
+rhel_09_611010: true
+rhel_09_611015: true
+rhel_09_611020: true
+rhel_09_611030: true
+rhel_09_611035: true
+rhel_09_611040: true
+rhel_09_611045: true
+rhel_09_611050: true
+rhel_09_611055: true
+rhel_09_611060: true
+rhel_09_611065: true
+rhel_09_611070: true
+rhel_09_611075: true
 
 ### CONTROLS
 
@@ -553,7 +567,8 @@ rhel9stig_postfix_client_conf: permit_mynetworks,reject
 ### ACCOUNTS and AUTH ###
 ## PAM and password settings
 rhel9stig_pass:
-  max_days: 60
+  max_days: '60'
+  min_days: '1'
 
 rhel9stig_user_inactive_days: '35'
 
@@ -582,3 +597,8 @@ rhel9stig_login_defs:
 
 rhel9stig_logind_conf:
   stopsessionidle: '900'
+
+rhel9stig_pam:
+  remember: '5'
+  retry: '3'
+  rounds: '5000'

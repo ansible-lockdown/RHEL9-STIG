@@ -65,6 +65,12 @@
     name: sshd
     state: restarted
 
+- name: Restart_sssd
+  ansible.builtin.systemd:
+    name: sssd
+    state: restarted
+  when: "'sssd' in ansible_facts.packages"
+
 - name: Update_aliases
   ansible.builtin.shell: newaliases
 
