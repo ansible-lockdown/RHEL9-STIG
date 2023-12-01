@@ -41,6 +41,7 @@
         - rhel9stig_disruption_high
         - rhel9stig_users_passwd_max is defined
         - rhel9stig_users_passwd_max.stdout | length > 0
+        - item in rhel9stig_interactive_users.stdout
       ansible.builtin.shell: "chage -M 60 {{ item }}"
       failed_when: rhel9stig_users_passwd_max.rc not in [ 0, 1 ]
       loop:
