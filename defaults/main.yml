@@ -420,6 +420,32 @@ rhel_09_611060: true
 rhel_09_611065: true
 rhel_09_611070: true
 rhel_09_611075: true
+rhel_09_611080: true
+rhel_09_611085: true
+rhel_09_611090: true
+rhel_09_611095: true
+rhel_09_611100: true
+rhel_09_611105: true
+rhel_09_611110: true
+rhel_09_611115: true
+rhel_09_611120: true
+rhel_09_611125: true
+rhel_09_611130: true
+rhel_09_611135: true
+rhel_09_611140: true
+rhel_09_611145: true
+rhel_09_611150: true
+rhel_09_611155: true
+rhel_09_611160: true
+rhel_09_611165: true
+rhel_09_611170: true
+rhel_09_611175: true
+rhel_09_611180: true
+rhel_09_611185: true
+rhel_09_611190: true
+rhel_09_611195: true
+rhel_09_611200: true
+rhel_09_611205: true
 
 ### CONTROLS
 
@@ -569,6 +595,7 @@ rhel9stig_postfix_client_conf: permit_mynetworks,reject
 rhel9stig_pass:
   max_days: '60'
   min_days: '1'
+  minlen: '15'
 
 rhel9stig_user_inactive_days: '35'
 
@@ -602,3 +629,16 @@ rhel9stig_pam:
   remember: '5'
   retry: '3'
   rounds: '5000'
+
+rhel9stig_pwquality:
+  dcredit: '-1'
+  dictcheck: '1'
+  difok: '8'
+  lcredit: '-1'
+  maxclassrepeat: '4'
+  maxrepeat: '3'
+  minclass: '4'
+  ocredit: '-1'
+  ucredit: '-1'
+
+rhel9stig_smartcard_reader: false
