@@ -1,21 +1,46 @@
 ---
 # Preliminary tasks that should always be run
 # List users in order to look files inside each home directory
-- name: PRELIM | List users accounts
-  ansible.builtin.shell: "awk -F: '{print $1}' /etc/passwd"
-  changed_when: false
-  check_mode: false
-  register: users
+
+- name: PRELIM | Discover Interactive UID MIN and MIN from logins.def
   tags:
-    - users
+    - always
+  block:
+    - name: PRELIM | Capture UID_MIN information from logins.def
+      ansible.builtin.shell: grep -w "^UID_MIN" /etc/login.defs | awk '{print $NF}'
+      changed_when: false
+      register: uid_min_id
+
+    - name: PRELIM | Capture UID_MAX information from logins.def
+      ansible.builtin.shell: grep -w "^UID_MAX" /etc/login.defs | awk '{print $NF}'
+      changed_when: false
+      register: uid_max_id
+
+    - name: PRELIM | Capture GID_MIN information from logins.def
+      ansible.builtin.shell: grep -w "^GID_MIN" /etc/login.defs | awk '{print $NF}'
+      changed_when: false
+      register: gid_min_id
+
+    - name: PRELIM | set_facts for interactive uid/gid
+      ansible.builtin.set_fact:
+        min_int_uid: "{{ uid_min_id.stdout }}"
+        max_int_uid: "{{ uid_max_id.stdout }}"
+        min_int_gid: "{{ gid_min_id.stdout }}"
 
 - name: PRELIM | capture /etc/password variables
+  tags:
+    - always
   ansible.builtin.include_tasks:
     file: parse_etc_password.yml
+
+- name: PRELIM | Interactive Users
+  ansible.builtin.shell: "grep -Ev 'nologin|/sbin' /etc/passwd | awk -F: '$3 >= {{ min_int_uid }} {print $1}'"
+  changed_when: false
+  register: rhel9stig_interactive_users
   tags:
     - always
 
-- name: PRELIM | Interactive User accounts
+- name: PRELIM | Interactive User account home
   ansible.builtin.shell: 'cat /etc/passwd | grep -Ev "nologin|/sbin" | cut -d: -f6'
   changed_when: false
   register: rhel9stig_interactive_users_home
@@ -23,9 +48,10 @@
     - always
 
 - name: PRELIM | Gather accounts with empty password fields
+  when: rhel_09_611155
   ansible.builtin.shell: "cat /etc/shadow | awk -F: '($2 == \"\" ) {j++;print $1; } END {exit j}'"
   changed_when: false
-  check_mode: false
+  check_mode: rhel9stig_empty_password_accounts.rc not in [ 0, 1 ]
   register: rhel9stig_empty_password_accounts
   tags:
     - passwords
@@ -230,6 +256,34 @@
   check_mode: false
   register: rhel9stig_sudoers_files
 
+- name: PRELIM | Find all pwquality files.
+  when:
+    - rhel_09_611100
+    - rhel_09_611060
+    - rhel_09_611065
+    - rhel_09_611070
+  tags:
+    - always
+  ansible.builtin.shell: find /etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf
+  changed_when: false
+  failed_when: rhel9stig_pwquality_conf_files.rc not in [ 0, 1 ]
+  check_mode: false
+  register: rhel9stig_pwquality_conf_files
+
+- name: PRELIM | Find all sssd conf files.
+  when:
+    - rhel_09_611170
+    - rhel_09_611060
+    - rhel_09_611065
+    - rhel_09_611070
+  tags:
+    - always
+  ansible.builtin.shell: find /etc/sssd/sssd.conf /etc/sssd/conf.d/*.conf
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  register: rhel9stig_sssd_conf_files
+
 - name: "PRELIM | RHEL-09-411080 | RHEL-09-411080 | RHEL-09-411090 | Setup authselect if setting allow"
   when:
     - rhel_09_411085 or rhel_09_411085 or rhel_09_411090
@@ -262,31 +316,6 @@
   ansible.builtin.set_fact:
     rhel9stig_discovered_removable_storage: "{{ rhel9stig_discovered_removable_storage | default([]) + [item.key] }}"
   loop: "{{ ansible_facts['devices'] | dict2items }}"
-
-- name: PRELIM | Discover Interactive UID MIN and MIN from logins.def
-  tags:
-    - always
-  block:
-    - name: PRELIM | Capture UID_MIN information from logins.def
-      ansible.builtin.shell: grep -w "^UID_MIN" /etc/login.defs | awk '{print $NF}'
-      changed_when: false
-      register: uid_min_id
-
-    - name: PRELIM | Capture UID_MAX information from logins.def
-      ansible.builtin.shell: grep -w "^UID_MAX" /etc/login.defs | awk '{print $NF}'
-      changed_when: false
-      register: uid_max_id
-
-    - name: PRELIM | Capture GID_MIN information from logins.def
-      ansible.builtin.shell: grep -w "^GID_MIN" /etc/login.defs | awk '{print $NF}'
-      changed_when: false
-      register: gid_min_id
-
-    - name: PRELIM | set_facts for interactive uid/gid
-      ansible.builtin.set_fact:
-        min_int_uid: "{{ uid_min_id.stdout }}"
-        max_int_uid: "{{ uid_max_id.stdout }}"
-        min_int_gid: "{{ gid_min_id.stdout }}"
 
 - name: PRELIM | Gather the package facts after prelim
   ansible.builtin.package_facts:
