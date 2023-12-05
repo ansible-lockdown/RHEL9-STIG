@@ -51,7 +51,7 @@
   when: rhel_09_611155
   ansible.builtin.shell: "cat /etc/shadow | awk -F: '($2 == \"\" ) {j++;print $1; } END {exit j}'"
   changed_when: false
-  check_mode: rhel9stig_empty_password_accounts.rc not in [ 0, 1 ]
+  failed_when: rhel9stig_empty_password_accounts.rc not in [ 0, 1 ]
   register: rhel9stig_empty_password_accounts
   tags:
     - passwords

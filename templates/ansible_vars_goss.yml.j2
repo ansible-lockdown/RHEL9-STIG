@@ -371,6 +371,46 @@ rhel_09_432035: {{ rhel_09_432035 }}
 rhel_09_433010: {{ rhel_09_433010 }}
 rhel_09_433015: {{ rhel_09_433015 }}
 
+rhel_09_611010: {{ rhel_09_611010 }}
+rhel_09_611015: {{ rhel_09_611015 }}
+rhel_09_611020: {{ rhel_09_611020 }}
+rhel_09_611030: {{ rhel_09_611030 }}
+rhel_09_611035: {{ rhel_09_611035 }}
+rhel_09_611040: {{ rhel_09_611040 }}
+rhel_09_611045: {{ rhel_09_611045 }}
+rhel_09_611050: {{ rhel_09_611050 }}
+rhel_09_611055: {{ rhel_09_611055 }}
+rhel_09_611060: {{ rhel_09_611060 }}
+rhel_09_611065: {{ rhel_09_611065 }}
+rhel_09_611070: {{ rhel_09_611070 }}
+rhel_09_611075: {{ rhel_09_611075 }}
+rhel_09_611080: {{ rhel_09_611080 }}
+rhel_09_611085: {{ rhel_09_611085 }}
+rhel_09_611090: {{ rhel_09_611090 }}
+rhel_09_611095: {{ rhel_09_611095 }}
+rhel_09_611100: {{ rhel_09_611100 }}
+rhel_09_611105: {{ rhel_09_611105 }}
+rhel_09_611110: {{ rhel_09_611110 }}
+rhel_09_611115: {{ rhel_09_611115 }}
+rhel_09_611120: {{ rhel_09_611120 }}
+rhel_09_611125: {{ rhel_09_611125 }}
+rhel_09_611130: {{ rhel_09_611130 }}
+rhel_09_611135: {{ rhel_09_611135 }}
+rhel_09_611140: {{ rhel_09_611140 }}
+rhel_09_611145: {{ rhel_09_611145 }}
+rhel_09_611150: {{ rhel_09_611150 }}
+rhel_09_611155: {{ rhel_09_611155 }}
+rhel_09_611160: {{ rhel_09_611160 }}
+rhel_09_611165: {{ rhel_09_611165 }}
+rhel_09_611170: {{ rhel_09_611170 }}
+rhel_09_611175: {{ rhel_09_611175 }}
+rhel_09_611180: {{ rhel_09_611180 }}
+rhel_09_611185: {{ rhel_09_611185 }}
+rhel_09_611190: {{ rhel_09_611190 }}
+rhel_09_611195: {{ rhel_09_611195 }}
+rhel_09_611200: {{ rhel_09_611200 }}
+rhel_09_611205: {{ rhel_09_611205 }}
+
 # Cat 3 controls
 
 # Variables
@@ -510,15 +550,18 @@ rhel9stig_sshd_config:
   x11uselocal: {{ rhel9stig_sshd_config.x11uselocal }}
 
 ##27XXXX GUI Settings
-{% if rhel9stig_dconf_locald_files.file is defined %}
+{% if rhel9stig_dconf_locald_files.files is defined %}
 rhel9stig_dconf_locald_files:
-{% for file rhel9stig_dconf_locald_files.files.path %}
-- {{ file }}
+{% for file in rhel9stig_dconf_locald_files.files %}
+- {{ file.path }}
 {% endfor %}
 {% endif %}
 
+{% if rhel9stig_gui %}
+{% if rhel9stig_dconf_db is defined %}
 rhel9stig_dconf_db: {{ rhel9stig_dconf_db.stdout }}
-
+{% endif %}
+{% endif %}
 
 # Path to set for users initialization files e.g. echo $PATH expected results
 rhel9stig_env_path: {{ rhel9stig_env_path }}
@@ -547,3 +590,5 @@ rhel9stig_unnecessary_accounts:
 {% endfor %}
 
 rhel9stig_remove_unnecessary_user_files: {{ rhel9stig_remove_unnecessary_user_files }}
+
+rhel9stig_smartcard_reader: {{ rhel9stig_smartcard_reader }}

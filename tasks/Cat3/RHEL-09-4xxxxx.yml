@@ -1,0 +1,17 @@
+---
+
+- name: "MEDIUM | RHEL-09-412040 | PATCH | RHEL 9 must limit the number of concurrent sessions to ten for all accounts and/or account types."
+  when:
+    - rhel_09_412040
+  tags:
+    - RHEL-09-412040
+    - CAT2
+    - CCI-000054
+    - SRG-OS-000027-GPOS-00008
+    - SV-258069r926194_rule
+    - V-258069
+    - NIST800-53R4_AC-10
+  ansible.builtin.lineinfile:
+    line: "* hard maxlogins 10"
+    path: /etc/security/limits.conf
+    regexp: '^\s*\*\s+hard\s+maxlogins\s+\d{1,}'

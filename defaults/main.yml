@@ -386,6 +386,7 @@ rhel_09_412015: true
 rhel_09_412020: true
 rhel_09_412025: true
 rhel_09_412035: true
+rhel_09_412040: true
 rhel_09_412045: true
 rhel_09_412050: true
 rhel_09_412055: true
@@ -638,7 +639,24 @@ rhel9stig_pwquality:
   maxclassrepeat: '4'
   maxrepeat: '3'
   minclass: '4'
-  ocredit: '-1'
-  ucredit: '-1'
+  ocredit: -1
+  ucredit: -1
 
 rhel9stig_smartcard_reader: false
+
+### SSSD
+rhel9stig_sssd_configure: false
+rhel9stig_sssd_config_certmap: |
+  [certmap/{{ rhel9stig_sssd.domain }}/{{ rhel9stig_sssd.rulename}}"]
+  matchrule ='.*example@mil'
+  maprule = (userCertificate;binary={cert!bin})
+  domains = example.com
+
+### Aide
+rhel9stig_use_aide: true
+rhel9stig_aide_cron:
+  day: '*'
+  hour: '4'
+  minute: '30'
+  job: 'usr/sbin/aide --check | /bin/mail -s "$HOSTNAME - Daily aide integrity check run" root@sysname.mil'
+  name: 'Aide Job runs Daily at 0430'

@@ -41,7 +41,7 @@
         - rhel9stig_disruption_high
         - rhel9stig_users_passwd_max is defined
         - rhel9stig_users_passwd_max.stdout | length > 0
-        - item in rhel9stig_interactive_users.stdout
+        - "item in rhel9stig_interactive_users.stdout_lines"
       ansible.builtin.shell: "chage -M 60 {{ item }}"
       failed_when: rhel9stig_users_passwd_max.rc not in [ 0, 1 ]
       loop:
@@ -90,15 +90,28 @@
     - SV-258044r926119_rule
     - V-258044
     - NIST800-53R4_CM-6
-  ansible.builtin.replace:
-    path: "{{ item.path }}"
-    regexp: (?i)(umask\s+\d\d\d)
-    replace: '{{ item.line }} 077'
-  with_items:
-    - { path: '/etc/bashrc', line: 'umask' }
-    - { path: '/etc/csh.cshrc', line: 'umask' }
-    - { path: '/etc/profile', line: 'umask' }
-    - { path: '/etc/login.defs', line: 'UMASK' }
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-411025"
+  block:
+    - name: "MEDIUM | RHEL-09-411025 | AUDIT | RHEL 9 must set the umask value to 077 for all local interactive user accounts."
+      ansible.builtin.shell: grep -ri umask {{ rhel9stig_home_filesystem }}/*/.[^.]*
+      changed_when: false
+      failed_when: rhel9stig_homedirs_umasks_set.rc not in [ 0, 1 ]
+      register: rhel9stig_homedirs_umasks_set
+
+    - name: "MEDIUM | RHEL-09-411025 | WARN | RHEL 9 must set the umask value to 077 for all local interactive user accounts"
+      when:
+        - rhel9stig_homedirs_umasks_set is defined
+        - rhel9stig_homedirs_umasks_set.stdout | length > 0
+      ansible.builtin.debug:
+        msg: "Warning!! Umask setting have been found in homes directories Please investigate"
+
+    - name: "MEDIUM | RHEL-09-411025 | WARN | RHEL 9 must set the umask value to 077 for all local interactive user accounts"
+      when:
+        - rhel9stig_homedirs_umasks_set is defined
+        - rhel9stig_homedirs_umasks_set.stdout | length > 0
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-411030 | PATCH | RHEL 9 duplicate User IDs (UIDs) must not exist for interactive users."
   when:
@@ -613,6 +626,29 @@
     mode: '0755'
     src: etc/profile.d/tmux.sh.j2
 
+- name: "MEDIUM | RHEL-09-412020 | PATCH | RHEL 9 must have the tmux package installed."
+  when:
+    - rhel_09_412020
+  tags:
+    - RHEL-09-412020
+    - CAT2
+    - CCI-000056
+    - SRG-OS-000028-GPOS-00009
+    - SV-258065r926182_rule
+    - V-258065
+    - NIST800-53R4_AC-11
+  notify: Reload_tmux
+  ansible.builtin.lineinfile:
+    create: true
+    line: "{{ item }}"
+    mode: '0644'
+    path: /etc/tmux.conf
+    regexp: "{{ item }}"
+    state: present
+  loop:
+    - 'set -g lock-command vlock'
+    - 'bind X lock-session'
+
 - name: "MEDIUM | RHEL-09-412025 | PATCH | RHEL 9 must automatically lock command line user sessions after 15 minutes of inactivity."
   when:
     - rhel_09_412025
@@ -649,11 +685,11 @@
     - NIST800-53R4_AC-11
     - NIST800-53R4_SC-10
   ansible.builtin.template:
-    dest: /etc/profile.d/tmux.sh
+    dest: /etc/profile.d/tmout.sh
     group: root
     owner: root
     mode: '0755'
-    src: etc/profile.d/tmux.sh.j2
+    src: etc/profile.d/tmout.sh.j2
 
 - name: "MEDIUM | RHEL-09-412045 | PATCH | RHEL 9 must log username information when unsuccessful logon attempts occur."
   when:
@@ -685,7 +721,7 @@
   ansible.builtin.lineinfile:
     line: "FAIL_DELAY {{ rhel9stig_login_defs.fail_delay }}"
     path: /etc/login.defs
-    regexp: '^(#|)\s*FAIL_DELAY \d'
+    regexp: \s*FAIL_DELAY
 
 - name: "MEDIUM | RHEL-09-412055 | PATCH | RHEL 9 must define default permissions for the bash shell."
   when:
@@ -756,7 +792,7 @@
     - name: "MEDIUM | RHEL-09-412065 | PATCH | RHEL 9 must define default permissions for all authenticated users in such a way that the user can only read and modify their own files. | Amend all instances"
       ansible.builtin.replace:
         path: /etc/login.defs
-        regexp: UMASK \d\d\d
+        regexp: UMASK\s+\d\d\d
         replace: UMASK 077
 
 - name: "MEDIUM | RHEL-09-412070 | PATCH | RHEL 9 must define default permissions for the system default profile."
@@ -991,7 +1027,6 @@
     line: auth    required    pam_wheel.so use_uid
     path: /etc/pam.d/su
     regexp: ^(#|)(auth\s*required\s*)pam_wheel.so(.*)
-    state: absent
 
 - name: "MEDIUM | RHEL-09-433010 | PATCH | RHEL 9 fapolicy module must be installed."
   when:

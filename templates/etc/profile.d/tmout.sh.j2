@@ -1,0 +1,8 @@
+# Timeout profile script created by DISA STIG for RHEL9
+## Supplied by ansible-lockdown
+## Sponsored by MindPointGroup.com
+#!/bin/bash
+
+{% if rhel_09_412035 %}
+declare -xr TMOUT=900
+{% endif %}

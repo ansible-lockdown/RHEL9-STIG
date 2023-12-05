@@ -10,7 +10,3 @@ name=$(ps -o comm= -p $parent)
 case "$name" in (sshd|login) tmux ;; esac
 fi
 {% endif %}
-
-{% if rhel_09_412035 %}
-declare -xr TMOUT=900
-{% endif %}

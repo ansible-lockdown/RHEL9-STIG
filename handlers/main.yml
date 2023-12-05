@@ -76,3 +76,15 @@
 
 - name: Update_dconf
   ansible.builtin.shell: dconf update
+
+- name: Build_aide_db
+  notify: Check_aide
+  ansible.builtin.shell: /usr/sbin/aide --init && mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
+
+- name: Check_aide
+  ansible.builtin.shell: /usr/sbin/aide --check
+
+- name: Restart_aide
+  ansible.builtin.systemd:
+    name: aide
+    state: restarted
