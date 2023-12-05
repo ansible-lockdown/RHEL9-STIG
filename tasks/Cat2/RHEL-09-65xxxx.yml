@@ -1,0 +1,140 @@
+---
+
+- name: "MEDIUM | RHEL-09-651010 | PATCH | RHEL 9 must have the AIDE package installed."
+  when:
+    - rhel_09_651010
+    - rhel9stig_use_aide
+  tags:
+    - RHEL-09-651010
+    - CAT2
+    - CCI-001744
+    - CCI-002696
+    - SRG-OS-000363-GPOS-00150
+    - SRG-OS-000445-GPOS-00199
+    - SV-258134r926389_rule
+    - V-258134
+    - NIST800-53R4_CM-3
+    - NIST800-53R4_SI-6
+  notify: Build_aide_db
+  ansible.builtin.package:
+    name: aide
+    state: present
+
+- name: "MEDIUM | RHEL-09-651015 | PATCH | RHEL 9 must routinely check the baseline configuration for unauthorized changes and notify the system administrator when anomalies in the operation of any security functions are discovered."
+  when:
+    - rhel_09_651015
+    - rhel9stig_use_aide
+  tags:
+    - RHEL-09-651015
+    - CAT2
+    - CCI-001744
+    - CCI-002699
+    - CCI-002702
+    - SRG-OS-000363-GPOS-00150
+    - SRG-OS-000446-GPOS-00200
+    - SRG-OS-000447-GPOS-00201
+    - SV-258135r926392_rule
+    - V-258135
+    - NIST800-53R4_CM-3
+    - NIST800-53R4_SI-6
+  ansible.builtin.cron:
+    hour: "{{ rhel9stig_aide_cron.hour }}"
+    job: "{{ rhel9stig_aide_cron.job }}"
+    minute: "{{ rhel9stig_aide_cron.minute }}"
+    name: "{{ rhel9stig_aide_cron.name }}"
+    state: present
+
+- name: "MEDIUM | RHEL-09-651020 | PATCH | RHEL 9 must routinely check the baseline configuration for unauthorized changes and notify the system administrator when anomalies in the operation of any security functions are discovered."
+  when:
+    - rhel_09_651020
+    - rhel9stig_use_aide
+  tags:
+    - RHEL-09-651020
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-258136r926395_rule
+    - V-258136
+    - NIST800-53R4_CM-6
+  notify: Restart_aide
+  ansible.builtin.template:
+    dest: /etc/aide.conf
+    src: etc/aide.conf.j2
+
+- name: "MEDIUM | RHEL-09-651025 | PATCH | RHEL 9 must use a file integrity tool that is configured to use FIPS 140-3-approved cryptographic hashes for validating file contents and directories."
+  when:
+    - rhel_09_651025
+    - rhel9stig_use_aide
+  tags:
+    - RHEL-09-651025
+    - CAT2
+    - CCI-001493
+    - CCI-001494
+    - CCI-001495
+    - CCI-001496
+    - SRG-OS-000256-GPOS-00097
+    - SRG-OS-000257-GPOS-00098
+    - SRG-OS-000258-GPOS-00099
+    - SRG-OS-000278-GPOS-00108
+    - SV-258137r926398_rule
+    - V-258137
+    - NIST800-53R4_AU-9
+  notify: Restart_aide
+  ansible.builtin.template:
+    dest: /etc/aide.conf
+    src: etc/aide.conf.j2
+
+- name: "MEDIUM | RHEL-09-652010 | PATCH | RHEL 9 must have the rsyslog package installed."
+  when:
+    - rhel_09_652010
+  tags:
+    - RHEL-09-652010
+    - CAT2
+    - CCI-000154
+    - CCI-000366
+    - CCI-001851
+    - SRG-OS-000479-GPOS-00224
+    - SRG-OS-000051-GPOS-00024
+    - SRG-OS-000480-GPOS-00227
+    - SV-258140r926407_rule
+    - V-258140
+    - NIST800-53R4_AU-4
+    - NIST800-53R4_AU-6
+    - NIST800-53R4_CM-6
+  ansible.builtin.package:
+    name: rsyslogd
+    state: present
+
+- name: "MEDIUM | RHEL-09-652015 | PATCH | RHEL 9 must have the packages required for encrypting offloaded audit logs installed."
+  when:
+    - rhel_09_652015
+  tags:
+    - RHEL-09-652015
+    - CAT2
+    - CCI-000366
+    - CCI-000803
+    - SRG-OS-000480-GPOS-00227
+    - SRG-OS-000120-GPOS-00061
+    - SV-258141r926410_rule
+    - V-258141
+    - NIST800-53R4_IA-7
+    - NIST800-53R4_CM-6
+  ansible.builtin.package:
+    name: rsyslog-gnutls
+    state: present
+
+- name: "MEDIUM | RHEL-09-652020 | PATCH | The rsyslog service on RHEL 9 must be active."
+  when:
+    - rhel_09_652020
+  tags:
+    - RHEL-09-652020
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-258142r926413_rule
+    - V-258142
+    - NIST800-53R4_CM-6
+  ansible.builtin.systemd:
+    name: rsyslog
+    state: started
+    enabled: true

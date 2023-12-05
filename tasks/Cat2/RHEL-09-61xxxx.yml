@@ -304,7 +304,7 @@
     - NIST800-53R4_IA-7
   community.general.pamd:
     name: password-auth
-    type: auth
+    type: password
     control: sufficient
     module_path: pam_unix.so
     module_arguments: 'sha512 rounds={{ rhel9stig_pam.rounds }}'
@@ -327,7 +327,7 @@
     - NIST800-53R4_IA-7
   community.general.pamd:
     name: system-auth
-    type: auth
+    type: password
     control: sufficient
     module_path: pam_unix.so
     module_arguments: 'sha512 rounds={{ rhel9stig_pam.rounds }}'
@@ -362,7 +362,7 @@
     backrefs: true
     line: enforce_for_root
     path: "{{ item }}"
-    regexp: ^(#|)enforce_for_root
+    regexp: ^#\s*enforce_for_root
   loop: "{{ rhel9stig_pwquality_conf_files.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-611065 | PATCH | RHEL 9 must enforce password complexity by requiring that at least one lowercase character be used."
@@ -379,9 +379,9 @@
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     backrefs: true
-    line: lcredit = "{{ rhel9stig_pwquality.lcredit }}"
+    line: lcredit = {{ rhel9stig_pwquality.lcredit }}
     path: "{{ item }}"
-    regexp: ^(#|)lcredit =
+    regexp: \s*lcredit =
   loop: "{{ rhel9stig_pwquality_conf_files.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-611070 | PATCH | RHEL 9 must enforce password complexity by requiring that at least one numeric character be used."
@@ -398,9 +398,9 @@
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     backrefs: true
-    line: dcredit = "{{ rhel9stig_pwquality.dcredit }}"
+    line: dcredit = {{ rhel9stig_pwquality.dcredit }}
     path: "{{ item }}"
-    regexp: ^(#|)dcredit =
+    regexp: \s*dcredit =
   loop: "{{ rhel9stig_pwquality_conf_files.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-611075 | PATCH | RHEL 9 passwords for new users or password changes must have a 24 hours minimum password lifetime restriction in /etc/login.defs."
@@ -419,7 +419,7 @@
     backrefs: true
     line: PASS_MIN_DAYS {{ rhel9stig_pass.min_days }}
     path: /etc/login.defs
-    regexp: ^(#|)PASS_MIN_DAYS 1
+    regexp: \s*PASS_MIN_DAYS\s*
 
 - name: "MEDIUM | RHEL-09-611080 | PATCH | RHEL 9 passwords must have a 24 hours minimum password lifetime restriction in /etc/shadow."
   when:
@@ -528,7 +528,7 @@
     backrefs: true
     line: minlen = {{ rhel9stig_pass.minlen }}
     path: /etc/security/pwquality.conf
-    regexp: ^minlen\s*=\s*([0-9]|1[0-4])
+    regexp: \s*minlen\s*=\s*([0-9]|1[0-4])
 
 - name: "MEDIUM | RHEL-09-611095 | PATCH | RHEL 9 passwords for new users must have a minimum of 15 characters."
   when:
@@ -543,9 +543,9 @@
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     backrefs: true
-    line: PASS_MIN_LEN = {{ rhel9stig_pass.minlen }}
+    line: PASS_MIN_LEN {{ rhel9stig_pass.minlen }}
     path: /etc/login.defs
-    regexp: ^PASS_MIN_LEN ([0-9]|1[0-4])
+    regexp: PASS_MIN_LEN
 
 - name: "MEDIUM | RHEL-09-611100 | PATCH | RHEL 9 must enforce password complexity by requiring that at least one special character be used."
   when:
@@ -561,9 +561,9 @@
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     backrefs: true
-    line: ocredit = "{{ rhel9stig_pwquality.ocredit }}"
+    line: ocredit = {{ rhel9stig_pwquality.ocredit }}
     path: "{{ item }}"
-    regexp: ^(#|)ocredit =
+    regexp: \s*ocredit =
   loop: "{{ rhel9stig_pwquality_conf_files.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-611105 | PATCH | RHEL 9 must prevent the use of dictionary words for passwords."
@@ -580,9 +580,9 @@
     - NIST800-53R4_CM-6
   ansible.builtin.lineinfile:
     backrefs: true
-    line: dictcheck="{{ rhel9stig_pwquality.dictcheck }}"
+    line: dictcheck={{ rhel9stig_pwquality.dictcheck }}
     path: "{{ item }}"
-    regexp: ^(#|)dictcheck\s*=\s*
+    regexp: \s*dictcheck\s*=\s*
   loop: "{{ rhel9stig_pwquality_conf_files.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-611110 | PATCH | RHEL 9 must enforce password complexity by requiring that at least one uppercase character be used."
@@ -599,9 +599,9 @@
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     backrefs: true
-    line: ucredit = "{{ rhel9stig_pwquality.ucredit }}"
+    line: ucredit = {{ rhel9stig_pwquality.ucredit }}
     path: "{{ item }}"
-    regexp: ^(#|)ucredit\s*=\s*
+    regexp: \s*ucredit\s*=\s*
   loop: "{{ rhel9stig_pwquality_conf_files.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-611115 | PATCH | RHEL 9 must require the change of at least eight characters when passwords are changed."
@@ -618,9 +618,9 @@
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     backrefs: true
-    line: difok = "{{ rhel9stig_pwquality.difok }}"
+    line: difok = {{ rhel9stig_pwquality.difok }}
     path: "{{ item }}"
-    regexp: ^(#|)difok\s*=\s*
+    regexp: \s*difok\s*=\s*
   loop: "{{ rhel9stig_pwquality_conf_files.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-611120 | PATCH | RHEL 9 must require the maximum number of repeating characters of the same character class be limited to four when passwords are changed."
@@ -637,9 +637,9 @@
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     backrefs: true
-    line: maxclassrepeat = "{{ rhel9stig_pwquality.maxclassrepeat }}"
+    line: maxclassrepeat = {{ rhel9stig_pwquality.maxclassrepeat }}
     path: /etc/security/pwquality.conf
-    regexp: ^(#|)maxclassrepeat\s*=\s*
+    regexp: \s*maxclassrepeat\s*=\s*
 
 - name: "MEDIUM | RHEL-09-611125 | PATCH | RHEL 9 must require the maximum number of repeating characters be limited to three when passwords are changed."
   when:
@@ -655,9 +655,9 @@
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     backrefs: true
-    line: maxrepeat = "{{ rhel9stig_pwquality.maxrepeat }}"
+    line: maxrepeat = {{ rhel9stig_pwquality.maxrepeat }}
     path: /etc/security/pwquality.conf
-    regexp: ^(#|)maxrepeat\s*=\s*
+    regexp: \s*maxrepeat\s*=\s*
 
 - name: "MEDIUM | RHEL-09-611130 | PATCH | RHEL 9 must require the change of at least four character classes when passwords are changed."
   when:
@@ -673,9 +673,9 @@
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     backrefs: true
-    line: minclass = "{{ rhel9stig_pwquality.minclass }}"
+    line: minclass = {{ rhel9stig_pwquality.minclass }}
     path: /etc/security/pwquality.conf
-    regexp: ^(#|)minclass\s*=\s*
+    regexp: \s*minclass\s*=\s*
 
 - name: "MEDIUM | RHEL-09-611135 | PATCH | RHEL 9 must be configured so that user and group account administration utilities are configured to store only encrypted representations of passwords."
   when:
@@ -711,7 +711,7 @@
     backrefs: true
     line: ENCRYPT_METHOD SHA512
     path: /etc/login.defs
-    regexp: ^(#|)ENCRYPT_METHOD
+    regexp: \s*ENCRYPT_METHOD
 
 - name: "MEDIUM | RHEL-09-611145 | PATCH | RHEL 9 must not be configured to bypass password requirements for privilege escalation."
   when:
@@ -747,9 +747,9 @@
     - NIST800-53R4_IA-7
   ansible.builtin.lineinfile:
     backrefs: true
-    line: SHA_CRYPT_MIN_ROUNDS "{{ rhel9stig_pam.rounds }}"
+    line: "SHA_CRYPT_MIN_ROUNDS {{ rhel9stig_pam.rounds }}"
     path: /etc/login.defs
-    regexp: ^(#|)SHA_CRYPT_MIN_ROUNDS
+    regexp: \s*SHA_CRYPT_MIN_ROUNDS
 
 - name: "MEDIUM | RHEL-09-611155 | PATCH | RHEL 9 must not have accounts configured with blank or null passwords."
   when:

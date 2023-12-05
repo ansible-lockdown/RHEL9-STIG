@@ -1,0 +1,68 @@
+---
+
+- name: "MEDIUM | RHEL-09-631010 | PATCH | RHEL 9, for PKI-based authentication, must validate certificates by constructing a certification path (which includes status information) to an accepted trust anchor."
+  when:
+    - rhel_09_631010
+  tags:
+    - RHEL-09-631010
+    - CAT2
+    - CCI-000185
+    - CCI-001991
+    - SRG-OS-000066-GPOS-00034
+    - SRG-OS-000384-GPOS-00167
+    - SV-258131r926380_rule
+    - V-258131
+    - NIST800-53R4_IA-5
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-631010"
+  block:
+    - name: "MEDIUM | RHEL-09-631010 | AUDIT | RHEL 9, for PKI-based authentication, must validate certificates by constructing a certification path (which includes status information) to an accepted trust anchor."
+      ansible.builtin.shell: "openssl x509 -text -in /etc/sssd/pki/sssd_auth_ca_db.pem | grep 'Issuer: C = US, O = U.S. Government, OU = DoD, OU = PKI, CN = DoD Root CA 3'"
+      changed_when: false
+      failed_when: rhel9stig_dod_cert_check.rc not in [ 0 , 1 ]
+      register: rhel9stig_dod_cert_check
+
+    - name: "MEDIUM | RHEL-09-631010 | WARN | RHEL 9, for PKI-based authentication, must validate certificates by constructing a certification path (which includes status information) to an accepted trust anchor."
+      when: rhel9stig_dod_cert_check is defined
+      ansible.builtin.debug:
+        msg: "Warning!! Please Investigate - Not a DOD issued ssl certificate "
+
+    - name: "MEDIUM | RHEL-09-631010 | WARN | RHEL 9, for PKI-based authentication, must validate certificates by constructing a certification path (which includes status information) to an accepted trust anchor."
+      when: rhel9stig_dod_cert_check is defined
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "MEDIUM | RHEL-09-631015 | PATCH | RHEL 9 must map the authenticated identity to the user or group account for PKI-based authentication."
+  when:
+    - rhel_09_631015
+    - rhel9stig_sssd_configure
+  tags:
+    - RHEL-09-631015
+    - CAT2
+    - CCI-000187
+    - SRG-OS-000068-GPOS-00036
+    - SV-258132r926383_rule
+    - V-258132
+    - NIST800-53R4_IA-5
+  ansible.builtin.blockinfile:
+    block: "{{ rhel9stig_sssd_config_certmap }}"
+    marker: "<!-- {mark} Ansible-Lockdown RHEL9-STIG -->"
+    path: /etc/sssd/sssd.conf
+
+- name: "MEDIUM | RHEL-09-631020 | PATCH | RHEL 9 must prohibit the use of cached authenticators after one day."
+  when:
+    - rhel_09_631020
+    - rhel9stig_sssd_configure
+  tags:
+    - RHEL-09-631020
+    - CAT2
+    - CCI-002007
+    - SRG-OS-000383-GPOS-00166
+    - SV-258133r926386_rule
+    - V-258133
+    - NIST800-53R4_IA-5
+  community.general.ini_file:
+    option: offline_credentials_expiration
+    path: /etc/sssd/sssd.conf
+    section: pam
+    value: 1
