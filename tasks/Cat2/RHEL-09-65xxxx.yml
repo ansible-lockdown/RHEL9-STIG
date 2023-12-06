@@ -4,6 +4,7 @@
   when:
     - rhel_09_651010
     - rhel9stig_use_aide
+    - "'aide' not in ansible_facts.packages"
   tags:
     - RHEL-09-651010
     - CAT2
@@ -15,6 +16,7 @@
     - V-258134
     - NIST800-53R4_CM-3
     - NIST800-53R4_SI-6
+    - aide
   notify: Build_aide_db
   ansible.builtin.package:
     name: aide
@@ -37,6 +39,7 @@
     - V-258135
     - NIST800-53R4_CM-3
     - NIST800-53R4_SI-6
+    - aide
   ansible.builtin.cron:
     hour: "{{ rhel9stig_aide_cron.hour }}"
     job: "{{ rhel9stig_aide_cron.job }}"
@@ -56,6 +59,7 @@
     - SV-258136r926395_rule
     - V-258136
     - NIST800-53R4_CM-6
+    - aide
   notify: Restart_aide
   ansible.builtin.template:
     dest: /etc/aide.conf
@@ -79,6 +83,7 @@
     - SV-258137r926398_rule
     - V-258137
     - NIST800-53R4_AU-9
+    - aide
   notify: Restart_aide
   ansible.builtin.template:
     dest: /etc/aide.conf
@@ -87,6 +92,7 @@
 - name: "MEDIUM | RHEL-09-652010 | PATCH | RHEL 9 must have the rsyslog package installed."
   when:
     - rhel_09_652010
+    - "'rsyslog' not in ansible_facts.packages"
   tags:
     - RHEL-09-652010
     - CAT2
@@ -101,8 +107,9 @@
     - NIST800-53R4_AU-4
     - NIST800-53R4_AU-6
     - NIST800-53R4_CM-6
+    - rsyslog
   ansible.builtin.package:
-    name: rsyslogd
+    name: rsyslog
     state: present
 
 - name: "MEDIUM | RHEL-09-652015 | PATCH | RHEL 9 must have the packages required for encrypting offloaded audit logs installed."
@@ -119,6 +126,7 @@
     - V-258141
     - NIST800-53R4_IA-7
     - NIST800-53R4_CM-6
+    - rsyslog
   ansible.builtin.package:
     name: rsyslog-gnutls
     state: present
@@ -134,7 +142,290 @@
     - SV-258142r926413_rule
     - V-258142
     - NIST800-53R4_CM-6
+    - rsyslog
   ansible.builtin.systemd:
     name: rsyslog
     state: started
     enabled: true
+
+- name: "MEDIUM | RHEL-09-652025 | PATCH | RHEL 9 must be configured so that the rsyslog daemon does not accept log messages from other servers unless the server is being used for log aggregation."
+  when:
+    - rhel_09_652025
+    - not rhel9stig_rsyslog_server
+  tags:
+    - RHEL-09-652025
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-258143r926416_rule
+    - V-258143
+    - NIST800-53R4_CM-6
+    - rsyslog
+  notify: Restart_rsyslog
+  block:
+    - name: "MEDIUM | RHEL-09-652025 | AUDIT | RHEL 9 must be configured so that the rsyslog daemon does not accept log messages from other servers unless the server is being used for log aggregation."
+      ansible.builtin.find:
+        paths: /etc/rsyslog.d/
+      register: rhel9stig_rsyslog_conf
+
+    - name: "MEDIUM | RHEL-09-652025 | PATCH | RHEL 9 must be configured so that the rsyslog daemon does not accept log messages from other servers unless the server is being used for log aggregation."
+      ansible.builtin.lineinfile:
+        backrefs: true
+        line: '#\1\2\3'
+        path: /etc/rsyslog.conf
+        regex: (Input|ModLoad)(TCP|UDP|RELP|imtcp|imudp|imrelp)(.*)
+
+    - name: "MEDIUM | RHEL-09-652025 | PATCH | RHEL 9 must be configured so that the rsyslog daemon does not accept log messages from other servers unless the server is being used for log aggregation."
+      when:
+        - rhel9stig_rsyslog_conf.matched > 0
+      ansible.builtin.lineinfile:
+        backrefs: true
+        line: '#\1\2\3'
+        path: "{{ item.path }}"
+        regex: (Input|ModLoad)(TCP|UDP|RELP|imtcp|imudp|imrelp)(.*)
+      loop:
+        - "{{ rhel9stig_rsyslog_conf.files }}"
+
+- name: "MEDIUM | RHEL-09-652030 | PATCH | All RHEL 9 remote access methods must be monitored."
+  when:
+    - rhel_09_652030
+  tags:
+    - RHEL-09-652030
+    - CAT2
+    - CCI-000067
+    - SRG-OS-000032-GPOS-00013
+    - SV-258144r926419_rule
+    - V-258144
+    - NIST800-53R4_AC-17
+    - rsyslog
+  notify: Restart_rsyslog
+  ansible.builtin.lineinfile:
+    line: 'auth.*;authpriv.*;daemon.* /var/log/secure'
+    path: /etc/rsyslog.conf
+
+## Required for 652035 to run
+- name: "MEDIUM | RHEL-09-653130 | PATCH | RHEL 9 audispd-plugins package must be installed"
+  when:
+    - rhel_09_653130
+    - "'audispd-plugins' not in ansible_facts.packages"
+  tags:
+    - RHEL-09-653130
+    - CAT2
+    - CCI-001851
+    - SRG-OS-000342-GPOS-00133
+    - SRG-OS-000479-GPOS-00224
+    - SV-258175r926512_rule
+    - V-258175
+    - NIST800-53R4_AU-4
+    - rsyslog
+    - auditd
+  ansible.builtin.package:
+    name: audispd-plugins
+    state: present
+
+- name: "MEDIUM | RHEL-09-652035 | PATCH | RHEL 9 must be configured to offload audit records onto a different system from the system being audited via syslog."
+  when:
+    - rhel_09_652035
+  tags:
+    - RHEL-09-652035
+    - CAT2
+    - CCI-001851
+    - SRG-OS-000342-GPOS-00133
+    - SRG-OS-000479-GPOS-00224
+    - SV-258145r926422_rule
+    - V-258145
+    - NIST800-53R4_AU-4
+    - rsyslog
+  notify: Restart_rsyslog
+  ansible.builtin.lineinfile:
+    line: 'active = yes'
+    path: /etc/audit/plugins.d/syslog.conf
+    regexp: 'active\s*='
+
+- name: "MEDIUM | RHEL-09-652040 | AUDIT | RHEL 9 must authenticate the remote logging server for offloading audit logs via rsyslog."
+  when:
+    - rhel_09_652040
+  tags:
+    - RHEL-09-652040
+    - CAT2
+    - CCI-001851
+    - SRG-OS-000342-GPOS-00133
+    - SRG-OS-000479-GPOS-00224
+    - SV-258146r926425_rule
+    - V-258146
+    - NIST800-53R4_AU-4
+    - rsyslog
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-652040"
+  block:
+    - name: "MEDIUM | RHEL-09-652040 | AUDIT | RHEL 9 must authenticate the remote logging server for offloading audit logs via rsyslog."
+      ansible.builtin.shell: grep -i "^\$ActionSendStreamDriverAuthMode" /etc/rsyslog.conf /etc/rsyslog.d/*.conf
+      changed_when: false
+      failed_when: rhel9stig_rsyslog_remote_auth_x509.rc not in [ 0, 1, 2 ]
+      register: rhel9stig_rsyslog_remote_auth_x509
+
+    - name: "MEDIUM | RHEL-09-652040 | WARN | RHEL 9 must authenticate the remote logging server for offloading audit logs via rsyslog."
+      when:
+        - rhel9stig_rsyslog_remote_auth_x509 is defined
+        - "'x509' not in rhel9stig_rsyslog_remote_auth_x509.stdout"
+      ansible.builtin.debug:
+        msg: "Warning!! Please ensure rule RHEL-09-652040 remote syslog control requirements are met for your environment"
+
+    - name: "MEDIUM | RHEL-09-652040 | WARN | RHEL 9 must authenticate the remote logging server for offloading audit logs via rsyslog."
+      when:
+        - rhel9stig_rsyslog_remote_auth_x509 is defined
+        - "'x509' not in rhel9stig_rsyslog_remote_auth_x509.stdout"
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "MEDIUM | RHEL-09-652045 | AUDIT | RHEL 9 must encrypt the transfer of audit records offloaded onto a different system or media from the system being audited via rsyslog."
+  when:
+    - rhel_09_652045
+    - not rhel9stig_rsyslog_server
+  tags:
+    - RHEL-09-652045
+    - CAT2
+    - CCI-001851
+    - SRG-OS-000342-GPOS-00133
+    - SRG-OS-000479-GPOS-00224
+    - SV-258147r926428_rule
+    - V-258147
+    - NIST800-53R4_AU-4
+    - rsyslog
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-652045"
+  block:
+    - name: "MEDIUM | RHEL-09-652045 | AUDIT | RHEL 9 must encrypt the transfer of audit records offloaded onto a different system or media from the system being audited via rsyslog."
+      ansible.builtin.shell: grep -i "^\$ActionSendStreamDriverMode 1" /etc/rsyslog.conf /etc/rsyslog.d/*.conf
+      changed_when: false
+      failed_when: rhel9stig_rsyslog_remote_stream_driver.rc not in [ 0, 1, 2 ]
+      register: rhel9stig_rsyslog_remote_stream_driver
+
+    - name: "MEDIUM | RHEL-09-652040 | WARN | RHEL 9 must encrypt the transfer of audit records offloaded onto a different system or media from the system being audited via rsyslog."
+      when:
+        - rhel9stig_rsyslog_remote_stream_driver is defined
+        - rhel9stig_rsyslog_remote_stream_driver.rc == 2
+      ansible.builtin.debug:
+        msg: "Warning!! Please ensure rule RHEL-09-652045 remote syslog control requirements are met for your environment"
+
+    - name: "MEDIUM | RHEL-09-652040 | WARN | RHEL 9 must encrypt the transfer of audit records offloaded onto a different system or media from the system being audited via rsyslog."
+      when:
+        - rhel9stig_rsyslog_remote_stream_driver is defined
+        - rhel9stig_rsyslog_remote_stream_driver.rc == 2
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "MEDIUM | RHEL-09-652045 | AUDIT | RHEL 9 must encrypt the transfer of audit records offloaded onto a different system or media from the system being audited via rsyslog."
+  when:
+    - rhel_09_652045
+    - not rhel9stig_rsyslog_server
+  tags:
+    - RHEL-09-652045
+    - CAT2
+    - CCI-001851
+    - SRG-OS-000342-GPOS-00133
+    - SRG-OS-000479-GPOS-00224
+    - SV-258147r926428_rule
+    - V-258147
+    - NIST800-53R4_AU-4
+    - rsyslog
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-652045"
+  block:
+    - name: "MEDIUM | RHEL-09-652045 | AUDIT | RHEL 9 must encrypt the transfer of audit records offloaded onto a different system or media from the system being audited via rsyslog."
+      ansible.builtin.shell: grep -i "^\$ActionSendStreamDriverMode 1" /etc/rsyslog.conf /etc/rsyslog.d/*.conf
+      changed_when: false
+      failed_when: rhel9stig_rsyslog_remote_stream_driver.rc not in [ 0, 1, 2 ]
+      register: rhel9stig_rsyslog_remote_stream_driver
+
+    - name: "MEDIUM | RHEL-09-652045 | WARN | RHEL 9 must encrypt the transfer of audit records offloaded onto a different system or media from the system being audited via rsyslog."
+      when:
+        - rhel9stig_rsyslog_remote_stream_driver is defined
+        - rhel9stig_rsyslog_remote_stream_driver.rc == [ 1, 2 ]
+      ansible.builtin.debug:
+        msg: "Warning!! Please ensure rule RHEL-09-652045 remote syslog control requirements are met for your environment"
+
+    - name: "MEDIUM | RHEL-09-652045 | WARN | RHEL 9 must encrypt the transfer of audit records offloaded onto a different system or media from the system being audited via rsyslog."
+      when:
+        - rhel9stig_rsyslog_remote_stream_driver is defined
+        - rhel9stig_rsyslog_remote_stream_driver.rc == [ 1, 2 ]
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "MEDIUM | RHEL-09-652050 | AUDIT | RHEL 9 must encrypt via the gtls driver the transfer of audit records offloaded onto a different system or media from the system being audited via rsyslog."
+  when:
+    - rhel_09_652050
+    - not rhel9stig_rsyslog_server
+  tags:
+    - RHEL-09-652050
+    - CAT2
+    - CCI-001851
+    - SRG-OS-000342-GPOS-00133
+    - SRG-OS-000479-GPOS-00224
+    - SV-258148r926431_rule
+    - V-258148
+    - NIST800-53R4_AU-4
+    - rsyslog
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-652050"
+  block:
+    - name: "MEDIUM | RHEL-09-652050 | AUDIT | RHEL 9 must encrypt via the gtls driver the transfer of audit records offloaded onto a different system or media from the system being audited via rsyslog."
+      ansible.builtin.shell: grep -i "^\$$DefaultNetstreamDriver" /etc/rsyslog.conf /etc/rsyslog.d/*.conf
+      changed_when: false
+      failed_when: rhel9stig_rsyslog_remote_netstream_driver.rc not in [ 0, 1, 2 ]
+      register: rhel9stig_rsyslog_remote_netstream_driver
+
+    - name: "MEDIUM | RHEL-09-652050 | WARN | RHEL 9 must encrypt via the gtls driver the transfer of audit records offloaded onto a different system or media from the system being audited via rsyslog."
+      when:
+        - rhel9stig_rsyslog_remote_netstream_driver is defined
+        - "'gtls' not in rhel9stig_rsyslog_remote_netstream_driver.stdout"
+      ansible.builtin.debug:
+        msg: "Warning!! Please ensure rule RHEL-09-652050 remote syslog control requirements are met for your environment"
+
+    - name: "MEDIUM | RHEL-09-652050 | WARN | RHEL 9 must encrypt via the gtls driver the transfer of audit records offloaded onto a different system or media from the system being audited via rsyslog."
+      when:
+        - rhel9stig_rsyslog_remote_netstream_driver is defined
+        - "'gtls' not in rhel9stig_rsyslog_remote_netstream_driver.stdout"
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "MEDIUM | RHEL-09-652055 | PATCH | RHEL 9 must be configured to forward audit records via TCP to a different system or media from the system being audited via rsyslog."
+  when:
+    - rhel_09_652055
+    - not rhel9stig_rsyslog_server
+  tags:
+    - RHEL-09-652055
+    - CAT2
+    - CCI-000366
+    - CCI-001851
+    - SRG-OS-000342-GPOS-00133
+    - SRG-OS-000479-GPOS-00224
+    - SRG-OS-000480-GPOS-00227
+    - SV-258149r926434_rule
+    - V-258149
+    - NIST800-53R4_AU-4
+    - NIST800-53R4_CM-6
+    - rsyslog
+  ansible.builtin.lineinfile:
+    line: "*.* {{ rhel9stig_remotelog_server.protocol }}{{ rhel9stig_remotelog_server.server }}:{{ rhel9stig_remotelog_server.port }}"
+    path: /etc/rsyslog.conf
+    regexp: '^.*\@\@'
+
+- name: "MEDIUM | RHEL-09-652060 | PATCH | RHEL 9 must use cron logging."
+  when:
+    - rhel_09_652060
+  tags:
+    - RHEL-09-652060
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-258150r926437_rule
+    - V-258150
+    - NIST800-53R4_CM-6
+    - rsyslog
+  ansible.builtin.lineinfile:
+    backrefs: true
+    insertafter: "# Log cron stuff"
+    line: 'cron.*\1/var/log/cron'
+    path: /etc/rsyslog.conf
+    regexp: 'cron\.\*(\s+)'

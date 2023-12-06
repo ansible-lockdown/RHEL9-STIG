@@ -88,3 +88,8 @@
   ansible.builtin.systemd:
     name: aide
     state: restarted
+
+- name: Restart_rsyslog
+  ansible.builtin.systemd:
+    name: rsyslog.service
+    state: restarted

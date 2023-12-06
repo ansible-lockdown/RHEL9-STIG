@@ -448,6 +448,28 @@ rhel_09_611195: true
 rhel_09_611200: true
 rhel_09_611205: true
 
+### CAT2 63xxxx
+rhel_09_631010: true
+rhel_09_631015: true
+rhel_09_631020: true
+### CAT2 65xxxx
+rhel_09_651010: true
+rhel_09_651015: true
+rhel_09_651020: true
+rhel_09_651025: true
+rhel_09_652010: true
+rhel_09_652015: true
+rhel_09_652020: true
+rhel_09_652025: true
+rhel_09_652030: true
+rhel_09_653130: true  # NOTE Required before 652035 can run
+rhel_09_652035: true
+rhel_09_652040: true
+rhel_09_652045: true
+rhel_09_652050: true
+rhel_09_652055: true
+rhel_09_652060: true
+
 ### CONTROLS
 
 ## Grahical/Gnome interface required
@@ -660,3 +682,13 @@ rhel9stig_aide_cron:
   minute: '30'
   job: 'usr/sbin/aide --check | /bin/mail -s "$HOSTNAME - Daily aide integrity check run" root@sysname.mil'
   name: 'Aide Job runs Daily at 0430'
+
+### Rsyslog
+# Set the following to true if the server accepts incoming syslog data using rsyslog
+rhel9stig_rsyslog_server: false
+
+# Adjust to match remote syslog server configuration
+rhel9stig_remotelog_server:
+  server: 10.10.10.10
+  port: 9999
+  protocol: '@@'
