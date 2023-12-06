@@ -411,6 +411,28 @@ rhel_09_611195: {{ rhel_09_611195 }}
 rhel_09_611200: {{ rhel_09_611200 }}
 rhel_09_611205: {{ rhel_09_611205 }}
 
+### CAT2 63xxxx
+rhel_09_631010: {{ rhel_09_631010 }}
+rhel_09_631015: {{ rhel_09_631015 }}
+rhel_09_631020: {{ rhel_09_631030 }}
+### CAT2 65xxxx
+rhel_09_651010: {{ rhel_09_651010 }}
+rhel_09_651015: {{ rhel_09_651015 }}
+rhel_09_651020: {{ rhel_09_651020 }}
+rhel_09_651025: {{ rhel_09_651025 }}
+rhel_09_652010: {{ rhel_09_652010 }}
+rhel_09_652015: {{ rhel_09_652015 }}
+rhel_09_652020: {{ rhel_09_652020 }}
+rhel_09_652025: {{ rhel_09_652025 }}
+rhel_09_652030: {{ rhel_09_652030 }}
+rhel_09_653130: {{ rhel_09_653130 }}  # NOTE Required before 652035 can run
+rhel_09_652035: {{ rhel_09_652035 }}
+rhel_09_652040: {{ rhel_09_652040 }}
+rhel_09_652045: {{ rhel_09_652045 }}
+rhel_09_652050: {{ rhel_09_652050 }}
+rhel_09_652055: {{ rhel_09_652055 }}
+rhel_09_652060: {{ rhel_09_652060 }}
+
 # Cat 3 controls
 
 # Variables
@@ -592,3 +614,23 @@ rhel9stig_unnecessary_accounts:
 rhel9stig_remove_unnecessary_user_files: {{ rhel9stig_remove_unnecessary_user_files }}
 
 rhel9stig_smartcard_reader: {{ rhel9stig_smartcard_reader }}
+
+### Aide
+rhel9stig_use_aide: true
+rhel9stig_aide_cron_file: {{ rhel9stig_aide_cron_file }}  # NOTE the path may change if not running daily
+rhel9stig_aide_cron:
+  day: {{ rhel9stig_aide_cron.day }}
+  hour: {{ rhel9stig_aide_cron.hour }}
+  minute: {{ rhel9stig_aide_cron.minute }}
+  job: {{ rhel9stig_aide_cron.job }}
+  name: {{ rhel9stig_aide_cron.name }}
+
+### Rsyslog
+# Set the following to true if the server accepts incoming syslog data using rsyslog
+rhel9stig_rsyslog_server: {{ rhel9stig_rsyslog_server }}
+
+# Adjust to match remote syslog server configuration
+rhel9stig_remotelog_server:
+  server: {{ rhel9stig_remotelog_server.server }}
+  port: {{ rhel9stig_remotelog_server.port }}
+  protocol: {{ rhel9stig_remotelog_server.protocol }}

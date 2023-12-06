@@ -41,11 +41,13 @@
     - NIST800-53R4_SI-6
     - aide
   ansible.builtin.cron:
+    cron_file: "{{ rhel9stig_aide_cron_file }}"
     hour: "{{ rhel9stig_aide_cron.hour }}"
     job: "{{ rhel9stig_aide_cron.job }}"
     minute: "{{ rhel9stig_aide_cron.minute }}"
     name: "{{ rhel9stig_aide_cron.name }}"
     state: present
+    user: root
 
 - name: "MEDIUM | RHEL-09-651020 | PATCH | RHEL 9 must routinely check the baseline configuration for unauthorized changes and notify the system administrator when anomalies in the operation of any security functions are discovered."
   when:
@@ -60,7 +62,6 @@
     - V-258136
     - NIST800-53R4_CM-6
     - aide
-  notify: Restart_aide
   ansible.builtin.template:
     dest: /etc/aide.conf
     src: etc/aide.conf.j2
@@ -84,7 +85,6 @@
     - V-258137
     - NIST800-53R4_AU-9
     - aide
-  notify: Restart_aide
   ansible.builtin.template:
     dest: /etc/aide.conf
     src: etc/aide.conf.j2

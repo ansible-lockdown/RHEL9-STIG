@@ -84,11 +84,6 @@
 - name: Check_aide
   ansible.builtin.shell: /usr/sbin/aide --check
 
-- name: Restart_aide
-  ansible.builtin.systemd:
-    name: aide
-    state: restarted
-
 - name: Restart_rsyslog
   ansible.builtin.systemd:
     name: rsyslog.service

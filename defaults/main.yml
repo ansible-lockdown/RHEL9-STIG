@@ -676,11 +676,12 @@ rhel9stig_sssd_config_certmap: |
 
 ### Aide
 rhel9stig_use_aide: true
+rhel9stig_aide_cron_file: /etc/cron.daily/aide  # NOTE the path may change if not running daily
 rhel9stig_aide_cron:
   day: '*'
   hour: '4'
   minute: '30'
-  job: 'usr/sbin/aide --check | /bin/mail -s "$HOSTNAME - Daily aide integrity check run" root@sysname.mil'
+  job: '/usr/sbin/aide --check | /bin/mail -s "$HOSTNAME - Daily aide integrity check run" root@sysname.mil'
   name: 'Aide Job runs Daily at 0430'
 
 ### Rsyslog
