@@ -45,9 +45,6 @@ system_is_ec2: false
 # Whether to skip the reboot
 skip_reboot: true
 
-# Defined will change if control requires
-change_requires_reboot: false
-
 rhel9stig_workaround_for_disa_benchmark: true
 rhel9stig_workaround_for_ssg_benchmark: true
 
@@ -269,7 +266,6 @@ rhel_09_251045: true
 rhel_09_252010: true
 rhel_09_252015: true
 rhel_09_252020: true
-rhel_09_252025: true
 rhel_09_252030: true
 rhel_09_252035: true
 rhel_09_252040: true
@@ -386,7 +382,6 @@ rhel_09_412015: true
 rhel_09_412020: true
 rhel_09_412025: true
 rhel_09_412035: true
-rhel_09_412040: true
 rhel_09_412045: true
 rhel_09_412050: true
 rhel_09_412055: true
@@ -469,6 +464,116 @@ rhel_09_652045: true
 rhel_09_652050: true
 rhel_09_652055: true
 rhel_09_652060: true
+
+### CAT2 65xxxx
+rhel_09_653010: true
+rhel_09_653015: true
+rhel_09_653020: true
+rhel_09_653025: true
+rhel_09_653030: true
+rhel_09_653035: true
+rhel_09_653040: true
+rhel_09_653045: true
+rhel_09_653050: true
+rhel_09_653055: true
+rhel_09_653060: true
+rhel_09_653065: true
+rhel_09_653070: true
+rhel_09_653075: true
+rhel_09_653080: true
+rhel_09_653085: true
+rhel_09_653090: true
+rhel_09_653095: true
+rhel_09_653100: true
+rhel_09_653105: true
+rhel_09_653110: true
+rhel_09_653115: true
+rhel_09_653125: true
+
+### CAT2 65xxxx
+
+rhel_09_654010: true
+rhel_09_654015: true
+rhel_09_654020: true
+rhel_09_654025: true
+rhel_09_654030: true
+rhel_09_654035: true
+rhel_09_654040: true
+rhel_09_654045: true
+rhel_09_654050: true
+rhel_09_654055: true
+rhel_09_654060: true
+rhel_09_654065: true
+rhel_09_654070: true
+rhel_09_654075: true
+rhel_09_654080: true
+rhel_09_654085: true
+rhel_09_654090: true
+rhel_09_654095: true
+rhel_09_654100: true
+rhel_09_654105: true
+rhel_09_654110: true
+rhel_09_654115: true
+rhel_09_654120: true
+rhel_09_654125: true
+rhel_09_654130: true
+rhel_09_654135: true
+rhel_09_654140: true
+rhel_09_654145: true
+rhel_09_654150: true
+rhel_09_654155: true
+rhel_09_654160: true
+rhel_09_654165: true
+rhel_09_654170: true
+rhel_09_654175: true
+rhel_09_654180: true
+rhel_09_654185: true
+rhel_09_654190: true
+rhel_09_654195: true
+rhel_09_654200: true
+rhel_09_654205: true
+rhel_09_654210: true
+rhel_09_654215: true
+rhel_09_654220: true
+rhel_09_654225: true
+rhel_09_654230: true
+rhel_09_654235: true
+rhel_09_654240: true
+rhel_09_654245: true
+rhel_09_654250: true
+rhel_09_654255: true
+rhel_09_654260: true
+rhel_09_654265: true
+rhel_09_654270: true
+rhel_09_654275: true
+
+rhel_09_671015: true
+rhel_09_671020: true
+rhel_09_671025: true
+rhel_09_672010: true
+rhel_09_672020: true
+rhel_09_672025: true
+rhel_09_672035: true
+rhel_09_672040: true
+rhel_09_672045: true
+rhel_09_672050: true
+
+### Cat3
+rhel_09_211035: true
+rhel_09_212050: true
+rhel_09_212055: true
+rhel_09_214035: true
+rhel_09_231020: true
+rhel_09_231025: true
+rhel_09_231030: true
+rhel_09_231195: true
+rhel_09_252025: true
+rhel_09_291025: true
+rhel_09_412030: true
+rhel_09_412040: true
+rhel_09_651030: true
+rhel_09_651035: true
+rhel_09_653120: true
 
 ### CONTROLS
 
@@ -693,3 +798,25 @@ rhel9stig_remotelog_server:
   server: 10.10.10.10
   port: 9999
   protocol: '@@'
+
+### AUDITD
+rhel9stig_audit_log_filesystem: /var/log/audit
+rhel9stig_audit_conf:
+  action_mail_acct: root
+  admin_space_left: 5
+  admin_space_left_action: single
+  disk_error_action: HALT  # Can be one of "SYSLOG", "SINGLE", or "HALT"
+  disk_full_action: HALT  # Can be one of "SYSLOG", "SINGLE", or "HALT"
+  freq: '100'
+  local_events: 'yes'
+  log_format: ENRICHED
+  logfile: "{{ rhel9stig_audit_log_filesystem }}/audit.log"
+  logfile_group: root
+  max_log_file_action: ROTATE
+  name_format: hostname
+  overflow_action: syslog
+  space_left: 25
+  space_left_action: email
+  write_logs: 'yes'
+
+rhel9stig_audit_backlog_limit: 8192

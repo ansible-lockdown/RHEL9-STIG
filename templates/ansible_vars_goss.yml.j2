@@ -235,7 +235,6 @@ rhel_09_251045: {{ rhel_09_251045 }}
 rhel_09_252010: {{ rhel_09_252010 }}
 rhel_09_252015: {{ rhel_09_252015 }}
 rhel_09_252020: {{ rhel_09_252020 }}
-rhel_09_252025: {{ rhel_09_252025 }}
 rhel_09_252030: {{ rhel_09_252030 }}
 rhel_09_252035: {{ rhel_09_252035 }}
 rhel_09_252040: {{ rhel_09_252040 }}
@@ -414,7 +413,7 @@ rhel_09_611205: {{ rhel_09_611205 }}
 ### CAT2 63xxxx
 rhel_09_631010: {{ rhel_09_631010 }}
 rhel_09_631015: {{ rhel_09_631015 }}
-rhel_09_631020: {{ rhel_09_631030 }}
+rhel_09_631020: {{ rhel_09_631020 }}
 ### CAT2 65xxxx
 rhel_09_651010: {{ rhel_09_651010 }}
 rhel_09_651015: {{ rhel_09_651015 }}
@@ -433,6 +432,85 @@ rhel_09_652050: {{ rhel_09_652050 }}
 rhel_09_652055: {{ rhel_09_652055 }}
 rhel_09_652060: {{ rhel_09_652060 }}
 
+### CAT2 65xxxx
+rhel_09_653010: {{ rhel_09_653010 }}
+rhel_09_653015: {{ rhel_09_653015 }}
+rhel_09_653020: {{ rhel_09_653020 }}
+rhel_09_653025: {{ rhel_09_653025 }}
+rhel_09_653030: {{ rhel_09_653030 }}
+rhel_09_653035: {{ rhel_09_653035 }}
+rhel_09_653040: {{ rhel_09_653040 }}
+rhel_09_653045: {{ rhel_09_653045 }}
+rhel_09_653050: {{ rhel_09_653050 }}
+rhel_09_653055: {{ rhel_09_653055 }}
+rhel_09_653060: {{ rhel_09_653060 }}
+rhel_09_653065: {{ rhel_09_653065 }}
+rhel_09_653070: {{ rhel_09_653070 }}
+rhel_09_653075: {{ rhel_09_653075 }}
+rhel_09_653080: {{ rhel_09_653080 }}
+rhel_09_653085: {{ rhel_09_653085 }}
+rhel_09_653090: {{ rhel_09_653090 }}
+rhel_09_653095: {{ rhel_09_653095 }}
+rhel_09_653100: {{ rhel_09_653100 }}
+rhel_09_653105: {{ rhel_09_653105 }}
+rhel_09_653110: {{ rhel_09_653110 }}
+rhel_09_653115: {{ rhel_09_653115 }}
+rhel_09_653125: {{ rhel_09_653125 }}
+
+rhel_09_654010: {{ rhel_09_654010 }}
+rhel_09_654015: {{ rhel_09_654015 }}
+rhel_09_654020: {{ rhel_09_654020 }}
+rhel_09_654025: {{ rhel_09_654025 }}
+rhel_09_654030: {{ rhel_09_654030 }}
+rhel_09_654035: {{ rhel_09_654035 }}
+rhel_09_654040: {{ rhel_09_654040 }}
+rhel_09_654045: {{ rhel_09_654045 }}
+rhel_09_654050: {{ rhel_09_654050 }}
+rhel_09_654055: {{ rhel_09_654055 }}
+rhel_09_654060: {{ rhel_09_654060 }}
+rhel_09_654065: {{ rhel_09_654065 }}
+rhel_09_654070: {{ rhel_09_654070 }}
+rhel_09_654075: {{ rhel_09_654075 }}
+rhel_09_654080: {{ rhel_09_654080 }}
+rhel_09_654085: {{ rhel_09_654085 }}
+rhel_09_654090: {{ rhel_09_654090 }}
+rhel_09_654095: {{ rhel_09_654095 }}
+rhel_09_654100: {{ rhel_09_654100 }}
+rhel_09_654105: {{ rhel_09_654105 }}
+rhel_09_654110: {{ rhel_09_654110 }}
+rhel_09_654115: {{ rhel_09_654115 }}
+rhel_09_654120: {{ rhel_09_654120 }}
+rhel_09_654125: {{ rhel_09_654125 }}
+rhel_09_654130: {{ rhel_09_654130 }}
+rhel_09_654135: {{ rhel_09_654135 }}
+rhel_09_654140: {{ rhel_09_654140 }}
+rhel_09_654145: {{ rhel_09_654145 }}
+rhel_09_654150: {{ rhel_09_654150 }}
+rhel_09_654155: {{ rhel_09_654155 }}
+rhel_09_654160: {{ rhel_09_654160 }}
+rhel_09_654165: {{ rhel_09_654165 }}
+rhel_09_654170: {{ rhel_09_654170 }}
+rhel_09_654175: {{ rhel_09_654175 }}
+rhel_09_654180: {{ rhel_09_654180 }}
+rhel_09_654185: {{ rhel_09_654185 }}
+rhel_09_654190: {{ rhel_09_654190 }}
+rhel_09_654195: {{ rhel_09_654195 }}
+rhel_09_654200: {{ rhel_09_654200 }}
+rhel_09_654205: {{ rhel_09_654205 }}
+rhel_09_654210: {{ rhel_09_654210 }}
+rhel_09_654215: {{ rhel_09_654215 }}
+rhel_09_654220: {{ rhel_09_654220 }}
+rhel_09_654225: {{ rhel_09_654225 }}
+rhel_09_654230: {{ rhel_09_654230 }}
+rhel_09_654235: {{ rhel_09_654235 }}
+rhel_09_654240: {{ rhel_09_654240 }}
+rhel_09_654245: {{ rhel_09_654245 }}
+rhel_09_654250: {{ rhel_09_654250 }}
+rhel_09_654255: {{ rhel_09_654255 }}
+rhel_09_654260: {{ rhel_09_654260 }}
+rhel_09_654265: {{ rhel_09_654265 }}
+rhel_09_654270: {{ rhel_09_654270 }}
+rhel_09_654275: {{ rhel_09_654275 }}
 # Cat 3 controls
 
 # Variables
@@ -493,13 +571,13 @@ rhel9stig_custom_firewall:
 # This can also be a port number if no service exists
 rhel9stig_white_list_services:
 {% for service in rhel9stig_white_list_services %}
-- {{ service }}
+  - {{ service }}
 {% endfor %}
 
 ## Interface list allowed to have promiscuous mode set
 rhel9stig_promisc_if:
 {% for prom_if in rhel9stig_promisc_if %}
-- {{ prom_if }}
+  - {{ prom_if }}
 {% endfor %}
 
 # Set sysctl files
@@ -518,13 +596,13 @@ rhel9stig_chrony_server_options: "{{ rhel9stig_chrony_server_options }}"  # Max 
 {% if rhel9stig_dns_ip4_servers is defined %}
 rhel9stig_dns_servers:
 {% for server in rhel9stig_dns_ip4_servers %}
-- nameserver {{ server }}
+  - nameserver {{ server }}
 {% endfor %}
 {% endif %}
 {% if rhel9stig_dns_ip6_servers is defined %}
 rhel9stig_dns_servers:
 {% for server in rhel9stig_dns_ip6_servers %}
-- nameserver {{ server }}
+  - nameserver {{ server }}
 {% endfor %}
 {% endif %}
 
@@ -616,14 +694,14 @@ rhel9stig_remove_unnecessary_user_files: {{ rhel9stig_remove_unnecessary_user_fi
 rhel9stig_smartcard_reader: {{ rhel9stig_smartcard_reader }}
 
 ### Aide
-rhel9stig_use_aide: true
+rhel9stig_use_aide: {{ rhel9stig_use_aide }}
 rhel9stig_aide_cron_file: {{ rhel9stig_aide_cron_file }}  # NOTE the path may change if not running daily
 rhel9stig_aide_cron:
-  day: {{ rhel9stig_aide_cron.day }}
-  hour: {{ rhel9stig_aide_cron.hour }}
-  minute: {{ rhel9stig_aide_cron.minute }}
-  job: {{ rhel9stig_aide_cron.job }}
-  name: {{ rhel9stig_aide_cron.name }}
+  day: "{{ rhel9stig_aide_cron.day }}"
+  hour: "{{ rhel9stig_aide_cron.hour }}"
+  minute: "{{ rhel9stig_aide_cron.minute }}"
+  job: '{{ rhel9stig_aide_cron.job }}'
+  name: "{{ rhel9stig_aide_cron.name }}"
 
 ### Rsyslog
 # Set the following to true if the server accepts incoming syslog data using rsyslog
@@ -631,6 +709,26 @@ rhel9stig_rsyslog_server: {{ rhel9stig_rsyslog_server }}
 
 # Adjust to match remote syslog server configuration
 rhel9stig_remotelog_server:
-  server: {{ rhel9stig_remotelog_server.server }}
-  port: {{ rhel9stig_remotelog_server.port }}
-  protocol: {{ rhel9stig_remotelog_server.protocol }}
+  server: "{{ rhel9stig_remotelog_server.server }}"
+  port: "{{ rhel9stig_remotelog_server.port }}"
+  protocol: "{{ rhel9stig_remotelog_server.protocol }}"
+
+### AUDITD
+rhel9stig_audit_log_filesystem: /var/log/audit
+rhel9stig_audit_conf:
+  action_mail_acct: {{ rhel9stig_audit_conf.action_mail_acct }}
+  admin_space_left: {{ rhel9stig_audit_conf.admin_space_left }}
+  admin_space_left_action: {{ rhel9stig_audit_conf.admin_space_left_action }}
+  disk_error_action: {{ rhel9stig_audit_conf.disk_error_action }}  # Can be one of "SYSLOG", "SINGLE", or "HALT"
+  disk_full_action: {{ rhel9stig_audit_conf.disk_full_action }}  # Can be one of "SYSLOG", "SINGLE", or "HALT"
+  freq: {{ rhel9stig_audit_conf.freq }}
+  local_events: {{ rhel9stig_audit_conf.local_events }}
+  log_format: {{ rhel9stig_audit_conf.log_format }}
+  logfile: {{ rhel9stig_audit_conf.logfile }}
+  log_group: {{ rhel9stig_audit_conf.log_group }}
+  max_log_file_action: {{ rhel9stig_audit_conf.max_log_file_action }}
+  name_format: {{ rhel9stig_audit_conf.name_format }}
+  overflow_action: {{ rhel9stig_audit_conf.overflow_action }}
+  space_left: {{ rhel9stig_audit_conf.space_left }}
+  space_left_action: {{ rhel9stig_audit_conf.space_left_action }}
+  write_logs: {{ rhel9stig_audit_conf.write_logs }}

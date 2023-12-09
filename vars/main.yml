@@ -25,6 +25,10 @@ gpg_key_package: "{{ ansible_distribution | lower }}-gpg-keys"
 # Allow automated discovery of uids
 discover_int_uid: true
 
+# Default for facts
+reboot_required: false
+update_audit_template: false
+
 # DOD encryption
 rhel9stig_dod_ciphers:
 - aes256-gcm@openssh.com

@@ -33,11 +33,19 @@
 - name: Run Cat 2 STIG 63xxxx tasks
   ansible.builtin.import_tasks:
     file: RHEL-09-63xxxx.yml
-  tags:
-    - test
 
 - name: Run Cat 2 STIG 65xxxx tasks
   ansible.builtin.import_tasks:
     file: RHEL-09-65xxxx.yml
+
+- name: Run Cat 2 STIG 654xxx tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-654xxx.yml
+  tags:
+    - test
+
+- name: Run Cat 2 STIG 67xxxx tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-67xxxx.yml
   tags:
     - test

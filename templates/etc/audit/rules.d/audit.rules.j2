@@ -1,0 +1,238 @@
+## Auditd Configured by ansible-lockdown RHEL9-STIG
+# Sponsored by MindPoint Group
+{% if rhel_09_654010 %}
+# RHEL9-STIG rule 654010
+-a always,exit -F arch=b32 -S execve -C uid!=euid -F euid=0 -k execpriv
+-a always,exit -F arch=b64 -S execve -C uid!=euid -F euid=0 -k execpriv
+-a always,exit -F arch=b32 -S execve -C gid!=egid -F egid=0 -k execpriv
+-a always,exit -F arch=b64 -S execve -C gid!=egid -F egid=0 -k execpriv
+{% endif %}
+{% if rhel_09_654015 %}
+# RHEL9-STIG rule 654015
+-a always,exit -F arch=b32 -S chmod,fchmod,fchmodat -F auid>=1000 -F auid!=unset -k perm_mod
+-a always,exit -F arch=b64 -S chmod,fchmod,fchmodat -F auid>=1000 -F auid!=unset -k perm_mod
+{% endif %}
+{% if rhel_09_654020 %}
+# RHEL9-STIG rule 654020
+-a always,exit -F arch=b32 -S chown,fchown,fchownat,lchown -F auid>=1000 -F auid!=unset -k perm_mod
+-a always,exit -F arch=b64 -S chown,fchown,fchownat,lchown -F auid>=1000 -F auid!=unset -k perm_mod
+{% endif %}
+{% if rhel_09_654025 %}
+# RHEL9-STIG rule 654025
+-a always,exit -F arch=b32 -S setxattr,fsetxattr,lsetxattr,removexattr,fremovexattr,lremovexattr -F auid>=1000 -F auid!=unset -k perm_mod
+-a always,exit -F arch=b64 -S setxattr,fsetxattr,lsetxattr,removexattr,fremovexattr,lremovexattr -F auid>=1000 -F auid!=unset -k perm_mod
+-a always,exit -F arch=b32 -S setxattr,fsetxattr,lsetxattr,removexattr,fremovexattr,lremovexattr -F auid=0 -k perm_mod
+-a always,exit -F arch=b64 -S setxattr,fsetxattr,lsetxattr,removexattr,fremovexattr,lremovexattr -F auid=0 -k perm_mod
+{% endif %}
+{% if rhel_09_654030 %}
+# RHEL9-STIG rule 654030
+-a always,exit -F path=/usr/bin/umount -F perm=x -F auid>=1000 -F auid!=unset -k privileged-mount
+{% endif %}
+{% if rhel_09_654035 %}
+# RHEL9-STIG rule 654035
+-a always,exit -F path=/usr/bin/chacl -F perm=x -F auid>=1000 -F auid!=unset -k perm_mod
+{% endif %}
+{% if rhel_09_654040 %}
+# RHEL9-STIG rule 654040
+-a always,exit -F path=/usr/bin/setfacl -F perm=x -F auid>=1000 -F auid!=unset -k perm_mod
+{% endif %}
+{% if rhel_09_654045 %}
+# RHEL9-STIG rule 654045
+-a always,exit -F path=/usr/bin/chcon -F perm=x -F auid>=1000 -F auid!=unset -k perm_mod
+{% endif %}
+{% if rhel_09_654050 %}
+# RHEL9-STIG rule 654050
+-a always,exit -F path=/usr/sbin/semanage -F perm=x -F auid>=1000 -F auid!=unset -k privileged-unix-update
+{% endif %}
+{% if rhel_09_654055 %}
+# RHEL9-STIG rule 654055
+-a always,exit -F path=/usr/sbin/setfiles -F perm=x -F auid>=1000 -F auid!=unset -k privileged-unix-update
+{% endif %}
+{% if rhel_09_654060 %}
+# RHEL9-STIG rule 654060
+-a always,exit -F path=/usr/sbin/setsebool -F perm=x -F auid>=1000 -F auid!=unset -F key=privileged
+{% endif %}
+{% if rhel_09_654065 %}
+# RHEL9-STIG rule 654065
+-a always,exit -F arch=b32 -S rename,unlink,rmdir,renameat,unlinkat -F auid>=1000 -F auid!=unset -k delete
+-a always,exit -F arch=b64 -S rename,unlink,rmdir,renameat,unlinkat -F auid>=1000 -F auid!=unset -k delete
+{% endif %}
+{% if rhel_09_654070 %}
+# RHEL9-STIG rule 654070
+-a always,exit -F arch=b32 -S truncate,ftruncate,creat,open,openat,open_by_handle_at -F exit=-EPERM -F auid>=1000 -F auid!=unset -k perm_access
+-a always,exit -F arch=b64 -S truncate,ftruncate,creat,open,openat,open_by_handle_at -F exit=-EPERM -F auid>=1000 -F auid!=unset -k perm_access
+-a always,exit -F arch=b32 -S truncate,ftruncate,creat,open,openat,open_by_handle_at -F exit=-EACCES -F auid>=1000 -F auid!=unset -k perm_access
+-a always,exit -F arch=b64 -S truncate,ftruncate,creat,open,openat,open_by_handle_at -F exit=-EACCES -F auid>=1000 -F auid!=unset -k perm_access
+{% endif %}
+{% if rhel_09_654075 %}
+# RHEL9-STIG rule 654075
+-a always,exit -F arch=b32 -S delete_module -F auid>=1000 -F auid!=unset -k module_chng
+-a always,exit -F arch=b64 -S delete_module -F auid>=1000 -F auid!=unset -k module_chng
+{% endif %}
+{% if rhel_09_654080 %}
+# RHEL9-STIG rule 654080
+-a always,exit -F arch=b32 -S init_module,finit_module -F auid>=1000 -F auid!=unset -k module_chng
+-a always,exit -F arch=b64 -S init_module,finit_module -F auid>=1000 -F auid!=unset -k module_chng
+{% endif %}
+{% if rhel_09_654085 %}
+# RHEL9-STIG rule 654085
+-a always,exit -F path=/usr/bin/chage -F perm=x -F auid>=1000 -F auid!=unset -k privileged-chage
+{% endif %}
+{% if rhel_09_654090 %}
+# RHEL9-STIG rule 654090
+-a always,exit -F path=/usr/bin/chsh -F perm=x -F auid>=1000 -F auid!=unset -k priv_cmd
+{% endif %}
+{% if rhel_09_654095 %}
+# RHEL9-STIG rule 654095
+-a always,exit -F path=/usr/bin/crontab -F perm=x -F auid>=1000 -F auid!=unset -k privileged-crontab
+{% endif %}
+{% if rhel_09_654100 %}
+# RHEL9-STIG rule 654100
+-a always,exit -F path=/usr/bin/gpasswd -F perm=x -F auid>=1000 -F auid!=unset -k privileged-gpasswd
+{% endif %}
+{% if rhel_09_654105 %}
+# RHEL9-STIG rule 654105
+-a always,exit -F path=/usr/bin/kmod -F perm=x -F auid>=1000 -F auid!=unset -k modules
+{% endif %}
+{% if rhel_09_654110 %}
+# RHEL9-STIG rule 654110
+-a always,exit -F path=/usr/bin/newgrp -F perm=x -F auid>=1000 -F auid!=unset -k priv_cmd
+{% endif %}
+{% if rhel_09_654115 %}
+# RHEL9-STIG rule 654115
+-a always,exit -F path=/usr/sbin/pam_timestamp_check -F perm=x -F auid>=1000 -F auid!=unset -k privileged-pam_timestamp_check
+{% endif %}
+{% if rhel_09_654120 %}
+# RHEL9-STIG rule 654120
+-a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=unset -k privileged-passwd
+{% endif %}
+{% if rhel_09_654125 %}
+# RHEL9-STIG rule 654125
+-a always,exit -F path=/usr/sbin/postdrop -F perm=x -F auid>=1000 -F auid!=unset -k privileged-unix-update
+{% endif %}
+{% if rhel_09_654130 %}
+# RHEL9-STIG rule 654130
+-a always,exit -F path=/usr/sbin/postqueue -F perm=x -F auid>=1000 -F auid!=unset -k privileged-unix-update
+{% endif %}
+{% if rhel_09_654135 %}
+# RHEL9-STIG rule 654135
+-a always,exit -F path=/usr/bin/ssh-agent -F perm=x -F auid>=1000 -F auid!=unset -k privileged-ssh
+{% endif %}
+{% if rhel_09_654140 %}
+# RHEL9-STIG rule 654140
+-a always,exit -F path=/usr/libexec/openssh/ssh-keysign -F perm=x -F auid>=1000 -F auid!=unset -k privileged-ssh
+{% endif %}
+{% if rhel_09_654145 %}
+# RHEL9-STIG rule 654145
+-a always,exit -F path=/usr/bin/su -F perm=x -F auid>=1000 -F auid!=unset -k privileged-priv_change
+{% endif %}
+{% if rhel_09_654150 %}
+# RHEL9-STIG rule 654150
+-a always,exit -F path=/usr/bin/sudo -F perm=x -F auid>=1000 -F auid!=unset -k priv_cmd
+{% endif %}
+{% if rhel_09_654155 %}
+# RHEL9-STIG rule 654155
+-a always,exit -F path=/usr/bin/sudoedit -F perm=x -F auid>=1000 -F auid!=unset -k priv_cmd
+{% endif %}
+{% if rhel_09_654160 %}
+# RHEL9-STIG rule 654160
+-a always,exit -F path=/usr/sbin/unix_chkpwd -F perm=x -F auid>=1000 -F auid!=unset -k privileged-unix-update
+{% endif %}
+{% if rhel_09_654165 %}
+# RHEL9-STIG rule 654165
+-a always,exit -F path=/usr/sbin/unix_update -F perm=x -F auid>=1000 -F auid!=unset -k privileged-unix-update
+{% endif %}
+{% if rhel_09_654170 %}
+# RHEL9-STIG rule 654170
+-a always,exit -F path=/usr/sbin/userhelper -F perm=x -F auid>=1000 -F auid!=unset -k privileged-unix-update
+{% endif %}
+{% if rhel_09_654175 %}
+# RHEL9-STIG rule 654175
+-a always,exit -F path=/usr/sbin/usermod -F perm=x -F auid>=1000 -F auid!=unset -k privileged-usermod
+{% endif %}
+{% if rhel_09_654180 %}
+# RHEL9-STIG rule 654180
+-a always,exit -F path=/usr/bin/mount -F perm=x -F auid>=1000 -F auid!=unset -k privileged-mount
+{% endif %}
+{% if rhel_09_654185 %}
+# RHEL9-STIG rule 654185
+-a always,exit -F path=/usr/sbin/init -F perm=x -F auid>=1000 -F auid!=unset -k privileged-init
+{% endif %}
+{% if rhel_09_654190 %}
+# RHEL9-STIG rule 654190
+-a always,exit -F path=/usr/sbin/poweroff -F perm=x -F auid>=1000 -F auid!=unset -k privileged-poweroff
+{% endif %}
+{% if rhel_09_654195 %}
+# RHEL9-STIG rule 654195
+-a always,exit -F path=/usr/sbin/reboot -F perm=x -F auid>=1000 -F auid!=unset -k privileged-reboot
+{% endif %}
+{% if rhel_09_654200 %}
+# RHEL9-STIG rule 654200
+-a always,exit -F path=/usr/sbin/shutdown -F perm=x -F auid>=1000 -F auid!=unset -k privileged-shutdown
+{% endif %}
+{% if rhel_09_654030 %}
+# RHEL9-STIG rule 654205 Overruled by 654030
+#-a always,exit -F arch=b32 -S umount -F auid>=1000 -F auid!=unset -k perm_mod
+#-a always,exit -F arch=b64 -S umount -F auid>=1000 -F auid!=unset -k perm_mod
+{% elif rhel_09_654205 %}
+# RHEL9-STIG rule 654205
+-a always,exit -F arch=b32 -S umount -F auid>=1000 -F auid!=unset -k perm_mod
+-a always,exit -F arch=b64 -S umount -F auid>=1000 -F auid!=unset -k perm_mod
+{% endif %}
+{% if rhel_09_654210 %}
+# RHEL9-STIG rule 654210
+-a always,exit -F arch=b32 -S umount2 -F auid>=1000 -F auid!=unset -k perm_mod
+-a always,exit -F arch=b64 -S umount2 -F auid>=1000 -F auid!=unset -k perm_mod
+{% endif %}
+{% if rhel_09_654215 %}
+# RHEL9-STIG rule 654215
+-w /etc/sudoers -p wa -k identity
+{% endif %}
+{% if rhel_09_654220 %}
+# RHEL9-STIG rule 654220
+-w /etc/sudoers.d/ -p wa -k identity
+{% endif %}
+{% if rhel_09_654225 %}
+# RHEL9-STIG rule 654225
+-w /etc/group -p wa -k identity
+{% endif %}
+{% if rhel_09_654230 %}
+# RHEL9-STIG rule 654230
+-w /etc/gshadow -p wa -k identity
+{% endif %}
+{% if rhel_09_654235 %}
+# RHEL9-STIG rule 654235
+-w /etc/security/opasswd -p wa -k identity
+{% endif %}
+{% if rhel_09_654240 %}
+# RHEL9-STIG rule 654240
+-w /etc/passwd -p wa -k identity
+{% endif %}
+{% if rhel_09_654245 %}
+# RHEL9-STIG rule 654245
+-w /etc/shadow -p wa -k identity
+{% endif %}
+{% if rhel_09_654250 %}
+# RHEL9-STIG rule 654250
+-w /var/log/faillock -p wa -k logins
+{% endif %}
+{% if rhel_09_654255 %}
+# RHEL9-STIG rule 654255
+-w /var/log/lastlog -p wa -k logins
+{% endif %}
+{% if rhel_09_654260 %}
+# RHEL9-STIG rule 654260
+-w /var/log/tallylog -p wa -k logins
+{% endif %}
+{% if rhel_09_654265 %}
+# RHEL9-STIG rule 654265
+-f 2
+{% endif %}
+{% if rhel_09_654270 %}
+# RHEL9-STIG rule 654270
+--loginuid-immutable
+{% endif %}
+{% if rhel_09_654275 %}
+# RHEL9-STIG rule 654275
+-e 2
+{% endif %}

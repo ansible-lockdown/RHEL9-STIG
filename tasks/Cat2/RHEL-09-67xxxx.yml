@@ -1,0 +1,303 @@
+---
+
+- name: "MEDIUM | RHEL-09-671015 | PATCH | RHEL 9 must employ FIPS 140-3 approved cryptographic hashing algorithms for all stored passwords."
+  when:
+    - rhel_09_671015
+  tags:
+    - RHEL-09-671015
+    - CAT2
+    - CCI-000196
+    - CCI-000803
+    - SRG-OS-000073-GPOS-00041
+    - SRG-OS-000120-GPOS-00061
+    - SV-258231r926680_rule
+    - V-258231
+    - NIST800-53R4_IA-5
+    - NIST800-53R4_IA-7
+    - fips
+    - users
+  block:
+    - name: "MEDIUM | RHEL-09-671015 | AUDIT | RHEL 9 must employ FIPS 140-3 approved cryptographic hashing algorithms for all stored passwords. | Get user accounts not using FIPS 140-2 hashing"
+      ansible.builtin.shell: 'cat /etc/shadow | grep -v "*" | grep -v "!" | grep -v ":$6$" | cut -f1 -d:'
+      changed_when: false
+      failed_when: false
+      register: rhel9stig_non_fips_hashed_accounts
+
+    - name: "MEDIUM | RHEL-09-671015 | PATCH | RHEL 9 must employ FIPS 140-3 approved cryptographic hashing algorithms for all stored passwords. | Lock user not using FIPS 140-3 hashing"
+      when:
+        - rhel9stig_non_fips_hashed_accounts.stdout | length > 0
+        - rhel9stig_disruption_high
+      ansible.builtin.shell: "passwd -l {{ item }}"
+      loop:
+        - "{{ rhel9stig_non_fips_hashed_accounts.stdout_lines }}"
+
+    - name: "MEDIUM | RHEL-09-671015 | AUDIT | RHEL 8 must employ FIPS 140-2 approved cryptographic hashing algorithms for all stored passwords. | Message out user accounts"
+      when:
+        - not rhel9stig_disruption_high
+        - rhel9stig_non_fips_hashed_accounts.stdout | length > 0
+      ansible.builtin.debug:
+        msg:
+          - "WARNING!! The following accounts do not have FIPS 140-2 hashing. Please review the accounts and correct to conform to control 010120 of the RHEL8 STIG"
+          - "{{ rhel9stig_non_fips_hashed_accounts.stdout_lines }}"
+
+- name: "MEDIUM | RHEL-09-671020 | PATCH | RHEL 9 IP tunnels must use FIPS 140-2/140-3 approved cryptographic algorithms."
+  when:
+    - rhel_09_671020
+    - "'ipsec' in ansible_facts.packages"
+  tags:
+    - RHEL-09-671020
+    - CAT2
+    - CCI-000068
+    - SRG-OS-000033-GPOS-00014
+    - SV-258232r926683_rule
+    - V-258232
+    - NIST800-53R4_AC-17
+    - fips
+    - tunnel
+  ansible.builtin.lineinfile:
+    line: include /etc/crypto-policies/back-ends/libreswan.config
+    path: /etc/ipsec.conf
+    regexp: ^(|\s*)include /etc/crypto-policies/back-ends
+
+- name: "MEDIUM | RHEL-09-671025 | PATCH |  RHEL 9 pam_unix.so module must be configured in the password-auth file to use a FIPS 140-3 approved cryptographic hashing algorithm for system authentication."
+  when:
+    - rhel_09_671025
+  tags:
+    - RHEL-09-671025
+    - CAT2
+    - CCI-000196
+    - SRG-OS-000073-GPOS-00041
+    - SV-258233r926686_rule
+    - V-258233
+    - NIST800-53R4_AC-5
+    - pam
+  block:
+    - name: "MEDIUM | RHEL-09-671025 | AUDIT |  RHEL 9 pam_unix.so module must be configured in the password-auth file to use a FIPS 140-3 approved cryptographic hashing algorithm for system authentication."
+      ansible.builtin.shell: grep "password.*pam_unix.so" /etc/pam.d/password-auth
+      changed_when: false
+      failed_when: rhel9stig_pamunix_fips_auth_status.rc not in [ 0, 1 ]
+      register: rhel9stig_pamunix_fips_auth_status
+
+    - name: "MEDIUM | RHEL-09-671025 | PATCH |  RHEL 9 pam_unix.so module must be configured in the password-auth file to use a FIPS 140-3 approved cryptographic hashing algorithm for system authentication."
+      when: rhel9stig_pamunix_fips_auth_status.stdout | length == 0
+      ansible.builtin.lineinfile:
+        backrefs: true
+        insertafter: '^password'
+        line: '\1required\3 sha512"\4'
+        path: /etc/pam.d/password-auth
+        regexp: '^(password\s+)(sufficient)(\s+pam_pwquality.so.*)\ssha512\d(.*)'
+
+    - name: "MEDIUM | RHEL-09-671025 | PATCH |  RHEL 9 pam_unix.so module must be configured in the password-auth file to use a FIPS 140-3 approved cryptographic hashing algorithm for system authentication."
+      when: rhel9stig_pamunix_fips_auth_status.stdout | length > 0
+      community.general.pamd:
+        name: password-auth
+        type: password
+        control: sufficient
+        module_path: pam_unix.so
+        module_arguments: 'sha512'
+        state: args_present
+
+- name: "MEDIUM | RHEL-09-672010 | PATCH | RHEL 9 must have the crypto-policies package installed."
+  when:
+    - rhel_09_672010
+    - "'crypto-policies' not in ansible_facts.packages"
+  tags:
+    - RHEL-09-672010
+    - CAT2
+    - CCI-002450
+    - CCI-002890
+    - CCI-003123
+    - SRG-OS-000396-GPOS-00176
+    - SRG-OS-000393-GPOS-00173
+    - SRG-OS-000394-GPOS-00174
+    - SV-258234r926689_rule
+    - V-258234
+    - NIST800-53R4_SC-12
+    - NIST800-53R4_MA-4
+    - crypto
+  ansible.builtin.package:
+    name: crypto-policies
+    state: present
+
+- name: "MEDIUM | RHEL-09-672020 | PATCH | RHEL 9 crypto policy must not be overridden."
+  when:
+    - rhel_09_672020
+  tags:
+    - RHEL-09-672020
+    - CAT2
+    - CCI-002450
+    - CCI-002890
+    - CCI-003123
+    - SRG-OS-000396-GPOS-00176
+    - SRG-OS-000393-GPOS-00173
+    - SRG-OS-000394-GPOS-00174
+    - SV-258236r926695_rule
+    - V-258236
+    - NIST800-53R4_SC-12
+    - NIST800-53R4_MA-4
+    - crypto
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-672020"
+  block:
+    - name: "MEDIUM | RHEL-09-672020 | AUDIT | RHEL 9 crypto policy must not be overridden."
+      ansible.builtin.shell: ls -l /etc/crypto-policies/back-ends/ | grep -V FIPS
+      changed_when: false
+      failed_when: rhel9stig_crypto_policies_fips.rc not in [ 0, 1 ]
+      register: rhel9stig_crypto_policies_fips
+
+    - name: "MEDIUM | RHEL-09-672020 | WARN | RHEL 9 crypto policy must not be overridden."
+      when:
+        - rhel9stig_crypto_policies_fips is defined
+        - rhel9stig_crypto_policies_fips.stdout | length > 0
+      ansible.builtin.debug:
+        msg: "Warning!! Please Investigate 672020 - Crypto files not pointing to FIPS"
+
+    - name: "MEDIUM | RHEL-09-672020 | WARN | RHEL 9 crypto policy must not be overridden."
+      when:
+        - rhel9stig_crypto_policies_fips is defined
+        - rhel9stig_crypto_policies_fips.stdout | length > 0
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "MEDIUM | RHEL-09-672025 | PATCH | RHEL 9 must use mechanisms meeting the requirements of applicable federal laws, executive orders, directives, policies, regulations, standards, and guidance for authentication to a cryptographic module."
+  when:
+    - rhel_09_672025
+  tags:
+    - RHEL-09-672025
+    - CAT2
+    - CCI-000803
+    - SRG-OS-000120-GPOS-00061
+    - SV-258237r926698_rule
+    - V-258237
+    - NIST800-53R4_IA-7
+    - crypto
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-672025"
+  block:
+    - name: "MEDIUM | RHEL-09-672025 | AUDIT | RHEL 9 must use mechanisms meeting the requirements of applicable federal laws, executive orders, directives, policies, regulations, standards, and guidance for authentication to a cryptographic module."
+      ansible.builtin.shell: file /etc/crypto-policies/back-ends/krb5.config
+      changed_when: false
+      failed_when: rhel9stig_crypto_krb5_fips.rc not in [ 0, 1 ]
+      register: rhel9stig_crypto_krb5_fips
+
+    - name: "MEDIUM | RHEL-09-672025 | WARN | RHEL 9 must use mechanisms meeting the requirements of applicable federal laws, executive orders, directives, policies, regulations, standards, and guidance for authentication to a cryptographic module."
+      when:
+        - rhel9stig_crypto_krb5_fips is defined
+        - "'FIPS/krb5.txt' not in rhel9stig_crypto_krb5_fips.stdout"
+      ansible.builtin.debug:
+        msg: "Warning!! Please Investigate 672025 - kerberos is not FIPS compliant"
+
+    - name: "MEDIUM | RHEL-09-672025 | WARN | RHEL 9 must use mechanisms meeting the requirements of applicable federal laws, executive orders, directives, policies, regulations, standards, and guidance for authentication to a cryptographic module."
+      when:
+        - rhel9stig_crypto_krb5_fips is defined
+        - "'FIPS/krb5.txt' not in rhel9stig_crypto_krb5_fips.stdout"
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "MEDIUM | RHEL-09-672035 | PATCH | RHEL 9 must implement DOD-approved encryption in the OpenSSL package."
+  when:
+    - rhel_09_672035
+  tags:
+    - RHEL-09-672035
+    - CAT2
+    - CCI-001453
+    - SRG-OS-000250-GPOS-00093
+    - SV-258239r926704_rule
+    - V-258239
+    - NIST800-53R4_AC-17
+    - ssl
+  notify: Change_requires_reboot
+  ansible.builtin.lineinfile:
+    line: '.include = /etc/crypto-policies/back-ends/opensslcnf.config'
+    path: /etc/pki/tls/openssl.cnf
+    regexp: ^(|\s*)\.include = /etc/crypto-policies
+
+- name: "MEDIUM | RHEL-09-672040 | PATCH | RHEL 9 must implement DOD-approved TLS encryption in the OpenSSL package."
+  when:
+    - rhel_09_672040
+  tags:
+    - RHEL-09-672040
+    - CAT2
+    - CCI-001453
+    - SRG-OS-000250-GPOS-00093
+    - SV-258240r926707_rule
+    - V-258240
+    - NIST800-53R4_AC-17
+    - ssl
+  notify: Change_requires_reboot
+  ansible.builtin.lineinfile:
+    line: "{{ item.line }}"
+    path: /etc/crypto-policies/back-ends/opensslcnf.config
+    regexp: "{{ item.regexp }}"
+  loop:
+    - {line: 'TLS.MinProtocol = TLSv1.2', regexp: '^(\s*|#)TLS.MinProtocol = '}
+    - {line: 'DTLS.MinProtocol = DTLSv1.2', regexp: '^(\s*|#)DTLS.MinProtocol = '}
+
+- name: "MEDIUM | RHEL-09-672045 | PATCH | RHEL 9 must implement a system-wide encryption policy."
+  when:
+    - rhel_09_672045
+  tags:
+    - RHEL-09-672045
+    - CAT2
+    - CCI-002450
+    - CCI-002890
+    - CCI-003123
+    - SRG-OS-000396-GPOS-00176
+    - SRG-OS-000393-GPOS-00173
+    - SRG-OS-000394-GPOS-00174
+    - SV-258241r926710_rule
+    - V-258241
+    - NIST800-53R4_SC-3
+    - NIST800-53R4_MA-4
+    - fips
+    - encryption
+  notify: Change_requires_reboot
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-672045"
+  block:
+    - name: "MEDIUM | RHEL-09-672045 | AUDIT | RHEL 9 must implement a system-wide encryption policy."
+      ansible.builtin.shell: update-crypto-policies --check
+      changed_when: false
+      failed_when: crypto_policies_check.rc not in [0 , 1]
+      register: crypto_policies_check
+
+    - name: "MEDIUM | RHEL-09-672045 | PATCH | RHEL 9 must implement a system-wide encryption policy."
+      when:
+        - "'FIPS' not in crypto_policies_check.stdout"
+        - rhel9stig_disruption_high
+      ansible.builtin.shell: fips-mode-setup --enable
+
+    - name: "MEDIUM | RHEL-09-672045 | WARN | RHEL 9 must implement a system-wide encryption policy."
+      when:
+        - "'FIPS' not in crypto_policies_check.stdout"
+        - not rhel9stig_disruption_high
+      ansible.builtin.debug:
+        msg: WARNING!! - Crypto-Policies is not set to FIPS
+
+    - name: "MEDIUM | RHEL-09-672045 | WARN | RHEL 9 must implement a system-wide encryption policy."
+      when:
+        - "'FIPS' not in crypto_policies_check.stdout"
+        - not rhel9stig_disruption_high
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "MEDIUM | RHEL-09-672050 | PATCH | RHEL 9 must implement DOD-approved encryption in the bind package."
+  when:
+    - rhel_09_672045
+    - "'bind' in ansible_facts.packages"
+  tags:
+    - RHEL-09-672045
+    - CAT2
+    - CCI-002418
+    - CCI-002422
+    - SRG-OS-000423-GPOS-00187
+    - SRG-OS-000426-GPOS-00190
+    - SV-258242r926713_rule
+    - V-258242
+    - NIST800-53R4_SC-8
+    - bind
+    - encryption
+  ansible.builtin.lineinfile:
+    line: 'include "/etc/crypto-policies/back-ends/bind.config";'
+    path: /etc/named.conf
+    regexp: ^(|\s*)\include = /etc/crypto-policies

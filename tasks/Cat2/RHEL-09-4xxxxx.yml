@@ -637,7 +637,6 @@
     - SV-258065r926182_rule
     - V-258065
     - NIST800-53R4_AC-11
-  notify: Reload_tmux
   ansible.builtin.lineinfile:
     create: true
     line: "{{ item }}"
@@ -662,7 +661,6 @@
     - SV-258066r926185_rule
     - V-258066
     - NIST800-53R4_AC-11
-  notify: Reload_tmux
   ansible.builtin.template:
     dest: /etc/tmux.conf
     group: root

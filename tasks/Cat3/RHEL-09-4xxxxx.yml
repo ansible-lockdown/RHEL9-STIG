@@ -1,6 +1,27 @@
 ---
 
-- name: "MEDIUM | RHEL-09-412040 | PATCH | RHEL 9 must limit the number of concurrent sessions to ten for all accounts and/or account types."
+- name: "LOW | RHEL-09-412030 | PATCH | RHEL 9 must prevent users from disabling session control mechanisms."
+  when:
+    - rhel_09_412030
+  tags:
+    - RHEL-09-412030
+    - CAT2
+    - CCI-000056
+    - CCI-002235
+    - SRG-OS-000324-GPOS-00125
+    - SRG-OS-000028-GPOS-00009
+    - SV-258067r926188_rule
+    - V-258067
+    - NIST800-53R4_AC-6
+    - NIST800-53R4_AC-11
+    - shell
+    - tmux
+  ansible.builtin.lineinfile:
+    path: /etc/shells
+    regexp: '^tmux'
+    state: absent
+
+- name: "LOW | RHEL-09-412040 | PATCH | RHEL 9 must limit the number of concurrent sessions to ten for all accounts and/or account types."
   when:
     - rhel_09_412040
   tags:
@@ -11,7 +32,26 @@
     - SV-258069r926194_rule
     - V-258069
     - NIST800-53R4_AC-10
+    - limits
   ansible.builtin.lineinfile:
     line: "* hard maxlogins 10"
     path: /etc/security/limits.conf
     regexp: '^\s*\*\s+hard\s+maxlogins\s+\d{1,}'
+
+- name: "LOW | RHEL-09-412075 | PATCH | RHEL 9 must display the date and time of the last successful account logon upon logon."
+  when:
+    - rhel_09_412075
+  tags:
+    - RHEL-09-412075
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-258076r926215_rule
+    - V-258076
+    - NIST800-53R4_CM-6
+    - pam
+  ansible.builtin.lineinfile:
+    insertbefore: BOF
+    line: session required pam_lastlog.so showfailed
+    path: /etc/pam.d/postlogin
+    regex: session required pam_lastlog.so showfailed

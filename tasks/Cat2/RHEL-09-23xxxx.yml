@@ -17,7 +17,7 @@
   block:
     - name: "MEDIUM | RHEL-09-231010 | PATCH | A separate RHEL 9 file system must be used for user home directories (such as /home or an equivalent)."
       ansible.builtin.debug:
-        msg: "Warning!! The designated /home directory is not a seperate filesystem"
+        msg: "Warning!! The designated /home directory is not a separate filesystem"
 
     - name: "MEDIUM | RHEL-09-231010 | PATCH | A separate RHEL 9 file system must be used for user home directories (such as /home or an equivalent)."
       ansible.builtin.import_tasks:
@@ -38,7 +38,7 @@
   vars:
     warn_control_id: "MEDIUM | RHEL-09-231015"
   block:
-    - name: "MEDIUM | RHEL-09-231015 | PATCH | RHEL 9 must use a separate file system for /tmp.."
+    - name: "MEDIUM | RHEL-09-231015 | PATCH | RHEL 9 must use a separate file system for /tmp."
       ansible.builtin.debug:
         msg: "Warning!! /tmp directory is not a seperate filesystem"
 

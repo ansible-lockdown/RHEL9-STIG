@@ -1,0 +1,63 @@
+---
+
+- name: "LOW | RHEL-09-651030 | PATCH | RHEL 9 must be configured so that the file integrity tool verifies Access Control Lists (ACLs)."
+  when:
+    - rhel_09_651030
+  tags:
+    - RHEL-09-651030
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-258138r926401_rule
+    - V-258138
+    - NIST800-53R4_CM-6
+    - aide
+  ansible.builtin.template:
+    dest: /etc/aide.conf
+    src: etc/aide.conf.j2
+
+- name: "LOW | RHEL-09-651035 | PATCH | RHEL 9 must be configured so that the file integrity tool verifies extended attributes."
+  when:
+    - rhel_09_651035
+  tags:
+    - RHEL-09-651035
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-258139r926404_rule
+    - V-258139
+    - NIST800-53R4_CM-6
+    - aide
+  ansible.builtin.template:
+    dest: /etc/aide.conf
+    src: etc/aide.conf.j2
+
+- name: "LOW | RHEL-09-653120 | PATCH | RHEL 9 must allocate an audit_backlog_limit of sufficient size to capture processes that start prior to the audit daemon."
+  when:
+    - rhel_09_653120
+  tags:
+    - RHEL-09-653120
+    - CAT2
+    - CCI-001464
+    - CCI-001849
+    - SRG-OS-000254-GPOS-00095
+    - SRG-OS-000341-GPOS-00132
+    - SV-258173r926506_rule
+    - V-258173
+    - NIST800-53R4_AU-4
+    - NIST800-53R4_AU-14
+    - grub
+  notify:
+    - Change_requires_reboot
+  block:
+    - name: "LOW | RHEL-09-653120 | AUDIT | RHEL 9 must allocate an audit_backlog_limit of sufficient size to capture processes that start prior to the audit daemon."
+      ansible.builtin.shell: grep "^GRUB_CMD" /etc/default/grub | grep audit_backlog_limit
+      changed_when: false
+      failed_when: rhel9stig_grub_audit_backlog_limit.rc not in [ 0, 1 ]
+      register: rhel9stig_grub_audit_backlog_limit
+
+    - name: "LOW | RHEL-09-211050 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
+      when:
+        - rhel9stig_grub_audit_backlog_limit is defined
+        - rhel9stig_grub_audit_backlog_limit.rc == 1
+      ansible.builtin.shell: grubby --update-kernel=ALL --args="audit_backlog_limit={{ rhel9stig_audit_backlog_limit }}"

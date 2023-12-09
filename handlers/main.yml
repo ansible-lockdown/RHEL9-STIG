@@ -6,7 +6,7 @@
 
 - name: Change_requires_reboot
   ansible.builtin.set_fact:
-    change_requires_reboot: true
+    reboot_required: true
 
 - name: Sshd_restart
   ansible.builtin.systemd:
@@ -46,9 +46,6 @@
 - name: Reload_sysctl
   ansible.builtin.shell: sysctl --system
 
-- name: Reload_tmux
-  ansible.builtin.shell: tmux source-file /etc/tmux.conf
-
 - name: Rebuild_grub
   ansible.builtin.shell: grub2-mkconfig -o /boot/grub2/grub.cfg
 
@@ -78,13 +75,28 @@
   ansible.builtin.shell: dconf update
 
 - name: Build_aide_db
-  notify: Check_aide
   ansible.builtin.shell: /usr/sbin/aide --init && mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
-
-- name: Check_aide
-  ansible.builtin.shell: /usr/sbin/aide --check
 
 - name: Restart_rsyslog
   ansible.builtin.systemd:
     name: rsyslog.service
     state: restarted
+
+## Auditd tasks note order for handlers to run
+
+- name: Auditd_immutable_check
+  ansible.builtin.shell: grep -c "^-e 2" /etc/audit/rules.d/audit.rules
+  changed_when: false
+  register: auditd_immutable_check
+
+- name: Audit_immutable_fact
+  when:
+    - auditd_immutable_check.stdout == '1'
+  notify: change_requires_reboot
+  ansible.builtin.debug:
+    msg: "Reboot required for auditd to apply new rules as immutable set"
+
+- name: Restart_auditd
+  tags:
+    - skip_ansible_lint
+  ansible.builtin.shell: service auditd restart

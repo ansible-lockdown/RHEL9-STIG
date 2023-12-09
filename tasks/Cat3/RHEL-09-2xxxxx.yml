@@ -1,0 +1,255 @@
+---
+
+- name: "LOW | RHEL-09-211035 | PATCH | RHEL 9 must enable the hardware random number generator entropy gatherer service."
+  when:
+    - rhel_09_211035
+  tags:
+    - RHEL-09-211035
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257782r925333_rule
+    - V-257782
+    - NIST800-53R4_CM-6
+    - entropy
+  ansible.builtin.systemd:
+    enabled: true
+    name: rngd
+    state: started
+
+- name: "LOW | RHEL-09-211050 | PATCH | RHEL 9 must enable mitigations against processor-based vulnerabilities."
+  when:
+    - rhel_09_211050
+  tags:
+    - RHEL-09-211050
+    - CAT2
+    - CCI-000381
+    - CCI-002824
+    - SRG-OS-000433-GPOS-00193
+    - SRG-OS-000095-GPOS-00049
+    - SV-257795r925372_rule
+    - V-257795
+    - NIST800-53R4_CM-7
+    - NIST800-53R4_SI-16
+    - grub
+  notify:
+    - Change_requires_reboot
+  block:
+    - name: "LOW | RHEL-09-211050 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
+      ansible.builtin.shell: grep "^GRUB_CMD" /etc/default/grub | grep pti
+      changed_when: false
+      failed_when: rhel9stig_grub_pti_enabled.rc not in [ 0, 1 ]
+      register: rhel9stig_grub_pti_enabled
+
+    - name: "LOW | RHEL-09-211050 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
+      when:
+        - rhel9stig_grub_pti_enabled is defined
+        - rhel9stig_grub_pti_enabled.rc == 1
+      ansible.builtin.shell: grubby --update-kernel=ALL --args="pti=on"
+
+- name: "LOW | RHEL-09-211055 | PATCH | RHEL 9 must enable auditing of processes that start prior to the audit daemon."
+  when:
+    - rhel_09_211055
+  tags:
+    - RHEL-09-211055
+    - CAT2
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-000172
+    - CCI-001464
+    - CCI-002884
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000473-GPOS-00218
+    - SRG-OS-000254-GPOS-00095
+    - SV-257796r925375_rule
+    - V-257796
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_AU-14
+    - NIST800-53R4_MA-4
+    - grub
+    - audit
+  notify:
+    - Change_requires_reboot
+  block:
+    - name: "LOW | RHEL-09-211050 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
+      ansible.builtin.shell: grep "^GRUB_CMD" /etc/default/grub | grep 'audit=1'
+      changed_when: false
+      failed_when: rhel9stig_grub_audit_enabled.rc not in [ 0, 1 ]
+      register: rhel9stig_grub_audit_enabled
+
+    - name: "LOW | RHEL-09-211050 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
+      when:
+        - rhel9stig_grub_audit_enabled is defined
+        - rhel9stig_grub_audit_enabled.rc == 1
+      ansible.builtin.shell: grubby --update-kernel=ALL --args="audit=1"
+
+- name: "LOW | RHEL-09-214035 | PATCH | RHEL 9 must remove all software components after updated versions have been installed."
+  when:
+    - rhel_09_214035
+  tags:
+    - RHEL-09-214035
+    - CAT2
+    - CCI-0002617
+    - SRG-OS-000437-GPOS-00194
+    - SV-257824r925459_rule
+    - V-257824
+    - NIST800-53R4_SI-2
+    - dnf
+  ansible.builtin.lineinfile:
+    line: clean_requirements_on_remove=1
+    path: /etc/dnf/dnf.conf
+    regexp: ^(#|\s*)clean_requirements_on_remove
+
+- name: "LOW | RHEL-09-231020 | AUDIT | RHEL 9 must use a separate file system for /var."
+  when:
+    - rhel_09_231020
+    - ansible_facts['mounts']| selectattr('mount', '==', '/var')
+  tags:
+    - RHEL-09-231020
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257845r925522_rule
+    - V-257845
+    - NIST800-53R4_CM-6
+    - filesystem
+  vars:
+    warn_control_id: "LOW | RHEL-09-231020"
+  block:
+    - name: "LOW | RHEL-09-231020 | WARN | RHEL 9 must use a separate file system for /var."
+      ansible.builtin.debug:
+        msg: "Warning!! /var directory is not a seperate filesystem"
+
+    - name: "LOW | RHEL-09-231020 | WARN | RHEL 9 must use a separate file system for /var."
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "LOW | RHEL-09-231025 | AUDIT | RHEL 9 must use a separate file system for /var/log."
+  when:
+    - rhel_09_231025
+    - ansible_facts['mounts']| selectattr('mount', '==', '/var/log')
+  tags:
+    - RHEL-09-231025
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257846r925525_rule
+    - V-257846
+    - NIST800-53R4_CM-6
+    - filesystem
+  vars:
+    warn_control_id: "LOW | RHEL-09-231025"
+  block:
+    - name: "LOW | RHEL-09-231025 | WARN | RHEL 9 must use a separate file system for /var/log."
+      ansible.builtin.debug:
+        msg: "Warning!! /var/log directory is not a separate filesystem"
+
+    - name: "LOW | RHEL-09-231025 | WARN | RHEL 9 must use a separate file system for /var/log."
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "LOW | RHEL-09-231030 | AUDIT | RHEL 9 must use a separate file system for /var/log/audit."
+  when:
+    - rhel_09_231030
+    - ansible_facts['mounts']| selectattr('mount', '==', rhel9stig_audit_log_filesystem )
+  tags:
+    - RHEL-09-231030
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257847r925528_rule
+    - V-257847
+    - NIST800-53R4_CM-6
+    - filesystem
+  vars:
+    warn_control_id: "LOW | RHEL-09-231030"
+  block:
+    - name: "LOW | RHEL-09-231030 | WARN | RHEL 9 must use a separate file system for /var/log/audit."
+      ansible.builtin.debug:
+        msg: "Warning!! {{ rhel9stig_audit_log_filesystem }} directory is not a separate filesystem"
+
+    - name: "LOW | RHEL-09-231025 | WARN | RHEL 9 must use a separate file system for /var/log/audit."
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "LOW | RHEL-09-231195 | PATCH | RHEL 9 must disable mounting of cramfs."
+  when:
+    - rhel_09_231195
+  tags:
+    - RHEL-09-231195
+    - CAT2
+    - CCI-000381
+    - SRG-OS-000095-GPOS-00049
+    - SV-257880r925627_rule
+    - V-257880
+    - NIST800-53R4_CM-7
+    - modprobe
+  notify:
+    - Change_requires_reboot
+  vars:
+    blacklist: 'cramfs'
+  ansible.builtin.template:
+    dest: "/etc/modprobe.d/{{ blacklist }}.conf"
+    src: etc/modprobe.d/module.conf.j2
+
+- name: "LOW | RHEL-09-252025 | PATCH | RHEL 9 must disable the chrony daemon from acting as a server."
+  when:
+    - rhel_09_252025
+  tags:
+    - RHEL-09-252025
+    - CAT2
+    - CCI-000381
+    - CCI-000382
+    - SRG-OS-000095-GPOS-00049
+    - SRG-OS-000096-GPOS-00050
+    - SV-257946r925825_rule
+    - V-257946
+    - NIST800-53R4_CM-7
+    - chrony
+  ansible.builtin.lineinfile:
+    line: 'port 0'
+    path: /etc/chrony.conf
+    regexp: ^(#|\s*)port \d*
+
+- name: "LOW | RHEL-09-252030 | PATCH | RHEL 9 must disable network management of the chrony daemon."
+  when:
+    - rhel_09_252030
+  tags:
+    - RHEL-09-252030
+    - CAT2
+    - CCI-000381
+    - CCI-000382
+    - SRG-OS-000095-GPOS-00049
+    - SRG-OS-000096-GPOS-00050
+    - SV-257946r925825_rule
+    - V-257946
+    - NIST800-53R4_CM-7
+    - chrony
+  ansible.builtin.lineinfile:
+    line: 'cmdport 0'
+    path: /etc/chrony.conf
+    regexp: ^(#|\s*)cmdport \d*
+
+- name: "LOW | RHEL-09-291025 | PATCH | RHEL 9 must disable network management of the chrony daemon."
+  when:
+    - rhel_09_291025
+  tags:
+    - RHEL-09-291025
+    - CAT2
+    - CCI-000169
+    - SRG-OS-000062-GPOS-00031
+    - SV-258037r926098_rule
+    - V-258037
+    - NIST800-53R4_AU-12
+    - usb
+  ansible.builtin.lineinfile:
+    line: AuditBackend=LinuxAudit
+    path: /etc/usbguard/usbguard-daemon.conf
+    regexp: AuditBackend=

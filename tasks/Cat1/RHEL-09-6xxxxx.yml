@@ -14,6 +14,7 @@
     - V-258078
     - NIST800-53R4_SC-3
     - NIST800-53R4_SI-6
+    - pam
   ansible.builtin.replace:
     path: "{{ null_pass }}"
     regexp: (.*) nullok(.*)
@@ -46,13 +47,15 @@
     - NIST800-53R4_MA-4
     - NIST800-53R4_SC-8
     - NIST800-53R4_SC-13
+    - fips
+  notify: Change_requires_reboot
+  vars:
+    warn_control_id: "HIGH | RHEL-09-671010"
   block:
     - name: HIGH | RHEL-09-671010 | PATCH | RHEL 9 must enable FIPS mode.
       when:
         - rhel9stig_disruption_high
-        - not ansible_facts.fips
       ansible.builtin.shell: fips-mode-setup --enable
-      notify: Change_requires_reboot
 
     - name: HIGH | RHEL-09-671010 | WARN | RHEL 9 must enable FIPS mode. | Give Warning
       when:
@@ -63,15 +66,13 @@
     - name: HIGH | RHEL-09-671010 | WARN | RHEL 9 must enable FIPS mode. | Warning Count
       when:
         - not rhel9stig_disruption_high
-      ansible.builtin.import_tasks: warning_facts.yml
-      vars:
-        warn_control_id: "HIGH | RHEL-09-671010"
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
 
 - name: HIGH | RHEL-09-672015 | RHEL 9 crypto policy files must match files shipped with the operating system.
   when:
     - rhel_09_672015
     - "'crypto-policies' in ansible_facts.packages"
-  notify: Change_requires_reboot
   tags:
     - RHEL-09-672015
     - CAT1
@@ -81,6 +82,8 @@
     - SV-258235r926692_rule
     - V-258235
     - NIST800-53R4_SC-13
+    - crypto
+  notify: Change_requires_reboot
   block:
     - name: HIGH | RHEL-09-672015 | AUDIT | RHEL 9 crypto policy files must match files shipped with the operating system. | Capture state
       ansible.builtin.shell: rpm -V crypto-policies
@@ -107,6 +110,10 @@
     - V-258238
     - NIST800-53R4_AC-17
     - NIST800-53R4_SC-8
+    - crypto
+  notify: Change_requires_reboot
+  vars:
+    warn_control_id: "HIGH | RHEL-09-672030"
   block:
     - name: HIGH | RHEL-09-672030 | AUDIT | RHEL 9 must implement DOD-approved TLS encryption in the GnuTLS package. | Capture crypto state
       ansible.builtin.shell: update-crypto-policies --show
@@ -118,7 +125,6 @@
         - not "'FIPS' in crypto_policies_state.stdout"
         - rhel9stig_disruption_high
       ansible.builtin.shell: fips-mode-setup --enable
-      notify: Change_requires_reboot
 
     - name: HIGH | RHEL-09-672030 | WARN | RHEL 9 must implement DOD-approved TLS encryption in the GnuTLS package. | Give Warning
       when:
@@ -131,6 +137,5 @@
       when:
         - not "'FIPS' in crypto_policies_state.stdout"
         - not rhel9stig_disruption_high
-      ansible.builtin.import_tasks: warning_facts.yml
-      vars:
-        warn_control_id: "HIGH | RHEL-09-672030"
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml

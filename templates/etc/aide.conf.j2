@@ -51,7 +51,9 @@ report_url=stdout
 #crc32:  crc32 checksum (MHASH only)
 #whirlpool:     whirlpool checksum (MHASH only)
 
+{% if rhel_09_651030 %}
 ALL = p+i+n+u+g+s+m+S+sha512+acl+xattrs+selinux
+{% endif %}
 FIPSR = p+i+n+u+g+s+m+S+sha512+acl+xattrs+selinux
 
 #R:             p+i+n+u+g+s+m+c+acl+selinux+xattrs+md5
