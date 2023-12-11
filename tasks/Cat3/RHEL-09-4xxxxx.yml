@@ -18,7 +18,7 @@
     - tmux
   ansible.builtin.lineinfile:
     path: /etc/shells
-    regexp: '^tmux'
+    regexp: 'tmux'
     state: absent
 
 - name: "LOW | RHEL-09-412040 | PATCH | RHEL 9 must limit the number of concurrent sessions to ten for all accounts and/or account types."

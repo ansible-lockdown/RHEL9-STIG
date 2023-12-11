@@ -132,13 +132,14 @@
     - CAT2
     - medium
 
-# - name: Include CAT III patches
-#   ansible.builtin.import_tasks: Cat3/main.yml
-#   when:
-#     - rhel9stig_cat3
-#   tags:
-#     - CAT3
-#     - low
+- name: Include CAT III patches
+  ansible.builtin.import_tasks:
+    file: Cat3/main.yml
+  when:
+    - rhel9stig_cat3
+  tags:
+    - CAT3
+    - low
 
 - name: Run auditd logic
   when:
