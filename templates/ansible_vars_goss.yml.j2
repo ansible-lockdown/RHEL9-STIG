@@ -512,6 +512,23 @@ rhel_09_654265: {{ rhel_09_654265 }}
 rhel_09_654270: {{ rhel_09_654270 }}
 rhel_09_654275: {{ rhel_09_654275 }}
 # Cat 3 controls
+### Cat3
+rhel_09_211035: {{ rhel_09_211035 }}
+rhel_09_212050: {{ rhel_09_212050 }}
+rhel_09_212055: {{ rhel_09_212055 }}
+rhel_09_214035: {{ rhel_09_214035 }}
+rhel_09_231020: {{ rhel_09_231020 }}
+rhel_09_231025: {{ rhel_09_231025 }}
+rhel_09_231030: {{ rhel_09_231030 }}
+rhel_09_231195: {{ rhel_09_231195 }}
+rhel_09_252025: {{ rhel_09_252025 }}
+rhel_09_291025: {{ rhel_09_291025 }}
+rhel_09_412030: {{ rhel_09_412030 }}
+rhel_09_412040: {{ rhel_09_412040 }}
+rhel_09_412075: {{ rhel_09_412075 }}
+rhel_09_651030: {{ rhel_09_651030 }}
+rhel_09_651035: {{ rhel_09_651035 }}
+rhel_09_653120: {{ rhel_09_653120 }}
 
 # Variables
 
@@ -725,7 +742,7 @@ rhel9stig_audit_conf:
   local_events: {{ rhel9stig_audit_conf.local_events }}
   log_format: {{ rhel9stig_audit_conf.log_format }}
   logfile: {{ rhel9stig_audit_conf.logfile }}
-  log_group: {{ rhel9stig_audit_conf.log_group }}
+  log_group: {{ rhel9stig_audit_conf.logfile_group }}
   max_log_file_action: {{ rhel9stig_audit_conf.max_log_file_action }}
   name_format: {{ rhel9stig_audit_conf.name_format }}
   overflow_action: {{ rhel9stig_audit_conf.overflow_action }}

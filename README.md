@@ -4,6 +4,8 @@
 
 This role is based on RHEL 9 DISA STIG: [Version 1, Rel 1 released on Sept 22, 2023](https://dl.dod.cyber.mil/wp-content/uploads/stigs/U_RHEL_9_V1R1_STIG.zip).
 
+## Initial Relase from STIG, still many items that not quite aligned in the documentation
+
 ---
 
 ![Org Stars](https://img.shields.io/github/stars/ansible-lockdown?label=Org%20Stars&style=social)
@@ -165,9 +167,9 @@ uses:
 
 ## Known Issues
 
-If adopting stig rule RHEL-09-xxxxx
+STIG Control
 
-This will affect cloud init as per [bug 1839899](https://bugs.launchpad.net/cloud-init/+bug/1839899)
+- RHEL-09-211035 rngd service - this is replaced if running FIPS see https://bugzilla.redhat.com/show_bug.cgi?id=2208049
 
 ## Support
 
