@@ -490,7 +490,7 @@
     - SRG-OS-000480-GPOS-00227
     - SRG-OS-000420-GPOS-00186
     - SRG-OS-000142-GPOS-00071
-    - SV-257957r925858_rule
+    - SV-257957r942983_rule
     - V-257957
     - NIST800-53R4_CM-6
     - NIST800-53R4_SC-5
@@ -508,7 +508,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257958r925861_rule
+    - SV-257958r942985_rule
     - V-257958
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -525,7 +525,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257959r925864_rule
+    - SV-257959r942987_rule
     - V-257959
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -576,7 +576,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257962r925873_rule
+    - SV-257962r942989_rule
     - V-257962
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -593,7 +593,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257963r925876_rule
+    - SV-257963r942991_rule
     - V-257963
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -610,7 +610,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257964r925879_rule
+    - SV-257964r942993_rule
     - V-257964
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -644,7 +644,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257966r925885_rule
+    - SV-257966r942995_rule
     - V-257966
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -678,7 +678,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257968r925891_rule
+    - SV-257968r942997_rule
     - V-257968
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -695,7 +695,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257969r925894_rule
+    - SV-257969r942999_rule
     - V-257969
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -764,7 +764,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257973r925906_rule
+    - SV-257973r943003_rule
     - V-257973
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -782,7 +782,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257974r925909_rule
+    - SV-257974r943005_rule
     - V-257974
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -799,7 +799,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257975r925912_rule
+    - SV-257975r943007_rule
     - V-257975
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -816,7 +816,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257976r925915_rule
+    - SV-257976r943009_rule
     - V-257976
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -833,7 +833,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257977r925918_rule
+    - SV-257977r943011_rule
     - V-257977
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
