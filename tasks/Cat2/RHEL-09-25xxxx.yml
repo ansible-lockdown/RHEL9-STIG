@@ -713,7 +713,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257970r925897_rule
+    - SV-257970r943001_rule
     - V-257970
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -915,7 +915,7 @@
     - CCI-001388
     - SRG-OS-000023-GPOS-00006
     - SRG-OS-000228-GPOS-00088
-    - SV-257981r925930_rule
+    - SV-257981r943028_rule
     - V-257981
     - NIST800-53R4_AC-8
   notify: Restart_ssh
@@ -933,7 +933,7 @@
     - CAT2
     - CCI-000067
     - SRG-OS-000032-GPOS-00013
-    - SV-257982r925933_rule
+    - SV-257982r943030_rule
     - V-257982
     - NIST800-53R4_AC-17
   notify: Restart_ssh
@@ -957,7 +957,7 @@
     - SRG-OS-000106-GPOS-00053
     - SRG-OS-000107-GPOS-00054
     - SRG-OS-000108-GPOS-00055
-    - SV-257983r925936_rule
+    - SV-257983r943032_rule
     - V-257983
     - NIST800-53R4_IA-2
   notify: Restart_ssh
@@ -977,7 +977,7 @@
     - CCI-000770
     - SRG-OS-000109-GPOS-00056
     - SRG-OS-000480-GPOS-00227
-    - SV-257985r928961_rule
+    - SV-257985r943036_rule
     - V-257985
     - NIST800-53R4_CM-6
     - NIST800-53R4_IA-2
@@ -1032,7 +1032,7 @@
     - CAT2
     - CCI-001453
     - SRG-OS-000250-GPOS-00093
-    - SV-257989r925954_rule
+    - SV-257989r943014_rule
     - V-257989
     - NIST800-53R4_AC-17
   notify: Change_requires_reboot
@@ -1083,7 +1083,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257992r925963_rule
+    - SV-257992r943040_rule
     - V-257992
     - NIST800-53R4_CM-6
   notify: Restart_ssh
@@ -1101,7 +1101,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00229
-    - SV-257993r925966_rule
+    - SV-257993r943042_rule
     - V-257993
     - NIST800-53R4_CM-6
   notify: Restart_ssh
@@ -1123,7 +1123,7 @@
     - SRG-OS-000423-GPOS-00187
     - SRG-OS-000033-GPOS-00014
     - SRG-OS-000424-GPOS-00188
-    - SV-257994r925969_rule
+    - SV-257994r943044_rule
     - V-257994
     - NIST800-53R4_AC-17
     - NIST800-53R4_SC-8
@@ -1145,7 +1145,7 @@
     - CCI-002421
     - SRG-OS-000163-GPOS-00072
     - SRG-OS-000279-GPOS-00109
-    - SV-257995r925972_rule
+    - SV-257995r942963_rule
     - V-257995
     - NIST800-53R4_SC-10
     - NIST800-53R4_AC-12
@@ -1170,7 +1170,7 @@
     - SRG-OS-000163-GPOS-00072
     - SRG-OS-000279-GPOS-00109
     - SRG-OS-000395-GPOS-00175
-    - SV-257996r925975_rule
+    - SV-257996r943046_rule
     - V-257996
     - NIST800-53R4_MA-4
     - NIST800-53R4_SC-10
@@ -1381,7 +1381,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258007r926008rule
+    - SV-258007r943048_rule
     - V-258007
     - NIST800-53R4_CM-6
   notify: Restart_ssh
@@ -1453,7 +1453,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258011r926020rule
+    - SV-258011r943050_rule
     - V-258011
     - NIST800-53R4_CM-6
   notify: Restart_ssh

@@ -81,7 +81,7 @@
     - SRG-OS-000257-GPOS-00098
     - SRG-OS-000258-GPOS-00099
     - SRG-OS-000278-GPOS-00108
-    - SV-258137r926398_rule
+    - SV-258137r943021_rule
     - V-258137
     - NIST800-53R4_AU-9
     - aide
@@ -890,7 +890,7 @@
     - CAT2
     - CCI-000154
     - SRG-OS-000051-GPOS-00024
-    - SV-258168r926491_rule
+    - SV-258168r943024_rule
     - V-258168
     - NIST800-53R4_AU-6
     - auditd
@@ -944,7 +944,7 @@
     - CAT2
     - CCI-000171
     - SRG-OS-000063-GPOS-00032
-    - SV-258171r926500_rule
+    - SV-258171r943057_rule
     - V-258171
     - NIST800-53R4_AU-12
     - auditd

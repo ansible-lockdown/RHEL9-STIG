@@ -358,7 +358,7 @@
     - CAT2
     - CCI-00366
     - SRG-OS-000480-GPOS-00227
-    - SV-258029r926074_rule
+    - SV-258029r943059_rule
     - V-258029
     - NIST800-53R4_CM-6
   notify: Update_dconf

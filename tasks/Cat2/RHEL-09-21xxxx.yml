@@ -582,12 +582,12 @@
     - CAT2
     - CCI-000381
     - SRG-OS-000095-GPOS-00049
-    - SV-257806r928942_rule
+    - SV-257806r942955_rule
     - V-257806
     - NIST800-53R4_CM-7
   vars:
     blacklist: 'firewire-core'
-    mod_value: 'true'
+    mod_value: 'false'
   ansible.builtin.template:
     dest: "/etc/modprobe.d/{{ blacklist }}.conf"
     src: etc/modprobe.d/module.conf.j2
@@ -1154,7 +1154,7 @@
     - CAT2
     - CCI-001744
     - SRG-OS-000363-GPOS-00150
-    - SV-257842r925513_rule
+    - SV-257842r942959_rule
     - V-257842
     - NIST800-53R4_CM-3
   ansible.builtin.package:
