@@ -343,6 +343,7 @@ rhel_09_271075: true
 rhel_09_271080: true
 rhel_09_271085: true
 rhel_09_271090: true
+rhel_09_271095: true
 rhel_09_271100: true
 rhel_09_271105: true
 rhel_09_271110: true
@@ -675,7 +676,7 @@ rhel9stig_custom_firewall:
   interface:
   - "{{ ansible_default_ipv4.interface }}"
 
-# rhel9stig_white_list_services is the services that you want to allow through initially for teh new firewall zone
+# rhel9stig_white_list_services is the services that you want to allow through initially for the new firewall zone
 # http and ssh need to be enabled for the role to run.
 # This can also be a port number if no service exists
 rhel9stig_white_list_services:
