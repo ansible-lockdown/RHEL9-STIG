@@ -1588,7 +1588,7 @@
     - NIST800-53R4_CM-5
   block:
     - name: "RHEL-09-232200 | AUDIT | RHEL 9 library files must be owned by root."
-      ansible.builtin.shell: find -L /lib /lib64 /usr/lib /usr/lib64 ! -user root -exec ls {} \;
+      ansible.builtin.shell: find -L /lib /lib64 /usr/lib /usr/lib64 ! -user root
       changed_when: false
       failed_when: rhel9stig_lib_files_owner.rc not in [ 0, 1 ]
       register: rhel9stig_lib_files_owner
@@ -1597,9 +1597,8 @@
       when: rhel9stig_lib_files_owner.stdout | length > 0
       ansible.builtin.file:
         owner: root
-        path: "{{ path }}"
-      loop:
-        - "{{ rhel9stig_lib_files_owner.stdout_lines }}"
+        path: "{{ item }}"
+      loop: "{{ rhel9stig_lib_files_owner.stdout_lines }}"
 
 - name: "RHEL-09-232205 | PATCH | RHEL 9 library files must be group-owned by root or a system account."
   when:
