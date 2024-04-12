@@ -48,7 +48,7 @@
     line: banner-message-enable
     path: "/etc/dconf/db/{{ rhel9stig_dconf_db.stdout }}.d/locks/session"
     mode: '0644'
-    modification_time: preserve
+    state: present
     state: touch
 
 - name: "MEDIUM | RHEL-09-271020 | PATCH | RHEL 9 must disable the graphical user interface automount function unless required."
