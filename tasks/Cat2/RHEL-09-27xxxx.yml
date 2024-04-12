@@ -72,7 +72,7 @@
   community.general.ini_file:
     create: true
     mode: '0644'
-    options: automount-open
+    option: automount-open
     path: "/etc/dconf/db/{{ rhel9stig_dconf_db.stdout }}.d/00-security-settings"
     section: 'org/gnome/desktop/media-handling'
     value: 'false'
