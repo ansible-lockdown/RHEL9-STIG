@@ -163,7 +163,7 @@
     option: removal-action
     path: "/etc/dconf/db/{{ rhel9stig_dconf_db.stdout }}.d/00-security-settings"
     section: 'org/gnome/settings-daemon/peripherals/smartcard'
-    value: 'lock-screen'
+    value: "'lock-screen'"
 
 - name: "MEDIUM | RHEL-09-271050 | PATCH | RHEL 9 must prevent a user from overriding the disabling of the graphical user smart card removal action."
   when:
