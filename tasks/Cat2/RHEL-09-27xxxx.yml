@@ -327,7 +327,7 @@
         option: picture-uri
         path: "/etc/dconf/db/{{ rhel9stig_dconf_db.stdout }}.d/00-security-settings"
         section: 'org/gnome/desktop/screensaver'
-        value: ''
+        value: '"file:///usr/share/backgrounds/pink-contacts.jpg"'
 
     - name: "MEDIUM | RHEL-09-271085 | PATCH | RHEL 9 must conceal, via the session lock, information previously visible on the display with a publicly viewable image."
       ansible.builtin.lineinfile:
