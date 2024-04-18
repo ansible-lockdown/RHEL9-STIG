@@ -10,7 +10,7 @@ skip_list:
     - 'name[play]'
     - 'name[casing]'
     - 'name[template]'
-    #  - 'key-order[task]'
+    - 'key-order[task]'
     - 'yaml[line-length]'
     - '204'
     - '305'
