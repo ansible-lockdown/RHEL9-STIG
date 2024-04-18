@@ -17,7 +17,7 @@ audit_bin_copy_location: /some/accessible/path
 ## managed by the control audit_content
 # git
 audit_file_git: "https://github.com/ansible-lockdown/{{ benchmark }}-Audit.git"
-audit_git_version: "benchmark-{{ benchmark_version }}"
+audit_git_version: "benchmark_{{ benchmark_version }}"
 
 # archive or copy:
 audit_conf_copy: "some path to copy from"
