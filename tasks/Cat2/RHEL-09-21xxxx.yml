@@ -808,6 +808,7 @@
 - name: "MEDIUM | RHEL-09-213115 | PATCH | The kdump service on RHEL 9 must be disabled."
   when:
     - rhel_09_213115
+    - "'kexec-tools' in ansible_facts.packages"
   tags:
     - RHEL-09-213115
     - CAT2
