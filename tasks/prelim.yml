@@ -158,6 +158,17 @@
     - SRG-OS-000475-GPOS-00220
     - auditd
 
+- name: "PRELIM | Discover auditd_logfile_path"
+  when:
+    - rhel_09_653085 or
+      rhel_09_653085 or
+      rhel_09_653090
+  tags:
+    - always
+  ansible.builtin.shell: grep ^log_file /etc/audit/auditd.conf | awk '{ print $NF }'
+  changed_when: false
+  register: discovered_auditd_logfile
+
 # - name: "PRELIM | Audit conf and rules files | list files"
 #   ansible.builtin.find:
 #     path: /etc/audit
