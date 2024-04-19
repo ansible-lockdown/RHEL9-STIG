@@ -177,7 +177,7 @@
 
     - name: "MEDIUM | RHEL-09-652025 | PATCH | RHEL 9 must be configured so that the rsyslog daemon does not accept log messages from other servers unless the server is being used for log aggregation."
       when:
-        - rhel9stig_rsyslog_conf.matched > 0
+        - rhel9stig_rsyslog_conf.matched > 1
       ansible.builtin.lineinfile:
         backrefs: true
         line: '#\1\2\3'
