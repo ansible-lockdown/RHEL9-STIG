@@ -40,6 +40,25 @@
   tags:
     - always
 
+- name: Include audit specific variables
+  when:
+    - run_audit or audit_only
+    - setup_audit
+  tags:
+    - setup_audit
+    - run_audit
+  ansible.builtin.include_vars:
+    file: audit.yml
+
+- name: Include pre-remediation audit tasks
+  when:
+    - run_audit or audit_only
+    - setup_audit
+  tags:
+    - run_audit
+  ansible.builtin.import_tasks:
+    file: pre_remediation_audit.yml
+
 - name: PRELIM | Interactive User account home
   ansible.builtin.shell: 'cat /etc/passwd | grep -Ev "nologin|/sbin" | cut -d: -f6'
   changed_when: false
