@@ -195,16 +195,18 @@
     - name: "MEDIUM | RHEL-09-251040 | PATCH | RHEL 9 network interfaces must not be in promiscuous mode."
       when:
         - not rhel9stig_disruption_high
-        - item not in rhel9stig_promisc_if
+        - item in rhel9stig_promisc_if
       ansible.builtin.debug:
         msg: "Warning!! You have interfaces set to promicious mode no in the exception list"
+      loop: "{{ ansible_facts.interfaces }}"
 
     - name: "MEDIUM | RHEL-09-251040 | PATCH | RHEL 9 network interfaces must not be in promiscuous mode."
       when:
         - not rhel9stig_disruption_high
-        - item not in rhel9stig_promisc_if
-      ansible.builtin.import_tasks:
+        - item in rhel9stig_promisc_if
+      ansible.builtin.include_tasks:
         file: warning_facts.yml
+      loop: "{{ ansible_facts.interfaces }}"
 
 - name: "MEDIUM | RHEL-09-251045 | PATCH | RHEL 9 must enable hardening for the Berkeley Packet Filter just-in-time compiler."
   when:
