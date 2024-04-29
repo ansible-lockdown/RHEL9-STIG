@@ -177,29 +177,16 @@
     - SRG-OS-000475-GPOS-00220
     - auditd
 
-# - name: "PRELIM | Audit conf and rules files | list files"
-#   ansible.builtin.find:
-#     path: /etc/audit
-#     file_type: file
-#     recurse: true
-#     patterns: '*.conf,*.rules'
-#   register: auditd_conf_files
-#   when:
-#       - rhel9_09_653105
-#   tags:
-#       - cat2
-#       - auditd
-#       - RHEL-09-653105
-
-# - name: "PRELIM | Configure cron"
-#   ansible.builtin.package:
-#       name: cronie
-#       state: present
-#   become: true
-#   when:
-#       - '"cronie" not in ansible_facts.packages'
-#   tags:
-#       - cron
+- name: "PRELIM | Discover auditd_logfile_path"
+  when:
+    - rhel_09_653085 or
+      rhel_09_653085 or
+      rhel_09_653090
+  tags:
+    - always
+  ansible.builtin.shell: grep ^log_file /etc/audit/auditd.conf | awk '{ print $NF }'
+  changed_when: false
+  register: discovered_auditd_logfile
 
 # Added to ensure ssh drop in file exists if not default /etc/ssh/sshd_config
 - name: PRELIM | SSH
