@@ -8,7 +8,7 @@ ci:
 
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.5.0
+  rev: v4.6.0
   hooks:
   # Safety
   - id: detect-aws-credentials
@@ -36,12 +36,12 @@ repos:
   - id: detect-secrets
 
 - repo: https://github.com/gitleaks/gitleaks
-  rev: v8.18.0
+  rev: v8.18.2
   hooks:
   - id: gitleaks
 
 - repo: https://github.com/ansible-community/ansible-lint
-  rev: v6.21.1
+  rev: v24.2.2
   hooks:
   - id: ansible-lint
     name: Ansible-lint
@@ -60,6 +60,6 @@ repos:
     - ansible-core>=2.12.1
 
 - repo: https://github.com/adrienverge/yamllint.git
-  rev: v1.32.0  # or higher tag
+  rev: v1.35.1  # or higher tag
   hooks:
   - id: yamllint
