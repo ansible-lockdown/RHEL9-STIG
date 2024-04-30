@@ -8,7 +8,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257782r925333_rule
+    - SV-257782r942961_rule
     - V-257782
     - NIST800-53R4_CM-6
     - entropy
@@ -187,7 +187,7 @@
     - CAT2
     - CCI-000381
     - SRG-OS-000095-GPOS-00049
-    - SV-257880r925627_rule
+    - SV-257880r942957_rule
     - V-257880
     - NIST800-53R4_CM-7
     - modprobe

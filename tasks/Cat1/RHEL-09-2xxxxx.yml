@@ -73,7 +73,7 @@
     - CAT1
     - CCI-000213
     - SRG-OS-000080-GPOS-00048
-    - SV-257789r925354_rule
+    - SV-257789r943055_rule
     - V-257789
     - NIST800-53R4_AC-3
     - grub
@@ -323,7 +323,7 @@
     - SRG-OS-000106-GPOS-00053
     - SRG-OS-000480-GPOS-00229
     - SRG-OS-000480-GPOS-00227
-    - SV-257984r925939_rule
+    - SV-257984r943034_rule
     - V-257984
     - NIST800-53R4_CM-6
     - NIST800-53R4_IA-2
@@ -343,7 +343,7 @@
     - CAT1
     - CCI-000877
     - SRG-OS-000125-GPOS-00065
-    - SV-257986r925945_rule
+    - SV-257986r943038_rule
     - V-257986
     - NIST800-53R4_MA-4
     - ssh

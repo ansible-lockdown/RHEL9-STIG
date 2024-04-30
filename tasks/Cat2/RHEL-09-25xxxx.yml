@@ -492,7 +492,7 @@
     - SRG-OS-000480-GPOS-00227
     - SRG-OS-000420-GPOS-00186
     - SRG-OS-000142-GPOS-00071
-    - SV-257957r925858_rule
+    - SV-257957r942983_rule
     - V-257957
     - NIST800-53R4_CM-6
     - NIST800-53R4_SC-5
@@ -510,7 +510,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257958r925861_rule
+    - SV-257958r942985_rule
     - V-257958
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -527,7 +527,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257959r925864_rule
+    - SV-257959r942987_rule
     - V-257959
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -578,7 +578,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257962r925873_rule
+    - SV-257962r942989_rule
     - V-257962
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -595,7 +595,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257963r925876_rule
+    - SV-257963r942991_rule
     - V-257963
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -612,7 +612,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257964r925879_rule
+    - SV-257964r942993_rule
     - V-257964
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -646,7 +646,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257966r925885_rule
+    - SV-257966r942995_rule
     - V-257966
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -680,7 +680,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257968r925891_rule
+    - SV-257968r942997_rule
     - V-257968
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -697,7 +697,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257969r925894_rule
+    - SV-257969r942999_rule
     - V-257969
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -715,7 +715,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257970r925897_rule
+    - SV-257970r943001_rule
     - V-257970
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -766,7 +766,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257973r925906_rule
+    - SV-257973r943003_rule
     - V-257973
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -784,7 +784,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257974r925909_rule
+    - SV-257974r943005_rule
     - V-257974
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -801,7 +801,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257975r925912_rule
+    - SV-257975r943007_rule
     - V-257975
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -818,7 +818,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257976r925915_rule
+    - SV-257976r943009_rule
     - V-257976
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -835,7 +835,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257977r925918_rule
+    - SV-257977r943011_rule
     - V-257977
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -917,15 +917,17 @@
     - CCI-001388
     - SRG-OS-000023-GPOS-00006
     - SRG-OS-000228-GPOS-00088
-    - SV-257981r925930_rule
+    - SV-257981r943028_rule
     - V-257981
     - NIST800-53R4_AC-8
+    - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     create: true
     line: "banner {{ rhel9stig_sshd_config.banner_file }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)banner \/.*\/.*
+    validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255030 | PATCH | RHEL 9 must log SSH connection attempts and failures to the server."
   when:
@@ -935,15 +937,17 @@
     - CAT2
     - CCI-000067
     - SRG-OS-000032-GPOS-00013
-    - SV-257982r925933_rule
+    - SV-257982r943030_rule
     - V-257982
     - NIST800-53R4_AC-17
+    - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     create: true
     line: "LogLevel {{ rhel9stig_sshd_config.loglevel }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)LogLevel.*
+    validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255035 | PATCH | RHEL 9 SSHD must accept public key authentication"
   when:
@@ -959,15 +963,17 @@
     - SRG-OS-000106-GPOS-00053
     - SRG-OS-000107-GPOS-00054
     - SRG-OS-000108-GPOS-00055
-    - SV-257983r925936_rule
+    - SV-257983r943032_rule
     - V-257983
     - NIST800-53R4_IA-2
+    - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     create: true
     line: "PubkeyAuthentication {{ rhel9stig_sshd_config.pubkeyauth }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)PubkeyAuthentication\s*(yes|no)
+    validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255045 | PATCH | RHEL 9 must not permit direct logons to the root account using remote access via SSH."
   when:
@@ -979,16 +985,18 @@
     - CCI-000770
     - SRG-OS-000109-GPOS-00056
     - SRG-OS-000480-GPOS-00227
-    - SV-257985r928961_rule
+    - SV-257985r943036_rule
     - V-257985
     - NIST800-53R4_CM-6
     - NIST800-53R4_IA-2
+    - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     create: true
     line: "PermitRootLogin {{ rhel9stig_sshd_config.permitroot }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)PermitRootLogin\s*(yes|no)
+    validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255055 | PATCH | RHEL 9 SSH daemon must be configured to use system-wide crypto policies."
   when:
@@ -1001,12 +1009,14 @@
     - SV-257987r925948_rule
     - V-257987
     - NIST800-53R4_AC-17
+    - ssh
   notify: Restart_sshd
   ansible.builtin.lineinfile:
     create: true
     line: "Include {{ rhel9stig_sshd_config.include_conf }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)Include.*
+    validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255060 | PATCH | RHEL 9 must implement DOD-approved encryption ciphers to protect the confidentiality of SSH client connections."
   when:
@@ -1019,12 +1029,14 @@
     - SV-257988r925951_rule
     - V-257988
     - NIST800-53R4_AC-17
+    - ssh
   notify: Restart_sshd
   ansible.builtin.lineinfile:
     create: true
     line: "Include {{ rhel9stig_sshd_config.include_conf }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)Include.*
+    validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255065 | PATCH | RHEL 9 must implement DOD-approved encryption ciphers to protect the confidentiality of SSH server connections."
   when:
@@ -1034,7 +1046,7 @@
     - CAT2
     - CCI-001453
     - SRG-OS-000250-GPOS-00093
-    - SV-257989r925954_rule
+    - SV-257989r943014_rule
     - V-257989
     - NIST800-53R4_AC-17
   notify: Change_requires_reboot
@@ -1085,15 +1097,17 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257992r925963_rule
+    - SV-257992r943040_rule
     - V-257992
     - NIST800-53R4_CM-6
+    - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     create: true
     line: "HostbasedAuthentication {{ rhel9stig_sshd_config.hostauth }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)HostbasedAuthentication\s*(yes|no)
+    validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255085 | PATCH | RHEL 9 must not allow users to override SSH environment variables."
   when:
@@ -1103,15 +1117,17 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00229
-    - SV-257993r925966_rule
+    - SV-257993r943042_rule
     - V-257993
     - NIST800-53R4_CM-6
+    - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     create: true
     line: "PermitUserEnvironment {{ rhel9stig_sshd_config.userenv }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)PermitUserEnvironments\s*(yes|no)
+    validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255090 | PATCH | RHEL 9 must force a frequent session key renegotiation for SSH connections to the server."
   when:
@@ -1125,16 +1141,18 @@
     - SRG-OS-000423-GPOS-00187
     - SRG-OS-000033-GPOS-00014
     - SRG-OS-000424-GPOS-00188
-    - SV-257994r925969_rule
+    - SV-257994r943044_rule
     - V-257994
     - NIST800-53R4_AC-17
     - NIST800-53R4_SC-8
+    - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     create: true
     line: "RekeyLimit {{ rhel9stig_sshd_config.rekeylimit }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)RekeyLimit.*
+    validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255095 | PATCH | RHEL 9 must be configured so that all network connections associated with SSH traffic terminate after becoming unresponsive."
   when:
@@ -1147,16 +1165,18 @@
     - CCI-002421
     - SRG-OS-000163-GPOS-00072
     - SRG-OS-000279-GPOS-00109
-    - SV-257995r925972_rule
+    - SV-257995r942963_rule
     - V-257995
     - NIST800-53R4_SC-10
     - NIST800-53R4_AC-12
+    - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     create: true
     line: "ClientAliveCountMax {{ rhel9stig_sshd_config.clientalivecountmax }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)ClientAliveCountMax\s\d*
+    validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255100 | PATCH | RHEL 9 must be configured so that all network connections associated with SSH traffic are terminated after 10 minutes of becoming unresponsive."
   when:
@@ -1172,17 +1192,19 @@
     - SRG-OS-000163-GPOS-00072
     - SRG-OS-000279-GPOS-00109
     - SRG-OS-000395-GPOS-00175
-    - SV-257996r925975_rule
+    - SV-257996r943046_rule
     - V-257996
     - NIST800-53R4_MA-4
     - NIST800-53R4_SC-10
     - NIST800-53R4_AC-12
+    - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     create: true
     line: "ClientAliveInterval {{ rhel9stig_sshd_config.clientaliveinterval }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)ClientAliveInterval\s\d*
+    validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255105 | PATCH | RHEL 9 SSH server configuration file must be group-owned by root."
   when:
@@ -1195,6 +1217,7 @@
     - SV-257997r925978_rule
     - V-257997
     - NIST800-53R4_CM-6
+    - ssh
   ansible.builtin.file:
     group: root
     path: "{{ rhel9stig_sshd_config_file }}"
@@ -1210,6 +1233,7 @@
     - SV-257998r925981_rule
     - V-257998
     - NIST800-53R4_CM-6
+    - ssh
   ansible.builtin.file:
     owner: root
     path: "{{ rhel9stig_sshd_config_file }}"
@@ -1225,6 +1249,7 @@
     - SV-257999r925984_rule
     - V-257999
     - NIST800-53R4_CM-6
+    - ssh
   ansible.builtin.file:
     mode: go-rwx
     path: "{{ rhel9stig_sshd_config_file }}"
@@ -1290,12 +1315,14 @@
     - SV-258002r925993_rule
     - V-258002
     - NIST800-53R4_CM-6
+    - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     create: true
     line: "Compression {{ rhel9stig_sshd_config.compress }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)Compression\s*(yes|no)
+    validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255135 | PATCH | RHEL 9 SSH daemon must not allow GSSAPI authentication."
   when:
@@ -1311,12 +1338,14 @@
     - V-258003
     - NIST800-53R4_CM-5
     - NIST800-53R4_CM-6
+    - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     create: true
     line: "GSSAPIAuthentication {{ rhel9stig_sshd_config.gssapiauth }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)GSSAPIAuthentication\s*(yes|no)
+    validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255140 | PATCH | RHEL 9 SSH daemon must not allow Kerberos authentication."
   when:
@@ -1332,12 +1361,14 @@
     - V-258004
     - NIST800-53R4_CM-5
     - NIST800-53R4_CM-6
+    - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     create: true
     line: "KerberosAuthentication {{ rhel9stig_sshd_config.gssapiauth }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)KerberosAuthentication\s*(yes|no)
+    validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255145 | PATCH | RHEL 9 SSH daemon must not allow rhosts authentication"
   when:
@@ -1350,12 +1381,14 @@
     - SV-258005r926002_rule
     - V-258005
     - NIST800-53R4_CM-6
+    - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     create: true
     line: "IgnoreRhosts {{ rhel9stig_sshd_config.ignorerhosts }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)IgnoreRhosts\s*(yes|no)
+    validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255150 | PATCH | RHEL 9 SSH daemon must not allow known hosts authentication."
   when:
@@ -1368,12 +1401,14 @@
     - SV-258006r926005rule
     - V-258006
     - NIST800-53R4_CM-6
+    - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     create: true
     line: "IgnoreUserKnownHosts {{ rhel9stig_sshd_config.ignoreknownhosts }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)IgnoreUserKnownHosts\s*(yes|no)
+    validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255155 | PATCH | RHEL 9 SSH daemon must disable remote X connections for interactive users."
   when:
@@ -1383,15 +1418,17 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258007r926008rule
+    - SV-258007r943048_rule
     - V-258007
     - NIST800-53R4_CM-6
+    - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     create: true
     line: "X11forwarding {{ rhel9stig_sshd_config.x11forward }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)X11forwarding\s*(yes|no)
+    validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255160 | PATCH | RHEL 9 SSH daemon must perform strict mode checking of home directory configuration files."
   when:
@@ -1404,12 +1441,14 @@
     - SV-258008r926011rule
     - V-258008
     - NIST800-53R4_CM-6
+    - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     create: true
     line: "StrictModes {{ rhel9stig_sshd_config.strictmodes }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)StrictModes\s*(yes|no)
+    validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255165 | PATCH | RHEL 9 SSH daemon must display the date and time of the last successful account logon upon an SSH logon."
   when:
@@ -1422,12 +1461,14 @@
     - SV-258009r926014rule
     - V-258009
     - NIST800-53R4_CM-6
+    - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     create: true
     line: "PrintLastLog {{ rhel9stig_sshd_config.lastlog }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)PrintLastLog\s*(yes|no)
+    validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255170 | PATCH | RHEL 9 SSH daemon must display the date and time of the last successful account logon upon an SSH logon."
   when:
@@ -1440,12 +1481,14 @@
     - SV-258010r926017rule
     - V-258010
     - NIST800-53R4_CM-6
+    - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     create: true
     line: "UsePrivilegeSeparation {{ rhel9stig_sshd_config.privsep }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)UsePrivilegeSeparation\s*(yes|no)
+    validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255175 | PATCH | RHEL 9 SSH daemon must prevent remote hosts from connecting to the proxy display."
   when:
@@ -1455,12 +1498,14 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258011r926020rule
+    - SV-258011r943050_rule
     - V-258011
     - NIST800-53R4_CM-6
+    - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     create: true
     line: "X11UseLocalhost {{ rhel9stig_sshd_config.x11uselocal }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)X11UseLocalhost\s*(yes|no)
+    validate: sshd -t -f %s
