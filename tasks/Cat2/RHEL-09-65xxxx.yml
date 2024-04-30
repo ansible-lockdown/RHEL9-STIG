@@ -177,7 +177,7 @@
 
     - name: "MEDIUM | RHEL-09-652025 | PATCH | RHEL 9 must be configured so that the rsyslog daemon does not accept log messages from other servers unless the server is being used for log aggregation."
       when:
-        - rhel9stig_rsyslog_conf.matched > 0
+        - rhel9stig_rsyslog_conf.matched > 1
       ansible.builtin.lineinfile:
         backrefs: true
         line: '#\1\2\3'
@@ -635,7 +635,8 @@
         msg:
           - "WARNING!! Below is the path and size of the partition for the audit logs."
           - "Please make sure there is enough disk space for 1 week of logs"
-          - "Path: {{ rhel9stig_audit_conf.logfile }}"
+          - "Munt: {{ rhel9stig_audit_log_filesystem }}"
+          - "Logfile: {{ discovered_auditd_logfile.stdout }}"
           - "Disk Space remaining: {{ audit_filesystem_space_left }}MB"
 
     - name: "MEDIUM | RHEL-09-653030 | WARN | RHEL 9 must allocate audit record storage capacity to store at least one week's worth of audit records."
@@ -850,7 +851,7 @@
     - auditd
   ansible.builtin.file:
     owner: root
-    path: "{{ rhel9stig_audit_log_filesystem }}"
+    path: "{{ discovered_auditd_logfile.stdout }}"
 
 - name: "MEDIUM | RHEL-09-653090 | PATCH | RHEL 9 audit logs file must have mode 0600 or less permissive to prevent unauthorized access to the audit log."
   when:
@@ -869,18 +870,9 @@
     - NIST800-53R4_AU-9
     - NIST800-53R4_SI-11
     - auditd
-  block:
-    - name: "MEDIUM | RHEL-09-653090 | PATCH | RHEL 9 audit logs file must have mode 0600 or less permissive to prevent unauthorized access to the audit log."
-      ansible.builtin.file:
-        mode: '0600'
-        path: "{{ rhel9stig_audit_conf.logfile }}"
-
-    - name: "MEDIUM | RHEL-09-653090 | PATCH | RHEL 9 audit logs file must have mode 0600 or less permissive to prevent unauthorized access to the audit log."
-      ansible.builtin.file:
-        mode: '0440'
-        path: "{{ item }}"
-      with_fileglob:
-        - "{{ rhel9stig_audit_conf.logfile }}*"
+  ansible.builtin.file:
+    mode: go-rwx
+    path: "{{ discovered_auditd_logfile.stdout }}"
 
 - name: "MEDIUM | RHEL-09-653095 | PATCH | RHEL 9 must periodically flush audit records to disk to prevent the loss of audit records."
   when:
