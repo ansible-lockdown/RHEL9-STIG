@@ -826,7 +826,7 @@ rhel9stig_remotelog_server:
 rhel9stig_audit_log_filesystem: /var/log/audit
 rhel9stig_audit_conf:
   action_mail_acct: root
-  admin_space_left: 5
+  admin_space_left: 5%
   admin_space_left_action: single
   disk_error_action: HALT  # Can be one of "SYSLOG", "SINGLE", or "HALT"
   disk_full_action: HALT  # Can be one of "SYSLOG", "SINGLE", or "HALT"
@@ -838,7 +838,7 @@ rhel9stig_audit_conf:
   max_log_file_action: ROTATE
   name_format: hostname
   overflow_action: syslog
-  space_left: 25
+  space_left: 25%
   space_left_action: email
   write_logs: 'yes'
 
