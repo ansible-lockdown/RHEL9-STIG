@@ -300,4 +300,4 @@
   ansible.builtin.lineinfile:
     line: 'include "/etc/crypto-policies/back-ends/bind.config";'
     path: /etc/named.conf
-    regexp: ^(|\s*)\include = /etc/crypto-policies
+    regexp: ^(|\s*)include = /etc/crypto-policies
