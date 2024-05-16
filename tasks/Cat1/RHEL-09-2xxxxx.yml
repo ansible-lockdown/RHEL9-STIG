@@ -197,7 +197,7 @@
     name: tftp
     state: absent
 
-- name: HIGH | RHEL-08-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
+- name: HIGH | RHEL-09-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
     of all information that requires at rest protection.
   when:
     - rhel_09_231190
@@ -218,14 +218,14 @@
   vars:
     warn_control_id: "HIGH | RHEL-09-231190"
   block:
-    - name: HIGH | RHEL-08-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
+    - name: HIGH | RHEL-09-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
         of all information that requires at rest protection. | Get partition layout
       ansible.builtin.shell: blkid
       changed_when: false
       failed_when: false
       register: rhel_09_231190_partition_layout
 
-    - name: HIGH | RHEL-08-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
+    - name: HIGH | RHEL-09-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
         of all information that requires at rest protection. | Message out warning
       ansible.builtin.debug:
         msg:
@@ -233,7 +233,7 @@
           - If partitions other than pseudo file systems (such as /proc or /sys or tmpfs) this is a finding
           - "{{ rhel_09_231190_partition_layout.stdout_lines }}"
 
-    - name: HIGH | RHEL-08-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
+    - name: HIGH | RHEL-09-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
         of all information that requires at rest protection. | Message out warning
       ansible.builtin.import_tasks:
         file: warning_facts.yml
