@@ -45,6 +45,7 @@
     - NIST800-53R4_CM-6
   notify: Update_dconf
   ansible.builtin.lineinfile:
+    create: true
     line: banner-message-enable
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
     mode: '0644'
