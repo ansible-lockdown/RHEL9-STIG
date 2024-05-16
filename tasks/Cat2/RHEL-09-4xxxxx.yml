@@ -259,7 +259,7 @@
     - name: "MEDIUM | RHEL-09-411050 | PATCH | RHEL 9 must disable account identifiers (individuals, groups, roles, and devices) after 35 days of inactivity."
       when:
         - rhel9stig_inactive_user_setting is defined
-        - "'-1' not in rhel9stig_inactive_user_setting.stdout"
+        - "'-1' in rhel9stig_inactive_user_setting.stdout"
         - "rhel9stig_user_inactive_days not in rhel9stig_inactive_user_setting.stdout"
       ansible.builtin.shell: "useradd -D -f {{ rhel9stig_user_inactive_days }}"
 
