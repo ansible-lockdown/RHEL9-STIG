@@ -881,7 +881,7 @@
       ansible.builtin.lineinfile:
         backrefs: true
         line: '#\1'
-        path: "{{ item }}"
+        path: "{{ item.split(':').0 }}"
         regexp: ^((#|)certificate_verification =.*)
       loop: "{{ rhel9stig_sssd_cert_verification_files.stdout_lines }}"
 
