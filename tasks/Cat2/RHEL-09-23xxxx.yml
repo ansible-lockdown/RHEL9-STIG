@@ -1036,7 +1036,7 @@
         depth: 3
         file_type: file
         hidden: true
-        path: "{{ rhel9stig_home_filesystem }}"
+        paths: ["{{ rhel9stig_home_filesystem }}", /root]
         patterns: ".*"
         recurse: true
       register: user_dot_files
