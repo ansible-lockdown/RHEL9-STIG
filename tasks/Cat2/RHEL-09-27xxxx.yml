@@ -165,6 +165,7 @@
   notify: Update_dconf
   community.general.ini_file:
     create: true
+    no_extra_spaces: true
     option: removal-action
     path: "/etc/dconf/db/{{ item }}.d/00-security-settings"
     section: 'org/gnome/settings-daemon/peripherals/smartcard'
