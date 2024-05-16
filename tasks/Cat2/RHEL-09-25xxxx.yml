@@ -310,6 +310,7 @@
     section: main
     state: present
     value: none
+    no_extra_spaces: true
   register: rhel09stig_dns_nm_set
 
 - name: "MEDIUM | RHEL-09-252035 | PATCH | RHEL 9 systems using Domain Name Servers (DNS) resolution must have at least two name servers configured."
