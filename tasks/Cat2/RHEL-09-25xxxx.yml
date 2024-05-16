@@ -1426,7 +1426,7 @@
   ansible.builtin.lineinfile:
     create: true
     line: "X11forwarding {{ rhel9stig_sshd_config.x11forward }}"
-    path: "{{ rhel9stig_sshd_config_file }}"
+    path: /etc/ssh/sshd_config.d/50-redhat.conf
     regexp: ^(?i)(#|)X11forwarding\s*(yes|no)
     validate: sshd -t -f %s
 
