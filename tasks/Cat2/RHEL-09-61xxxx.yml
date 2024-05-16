@@ -1017,6 +1017,6 @@
       when:
         - rhel9stig_keytab_files.matched > 0
       ansible.builtin.file:
-        path: "{{ item }}"
+        path: "{{ item.path }}"
         state: absent
       loop: "{{ rhel9stig_keytab_files.files }}"
