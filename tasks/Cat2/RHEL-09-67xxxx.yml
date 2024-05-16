@@ -140,7 +140,7 @@
     warn_control_id: "MEDIUM | RHEL-09-672020"
   block:
     - name: "MEDIUM | RHEL-09-672020 | AUDIT | RHEL 9 crypto policy must not be overridden."
-      ansible.builtin.shell: ls -l /etc/crypto-policies/back-ends/ | grep -V FIPS
+      ansible.builtin.shell: ls -l /etc/crypto-policies/back-ends/ | grep -v FIPS
       changed_when: false
       failed_when: rhel9stig_crypto_policies_fips.rc not in [ 0, 1 ]
       register: rhel9stig_crypto_policies_fips
