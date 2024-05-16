@@ -44,8 +44,7 @@
         - "item in rhel9stig_interactive_users.stdout_lines"
       ansible.builtin.shell: "chage -M 60 {{ item }}"
       failed_when: rhel9stig_users_passwd_max.rc not in [ 0, 1 ]
-      loop:
-        - "{{ rhel9stig_users_passwd_max.stdout_lines }}"
+      loop: "{{ rhel9stig_users_passwd_max.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-411015 | WARN | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
       when:
