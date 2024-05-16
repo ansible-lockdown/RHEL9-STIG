@@ -283,10 +283,10 @@
 
 - name: "MEDIUM | RHEL-09-672050 | PATCH | RHEL 9 must implement DOD-approved encryption in the bind package."
   when:
-    - rhel_09_672045
+    - rhel_09_672050
     - "'bind' in ansible_facts.packages"
   tags:
-    - RHEL-09-672045
+    - RHEL-09-672050
     - CAT2
     - CCI-002418
     - CCI-002422
