@@ -49,7 +49,6 @@
     line: /org/gnome/login-screen/banner-message-enable
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
     mode: '0644'
-    modification_time: preserve
     state: present
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
