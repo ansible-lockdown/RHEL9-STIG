@@ -382,8 +382,8 @@
   community.general.ini_file:
     create: true
     option: disable-restart-buttons
-    path: "/etc/dconf/db/{{ item }}.d/00-security-settings"
-    section: 'org/gnome/settings-daemon/peripherals/smartcard'
+    path: "/etc/dconf/db/{{ item }}.d/02-login-screen"
+    section: 'org/gnome/login-screen'
     value: 'true'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
