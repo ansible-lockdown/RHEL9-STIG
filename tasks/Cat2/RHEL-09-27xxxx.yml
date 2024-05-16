@@ -341,7 +341,7 @@
         option: picture-uri
         path: "/etc/dconf/db/{{ item }}.d/00-security-settings"
         section: 'org/gnome/desktop/screensaver'
-        value: '""'
+        value: "''"
       loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-271085 | PATCH | RHEL 9 must conceal, via the session lock, information previously visible on the display with a publicly viewable image."
@@ -384,7 +384,8 @@
     option: disable-restart-buttons
     path: "/etc/dconf/db/{{ item }}.d/02-login-screen"
     section: 'org/gnome/login-screen'
-    value: 'true'
+    value: "'true'"
+    no_extra_spaces: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271100 | PATCH | RHEL 9 must prevent a user from overriding the disable-restart-buttons setting for the graphical user interface."
