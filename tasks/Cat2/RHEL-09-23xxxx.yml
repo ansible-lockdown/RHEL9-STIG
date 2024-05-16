@@ -1840,8 +1840,7 @@
       ansible.builtin.file:
         path: "{{ item }}"
         mode: +t
-      loop:
-        - "{{ rhel9stig_public_dirs_stickybit.stdout_lines }}"
+      loop: "{{ rhel9stig_public_dirs_stickybit.stdout_lines }}"
 
     - name: "RHEL-09-232245 | WARN | A sticky bit must be set on all RHEL 9 public directories."
       when:
