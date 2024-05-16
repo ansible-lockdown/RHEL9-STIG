@@ -211,7 +211,7 @@
   community.general.ini_file:
     create: true
     option: lock-enabled
-    path: "/etc/dconf/db/{{ item }}.d/00-security-settings"
+    path: "/etc/dconf/db/{{ item }}.d/00-screensaver"
     section: 'org/gnome/desktop/screensaver'
     value: 'true'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
