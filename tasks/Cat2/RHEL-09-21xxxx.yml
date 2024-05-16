@@ -690,7 +690,7 @@
   ansible.posix.sysctl:
     name: kernel.yama.ptrace_scope
     state: present
-    sysctl_file: "{{ rhel9stig_sysctl_file.kernel }}"
+    sysctl_file: /usr/lib/sysctl.d/10-default-yama-scope.conf
     sysctl_set: true
     value: '1'
   notify: Reload_sysctl
