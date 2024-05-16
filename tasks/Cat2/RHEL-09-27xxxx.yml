@@ -442,7 +442,7 @@
   notify: Update_dconf
   ansible.builtin.lineinfile:
     create: true
-    line: org/gnome/settings-daemon/plugins/media-keys/logout
+    line: /org/gnome/settings-daemon/plugins/media-keys/logout
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
