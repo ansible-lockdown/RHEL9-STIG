@@ -787,6 +787,25 @@
         password_lock: true
       loop: "{{ rhel9stig_empty_password_accounts.stdout_lines }}"
 
+- name: "MEDIUM | RHEL-09-611185 | PATCH | RHEL 9 must have the opensc package installed."
+  when:
+    - rhel_09_611185
+    - "'opensc' not in ansible_facts.packages"
+    - rhel9stig_smartcard_reader
+  tags:
+    - RHEL-09-611185
+    - CAT2
+    - CCI-001948
+    - CCI-001953
+    - SRG-OS-000375-GPOS-00160
+    - SRG-OS-000376-GPOS-00161
+    - V-2581126r926365_rule
+    - V-258126
+    - NIST800-53R4_IA-2
+  ansible.builtin.package:
+    name: opensc
+    state: present
+
 - name: "MEDIUM | RHEL-09-611160 | PATCH | RHEL 9 must use the CAC smart card driver."
   when:
     - rhel_09_611160
@@ -918,25 +937,6 @@
     enabled: true
     name: pcscd
     state: started
-
-- name: "MEDIUM | RHEL-09-611185 | PATCH | RHEL 9 must have the opensc package installed."
-  when:
-    - rhel_09_611185
-    - "'opensc' not in ansible_facts.packages"
-    - rhel9stig_smartcard_reader
-  tags:
-    - RHEL-09-611185
-    - CAT2
-    - CCI-001948
-    - CCI-001953
-    - SRG-OS-000375-GPOS-00160
-    - SRG-OS-000376-GPOS-00161
-    - V-2581126r926365_rule
-    - V-258126
-    - NIST800-53R4_IA-2
-  ansible.builtin.package:
-    name: opensc
-    state: present
 
 - name: "MEDIUM | RHEL-09-611190 | PATCH | RHEL 9, for PKI-based authentication, must enforce authorized access to the corresponding private key."
   when:
