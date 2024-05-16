@@ -921,7 +921,7 @@
     - NIST800-53R4_CM-5
   block:
     - name: "MEDIUM | RHEL-09-232020 | AUDIT | RHEL 9 library files must have mode 755 or less permissive."
-      ansible.builtin.shell: find -L /lib /lib64 /usr/lib /usr/lib64 -perm /022 -type f -exec ls -l {} \; | awk '{ print $NF}'
+      ansible.builtin.shell: find /lib /lib64 /usr/lib /usr/lib64 -perm /7022 -type f -exec ls -l {} \; | awk '{ print $NF}'
       changed_when: false
       failed_when: rhel9stig_library_directory_perms.rc not in [ 0, 1 ]
       register: rhel9stig_library_directory_perms
@@ -931,8 +931,7 @@
       ansible.builtin.file:
         mode: '0755'
         path: "{{ item }}"
-      loop:
-        - "{{ rhel9stig_library_directory_perms.stdout_lines }}"
+      loop: "{{ rhel9stig_library_directory_perms.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232025 | PATCH | RHEL 9 /var/log directory must have mode 0755 or less permissive."
   when:
