@@ -383,7 +383,7 @@
     option: disable-restart-buttons
     path: "/etc/dconf/db/{{ item }}.d/02-login-screen"
     section: 'org/gnome/login-screen'
-    value: "'true'"
+    value: "true"
     no_extra_spaces: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
