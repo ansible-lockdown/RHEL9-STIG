@@ -43,7 +43,6 @@ rhel9stig_dod_macs:
 - hmac-sha2-512-etm@openssh.com
 - hmac-sha2-256
 - hmac-sha1
-- hmac-sha2-512-etm@openssh.com
 - umac-128@openssh.com
 - hmac-sha2-512
 rhel9stig_dod_kex:
