@@ -820,7 +820,7 @@ rhel9stig_remotelog_server:
 # Ensure this matches the filesystem where the audit logs are stored.
 # It will affect checks for control RHEL-09-653030
 
-rhel9stig_audit_log_filesystem: /var/log/audit
+rhel9stig_audit_log_filesystem: '/var/log/audit'
 rhel9stig_audit_conf:
   action_mail_acct: root
   admin_space_left: 5
