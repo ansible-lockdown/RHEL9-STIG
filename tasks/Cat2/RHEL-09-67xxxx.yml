@@ -140,7 +140,7 @@
     warn_control_id: "MEDIUM | RHEL-09-672020"
   block:
     - name: "MEDIUM | RHEL-09-672020 | AUDIT | RHEL 9 crypto policy must not be overridden."
-      ansible.builtin.shell: ls -l /etc/crypto-policies/back-ends/ | grep -V FIPS
+      ansible.builtin.shell: ls -l /etc/crypto-policies/back-ends/ | grep -v FIPS
       changed_when: false
       failed_when: rhel9stig_crypto_policies_fips.rc not in [ 0, 1 ]
       register: rhel9stig_crypto_policies_fips
@@ -283,10 +283,10 @@
 
 - name: "MEDIUM | RHEL-09-672050 | PATCH | RHEL 9 must implement DOD-approved encryption in the bind package."
   when:
-    - rhel_09_672045
+    - rhel_09_672050
     - "'bind' in ansible_facts.packages"
   tags:
-    - RHEL-09-672045
+    - RHEL-09-672050
     - CAT2
     - CCI-002418
     - CCI-002422
@@ -300,4 +300,4 @@
   ansible.builtin.lineinfile:
     line: 'include "/etc/crypto-policies/back-ends/bind.config";'
     path: /etc/named.conf
-    regexp: ^(|\s*)\include = /etc/crypto-policies
+    regexp: ^(|\s*)include = /etc/crypto-policies
