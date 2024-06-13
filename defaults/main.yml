@@ -1,7 +1,7 @@
 ---
 
 ## metadata for Audit benchmark
-benchmark_version: 'v1r2'
+benchmark_version: 'v1r3'
 
 ## Benchmark name used by audting control role
 # The audit variable found at the base
@@ -323,7 +323,6 @@ rhel_09_255045: true
 rhel_09_255055: true
 rhel_09_255060: true
 rhel_09_255065: true
-rhel_09_255070: true
 rhel_09_255075: true
 rhel_09_255080: true
 rhel_09_255085: true
@@ -616,8 +615,7 @@ rhel9stig_sshd_config:
   kerbauth: 'no'
   lastlog: 'yes'
   loglevel: VERBOSE
-  macs_clients: "{{ rhel9stig_dod_macs_clients }}"
-  macs_server: "{{ rhel9stig_dod_macs_server }}"
+  macs: "{{ rhel9stig_dod_macs }}"
   pubkeyauth: 'yes'
   permitroot: 'no'
   privsep: sandbox
