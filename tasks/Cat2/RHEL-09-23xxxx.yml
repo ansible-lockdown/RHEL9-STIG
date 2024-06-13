@@ -1875,7 +1875,7 @@
   block:
     - name: "RHEL-09-232250 | AUDIT | All RHEL 9 local files and directories must have a valid group owner."
       when:
-        - not item['device'].startswith('/dev')
+        - item['device'].startswith('/dev')
         - not 'bind' in item['options']
       ansible.builtin.shell: find "{{ item.mount }}" -xdev -nogroup
       check_mode: false
@@ -1921,7 +1921,7 @@
   block:
     - name: "RHEL-09-232255 | AUDIT | All RHEL 9 local files and directories must have a valid owner."
       when:
-        - not item['device'].startswith('/dev')
+        - item['device'].startswith('/dev')
         - not 'bind' in item['options']
       ansible.builtin.shell: find "{{ item.mount }}" -xdev -nogroup
       check_mode: false
