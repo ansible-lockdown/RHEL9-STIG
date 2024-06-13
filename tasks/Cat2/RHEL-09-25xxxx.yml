@@ -917,7 +917,7 @@
     - CCI-001388
     - SRG-OS-000023-GPOS-00006
     - SRG-OS-000228-GPOS-00088
-    - SV-257981r943028_rule
+    - SV-257981r952173_rule
     - V-257981
     - NIST800-53R4_AC-8
     - ssh
@@ -937,7 +937,7 @@
     - CAT2
     - CCI-000067
     - SRG-OS-000032-GPOS-00013
-    - SV-257982r943030_rule
+    - SV-257982r952175_rule
     - V-257982
     - NIST800-53R4_AC-17
     - ssh
@@ -963,7 +963,7 @@
     - SRG-OS-000106-GPOS-00053
     - SRG-OS-000107-GPOS-00054
     - SRG-OS-000108-GPOS-00055
-    - SV-257983r943032_rule
+    - SV-257983r952177_rule
     - V-257983
     - NIST800-53R4_IA-2
     - ssh
@@ -985,7 +985,7 @@
     - CCI-000770
     - SRG-OS-000109-GPOS-00056
     - SRG-OS-000480-GPOS-00227
-    - SV-257985r943036_rule
+    - SV-257985r952181_rule
     - V-257985
     - NIST800-53R4_CM-6
     - NIST800-53R4_IA-2
@@ -1006,7 +1006,7 @@
     - CAT2
     - CCI-001453
     - SRG-OS-000250-GPOS-00093
-    - SV-257987r925948_rule
+    - SV-257987r952185_rule
     - V-257987
     - NIST800-53R4_AC-17
     - ssh
@@ -1052,25 +1052,8 @@
   notify: Change_requires_reboot
   ansible.builtin.lineinfile:
     line: "Ciphers {{ rhel9stig_sshd_config.ciphers | join(',') }}"
-    path: /etc/crypto-policies/back-ends/opensshserver.config
-    regexp: ^Ciphers
-
-- name: "MEDIUM | RHEL-09-255070 | PATCH | RHEL 9 SSH client must be configured to use only Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms."
-  when:
-    - rhel_09_255070
-  tags:
-    - RHEL-09-255070
-    - CAT2
-    - CCI-001453
-    - SRG-OS-000250-GPOS-00093
-    - SV-257990r925957_rule
-    - V-257990
-    - NIST800-53R4_AC-17
-  notify: Change_requires_reboot
-  ansible.builtin.lineinfile:
-    line: "MACs {{ rhel9stig_sshd_config.macs_clients | join(',') }}"
     path: /etc/crypto-policies/back-ends/openssh.config
-    regexp: ^MACs
+    regexp: ^Ciphers
 
 - name: "MEDIUM | RHEL-09-255075 | PATCH | RHEL 9 SSH server must be configured to use only Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms."
   when:
@@ -1080,13 +1063,13 @@
     - CAT2
     - CCI-001453
     - SRG-OS-000250-GPOS-00093
-    - SV-257991r925960_rule
+    - SV-257991r952188_rule
     - V-257991
     - NIST800-53R4_AC-17
   notify: Change_requires_reboot
   ansible.builtin.lineinfile:
-    line: "MACs {{ rhel9stig_sshd_config.macs_clients | join(',') + ',' + rhel9stig_sshd_config.macs_server | join(',') }}"
-    path: /etc/crypto-policies/back-ends/opensshserver.config
+    line: "MACs {{ rhel9stig_sshd_config.macs | join(',') }}"
+    path: /etc/crypto-policies/back-ends/openssh.config
     regexp: ^MACs
 
 - name: "MEDIUM | RHEL-09-255080 | PATCH | RHEL 9 must not allow a noncertificate trusted host SSH logon to the system."
@@ -1097,7 +1080,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257992r943040_rule
+    - SV-257992r952190_rule
     - V-257992
     - NIST800-53R4_CM-6
     - ssh
@@ -1117,7 +1100,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00229
-    - SV-257993r943042_rule
+    - SV-257993r952192_rule
     - V-257993
     - NIST800-53R4_CM-6
     - ssh
@@ -1141,7 +1124,7 @@
     - SRG-OS-000423-GPOS-00187
     - SRG-OS-000033-GPOS-00014
     - SRG-OS-000424-GPOS-00188
-    - SV-257994r943044_rule
+    - SV-257994r952194_rule
     - V-257994
     - NIST800-53R4_AC-17
     - NIST800-53R4_SC-8
@@ -1165,7 +1148,7 @@
     - CCI-002421
     - SRG-OS-000163-GPOS-00072
     - SRG-OS-000279-GPOS-00109
-    - SV-257995r942963_rule
+    - SV-257995r952196_rule
     - V-257995
     - NIST800-53R4_SC-10
     - NIST800-53R4_AC-12
@@ -1192,7 +1175,7 @@
     - SRG-OS-000163-GPOS-00072
     - SRG-OS-000279-GPOS-00109
     - SRG-OS-000395-GPOS-00175
-    - SV-257996r943046_rule
+    - SV-257996r952198_rule
     - V-257996
     - NIST800-53R4_MA-4
     - NIST800-53R4_SC-10
@@ -1312,7 +1295,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258002r925993_rule
+    - SV-258002r952200_rule
     - V-258002
     - NIST800-53R4_CM-6
     - ssh
@@ -1334,7 +1317,7 @@
     - CCI-001813
     - SRG-OS-000364-GPOS-00151
     - SRG-OS-000480-GPOS-00227
-    - SV-258003r925996_rule
+    - SV-258003r952202_rule
     - V-258003
     - NIST800-53R4_CM-5
     - NIST800-53R4_CM-6
@@ -1357,7 +1340,7 @@
     - CCI-001813
     - SRG-OS-000364-GPOS-00151
     - SRG-OS-000480-GPOS-00227
-    - SV-258004r925999_rule
+    - SV-258004r952204_rule
     - V-258004
     - NIST800-53R4_CM-5
     - NIST800-53R4_CM-6
@@ -1378,7 +1361,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258005r926002_rule
+    - SV-258005r952206_rule
     - V-258005
     - NIST800-53R4_CM-6
     - ssh
@@ -1398,7 +1381,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258006r926005rule
+    - SV-258006r952208_rule
     - V-258006
     - NIST800-53R4_CM-6
     - ssh
@@ -1418,7 +1401,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258007r943048_rule
+    - SV-258007r952210_rule
     - V-258007
     - NIST800-53R4_CM-6
     - ssh
@@ -1438,7 +1421,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258008r926011rule
+    - SV-258008r952212_rule
     - V-258008
     - NIST800-53R4_CM-6
     - ssh
@@ -1458,7 +1441,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258009r926014rule
+    - SV-258009r952214_rule
     - V-258009
     - NIST800-53R4_CM-6
     - ssh
@@ -1478,7 +1461,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258010r926017rule
+    - SV-258010r952216_rule
     - V-258010
     - NIST800-53R4_CM-6
     - ssh
@@ -1498,7 +1481,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258011r943050_rule
+    - SV-258011r952218_rule
     - V-258011
     - NIST800-53R4_CM-6
     - ssh
