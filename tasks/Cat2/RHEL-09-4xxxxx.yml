@@ -44,8 +44,7 @@
         - "item in rhel9stig_interactive_users.stdout_lines"
       ansible.builtin.shell: "chage -M 60 {{ item }}"
       failed_when: rhel9stig_users_passwd_max.rc not in [ 0, 1 ]
-      loop:
-        - "{{ rhel9stig_users_passwd_max.stdout_lines }}"
+      loop: "{{ rhel9stig_users_passwd_max.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-411015 | WARN | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
       when:
@@ -259,7 +258,7 @@
     - name: "MEDIUM | RHEL-09-411050 | PATCH | RHEL 9 must disable account identifiers (individuals, groups, roles, and devices) after 35 days of inactivity."
       when:
         - rhel9stig_inactive_user_setting is defined
-        - "'-1' not in rhel9stig_inactive_user_setting.stdout"
+        - "'-1' in rhel9stig_inactive_user_setting.stdout"
         - "rhel9stig_user_inactive_days not in rhel9stig_inactive_user_setting.stdout"
       ansible.builtin.shell: "useradd -D -f {{ rhel9stig_user_inactive_days }}"
 
