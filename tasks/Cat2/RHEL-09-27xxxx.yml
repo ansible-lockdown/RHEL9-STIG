@@ -45,7 +45,8 @@
     - NIST800-53R4_CM-6
   notify: Update_dconf
   ansible.builtin.lineinfile:
-    line: banner-message-enable
+    create: true
+    line: /org/gnome/login-screen/banner-message-enable
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
     mode: '0644'
     modification_time: preserve
@@ -164,6 +165,7 @@
   notify: Update_dconf
   community.general.ini_file:
     create: true
+    no_extra_spaces: true
     option: removal-action
     path: "/etc/dconf/db/{{ item }}.d/00-security-settings"
     section: 'org/gnome/settings-daemon/peripherals/smartcard'
@@ -209,7 +211,7 @@
   community.general.ini_file:
     create: true
     option: lock-enabled
-    path: "/etc/dconf/db/{{ item }}.d/00-security-settings"
+    path: "/etc/dconf/db/{{ item }}.d/00-screensaver"
     section: 'org/gnome/desktop/screensaver'
     value: 'true'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
@@ -339,7 +341,7 @@
         option: picture-uri
         path: "/etc/dconf/db/{{ item }}.d/00-security-settings"
         section: 'org/gnome/desktop/screensaver'
-        value: ''
+        value: "''"
       loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-271085 | PATCH | RHEL 9 must conceal, via the session lock, information previously visible on the display with a publicly viewable image."
@@ -380,9 +382,10 @@
   community.general.ini_file:
     create: true
     option: disable-restart-buttons
-    path: "/etc/dconf/db/{{ item }}.d/00-security-settings"
-    section: 'org/gnome/settings-daemon/peripherals/smartcard'
-    value: 'true'
+    path: "/etc/dconf/db/{{ item }}.d/02-login-screen"
+    section: 'org/gnome/login-screen'
+    value: "true"
+    no_extra_spaces: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271100 | PATCH | RHEL 9 must prevent a user from overriding the disable-restart-buttons setting for the graphical user interface."
@@ -440,7 +443,7 @@
   notify: Update_dconf
   ansible.builtin.lineinfile:
     create: true
-    line: org/gnome/settings-daemon/plugins/media-keys/logout
+    line: /org/gnome/settings-daemon/plugins/media-keys/logout
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
