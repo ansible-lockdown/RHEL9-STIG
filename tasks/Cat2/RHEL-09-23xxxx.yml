@@ -564,7 +564,7 @@
     - item.mount == '/var'
     - "'nodev' not in item.options"
   notify:
-    - Remount_tmp
+    - Remount_var
   tags:
     - RHEL-09-231140
     - CAT2
