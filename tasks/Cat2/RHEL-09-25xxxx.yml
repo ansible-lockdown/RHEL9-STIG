@@ -310,6 +310,7 @@
     section: main
     state: present
     value: none
+    no_extra_spaces: true
   register: rhel09stig_dns_nm_set
 
 - name: "MEDIUM | RHEL-09-252035 | PATCH | RHEL 9 systems using Domain Name Servers (DNS) resolution must have at least two name servers configured."
@@ -1052,7 +1053,7 @@
   notify: Change_requires_reboot
   ansible.builtin.lineinfile:
     line: "Ciphers {{ rhel9stig_sshd_config.ciphers | join(',') }}"
-    path: /etc/crypto-policies/back-ends/opensshserver.config
+    path: /etc/crypto-policies/back-ends/openssh.config
     regexp: ^Ciphers
 
 - name: "MEDIUM | RHEL-09-255070 | PATCH | RHEL 9 SSH client must be configured to use only Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms."
@@ -1406,7 +1407,7 @@
   ansible.builtin.lineinfile:
     create: true
     line: "IgnoreUserKnownHosts {{ rhel9stig_sshd_config.ignoreknownhosts }}"
-    path: "{{ rhel9stig_sshd_config_file }}"
+    path: /etc/ssh/sshd_config.d/50-redhat.conf
     regexp: ^(?i)(#|)IgnoreUserKnownHosts\s*(yes|no)
     validate: sshd -t -f %s
 
