@@ -21,13 +21,13 @@
       changed_when: false
       register: gid_min_id
 
-    - name: PRELIM | set_facts for interactive uid/gid
+    - name: PRELIM | Set_facts for interactive uid/gid
       ansible.builtin.set_fact:
         min_int_uid: "{{ uid_min_id.stdout }}"
         max_int_uid: "{{ uid_max_id.stdout }}"
         min_int_gid: "{{ gid_min_id.stdout }}"
 
-- name: PRELIM | capture /etc/password variables
+- name: PRELIM | Capture /etc/password variables
   tags:
     - always
   ansible.builtin.include_tasks:
@@ -120,7 +120,7 @@
         path: /sys/firmware/efi
       register: rhel_09_efi_boot
 
-    - name: PRELIM | set legacy boot and grub path | Bios
+    - name: PRELIM | Set legacy boot and grub path | Bios
       ansible.builtin.set_fact:
         rhel9stig_legacy_boot: true
       when: not rhel_09_efi_boot.stat.exists
