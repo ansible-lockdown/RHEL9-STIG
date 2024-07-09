@@ -838,7 +838,7 @@
     warn_control_id: "MEDIUM | RHEL-09-231200"
   block:
     - name: "MEDIUM | RHEL-09-231200 | AUDIT | RHEL 9 must prevent special devices on non-root local partitions. | discover partition"
-      ansible.builtin.shell: mount | grep '^/dev\S* on /\S' | grep nodev | awk -F" " '{ print $3}'
+      ansible.builtin.shell: mount | grep '^/dev\S* on /\S' | grep -v nodev | awk -F" " '{ print $3}'
       changed_when: false
       failed_when: rhel9stig_non_root_missing_nodev.rc not in [ 0, 1 ]
       register: rhel9stig_non_root_missing_nodev
@@ -931,8 +931,7 @@
       ansible.builtin.file:
         mode: '0755'
         path: "{{ item }}"
-      loop:
-        - "{{ rhel9stig_library_directory_perms.stdout_lines }}"
+      loop: "{{ rhel9stig_library_directory_perms.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232025 | PATCH | RHEL 9 /var/log directory must have mode 0755 or less permissive."
   when:
@@ -1036,7 +1035,7 @@
         depth: 3
         file_type: file
         hidden: true
-        path: "{{ rhel9stig_home_filesystem }}"
+        path: ["{{ rhel9stig_home_filesystem}}", /root ]
         patterns: ".*"
         recurse: true
       register: user_dot_files
@@ -1840,8 +1839,7 @@
       ansible.builtin.file:
         path: "{{ item }}"
         mode: +t
-      loop:
-        - "{{ rhel9stig_public_dirs_stickybit.stdout_lines }}"
+      loop: "{{ rhel9stig_public_dirs_stickybit.stdout_lines }}"
 
     - name: "RHEL-09-232245 | WARN | A sticky bit must be set on all RHEL 9 public directories."
       when:
