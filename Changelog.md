@@ -6,6 +6,7 @@
 - issues
   - #12 thanks to @layluke
   - #13 thanks to @PoundsOfFlesh - some excellent items from PR
+  - update audit sumamry output
 
 ## 1.2 Based on STIG V1R2 Jan24 2024
 
