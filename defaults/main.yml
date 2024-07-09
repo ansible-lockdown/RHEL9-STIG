@@ -361,6 +361,7 @@ rhel_09_271075: true
 rhel_09_271080: true
 rhel_09_271085: true
 rhel_09_271090: true
+rhel_09_271095: true
 rhel_09_271100: true
 rhel_09_271105: true
 rhel_09_271110: true
@@ -690,8 +691,7 @@ rhel9stig_home_filesystem: '/home'
 # rhel9stig_custom_firewall_zone is the desired name for the firewall zone
 rhel9stig_custom_firewall:
   zone: "drop"
-  interface:
-  - "{{ ansible_default_ipv4.interface }}"
+  interface: "{{ ansible_default_ipv4.interface }}"
 
 # rhel9stig_white_list_services is the services that you want to allow through initially for the new firewall zone
 # http and ssh need to be enabled for the role to run.
@@ -825,7 +825,7 @@ rhel9stig_remotelog_server:
 rhel9stig_audit_log_filesystem: /var/log/audit
 rhel9stig_audit_conf:
   action_mail_acct: root
-  admin_space_left: 5
+  admin_space_left: 5%
   admin_space_left_action: single
   disk_error_action: HALT  # Can be one of "SYSLOG", "SINGLE", or "HALT"
   disk_full_action: HALT  # Can be one of "SYSLOG", "SINGLE", or "HALT"
@@ -837,7 +837,7 @@ rhel9stig_audit_conf:
   max_log_file_action: ROTATE
   name_format: hostname
   overflow_action: syslog
-  space_left: 25
+  space_left: 25%
   space_left_action: email
   write_logs: 'yes'
 
