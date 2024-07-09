@@ -183,8 +183,7 @@
         line: '#\1\2\3'
         path: "{{ item.path }}"
         regex: (Input|ModLoad)(TCP|UDP|RELP|imtcp|imudp|imrelp)(.*)
-      loop:
-        - "{{ rhel9stig_rsyslog_conf.files }}"
+      loop: "{{ rhel9stig_rsyslog_conf.files }}"
 
 - name: "MEDIUM | RHEL-09-652030 | PATCH | All RHEL 9 remote access methods must be monitored."
   when:

@@ -482,7 +482,7 @@
     warn_control_id: "MEDIUM | RHEL-09-611085"
   block:
     - name: "MEDIUM | RHEL-09-611085 | AUDIT | RHEL 9 must require users to provide a password for privilege escalation"
-      ansible.builtin.shell: grep NOPASSWD /etc/sudoers /etc/sudoers.d/*
+      ansible.builtin.shell: grep -r NOPASSWD /etc/sudoers /etc/sudoers.d/
       changed_when: false
       failed_when: rhel9stig_sudo_nopasswd.rc not in [ 0, 1 ]
       register: rhel9stig_sudo_nopasswd
@@ -787,6 +787,25 @@
         password_lock: true
       loop: "{{ rhel9stig_empty_password_accounts.stdout_lines }}"
 
+- name: "MEDIUM | RHEL-09-611185 | PATCH | RHEL 9 must have the opensc package installed."
+  when:
+    - rhel_09_611185
+    - "'opensc' not in ansible_facts.packages"
+    - rhel9stig_smartcard_reader
+  tags:
+    - RHEL-09-611185
+    - CAT2
+    - CCI-001948
+    - CCI-001953
+    - SRG-OS-000375-GPOS-00160
+    - SRG-OS-000376-GPOS-00161
+    - V-2581126r926365_rule
+    - V-258126
+    - NIST800-53R4_IA-2
+  ansible.builtin.package:
+    name: opensc
+    state: present
+
 - name: "MEDIUM | RHEL-09-611160 | PATCH | RHEL 9 must use the CAC smart card driver."
   when:
     - rhel_09_611160
@@ -881,7 +900,7 @@
       ansible.builtin.lineinfile:
         backrefs: true
         line: '#\1'
-        path: "{{ item }}"
+        path: "{{ item.split(':').0 }}"
         regexp: ^((#|)certificate_verification =.*)
       loop: "{{ rhel9stig_sssd_cert_verification_files.stdout_lines }}"
 
@@ -918,25 +937,6 @@
     enabled: true
     name: pcscd
     state: started
-
-- name: "MEDIUM | RHEL-09-611185 | PATCH | RHEL 9 must have the opensc package installed."
-  when:
-    - rhel_09_611185
-    - "'opensc' not in ansible_facts.packages"
-    - rhel9stig_smartcard_reader
-  tags:
-    - RHEL-09-611185
-    - CAT2
-    - CCI-001948
-    - CCI-001953
-    - SRG-OS-000375-GPOS-00160
-    - SRG-OS-000376-GPOS-00161
-    - V-2581126r926365_rule
-    - V-258126
-    - NIST800-53R4_IA-2
-  ansible.builtin.package:
-    name: opensc
-    state: present
 
 - name: "MEDIUM | RHEL-09-611190 | PATCH | RHEL 9, for PKI-based authentication, must enforce authorized access to the corresponding private key."
   when:
@@ -1017,6 +1017,6 @@
       when:
         - rhel9stig_keytab_files.matched > 0
       ansible.builtin.file:
-        path: "{{ item }}"
+        path: "{{ item.path }}"
         state: absent
       loop: "{{ rhel9stig_keytab_files.files }}"
