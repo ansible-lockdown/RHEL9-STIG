@@ -103,9 +103,9 @@
     - NIST800-53R4_SI-2
     - dnf
   ansible.builtin.lineinfile:
-    line: clean_requirements_on_remove=1
     path: /etc/dnf/dnf.conf
     regexp: ^(#|\s*)clean_requirements_on_remove
+    line: clean_requirements_on_remove=1
 
 - name: "LOW | RHEL-09-231020 | AUDIT | RHEL 9 must use a separate file system for /var."
   when:
@@ -214,9 +214,9 @@
     - NIST800-53R4_CM-7
     - chrony
   ansible.builtin.lineinfile:
-    line: 'port 0'
     path: /etc/chrony.conf
     regexp: ^(#|\s*)port \d*
+    line: 'port 0'
 
 - name: "LOW | RHEL-09-252030 | PATCH | RHEL 9 must disable network management of the chrony daemon."
   when:
@@ -233,9 +233,9 @@
     - NIST800-53R4_CM-7
     - chrony
   ansible.builtin.lineinfile:
-    line: 'cmdport 0'
     path: /etc/chrony.conf
     regexp: ^(#|\s*)cmdport \d*
+    line: 'cmdport 0'
 
 - name: "LOW | RHEL-09-291025 | PATCH | RHEL 9 must disable network management of the chrony daemon."
   when:
@@ -250,6 +250,6 @@
     - NIST800-53R4_AU-12
     - usb
   ansible.builtin.lineinfile:
-    line: AuditBackend=LinuxAudit
     path: /etc/usbguard/usbguard-daemon.conf
     regexp: AuditBackend=
+    line: AuditBackend=LinuxAudit

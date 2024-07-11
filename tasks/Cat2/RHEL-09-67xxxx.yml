@@ -55,9 +55,9 @@
     - fips
     - tunnel
   ansible.builtin.lineinfile:
-    line: include /etc/crypto-policies/back-ends/libreswan.config
     path: /etc/ipsec.conf
     regexp: ^(|\s*)include /etc/crypto-policies/back-ends
+    line: include /etc/crypto-policies/back-ends/libreswan.config
 
 - name: "MEDIUM | RHEL-09-671025 | PATCH |  RHEL 9 pam_unix.so module must be configured in the password-auth file to use a FIPS 140-3 approved cryptographic hashing algorithm for system authentication."
   when:
@@ -81,11 +81,11 @@
     - name: "MEDIUM | RHEL-09-671025 | PATCH |  RHEL 9 pam_unix.so module must be configured in the password-auth file to use a FIPS 140-3 approved cryptographic hashing algorithm for system authentication."
       when: rhel9stig_pamunix_fips_auth_status.stdout | length == 0
       ansible.builtin.lineinfile:
-        backrefs: true
-        insertafter: '^password'
-        line: '\1required\3 sha512"\4'
         path: /etc/pam.d/password-auth
         regexp: '^(password\s+)(sufficient)(\s+pam_pwquality.so.*)\ssha512\d(.*)'
+        line: '\1required\3 sha512"\4'
+        insertafter: '^password'
+        backrefs: true
 
     - name: "MEDIUM | RHEL-09-671025 | PATCH |  RHEL 9 pam_unix.so module must be configured in the password-auth file to use a FIPS 140-3 approved cryptographic hashing algorithm for system authentication."
       when: rhel9stig_pamunix_fips_auth_status.stdout | length > 0
@@ -208,9 +208,9 @@
     - ssl
   notify: Change_requires_reboot
   ansible.builtin.lineinfile:
-    line: '.include = /etc/crypto-policies/back-ends/opensslcnf.config'
     path: /etc/pki/tls/openssl.cnf
     regexp: ^(|\s*)\.include = /etc/crypto-policies
+    line: '.include = /etc/crypto-policies/back-ends/opensslcnf.config'
 
 - name: "MEDIUM | RHEL-09-672040 | PATCH | RHEL 9 must implement DOD-approved TLS encryption in the OpenSSL package."
   when:
@@ -226,9 +226,9 @@
     - ssl
   notify: Change_requires_reboot
   ansible.builtin.lineinfile:
-    line: "{{ item.line }}"
     path: /etc/crypto-policies/back-ends/opensslcnf.config
     regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
   loop:
     - {line: 'TLS.MinProtocol = TLSv1.2', regexp: '^(\s*|#)TLS.MinProtocol = '}
     - {line: 'DTLS.MinProtocol = DTLSv1.2', regexp: '^(\s*|#)DTLS.MinProtocol = '}
@@ -298,6 +298,6 @@
     - bind
     - encryption
   ansible.builtin.lineinfile:
-    line: 'include "/etc/crypto-policies/back-ends/bind.config";'
     path: /etc/named.conf
     regexp: ^(|\s*)include = /etc/crypto-policies
+    line: 'include "/etc/crypto-policies/back-ends/bind.config";'

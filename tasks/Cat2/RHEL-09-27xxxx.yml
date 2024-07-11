@@ -45,9 +45,9 @@
     - NIST800-53R4_CM-6
   notify: Update_dconf
   ansible.builtin.lineinfile:
-    create: true
-    line: /org/gnome/login-screen/banner-message-enable
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
+    line: /org/gnome/login-screen/banner-message-enable
+    create: true
     mode: '0644'
     modification_time: preserve
     state: present
@@ -98,9 +98,9 @@
     - NIST800-53R4_IA-3
   notify: Update_dconf
   ansible.builtin.lineinfile:
-    create: true
-    line: /org/gnome/desktop/media-handling/automount-open
     path: "/etc/dconf/db/{{ item }}.d/locks/00-security-settings-lock"
+    line: /org/gnome/desktop/media-handling/automount-open
+    create: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271030 | PATCH | RHEL 9 must disable the graphical user interface autorun function unless required."
@@ -143,9 +143,9 @@
     - NIST800-53R4_IA-3
   notify: Update_dconf
   ansible.builtin.lineinfile:
-    create: true
-    line: /org/gnome/desktop/media-handling/autorun-never
     path: "/etc/dconf/db/{{ item }}.d/locks/00-security-settings-lock"
+    line: /org/gnome/desktop/media-handling/autorun-never
+    create: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271045 | PATCH | RHEL 9 must be able to initiate directly a session lock for all connection types using smart card when the smart card is removed."
@@ -188,9 +188,9 @@
     - NIST800-53R4_AC-11
   notify: Update_dconf
   ansible.builtin.lineinfile:
-    create: true
-    line: /org/gnome/settings-daemon/peripherals/smartcard/removal-action
     path: "/etc/dconf/db/{{ item }}.d/locks/00-security-settings-lock"
+    line: /org/gnome/settings-daemon/peripherals/smartcard/removal-action
+    create: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271055 | PATCH | RHEL 9 must enable a user session lock until that user re-establishes access using established identification and authentication procedures for graphical user sessions."
@@ -232,9 +232,9 @@
     - NIST800-53R4_AC-11
   notify: Update_dconf
   ansible.builtin.lineinfile:
-    create: true
-    line: /org/gnome/desktop/screensaver/lock-enabled
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
+    line: /org/gnome/desktop/screensaver/lock-enabled
+    create: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271065 | PATCH | RHEL 9 must automatically lock graphical user sessions after 15 minutes of inactivity."
@@ -276,9 +276,9 @@
     - NIST800-53R4_AC-11
   notify: Update_dconf
   ansible.builtin.lineinfile:
-    create: true
-    line: /org/gnome/desktop/session/idle-delay
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
+    line: /org/gnome/desktop/session/idle-delay
+    create: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271075 | PATCH | RHEL 9 must initiate a session lock for graphical user interfaces when the screensaver is activated."
@@ -316,9 +316,9 @@
     - NIST800-53R4_AC-11
   notify: Update_dconf
   ansible.builtin.lineinfile:
-    create: true
-    line: /org/gnome/desktop/screensaver/lock-delay
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
+    line: /org/gnome/desktop/screensaver/lock-delay
+    create: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271085 | PATCH | RHEL 9 must conceal, via the session lock, information previously visible on the display with a publicly viewable image."
@@ -346,9 +346,9 @@
 
     - name: "MEDIUM | RHEL-09-271085 | PATCH | RHEL 9 must conceal, via the session lock, information previously visible on the display with a publicly viewable image."
       ansible.builtin.lineinfile:
-        create: true
-        line: /org/gnome/desktop/screensaver/picture-uri
         path: "/etc/dconf/db/{{ item }}.d/locks/00-security-settings-lock"
+        line: /org/gnome/desktop/screensaver/picture-uri
+        create: true
       loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271090 | PATCH | RHEL 9 effective dconf policy must match the policy keyfiles."
@@ -402,9 +402,9 @@
     - NIST800-53R4_CM-6
   notify: Update_dconf
   ansible.builtin.lineinfile:
-    create: true
-    line: /org/gnome/login-screen/disable-restart-buttons
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
+    line: /org/gnome/login-screen/disable-restart-buttons
+    create: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271105 | PATCH | RHEL 9 must disable the ability of a user to accidentally press Ctrl-Alt-Del and cause a system to shut down or reboot."
@@ -442,9 +442,9 @@
     - NIST800-53R4_CM-6
   notify: Update_dconf
   ansible.builtin.lineinfile:
-    create: true
-    line: /org/gnome/settings-daemon/plugins/media-keys/logout
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
+    line: /org/gnome/settings-daemon/plugins/media-keys/logout
+    create: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271115 | PATCH |  RHEL 9 must disable the user list at logon for graphical user interfaces."

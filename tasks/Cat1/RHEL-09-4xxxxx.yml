@@ -55,6 +55,6 @@
     - NIST800-53R4_SI-6
     - selinux
   ansible.builtin.lineinfile:
-    line: SELINUX=enforcing
     path: /etc/selinux/config
     regexp: (?i)^selinux=
+    line: SELINUX=enforcing
