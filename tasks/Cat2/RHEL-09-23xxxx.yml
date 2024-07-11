@@ -1896,7 +1896,7 @@
     - name: "RHEL-09-232250 | WARN | All RHEL 9 local files and directories must have a valid group owner."
       when: rhel9stig_ungrouped_files_found is defined
       ansible.builtin.debug:
-        msg: "Warning!! Missing group on items in {{ rhel9stig_ungrouped_files_dirs_audit | json_query('results[*].stdout_lines[*]') | flatten }}"  # noqa jinja[invalid]
+        msg: "Warning!! Missing group on items in {{ rhel9stig_ungrouped_files_dirs_audit.stdout_lines  }}"
 
     - name: "RHEL-09-232250 | WARN | All RHEL 9 local files and directories must have a valid group owner."
       when: rhel9stig_ungrouped_files_found is defined
@@ -1942,7 +1942,7 @@
     - name: "RHEL-09-232255 | WARN | All RHEL 9 local files and directories must have a valid owner."
       when: rhel9stig_unowned_files_found is defined
       ansible.builtin.debug:
-        msg: "Warning!! Missing group on items in {{ rhel9stig_ungrouped_files_dirs_audit | json_query('results[*].stdout_lines[*]') | flatten }}"  # noqa jinja[invalid]
+        msg: "Warning!! Missing group on items in {{ rhel9stig_ungrouped_files_dirs_audit.stdout_lines }}"
 
     - name: "RHEL-09-232255 | WARN | All RHEL 9 local files and directories must have a valid owner."
       when: rhel9stig_unowned_files_found is defined
