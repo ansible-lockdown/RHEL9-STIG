@@ -586,7 +586,7 @@
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
     regexp: ^\s*disk_error_action
-    line: disk_error_action = "{{ rhel9stig_audit_conf.disk_error_action }}"
+    line: disk_error_action = {{ rhel9stig_audit_conf.disk_error_action }}
 
 - name: "MEDIUM | RHEL-09-653025 | PATCH | RHEL 9 audit system must take appropriate action when the audit storage volume is full."
   when:
@@ -603,7 +603,7 @@
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
     regexp: ^\s*disk_full_action
-    line: disk_full_action = "{{ rhel9stig_audit_conf.disk_full_action }}"
+    line: disk_full_action = {{ rhel9stig_audit_conf.disk_full_action }}
 
 - name: "MEDIUM | RHEL-09-653030 | AUDIT | RHEL 9 must allocate audit record storage capacity to store at least one week's worth of audit records."
   when:
@@ -656,7 +656,7 @@
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)space_left\s*=
-    line: space_left = "{{ rhel9stig_audit_conf.space_left }}"
+    line: space_left = {{ rhel9stig_audit_conf.space_left }}
 
 - name: "MEDIUM | RHEL-09-653040 | PATCH | RHEL 9 must notify the system administrator (SA) and information system security officer (ISSO) (at a minimum) when allocated audit record storage volume 75 percent utilization."
   when:
@@ -673,7 +673,7 @@
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)space_left_action\s*=
-    line: space_left_action = "{{ rhel9stig_audit_conf.space_left_action }}"
+    line: space_left_action = {{ rhel9stig_audit_conf.space_left_action }}
 
 - name: "MEDIUM | RHEL-09-653045 | PATCH | RHEL 9 must take action when allocated audit record storage volume reaches 95 percent of the audit record storage capacity."
   when:
@@ -690,7 +690,7 @@
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)admin_space_left\s*=
-    line: admin_space_left = "{{ rhel9stig_audit_conf.admin_space_left }}"
+    line: admin_space_left = {{ rhel9stig_audit_conf.admin_space_left }}
 
 - name: "MEDIUM | RHEL-09-653050 | PATCH | RHEL 9 must take action when allocated audit record storage volume reaches 95 percent of the repository maximum audit record storage capacity."
   when:
@@ -707,7 +707,7 @@
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)admin_space_left_action\s*
-    line: admin_space_left_action = "{{ rhel9stig_audit_conf.admin_space_left_action }}"
+    line: admin_space_left_action = {{ rhel9stig_audit_conf.admin_space_left_action }}
 
 - name: "MEDIUM | RHEL-09-653055 | PATCH | RHEL 9 audit system must take appropriate action when the audit files have reached maximum size."
   when:
@@ -724,7 +724,7 @@
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)max_log_file_action
-    line: max_log_file_action = "{{ rhel9stig_audit_conf.max_log_file_action }}"
+    line: max_log_file_action = {{ rhel9stig_audit_conf.max_log_file_action }}
 
 - name: "MEDIUM | RHEL-09-653060 | PATCH | RHEL 9 must label all offloaded audit logs before sending them to the central log server."
   when:
@@ -742,7 +742,7 @@
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)name_format
-    line: name_format = "{{ rhel9stig_audit_conf.name_format }}"
+    line: name_format = {{ rhel9stig_audit_conf.name_format }}
 
 - name: "MEDIUM | RHEL-09-653065 | PATCH | RHEL 9 must take appropriate action when the internal event queue is full."
   when:
@@ -759,7 +759,7 @@
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)overflow_action
-    line: overflow_action = "{{ rhel9stig_audit_conf.overflow_action }}"
+    line: overflow_action = {{ rhel9stig_audit_conf.overflow_action }}
 
 - name: "MEDIUM | RHEL-09-653070 | PATCH | RHEL 9 System Administrator (SA) and/or information system security officer (ISSO) (at a minimum) must be alerted of an audit processing failure event."
   when:
@@ -779,7 +779,7 @@
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)overflow_action
-    line: overflow_action = "{{ rhel9stig_audit_conf.overflow_action }}"
+    line: overflow_action = {{ rhel9stig_audit_conf.overflow_action }}
 
 - name: "MEDIUM | RHEL-09-653075 | PATCH | RHEL 9 audit system must audit local events."
   when:
@@ -799,7 +799,7 @@
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)overflow_action
-    line: "overflow_action = {{ rhel9stig_audit_conf.overflow_action }}"
+    line: overflow_action = {{ rhel9stig_audit_conf.overflow_action }}
 
 - name: "MEDIUM | RHEL-09-653080 | PATCH | RHEL 9 audit logs must be group-owned by root or by a restricted logging group to prevent unauthorized read access."
   when:
@@ -823,7 +823,7 @@
       ansible.builtin.lineinfile:
         path: /etc/audit/auditd.conf
         regexp: ^(#|\s*)log_group
-        line: log_group = "{{ rhel9stig_audit_conf.logfile_group }}"
+        line: log_group = {{ rhel9stig_audit_conf.logfile_group }}
 
     - name: "MEDIUM | RHEL-09-653080 | PATCH | RHEL 9 audit logs must be group-owned by root or by a restricted logging group to prevent unauthorized read access. | Set perms"
       ansible.builtin.file:
@@ -869,8 +869,8 @@
     - NIST800-53R4_SI-11
     - auditd
   ansible.builtin.file:
-    mode: go-rwx
     path: "{{ discovered_auditd_logfile.stdout }}"
+    mode: go-rwx
 
 - name: "MEDIUM | RHEL-09-653095 | PATCH | RHEL 9 must periodically flush audit records to disk to prevent the loss of audit records."
   when:
@@ -887,7 +887,7 @@
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)freq\s*=
-    line: freq = "{{ rhel9stig_audit_conf.freq }}"
+    line: freq = {{ rhel9stig_audit_conf.freq }}
 
 - name: "MEDIUM | RHEL-09-653100 | PATCH | RHEL 9 must produce audit records containing information to establish the identity of any individual or process associated with the event."
   when:
@@ -907,7 +907,7 @@
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)log_format\s*=
-    line: log_format = "{{ rhel9stig_audit_conf.log_format }}"
+    line: log_format = {{ rhel9stig_audit_conf.log_format }}
 
 - name: "MEDIUM | RHEL-09-653105 | PATCH | RHEL 9 must write audit records to disk."
   when:
@@ -924,7 +924,7 @@
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
     regexp: ^\s*write_logs
-    line: write_logs = "{{ rhel9stig_audit_conf.write_logs }}"
+    line: write_logs = {{ rhel9stig_audit_conf.write_logs }}
 
 - name: "MEDIUM | RHEL-09-653110 | PATCH | RHEL 9 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM) to select which auditable events are to be audited."
   when:
@@ -964,10 +964,10 @@
     - NIST800-53R4_AU-12
     - auditd
   ansible.builtin.file:
-    mode: '0640'
     path: /etc/audit/auditd.conf
+    mode: u-x,g-wx,o-rwx
 
-- name: "MEDIUM | RHEL-09-653125 | PATCH | RHEL 9 /etc/audit/auditd.conf file must have 0640 or less permissive to prevent unauthorized access."
+- name: "MEDIUM | RHEL-09-653125 | PATCH | RHEL 9 must have mail aliases to notify the information system security officer (ISSO) and system administrator (SA) (at a minimum) in the event of an audit processing failure."
   when:
     - rhel_09_653125
   tags:
