@@ -57,7 +57,7 @@ rhel9stig_system_is_router: false
 
 ###########################################
 ### Goss is required on the remote host ###
-### vars/auditd.yml for other settings  ###
+### vars/audit.yml for other settings  ###
 
 # Allow audit to setup the requirements including installing git (if option chosen and downloading and adding goss binary to system)
 setup_audit: false
