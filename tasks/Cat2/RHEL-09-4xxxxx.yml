@@ -12,9 +12,9 @@
     - V-258041
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
-    line: "PASS_MAX_DAYS {{ rhel9stig_pass['max_days'] }}"
     path: /etc/login.defs
     regexp: '^PASS_MAX_DAYS'
+    line: "PASS_MAX_DAYS {{ rhel9stig_pass['max_days'] }}"
 
 - name: "MEDIUM | RHEL-09-411015 | PATCH | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
   when:
@@ -44,8 +44,7 @@
         - "item in rhel9stig_interactive_users.stdout_lines"
       ansible.builtin.shell: "chage -M 60 {{ item }}"
       failed_when: rhel9stig_users_passwd_max.rc not in [ 0, 1 ]
-      loop:
-        - "{{ rhel9stig_users_passwd_max.stdout_lines }}"
+      loop: "{{ rhel9stig_users_passwd_max.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-411015 | WARN | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
       when:
@@ -75,9 +74,9 @@
     - V-258043
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
-    line: "CREATE_HOME yes"
     path: /etc/login.defs
     regexp: ^(?i)(|#)\s*CREATE_HOME (no|yes)
+    line: "CREATE_HOME yes"
 
 - name: "MEDIUM | RHEL-09-411025 | PATCH | RHEL 9 must set the umask value to 077 for all local interactive user accounts."
   when:
@@ -259,7 +258,7 @@
     - name: "MEDIUM | RHEL-09-411050 | PATCH | RHEL 9 must disable account identifiers (individuals, groups, roles, and devices) after 35 days of inactivity."
       when:
         - rhel9stig_inactive_user_setting is defined
-        - "'-1' not in rhel9stig_inactive_user_setting.stdout"
+        - "'-1' in rhel9stig_inactive_user_setting.stdout"
         - "rhel9stig_user_inactive_days not in rhel9stig_inactive_user_setting.stdout"
       ansible.builtin.shell: "useradd -D -f {{ rhel9stig_user_inactive_days }}"
 
@@ -289,9 +288,9 @@
 
     - name: "MEDIUM | RHEL-09-411055 | PATCH | Executable search paths within the initialization files of all local interactive RHEL 9 users must only contain paths that resolve to the system default or the users home directory."
       ansible.builtin.lineinfile:
-        line: "PATH={{ rhel9stig_env_path }}"
         path: "{{ item.path }}"
         regexp: ^\s*PATH
+        line: "PATH={{ rhel9stig_env_path }}"
       loop: "{{ rhel9stig_user_initialization.files }}"
 
 - name: |
@@ -384,9 +383,9 @@
     - V-258054
     - NIST800-53R4_CM-6
   ansible.builtin.lineinfile:
-    line: "deny = {{ rhel9stig_faillock.deny }}"
     path: /etc/security/faillock.conf
     regexp: '^\s*deny\s*=\s*([0-2]|[4-9]|{{ rhel9stig_faillock.deny }}[0-9]{1,})\d*'
+    line: "deny = {{ rhel9stig_faillock.deny }}"
 
 - name: "MEDIUM | RHEL-09-411080 | PATCH | RHEL 9 must automatically lock the root account until the root account is released by an administrator when three unsuccessful logon attempts occur during a 15-minute time period."
   when:
@@ -402,9 +401,9 @@
     - V-258055
     - NIST800-53R4_AC-7
   ansible.builtin.lineinfile:
-    line: even_deny_root
     path: /etc/security/faillock.conf
     regexp: ^(#|)even_deny_root
+    line: even_deny_root
 
 - name: "MEDIUM | RHEL-09-411085 | PATCH | RHEL 9 must automatically lock an account when three unsuccessful logon attempts occur during a 15-minute time period."
   when:
@@ -420,9 +419,9 @@
     - V-258056
     - NIST800-53R4_AC-7
   ansible.builtin.lineinfile:
-    line: "fail_interval = {{ rhel9stig_faillock.fail_interval }}"
     path: /etc/security/faillock.conf
     regexp: '^fail_interval\s*=\s*'
+    line: "fail_interval = {{ rhel9stig_faillock.fail_interval }}"
 
 - name: "MEDIUM | RHEL-09-411090 | PATCH | RHEL 9 must maintain an account lock until the locked account is released by an administrator."
   when:
@@ -442,9 +441,9 @@
   block:
     - name: "MEDIUM | RHEL-09-411090 | PATCH | RHEL 9 must maintain an account lock until the locked account is released by an administrator."
       ansible.builtin.lineinfile:
-        line: "unlock_time = 0"
         path: /etc/security/faillock.conf
         regexp: '^unlock_time\s*=\s*[1-9]'
+        line: "unlock_time = 0"
 
     - name: "MEDIUM | RHEL-09-411090 | AUDIT | RHEL 9 must maintain an account lock until the locked account is released by an administrator. | not auth select profile"
       ansible.builtin.lineinfile:
@@ -527,9 +526,9 @@
 
     - name: "MEDIUM | RHEL-09-411105 | PATCH | RHEL 9 must ensure account lockouts persist."
       ansible.builtin.lineinfile:
-        line: "dir = {{ rhel9stig_faillock.dir }}"
         path: /etc/security/faillock.conf
         regexp: '^dir\s*=\s*'
+        line: "dir = {{ rhel9stig_faillock.dir }}"
       notify: Change_requires_reboot
 
 - name: "MEDIUM | RHEL-09-411110 | PATCH | RHEL 9 groups must have unique Group ID (GID)."
@@ -638,11 +637,11 @@
     - V-258065
     - NIST800-53R4_AC-11
   ansible.builtin.lineinfile:
-    create: true
-    line: "{{ item }}"
-    mode: '0644'
     path: /etc/tmux.conf
     regexp: "{{ item }}"
+    line: "{{ item }}"
+    create: true
+    mode: '0644'
     state: present
   loop:
     - 'set -g lock-command vlock'
@@ -701,9 +700,9 @@
     - V-258070
     - NIST800-53R4_AC-7
   ansible.builtin.lineinfile:
-    line: "audit"
     path: /etc/security/faillock.conf
     regexp: '^\s*audit'
+    line: "audit"
 
 - name: "MEDIUM | RHEL-09-412050 | PATCH | RHEL 9 must enforce a delay of at least four seconds between logon prompts following a failed logon attempt."
   when:
@@ -717,9 +716,9 @@
     - V-258071
     - NIST800-53R4_CM-6
   ansible.builtin.lineinfile:
-    line: "FAIL_DELAY {{ rhel9stig_login_defs.fail_delay }}"
     path: /etc/login.defs
     regexp: \s*FAIL_DELAY
+    line: "FAIL_DELAY {{ rhel9stig_login_defs.fail_delay }}"
 
 - name: "MEDIUM | RHEL-09-412055 | PATCH | RHEL 9 must define default permissions for the bash shell."
   when:
@@ -735,9 +734,9 @@
   block:
     - name: "MEDIUM | RHEL-09-412055 | PATCH | RHEL 9 must define default permissions for the bash shell. | Exists"
       ansible.builtin.lineinfile:
-        line: umask 077
         path: /etc/bashrc
         regexp: umask \d\d\d
+        line: umask 077
 
     - name: "MEDIUM | RHEL-09-412055 | PATCH | RHEL 9 must define default permissions for the bash shell.| Amend all instances"
       ansible.builtin.replace:
@@ -759,9 +758,9 @@
   block:
     - name: "MEDIUM | RHEL-09-412060 | PATCH | RHEL 9 must define default permissions for the c shell. | Exists"
       ansible.builtin.lineinfile:
-        line: umask 077
         path: /etc/csh.cshrc
         regexp: umask \d\d\d
+        line: umask 077
 
     - name: "MEDIUM | RHEL-09-412060 | PATCH | RHEL 9 must define default permissions for the c shell.| Amend all instances"
       ansible.builtin.replace:
@@ -783,9 +782,9 @@
   block:
     - name: "MEDIUM | RHEL-09-412065 | PATCH | RHEL 9 must define default permissions for all authenticated users in such a way that the user can only read and modify their own files. | Exists"
       ansible.builtin.lineinfile:
-        line: UMASK 077
         path: /etc/login.defs
         regexp: UMASK \d\d\d
+        line: UMASK 077
 
     - name: "MEDIUM | RHEL-09-412065 | PATCH | RHEL 9 must define default permissions for all authenticated users in such a way that the user can only read and modify their own files. | Amend all instances"
       ansible.builtin.replace:
@@ -807,9 +806,9 @@
   block:
     - name: "MEDIUM | RHEL-09-412070 | PATCH | RHEL 9 must define default permissions for the system default profile. | Exists"
       ansible.builtin.lineinfile:
-        line: umask 077
         path: /etc/profile
         regexp: umask \d\d\d
+        line: umask 077
 
     - name: "MEDIUM | RHEL-09-412070 | PATCH | RHEL 9 must define default permissions for the system default profile. | Amend all instances"
       ansible.builtin.replace:
@@ -829,9 +828,9 @@
     - V-258077
     - NIST800-53R4_CM-6
   ansible.builtin.lineinfile:
-    line: "StopIdleSessionSec={{ rhel9stig_logind_conf.stopsessionidle }}"
     path: /etc/systemd/logind.conf
     regexp: ^(#|)StopIdleSessionSec\s*=\s*\d*
+    line: "StopIdleSessionSec={{ rhel9stig_logind_conf.stopsessionidle }}"
 
 - name: "MEDIUM | RHEL-09-431015 | PATCH | RHEL 9 must enable the SELinux targeted policy."
   when:
@@ -845,9 +844,9 @@
     - V-258079
     - NIST800-53R4_SI-6
   ansible.builtin.lineinfile:
-    line: SELINUXTYPE=targeted
     path: /etc/selinux/config
     regexp: ^(#|)SELINUXTYPE\s*=\s*\w+
+    line: SELINUXTYPE=targeted
 
 - name: "MEDIUM | RHEL-09-431025 | PATCH | RHEL 9 must have policycoreutils package installed."
   when:
@@ -935,9 +934,9 @@
     - V-258084
     - NIST800-53R4_IA-11
   ansible.builtin.lineinfile:
-    line: Defaults timestamp_timeout=0
     path: "{{ item }}"
     regexp: ^Defaults timestamp_timeout\s*=\s*(-|)\d
+    line: Defaults timestamp_timeout=0
   loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-432020 | PATCH | RHEL 9 must use the invoking user's password for privilege escalation when using 'sudo'."
@@ -954,23 +953,23 @@
   block:
     - name: "MEDIUM | RHEL-09-432020 | PATCH | RHEL 9 must use the invoking user's password for privilege escalation when using 'sudo'. | targetpw"
       ansible.builtin.lineinfile:
-        line: Defaults !targetpw
         path: "{{ item }}"
         regexp: ^(#|)Defaults !targetpw
+        line: Defaults !targetpw
       loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-432020 | PATCH | RHEL 9 must use the invoking user's password for privilege escalation when using 'sudo'. | rootpw"
       ansible.builtin.lineinfile:
-        line: Defaults !rootpw
         path: "{{ item }}"
         regexp: ^(#|)Defaults !rootpw
+        line: Defaults !rootpw
       loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-432020 | PATCH | RHEL 9 must use the invoking user's password for privilege escalation when using 'sudo'. | runaspw"
       ansible.builtin.lineinfile:
-        line: Defaults !runaspw
         path: "{{ item }}"
         regexp: ^(#|)Defaults !runaspw
+        line: Defaults !runaspw
       loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-432025 | PATCH |  RHEL 9 must require users to reauthenticate for privilege escalation."
@@ -985,8 +984,8 @@
     - V-258086
     - NIST800-53R4_IA-11
   ansible.builtin.lineinfile:
-    line: '!authenticate'
     path: "{{ item }}"
+    line: '!authenticate'
     state: absent
   loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
 
@@ -1002,9 +1001,9 @@
     - V-258087
     - NIST800-53R4_CM-6
   ansible.builtin.lineinfile:
-    line: '!authenticate'
     path: "{{ item }}"
     regexp: ALL\s*ALL=\(ALL(:ALL|)\)\s*ALL
+    line: '!authenticate'
     state: absent
   loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
 
@@ -1022,9 +1021,9 @@
     - NIST800-53R4_IA-11
     - NIST800-53R4_AC-3
   ansible.builtin.lineinfile:
-    line: auth    required    pam_wheel.so use_uid
     path: /etc/pam.d/su
     regexp: ^(#|)(auth\s*required\s*)pam_wheel.so(.*)
+    line: auth    required    pam_wheel.so use_uid
 
 - name: "MEDIUM | RHEL-09-433010 | PATCH | RHEL 9 fapolicy module must be installed."
   when:
