@@ -21,13 +21,13 @@
       changed_when: false
       register: gid_min_id
 
-    - name: PRELIM | set_facts for interactive uid/gid
+    - name: PRELIM | Set_facts for interactive uid/gid
       ansible.builtin.set_fact:
         min_int_uid: "{{ uid_min_id.stdout }}"
         max_int_uid: "{{ uid_max_id.stdout }}"
         min_int_gid: "{{ gid_min_id.stdout }}"
 
-- name: PRELIM | capture /etc/password variables
+- name: PRELIM | Capture /etc/password variables
   tags:
     - always
   ansible.builtin.include_tasks:
@@ -39,6 +39,25 @@
   register: rhel9stig_interactive_users
   tags:
     - always
+
+- name: Include audit specific variables
+  when:
+    - run_audit or audit_only
+    - setup_audit
+  tags:
+    - setup_audit
+    - run_audit
+  ansible.builtin.include_vars:
+    file: audit.yml
+
+- name: Include pre-remediation audit tasks
+  when:
+    - run_audit or audit_only
+    - setup_audit
+  tags:
+    - run_audit
+  ansible.builtin.import_tasks:
+    file: pre_remediation_audit.yml
 
 - name: PRELIM | Interactive User account home
   ansible.builtin.shell: 'cat /etc/passwd | grep -Ev "nologin|/sbin" | cut -d: -f6'
@@ -79,16 +98,6 @@
     - RHEL-09-672030
     - crypto
 
-# - name: "PRELIM | if systemd coredump"
-#   ansible.builtin.stat:
-#       path: /etc/systemd/coredump.conf
-#   register: systemd_coredump
-#   tags:
-#       - level1-server
-#       - level1-workstation
-#       - rule_1.5.1
-#       - systemd
-
 - name: PRELIM | Create list of mount points
   ansible.builtin.set_fact:
     mount_names: "{{ ansible_mounts | map(attribute='mount') | list }}"
@@ -111,7 +120,7 @@
         path: /sys/firmware/efi
       register: rhel_09_efi_boot
 
-    - name: PRELIM | set legacy boot and grub path | Bios
+    - name: PRELIM | Set legacy boot and grub path | Bios
       ansible.builtin.set_fact:
         rhel9stig_legacy_boot: true
       when: not rhel_09_efi_boot.stat.exists
@@ -169,30 +178,6 @@
   changed_when: false
   register: discovered_auditd_logfile
 
-# - name: "PRELIM | Audit conf and rules files | list files"
-#   ansible.builtin.find:
-#     path: /etc/audit
-#     file_type: file
-#     recurse: true
-#     patterns: '*.conf,*.rules'
-#   register: auditd_conf_files
-#   when:
-#       - rhel9_09_653105
-#   tags:
-#       - cat2
-#       - auditd
-#       - RHEL-09-653105
-
-# - name: "PRELIM | Configure cron"
-#   ansible.builtin.package:
-#       name: cronie
-#       state: present
-#   become: true
-#   when:
-#       - '"cronie" not in ansible_facts.packages'
-#   tags:
-#       - cron
-
 # Added to ensure ssh drop in file exists if not default /etc/ssh/sshd_config
 - name: PRELIM | SSH
   ansible.builtin.file:
@@ -224,18 +209,6 @@
   changed_when: false
   failed_when: rhel9stig_network_manager_dns.rc not in [ 0, 1 ]
   register: rhel9stig_network_manager_dns
-
-# - name: "PRELIM | Install authconfig"
-#   ansible.builtin.package:
-#       name: authconfig
-#       state: present
-#   become: true
-#   when:
-#        '"authconfig" not in ansible_facts.packages or
-#        "auditd-lib" not in ansible_facts.packages'
-#   tags:
-#       - authconfig
-#       - auditd
 
 - name: PRELIM | Discover dconf systemdb
   when:

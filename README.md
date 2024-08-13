@@ -2,7 +2,7 @@
 
 ## Configure a RHEL9 based system to be complaint with Disa STIG
 
-This role is based on RHEL 9 DISA STIG: [Version 1, Rel 1 released on Sept 22, 2023](https://dl.dod.cyber.mil/wp-content/uploads/stigs/U_RHEL_9_V1R1_STIG.zip).
+This role is based on RHEL 9 DISA STIG: [Version 1, Rel 2 released on Jan 24, 2024](https://dl.dod.cyber.mil/wp-content/uploads/stigs/U_RHEL_9_V1R2_STIG.zip).
 
 ## Initial Relase from STIG, still many items that not quite aligned in the documentation
 
@@ -84,12 +84,10 @@ This audit will not only check the config has the correct setting but aims to ca
 
 The following packages must be installed on the controlling host/host where ansible is executed:
 
-- python2-passlib (or just passlib, if using python3)
 - python-lxml
 - python-xmltodict
-- python-jmespath
 
-Package 'python-xmltodict' is required if you enable the OpenSCAP tool installation and run a report. Packages python(2)-passlib and python-jmespath are required for tasks with custom filters or modules. These are all required on the controller host that executes Ansible.
+Package 'python-xmltodict' is required if you enable the OpenSCAP tool installation and run a report. These are all required on the controller host that executes Ansible.
 
 ## Role Variables
 

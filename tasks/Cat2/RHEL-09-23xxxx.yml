@@ -564,7 +564,7 @@
     - item.mount == '/var'
     - "'nodev' not in item.options"
   notify:
-    - Remount_tmp
+    - Remount_var
   tags:
     - RHEL-09-231140
     - CAT2
@@ -838,7 +838,7 @@
     warn_control_id: "MEDIUM | RHEL-09-231200"
   block:
     - name: "MEDIUM | RHEL-09-231200 | AUDIT | RHEL 9 must prevent special devices on non-root local partitions. | discover partition"
-      ansible.builtin.shell: mount | grep '^/dev\S* on /\S' | grep nodev | awk -F" " '{ print $3}'
+      ansible.builtin.shell: mount | grep '^/dev\S* on /\S' | grep -v nodev | awk -F" " '{ print $3}'
       changed_when: false
       failed_when: rhel9stig_non_root_missing_nodev.rc not in [ 0, 1 ]
       register: rhel9stig_non_root_missing_nodev
@@ -931,8 +931,7 @@
       ansible.builtin.file:
         mode: '0755'
         path: "{{ item }}"
-      loop:
-        - "{{ rhel9stig_library_directory_perms.stdout_lines }}"
+      loop: "{{ rhel9stig_library_directory_perms.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232025 | PATCH | RHEL 9 /var/log directory must have mode 0755 or less permissive."
   when:
@@ -1031,17 +1030,17 @@
     - V-257889
     - NIST800-53R4_CM-6
   block:
-    - name: "RHEL-09-232045 | AUDIT | All RHEL 9 local initialization files must have mode 0740 or less permissive. | Check for files"
+    - name: "MEDIUM | RHEL-09-232045 | AUDIT | All RHEL 9 local initialization files must have mode 0740 or less permissive. | Check for files"
       ansible.builtin.find:
         depth: 3
         file_type: file
         hidden: true
-        path: "{{ rhel9stig_home_filesystem }}"
+        path: ["{{ rhel9stig_home_filesystem}}", /root ]
         patterns: ".*"
         recurse: true
       register: user_dot_files
 
-    - name: "RHEL-09-232045 | AUDIT | All RHEL 9 local initialization files must have mode 0740 or less permissive. | update permissions"
+    - name: "MEDIUM | RHEL-09-232045 | AUDIT | All RHEL 9 local initialization files must have mode 0740 or less permissive. | update permissions"
       ansible.builtin.file:
         path: "{{ item.path }}"
         mode: g-wx,o-rwx
@@ -1050,7 +1049,7 @@
       loop_control:
         label: "{{ item.path }}"
 
-- name: "RHEL-09-232050 | PATCH | All RHEL 9 local interactive user home directories must have mode 0750 or less permissive."
+- name: "MEDIUM | RHEL-09-232050 | PATCH | All RHEL 9 local interactive user home directories must have mode 0750 or less permissive."
   when:
     - rhel_09_232050
     - rhel9stig_disruption_high
@@ -1063,13 +1062,13 @@
     - V-257890
     - NIST800-53R4_CM-6
   block:
-    - name: "RHEL-09-232050 | AUDIT | All RHEL 9 local interactive user home directories must have mode 0750 or less permissive. | get stat"
+    - name: "MEDIUM | RHEL-09-232050 | AUDIT | All RHEL 9 local interactive user home directories must have mode 0750 or less permissive. | get stat"
       ansible.builtin.stat:
         path: "{{ item }}"
       register: rhel9stig_home_dir_perms
       loop: "{{ rhel9stig_interactive_users_home.stdout_lines }}"
 
-    - name: "RHEL-09-232050 | PATCH | All RHEL 9 local interactive user home directories must have mode 0750 or less permissive. | amend if needed"
+    - name: "MEDIUM | RHEL-09-232050 | PATCH | All RHEL 9 local interactive user home directories must have mode 0750 or less permissive. | amend if needed"
       when:
         - item.stat.path is defined
         - item.stat.mode > '0750'
@@ -1082,7 +1081,7 @@
         label: "{{ item }}"
 
     # set default ACLs so the homedir has an effective umask of 0027
-    - name: "RHEL-09-232050 | PATCH | All RHEL 9 local interactive user home directories must have mode 0750 or less permissive. | Set group ACL"
+    - name: "MEDIUM | RHEL-09-232050 | PATCH | All RHEL 9 local interactive user home directories must have mode 0750 or less permissive. | Set group ACL"
       when:
         - not system_is_container
         - item.stat.path is defined
@@ -1096,7 +1095,7 @@
       loop_control:
         label: "{{ item }}"
 
-    - name: "RHEL-09-232050 | PATCH | All RHEL 9 local interactive user home directories must have mode 0750 or less permissive. | Set other ACL"
+    - name: "MEDIUM | RHEL-09-232050 | PATCH | All RHEL 9 local interactive user home directories must have mode 0750 or less permissive. | Set other ACL"
       when:
         - not system_is_container
         - item.stat.path is defined
@@ -1110,7 +1109,7 @@
       loop_control:
         label: "{{ item }}"
 
-- name: "RHEL-09-232055 | PATCH | RHEL 9 /etc/group file must have mode 0644 or less permissive to prevent unauthorized access."
+- name: "MEDIUM | RHEL-09-232055 | PATCH | RHEL 9 /etc/group file must have mode 0644 or less permissive to prevent unauthorized access."
   when:
     - rhel_09_232055
   tags:
@@ -1125,7 +1124,7 @@
     mode: u=rw,go-wx
     path: /etc/group
 
-- name: "RHEL-09-232060 | PATCH | RHEL 9 /etc/group- file must have mode 0644 or less permissive to prevent unauthorized access."
+- name: "MEDIUM | RHEL-09-232060 | PATCH | RHEL 9 /etc/group- file must have mode 0644 or less permissive to prevent unauthorized access."
   when:
     - rhel_09_232060
   tags:
@@ -1140,7 +1139,7 @@
     mode: u=rw,go-wx
     path: /etc/group-
 
-- name: "RHEL-09-232065 | PATCH | RHEL 9 /etc/gshadow file must have mode 0000 or less permissive to prevent unauthorized access."
+- name: "MEDIUM | RHEL-09-232065 | PATCH | RHEL 9 /etc/gshadow file must have mode 0000 or less permissive to prevent unauthorized access."
   when:
     - rhel_09_232065
   tags:
@@ -1155,7 +1154,7 @@
     mode: '0000'
     path: /etc/gshadow
 
-- name: "RHEL-09-232070 | PATCH | RHEL 9 /etc/gshadow- file must have mode 0000 or less permissive to prevent unauthorized access."
+- name: "MEDIUM | RHEL-09-232070 | PATCH | RHEL 9 /etc/gshadow- file must have mode 0000 or less permissive to prevent unauthorized access."
   when:
     - rhel_09_232070
   tags:
@@ -1170,7 +1169,7 @@
     mode: '0000'
     path: /etc/gshadow-
 
-- name: "RHEL-09-232075 | PATCH | RHEL 9 /etc/passwd file must have mode 0644 or less permissive to prevent unauthorized access."
+- name: "MEDIUM | RHEL-09-232075 | PATCH | RHEL 9 /etc/passwd file must have mode 0644 or less permissive to prevent unauthorized access."
   when:
     - rhel_09_232075
   tags:
@@ -1185,7 +1184,7 @@
     mode: u=rw,go-wx
     path: /etc/passwd
 
-- name: "RHEL-09-232080 | PATCH | RHEL 9 /etc/passwd- file must have mode 0644 or less permissive to prevent unauthorized access."
+- name: "MEDIUM | RHEL-09-232080 | PATCH | RHEL 9 /etc/passwd- file must have mode 0644 or less permissive to prevent unauthorized access."
   when:
     - rhel_09_232080
   tags:
@@ -1200,7 +1199,7 @@
     mode: u=rw,go-wx
     path: /etc/passwd-
 
-- name: "RHEL-09-232085 | PATCH | RHEL 9 /etc/shadow- file must have mode 0000 or less permissive to prevent unauthorized access."
+- name: "MEDIUM | RHEL-09-232085 | PATCH | RHEL 9 /etc/shadow- file must have mode 0000 or less permissive to prevent unauthorized access."
   when:
     - rhel_09_232085
   tags:
@@ -1215,7 +1214,7 @@
     mode: '0000'
     path: /etc/shadow-
 
-- name: "RHEL-09-232090 | PATCH | RHEL 9 /etc/group file must be owned by root."
+- name: "MEDIUM | RHEL-09-232090 | PATCH | RHEL 9 /etc/group file must be owned by root."
   when:
     - rhel_09_232090
   tags:
@@ -1230,7 +1229,7 @@
     owner: root
     path: /etc/group
 
-- name: "RHEL-09-232095 | PATCH | RHEL 9 /etc/group file must be group-owned by root."
+- name: "MEDIUM | RHEL-09-232095 | PATCH | RHEL 9 /etc/group file must be group-owned by root."
   when:
     - rhel_09_232095
   tags:
@@ -1245,7 +1244,7 @@
     group: root
     path: /etc/group
 
-- name: "RHEL-09-232100 | PATCH | RHEL 9 /etc/group- file must be owned by root."
+- name: "MEDIUM | RHEL-09-232100 | PATCH | RHEL 9 /etc/group- file must be owned by root."
   when:
     - rhel_09_232100
   tags:
@@ -1260,7 +1259,7 @@
     owner: root
     path: /etc/group-
 
-- name: "RHEL-09-232105 | PATCH | RHEL 9 /etc/group- file must be group-owned by root."
+- name: "MEDIUM | RHEL-09-232105 | PATCH | RHEL 9 /etc/group- file must be group-owned by root."
   when:
     - rhel_09_232105
   tags:
@@ -1275,7 +1274,7 @@
     group: root
     path: /etc/group-
 
-- name: "RHEL-09-232110 | PATCH | RHEL 9 /etc/gshadow file must be owned by root."
+- name: "MEDIUM | RHEL-09-232110 | PATCH | RHEL 9 /etc/gshadow file must be owned by root."
   when:
     - rhel_09_232110
   tags:
@@ -1290,7 +1289,7 @@
     owner: root
     path: /etc/gshadow
 
-- name: "RHEL-09-232115 | PATCH | RHEL 9 /etc/gshadow file must be group-owned by root."
+- name: "MEDIUM | RHEL-09-232115 | PATCH | RHEL 9 /etc/gshadow file must be group-owned by root."
   when:
     - rhel_09_232115
   tags:
@@ -1305,7 +1304,7 @@
     group: root
     path: /etc/gshadow
 
-- name: "RHEL-09-232120 | PATCH | RHEL 9 /etc/gshadow- file must be owned by root."
+- name: "MEDIUM | RHEL-09-232120 | PATCH | RHEL 9 /etc/gshadow- file must be owned by root."
   when:
     - rhel_09_232120
   tags:
@@ -1320,7 +1319,7 @@
     owner: root
     path: /etc/gshadow-
 
-- name: "RHEL-09-232125 | PATCH | RHEL 9 /etc/gshadow- file must be group-owned by root."
+- name: "MEDIUM | RHEL-09-232125 | PATCH | RHEL 9 /etc/gshadow- file must be group-owned by root."
   when:
     - rhel_09_232125
   tags:
@@ -1335,7 +1334,7 @@
     group: root
     path: /etc/gshadow-
 
-- name: "RHEL-09-232130 | PATCH | RHEL 9 /etc/passwd file must be owned by root."
+- name: "MEDIUM | RHEL-09-232130 | PATCH | RHEL 9 /etc/passwd file must be owned by root."
   when:
     - rhel_09_232130
   tags:
@@ -1350,7 +1349,7 @@
     owner: root
     path: /etc/passwd
 
-- name: "RHEL-09-232135 | PATCH | RHEL 9 /etc/passwd file must be group-owned by root."
+- name: "MEDIUM | RHEL-09-232135 | PATCH | RHEL 9 /etc/passwd file must be group-owned by root."
   when:
     - rhel_09_232135
   tags:
@@ -1365,7 +1364,7 @@
     group: root
     path: /etc/passwd
 
-- name: "RHEL-09-232140 | PATCH | RHEL 9 /etc/passwd- file must be owned by root."
+- name: "MEDIUM | RHEL-09-232140 | PATCH | RHEL 9 /etc/passwd- file must be owned by root."
   when:
     - rhel_09_232140
   tags:
@@ -1380,7 +1379,7 @@
     owner: root
     path: /etc/passwd-
 
-- name: "RHEL-09-232145 | PATCH | RHEL 9 /etc/passwd- file must be group-owned by root."
+- name: "MEDIUM | RHEL-09-232145 | PATCH | RHEL 9 /etc/passwd- file must be group-owned by root."
   when:
     - rhel_09_232145
   tags:
@@ -1395,7 +1394,7 @@
     group: root
     path: /etc/passwd-
 
-- name: "RHEL-09-232150 | PATCH | RHEL 9 /etc/shadow file must be owned by root."
+- name: "MEDIUM | RHEL-09-232150 | PATCH | RHEL 9 /etc/shadow file must be owned by root."
   when:
     - rhel_09_232150
   tags:
@@ -1410,7 +1409,7 @@
     owner: root
     path: /etc/shadow
 
-- name: "RHEL-09-232155 | PATCH | RHEL 9 /etc/shadow file must be group-owned by root."
+- name: "MEDIUM | RHEL-09-232155 | PATCH | RHEL 9 /etc/shadow file must be group-owned by root."
   when:
     - rhel_09_232155
   tags:
@@ -1425,7 +1424,7 @@
     group: root
     path: /etc/shadow
 
-- name: "RHEL-09-232160 | PATCH | RHEL 9 /etc/shadow- file must be owned by root."
+- name: "MEDIUM | RHEL-09-232160 | PATCH | RHEL 9 /etc/shadow- file must be owned by root."
   when:
     - rhel_09_232160
   tags:
@@ -1440,7 +1439,7 @@
     owner: root
     path: /etc/shadow-
 
-- name: "RHEL-09-232165 | PATCH | RHEL 9 /etc/shadow- file must be group-owned by root."
+- name: "MEDIUM | RHEL-09-232165 | PATCH | RHEL 9 /etc/shadow- file must be group-owned by root."
   when:
     - rhel_09_232165
   tags:
@@ -1455,7 +1454,7 @@
     group: root
     path: /etc/shadow
 
-- name: "RHEL-09-232170 | PATCH | RHEL 9 /var/log directory must be owned by root."
+- name: "MEDIUM | RHEL-09-232170 | PATCH | RHEL 9 /var/log directory must be owned by root."
   when:
     - rhel_09_232170
   tags:
@@ -1471,7 +1470,7 @@
     path: /var/log
     state: directory
 
-- name: "RHEL-09-232175 | PATCH | RHEL 9 /var/log directory must be group-owned by root."
+- name: "MEDIUM | RHEL-09-232175 | PATCH | RHEL 9 /var/log directory must be group-owned by root."
   when:
     - rhel_09_232175
   tags:
@@ -1487,7 +1486,7 @@
     path: /var/log
     state: directory
 
-- name: "RHEL-09-232180 | PATCH | RHEL 9 /var/log/messages file must be owned by root."
+- name: "MEDIUM | RHEL-09-232180 | PATCH | RHEL 9 /var/log/messages file must be owned by root."
   when:
     - rhel_09_232180
   tags:
@@ -1502,7 +1501,7 @@
     owner: root
     path: /var/log/messages
 
-- name: "RHEL-09-232185 | PATCH | RHEL 9 /var/log/messages file must be group-owned by root."
+- name: "MEDIUM | RHEL-09-232185 | PATCH | RHEL 9 /var/log/messages file must be group-owned by root."
   when:
     - rhel_09_232185
   tags:
@@ -1517,7 +1516,7 @@
     group: root
     path: /var/log/messages
 
-- name: "RHEL-09-232190 | PATCH | RHEL 9 system commands must be owned by root."
+- name: "MEDIUM | RHEL-09-232190 | PATCH | RHEL 9 system commands must be owned by root."
   when:
     - rhel_09_232190
   tags:
@@ -1529,13 +1528,13 @@
     - V-257918
     - NIST800-53R4_CM-5
   block:
-    - name: "RHEL-09-232190 | AUDIT | RHEL 9 system commands must be owned by root."
+    - name: "MEDIUM | RHEL-09-232190 | AUDIT | RHEL 9 system commands must be owned by root."
       ansible.builtin.shell: find -L /bin /sbin /usr/bin /usr/sbin /usr/libexec /usr/local/bin /usr/local/sbin ! -user root -exec ls {} \;
       changed_when: false
       failed_when: rhel9stig_sys_commands_owner.rc not in [ 0, 1 ]
       register: rhel9stig_sys_commands_owner
 
-    - name: "RHEL-09-232190 | PATCH | RHEL 9 system commands must be owned by root."
+    - name: "MEDIUM | RHEL-09-232190 | PATCH | RHEL 9 system commands must be owned by root."
       when: rhel9stig_sys_commands_owner.stdout | length > 0
       ansible.builtin.file:
         owner: root
@@ -1543,7 +1542,7 @@
       loop:
         - "{{ rhel9stig_sys_commands_owner.stdout_lines }}"
 
-- name: "RHEL-09-232195 | PATCH | RHEL 9 system commands must be group-owned by root or a system account."
+- name: "MEDIUM | RHEL-09-232195 | PATCH | RHEL 9 system commands must be group-owned by root or a system account."
   when:
     - rhel_09_232195
   tags:
@@ -1557,25 +1556,25 @@
   vars:
     warn_control_id: "MEDIUM | RHEL-09-232195"
   block:
-    - name: "RHEL-09-232195 | AUDIT | RHEL 9 system commands must be group-owned by root or a system account."
+    - name: "MEDIUM | RHEL-09-232195 | AUDIT | RHEL 9 system commands must be group-owned by root or a system account."
       ansible.builtin.shell: find -L /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin ! \( -group root -o -group tty \) -exec ls -l {} \;
       changed_when: false
       failed_when: rhel9stig_sys_commands_group.rc not in [ 0, 1 ]
       register: rhel9stig_sys_commands_group
 
-    - name: "RHEL-09-232195 | WARN | RHEL 9 system commands must be group-owned by root or a system account."
+    - name: "MEDIUM | RHEL-09-232195 | WARN | RHEL 9 system commands must be group-owned by root or a system account."
       when: rhel9stig_sys_commands_group.stdout | length > 0
       ansible.builtin.debug:
         msg: |
             "Warning!! Please validate group ownership of the following system commands
              {{ rhel9stig_sys_commands_group.stdout_lines }}"
 
-    - name: "RHEL-09-232195 | WARN | RHEL 9 system commands must be group-owned by root or a system account."
+    - name: "MEDIUM | RHEL-09-232195 | WARN | RHEL 9 system commands must be group-owned by root or a system account."
       when: rhel9stig_sys_commands_group.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
-- name: "RHEL-09-232200 | PATCH | RHEL 9 library files must be owned by root."
+- name: "MEDIUM | RHEL-09-232200 | PATCH | RHEL 9 library files must be owned by root."
   when:
     - rhel_09_232200
   tags:
@@ -1587,21 +1586,20 @@
     - V-257920
     - NIST800-53R4_CM-5
   block:
-    - name: "RHEL-09-232200 | AUDIT | RHEL 9 library files must be owned by root."
-      ansible.builtin.shell: find -L /lib /lib64 /usr/lib /usr/lib64 ! -user root -exec ls {} \;
+    - name: "MEDIUM | RHEL-09-232200 | AUDIT | RHEL 9 library files must be owned by root."
+      ansible.builtin.shell: find -L /lib /lib64 /usr/lib /usr/lib64 ! -user root
       changed_when: false
       failed_when: rhel9stig_lib_files_owner.rc not in [ 0, 1 ]
       register: rhel9stig_lib_files_owner
 
-    - name: "RHEL-09-232200 | PATCH | RHEL 9 library files must be owned by root."
+    - name: "MEDIUM | RHEL-09-232200 | PATCH | RHEL 9 library files must be owned by root."
       when: rhel9stig_lib_files_owner.stdout | length > 0
       ansible.builtin.file:
         owner: root
-        path: "{{ path }}"
-      loop:
-        - "{{ rhel9stig_lib_files_owner.stdout_lines }}"
+        path: "{{ item }}"
+      loop: "{{ rhel9stig_lib_files_owner.stdout_lines }}"
 
-- name: "RHEL-09-232205 | PATCH | RHEL 9 library files must be group-owned by root or a system account."
+- name: "MEDIUM | RHEL-09-232205 | PATCH | RHEL 9 library files must be group-owned by root or a system account."
   when:
     - rhel_09_232205
   tags:
@@ -1615,25 +1613,25 @@
   vars:
     warn_control_id: "MEDIUM | RHEL-09-232205"
   block:
-    - name: "RHEL-09-232205 | AUDIT | RHEL 9 library files must be group-owned by root or a system account."
+    - name: "MEDIUM | RHEL-09-232205 | AUDIT | RHEL 9 library files must be group-owned by root or a system account."
       ansible.builtin.shell: find -L /lib /lib64 /usr/lib /usr/lib64 ! \( -group root -o -group utmp -o -group ssh_keys -o -group tty \) -exec ls {} \;
       changed_when: false
       failed_when: rhel9stig_lib_files_group.rc not in [ 0, 1 ]
       register: rhel9stig_lib_files_group
 
-    - name: "RHEL-09-232205 | WARN | RHEL 9 library files must be group-owned by root or a system account."
+    - name: "MEDIUM | RHEL-09-232205 | WARN | RHEL 9 library files must be group-owned by root or a system account."
       when: rhel9stig_lib_files_group.stdout | length > 0
       ansible.builtin.debug:
         msg: |
             "Warning!! Please validate group ownership of the following library files or symlinks
              {{ rhel9stig_lib_files_group.stdout_lines }}"
 
-    - name: "RHEL-09-232205 | WARN | RHEL 9 library files must be group-owned by root or a system account."
+    - name: "MEDIUM | RHEL-09-232205 | WARN | RHEL 9 library files must be group-owned by root or a system account."
       when: rhel9stig_lib_files_group.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
-- name: "RHEL-09-232210 | PATCH | RHEL 9 library directories must be owned by root."
+- name: "MEDIUM | RHEL-09-232210 | PATCH | RHEL 9 library directories must be owned by root."
   when:
     - rhel_09_232210
   tags:
@@ -1653,7 +1651,7 @@
     - '/usr/lib'
     - '/usr/lib64'
 
-- name: "RHEL-09-232215 | PATCH | RHEL 9 library directories must be group-owned by root or a system account."
+- name: "MEDIUM | RHEL-09-232215 | PATCH | RHEL 9 library directories must be group-owned by root or a system account."
   when:
     - rhel_09_232215
   tags:
@@ -1667,25 +1665,25 @@
   vars:
     warn_control_id: "MEDIUM | RHEL-09-232215"
   block:
-    - name: "RHEL-09-232215 | AUDIT | RHEL 9 library directories must be group-owned by root or a system account."
+    - name: "MEDIUM | RHEL-09-232215 | AUDIT | RHEL 9 library directories must be group-owned by root or a system account."
       ansible.builtin.shell: find /lib /lib64 /usr/lib /usr/lib64 ! -group root -type d -exec stat -c "%n %G" '{}' \;
       changed_when: false
       failed_when: rhel9stig_lib_dirs_group.rc not in [ 0, 1 ]
       register: rhel9stig_lib_dirs_group
 
-    - name: "RHEL-09-232215 | WARN | RHEL 9 library directories must be group-owned by root or a system account."
+    - name: "MEDIUM | RHEL-09-232215 | WARN | RHEL 9 library directories must be group-owned by root or a system account."
       when: rhel9stig_lib_dirs_group.stdout | length > 0
       ansible.builtin.debug:
         msg: |
             "Warning!! Please validate group ownership of the following library directories
              {{ rhel9stig_lib_dirs_group.stdout_lines }}"
 
-    - name: "RHEL-09-232215 | WARN | RHEL 9 library directories must be group-owned by root or a system account."
+    - name: "MEDIUM | RHEL-09-232215 | WARN | RHEL 9 library directories must be group-owned by root or a system account."
       when: rhel9stig_lib_dirs_group.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
-- name: "RHEL-09-232220 | PATCH | RHEL 9 audit tools must be owned by root."
+- name: "MEDIUM | RHEL-09-232220 | PATCH | RHEL 9 audit tools must be owned by root."
   when:
     - rhel_09_232220
   tags:
@@ -1708,7 +1706,7 @@
     - '/sbin/rsyslogd'
     - '/sbin/augenrules'
 
-- name: "RHEL-09-232225 | PATCH | RHEL 9 audit tools must be group-owned by root."
+- name: "MEDIUM | RHEL-09-232225 | PATCH | RHEL 9 audit tools must be group-owned by root."
   when:
     - rhel_09_232225
   tags:
@@ -1731,7 +1729,7 @@
     - '/sbin/rsyslogd'
     - '/sbin/augenrules'
 
-- name: "RHEL-09-232230 | PATCH | RHEL 9 cron configuration files directory must be owned by root."
+- name: "MEDIUM | RHEL-09-232230 | PATCH | RHEL 9 cron configuration files directory must be owned by root."
   when:
     - rhel_09_232230
   tags:
@@ -1754,7 +1752,7 @@
     - '/etc/cron.weekly'
     - '/etc/crontab'
 
-- name: "RHEL-09-232235 | PATCH | RHEL 9 cron configuration files directory must be group-owned by root."
+- name: "MEDIUM | RHEL-09-232235 | PATCH | RHEL 9 cron configuration files directory must be group-owned by root."
   when:
     - rhel_09_232235
   tags:
@@ -1777,7 +1775,7 @@
     - '/etc/cron.weekly'
     - '/etc/crontab'
 
-- name: "RHEL-09-232240 | PATCH | All RHEL 9 world-writable directories must be owned by root, sys, bin, or an application user."
+- name: "MEDIUM | RHEL-09-232240 | PATCH | All RHEL 9 world-writable directories must be owned by root, sys, bin, or an application user."
   when:
     - rhel_09_232240
     - rhel9stig_disruption_high
@@ -1795,25 +1793,25 @@
   vars:
     warn_control_id: "MEDIUM | RHEL-09-232240"
   block:
-    - name: "RHEL-09-232240 | AUDIT | All RHEL 9 world-writable directories must be owned by root, sys, bin, or an application user."
+    - name: "MEDIUM | RHEL-09-232240 | AUDIT | All RHEL 9 world-writable directories must be owned by root, sys, bin, or an application user."
       ansible.builtin.shell: df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d -perm -0002 -uid +0
       changed_when: false
       failed_when: rhel9stig_worldwide_dir_owners.rc not in [ 0, 1 ]
       register: rhel9stig_worldwide_dir_owners
 
-    - name: "RHEL-09-232240 | WARN | All RHEL 9 world-writable directories must be owned by root, sys, bin, or an application user."
+    - name: "MEDIUM | RHEL-09-232240 | WARN | All RHEL 9 world-writable directories must be owned by root, sys, bin, or an application user."
       when: rhel9stig_worldwide_dir_owners.stdout | length > 0
       ansible.builtin.debug:
         msg: |
              "Warning!! The following Directories do not match requirements for RHEL_09_232240
              {{ rhel9stig_worldwide_dir_owners.stdout_lines }}"
 
-    - name: "RHEL-09-232240 | WARN | All RHEL 9 world-writable directories must be owned by root, sys, bin, or an application user."
+    - name: "MEDIUM | RHEL-09-232240 | WARN | All RHEL 9 world-writable directories must be owned by root, sys, bin, or an application user."
       when: rhel9stig_worldwide_dir_owners.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
-- name: "RHEL-09-232245 | PATCH | A sticky bit must be set on all RHEL 9 public directories."
+- name: "MEDIUM | RHEL-09-232245 | PATCH | A sticky bit must be set on all RHEL 9 public directories."
   when:
     - rhel_09_232245
     - rhel9stig_disruption_high
@@ -1828,23 +1826,22 @@
   vars:
     warn_control_id: "MEDIUM | RHEL-09-232245"
   block:
-    - name: "RHEL-09-232245 | AUDIT | A sticky bit must be set on all RHEL 9 public directories."
+    - name: "MEDIUM | RHEL-09-232245 | AUDIT | A sticky bit must be set on all RHEL 9 public directories."
       ansible.builtin.shell: df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d -perm -0002 -a ! -perm -1000 2>/dev/null
       changed_when: false
       failed_when: rhel9stig_public_dirs_stickybit.rc not in [ 0, 1 ]
       register: rhel9stig_public_dirs_stickybit
 
-    - name: "RHEL-09-232245 | PATCH | A sticky bit must be set on all RHEL 9 public directories."
+    - name: "MEDIUM | RHEL-09-232245 | PATCH | A sticky bit must be set on all RHEL 9 public directories."
       when:
         - rhel9stig_disruption_high
         - rhel9stig_public_dirs_stickybit.stdout | length > 0
       ansible.builtin.file:
         path: "{{ item }}"
         mode: +t
-      loop:
-        - "{{ rhel9stig_public_dirs_stickybit.stdout_lines }}"
+      loop: "{{ rhel9stig_public_dirs_stickybit.stdout_lines }}"
 
-    - name: "RHEL-09-232245 | WARN | A sticky bit must be set on all RHEL 9 public directories."
+    - name: "MEDIUM | RHEL-09-232245 | WARN | A sticky bit must be set on all RHEL 9 public directories."
       when:
         - not rhel9stig_disruption_high
         - rhel9stig_public_dirs_stickybit.stdout | length > 0
@@ -1853,14 +1850,14 @@
             "Warning!! The following file require sticky bit to be set
             {{ rhel9stig_public_dirs_stickybit.stdout_lines }}"
 
-    - name: "RHEL-09-232245 | WARN | A sticky bit must be set on all RHEL 9 public directories."
+    - name: "MEDIUM | RHEL-09-232245 | WARN | A sticky bit must be set on all RHEL 9 public directories."
       when:
         - not rhel9stig_disruption_high
         - rhel9stig_public_dirs_stickybit.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
-- name: "RHEL-09-232250 | PATCH | All RHEL 9 local files and directories must have a valid group owner."
+- name: "MEDIUM | RHEL-09-232250 | PATCH | All RHEL 9 local files and directories must have a valid group owner."
   when:
     - rhel_09_232250
   tags:
@@ -1874,9 +1871,9 @@
   vars:
     warn_control_id: "MEDIUM | RHEL-09-232250"
   block:
-    - name: "RHEL-09-232250 | AUDIT | All RHEL 9 local files and directories must have a valid group owner."
+    - name: "MEDIUM | RHEL-09-232250 | AUDIT | All RHEL 9 local files and directories must have a valid group owner."
       when:
-        - not item['device'].startswith('/dev')
+        - item['device'].startswith('/dev')
         - not 'bind' in item['options']
       ansible.builtin.shell: find "{{ item.mount }}" -xdev -nogroup
       check_mode: false
@@ -1887,7 +1884,7 @@
       loop_control:
         label: "{{ item.mount }}"
 
-    - name: "RHEL-09-232250 | AUDIT | All RHEL 9 local files and directories must have a valid group owner."
+    - name: "MEDIUM | RHEL-09-232250 | AUDIT | All RHEL 9 local files and directories must have a valid group owner."
       ansible.builtin.set_fact:
         rhel9stig_ungrouped_files_found: true
       loop: "{{ rhel9stig_ungrouped_files_dirs_audit.results }}"
@@ -1896,17 +1893,17 @@
         - item.stdout is defined  # skipped items are part of results list, but don't have the registered module properties
         - item.stdout | length > 0
 
-    - name: "RHEL-09-232250 | WARN | All RHEL 9 local files and directories must have a valid group owner."
+    - name: "MEDIUM | RHEL-09-232250 | WARN | All RHEL 9 local files and directories must have a valid group owner."
       when: rhel9stig_ungrouped_files_found is defined
       ansible.builtin.debug:
-        msg: "Warning!! Missing group on items in {{ rhel9stig_ungrouped_files_dirs_audit | json_query('results[*].stdout_lines[*]') | flatten }}"  # noqa jinja[invalid]
+        msg: "Warning!! Missing group on items in {{ rhel9stig_ungrouped_files_dirs_audit.stdout_lines  }}"
 
-    - name: "RHEL-09-232250 | WARN | All RHEL 9 local files and directories must have a valid group owner."
+    - name: "MEDIUM | RHEL-09-232250 | WARN | All RHEL 9 local files and directories must have a valid group owner."
       when: rhel9stig_ungrouped_files_found is defined
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
-- name: "RHEL-09-232255 | PATCH | All RHEL 9 local files and directories must have a valid owner."
+- name: "MEDIUM | RHEL-09-232255 | PATCH | All RHEL 9 local files and directories must have a valid owner."
   when:
     - rhel_09_232255
   tags:
@@ -1920,9 +1917,9 @@
   vars:
     warn_control_id: "MEDIUM | RHEL-09-232255"
   block:
-    - name: "RHEL-09-232255 | AUDIT | All RHEL 9 local files and directories must have a valid owner."
+    - name: "MEDIUM | RHEL-09-232255 | AUDIT | All RHEL 9 local files and directories must have a valid owner."
       when:
-        - not item['device'].startswith('/dev')
+        - item['device'].startswith('/dev')
         - not 'bind' in item['options']
       ansible.builtin.shell: find "{{ item.mount }}" -xdev -nogroup
       check_mode: false
@@ -1933,7 +1930,7 @@
       loop_control:
         label: "{{ item.mount }}"
 
-    - name: "RHEL-09-232255 | AUDIT | All RHEL 9 local files and directories must have a valid owner."
+    - name: "MEDIUM | RHEL-09-232255 | AUDIT | All RHEL 9 local files and directories must have a valid owner."
       ansible.builtin.set_fact:
         rhel9stig_unowned_files_found: true
       loop: "{{ rhel9stig_unowned_files_dirs_audit.results }}"
@@ -1942,17 +1939,17 @@
         - item.stdout is defined  # skipped items are part of results list, but don't have the registered module properties
         - item.stdout | length > 0
 
-    - name: "RHEL-09-232255 | WARN | All RHEL 9 local files and directories must have a valid owner."
+    - name: "MEDIUM | RHEL-09-232255 | WARN | All RHEL 9 local files and directories must have a valid owner."
       when: rhel9stig_unowned_files_found is defined
       ansible.builtin.debug:
-        msg: "Warning!! Missing group on items in {{ rhel9stig_ungrouped_files_dirs_audit | json_query('results[*].stdout_lines[*]') | flatten }}"  # noqa jinja[invalid]
+        msg: "Warning!! Missing group on items in {{ rhel9stig_ungrouped_files_dirs_audit.stdout_lines }}"
 
-    - name: "RHEL-09-232255 | WARN | All RHEL 9 local files and directories must have a valid owner."
+    - name: "MEDIUM | RHEL-09-232255 | WARN | All RHEL 9 local files and directories must have a valid owner."
       when: rhel9stig_unowned_files_found is defined
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
-- name: "RHEL-09-232260 | PATCH | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification."
+- name: "MEDIUM | RHEL-09-232260 | PATCH | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification."
   when:
     - rhel_09_232260
   tags:
@@ -1966,34 +1963,34 @@
   vars:
     warn_control_id: "MEDIUM | RHEL-09-232260"
   block:
-    - name: "RHEL-09-232260 | AUDIT | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification. | / scan"
+    - name: "MEDIUM | RHEL-09-232260 | AUDIT | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification. | / scan"
       ansible.builtin.shell: find / -context *:unlabeled_t:* \( -type c -o -type b \) -printf "%p %Z"
       changed_when: false
       failed_when: rhel9stig_unlabelled_files.rc not in [ 0, 1 ]
       register: rhel9stig_unlabelled_files
 
-    - name: "RHEL-09-232260 | AUDIT | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification. | / scan"
+    - name: "MEDIUM | RHEL-09-232260 | AUDIT | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification. | / scan"
       when:
         - rhel9stig_unlabelled_files.stdout | length > 0
         - rhel9stig_disruption_high
       ansible.builtin.shell: "restorecon -v {{ item }}"
       loop: "{{ rhel9stig_unlabelled_files.stdout_lines }}"
 
-    - name: "RHEL-09-232260 | WARN | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification."
+    - name: "MEDIUM | RHEL-09-232260 | WARN | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification."
       when:
         - rhel9stig_unlabelled_files.stdout | length > 0
         - not rhel9stig_disruption_high
       ansible.builtin.debug:
         msg: "Warning!! Unlabelled device files found on the system {{ rhel9stig_unlabelled_files }}"
 
-    - name: "RHEL-09-232260 | WARN | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification."
+    - name: "MEDIUM | RHEL-09-232260 | WARN | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification."
       when:
         - rhel9stig_unlabelled_files.stdout | length > 0
         - not rhel9stig_disruption_high
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
-- name: "RHEL-09-232265 | PATCH | RHEL 9 /etc/crontab file must have mode 0600."
+- name: "MEDIUM | RHEL-09-232265 | PATCH | RHEL 9 /etc/crontab file must have mode 0600."
   when:
     - rhel_09_232265
   tags:
@@ -2008,7 +2005,7 @@
     path: /etc/crontab
     mode: '0600'
 
-- name: "RHEL-09-232270 | PATCH | RHEL 9 /etc/shadow file must have mode 0000 to prevent unauthorized access."
+- name: "MEDIUM | RHEL-09-232270 | PATCH | RHEL 9 /etc/shadow file must have mode 0000 to prevent unauthorized access."
   when:
     - rhel_09_232270
   tags:
