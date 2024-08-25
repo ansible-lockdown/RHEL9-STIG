@@ -213,9 +213,9 @@
 - name: PRELIM | Discover Gnome Desktop Environment
   tags:
     - always
-    ansible.builtin.stat:
-      path: /usr/share/gnome/gnome-version.xml
-    register: rhel_09_gnome_present
+  ansible.builtin.stat:
+    path: /usr/share/gnome/gnome-version.xml
+  register: rhel_09_gnome_present
 
 - name: PRELIM | Discover dconf systemdb
   when:
