@@ -131,7 +131,6 @@
     file: auditd.yml
 
 - name: Flush handlers
-  when: not audit_only
   ansible.builtin.meta: flush_handlers
 
 - name: Reboot system
