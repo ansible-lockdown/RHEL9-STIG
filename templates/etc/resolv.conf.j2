@@ -3,7 +3,7 @@
 # Sponsored by MindPointGroup.com
 {% if rhel9stig_resolv_domains is defined %}
 # Domains
-{% for domains in rhel9stig_resolv_domains
+{% for domains in rhel9stig_resolv_domains %}
 domain {{ rhel9stig_resolv_domains }}
 {% endfor %}
 {% endif %}
