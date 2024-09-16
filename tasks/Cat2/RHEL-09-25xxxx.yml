@@ -331,9 +331,9 @@
           rhel9stig_network_manager_dns.stdout == 'none' or
           rhel9stig_network_manager_dns.stdout == 'unmanaged'
       ansible.builtin.template:
-        dest: /etc/resolv.conf.j2
+        dest: /etc/resolv.conf
         mode: '0644'
-        src: /etc/resolv.conf
+        src: etc/resolv.conf.j2
 
     - name: "MEDIUM | RHEL-09-252035 | PATCH | RHEL 9 systems using Domain Name Servers (DNS) resolution must have at least two name servers configured."
       when:
