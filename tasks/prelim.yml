@@ -210,6 +210,13 @@
   failed_when: rhel9stig_network_manager_dns.rc not in [ 0, 1 ]
   register: rhel9stig_network_manager_dns
 
+- name: PRELIM | Discover Gnome Desktop Environment
+  tags:
+    - always
+  ansible.builtin.stat:
+    path: /usr/share/gnome/gnome-version.xml
+  register: rhel_09_gnome_present
+
 - name: PRELIM | Discover dconf systemdb
   when:
     - rhel9stig_gui
