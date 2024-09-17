@@ -597,8 +597,8 @@ rhel_09_653120: true
 
 ### CONTROLS
 
-## Grahical/Gnome interface required
-rhel9stig_gui: false
+## Graphical/Gnome interface required
+rhel9stig_gui: "{{ rhel_09_gnome_present.stat.exists | default(false) }}"
 
 ## SSHD
 rhel9stig_sshd_config_file: /etc/ssh/sshd_config
