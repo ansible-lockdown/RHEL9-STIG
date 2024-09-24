@@ -47,3 +47,7 @@ rhel9stig_dod_macs_server:  # Server also has client mac listed above don't dupl
 - hmac-sha1
 - umac-128@openssh.com
 rhel9stig_dod_kex:
+
+# Defaults added for searches
+rhel9stig_ungrouped_files_found: false
+rhel9stig_unowned_files_found: false
