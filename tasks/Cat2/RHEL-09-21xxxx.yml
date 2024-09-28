@@ -935,6 +935,7 @@
   when:
     - rhel_09_215025
     - "'nfs-utils' in ansible_facts.packages"
+    - not rhel9stig_nfs_utils_required
   tags:
     - RHEL-09-215025
     - CAT2
