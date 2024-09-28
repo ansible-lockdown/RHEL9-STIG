@@ -215,7 +215,7 @@
     path: "{{ item.mount }}"
     src: "{{ item.device }}"
     state: present
-  loop: "{{ ansible_facts.mounts }}"
+  loop: "{{ ansible_facts.mounts | selectattr('fstype', 'equalto', 'nfs') | list }}"
   loop_control:
     label: "{{ item.device }}"
 
@@ -240,7 +240,7 @@
     path: "{{ item.mount }}"
     src: "{{ item.device }}"
     state: present
-  loop: "{{ ansible_facts.mounts }}"
+  loop: "{{ ansible_facts.mounts | selectattr('fstype', 'equalto', 'nfs') | list }}"
   loop_control:
     label: "{{ item.device }}"
 
@@ -265,7 +265,7 @@
     path: "{{ item.mount }}"
     src: "{{ item.device }}"
     state: present
-  loop: "{{ ansible_facts.mounts }}"
+  loop: "{{ ansible_facts.mounts | selectattr('fstype', 'equalto', 'nfs') | list }}"
   loop_control:
     label: "{{ item.device }}"
 
