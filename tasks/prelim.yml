@@ -235,10 +235,10 @@
 
 - name: PRELIM | Find all sudoers files.
   when:
-    - rhel_09_432015
-    - rhel_09_432020
-    - rhel_09_432025
-    - rhel_09_432030
+    - rhel_09_432015 or
+      rhel_09_432020 or
+      rhel_09_432025 or
+      rhel_09_432030
   tags:
     - always
   ansible.builtin.shell: find /etc/sudoers /etc/sudoers.d/ -type f ! -name '*~' ! -name '*.*'
@@ -249,10 +249,10 @@
 
 - name: PRELIM | Find all pwquality files.
   when:
-    - rhel_09_611100
-    - rhel_09_611060
-    - rhel_09_611065
-    - rhel_09_611070
+    - rhel_09_611100 or
+      rhel_09_611060 or
+      rhel_09_611065 or
+      rhel_09_611070
   tags:
     - always
   ansible.builtin.shell: find /etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf
