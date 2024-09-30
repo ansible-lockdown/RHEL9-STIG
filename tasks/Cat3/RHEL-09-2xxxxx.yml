@@ -237,7 +237,7 @@
     regexp: ^(#|\s*)cmdport \d*
     line: 'cmdport 0'
 
-- name: "LOW | RHEL-09-291025 | PATCH | RHEL 9 must disable network management of the chrony daemon."
+- name: "LOW | RHEL-09-291025 | PATCH | RHEL 9 must enable Linux audit logging for the USBGuard daemon."
   when:
     - rhel_09_291025
   tags:
