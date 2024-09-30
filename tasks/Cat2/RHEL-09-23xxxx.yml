@@ -1538,9 +1538,10 @@
       when: rhel9stig_sys_commands_owner.stdout | length > 0
       ansible.builtin.file:
         owner: root
-        path: "{{ path }}"
-      loop:
-        - "{{ rhel9stig_sys_commands_owner.stdout_lines }}"
+        path: "{{ item }}"
+      loop: "{{ rhel9stig_sys_commands_owner.stdout_lines }}"
+      loop_control:
+        label: "{{ item }}"
 
 - name: "MEDIUM | RHEL-09-232195 | PATCH | RHEL 9 system commands must be group-owned by root or a system account."
   when:
