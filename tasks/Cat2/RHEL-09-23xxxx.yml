@@ -197,7 +197,6 @@
 - name: "MEDIUM | RHEL-09-231065 | PATCH | RHEL 9 must prevent special devices on file systems that are imported via Network File System (NFS)."
   when:
     - rhel_09_231065
-    - ansible_facts['mounts']| selectattr('fstype', '==', 'nfs')
     - "'nfs-utils' in ansible_facts.packages"
     - "'nodev' not in item.options"
     - rhel9stig_disruption_high
@@ -215,14 +214,13 @@
     path: "{{ item.mount }}"
     src: "{{ item.device }}"
     state: present
-  loop: "{{ ansible_facts.mounts | selectattr('fstype', 'equalto', 'nfs') | list }}"
+  loop: "{{ ansible_facts.mounts | selectattr('fstype', 'contains', 'nfs') | list }}"
   loop_control:
     label: "{{ item.device }}"
 
 - name: "MEDIUM | RHEL-09-231070 | PATCH | RHEL 9  must prevent code from being executed on file systems that are imported via Network File System (NFS)."
   when:
     - rhel_09_231070
-    - ansible_facts['mounts']| selectattr('fstype', '==', 'nfs')
     - "'nfs-utils' in ansible_facts.packages"
     - "'noexec' not in item.options"
     - rhel9stig_disruption_high
@@ -240,14 +238,13 @@
     path: "{{ item.mount }}"
     src: "{{ item.device }}"
     state: present
-  loop: "{{ ansible_facts.mounts | selectattr('fstype', 'equalto', 'nfs') | list }}"
+  loop: "{{ ansible_facts.mounts | selectattr('fstype', 'contains', 'nfs') | list }}"
   loop_control:
     label: "{{ item.device }}"
 
 - name: "MEDIUM | RHEL-09-231075 | PATCH | RHEL 9 must prevent files with the setuid and setgid bit set from being executed on file systems that are imported via Network File System (NFS)."
   when:
     - rhel_09_231075
-    - ansible_facts['mounts']| selectattr('fstype', '==', 'nfs')
     - "'nfs-utils' in ansible_facts.packages"
     - "'nosuid' not in item.options"
     - rhel9stig_disruption_high
@@ -265,7 +262,7 @@
     path: "{{ item.mount }}"
     src: "{{ item.device }}"
     state: present
-  loop: "{{ ansible_facts.mounts | selectattr('fstype', 'equalto', 'nfs') | list }}"
+  loop: "{{ ansible_facts.mounts | selectattr('fstype', 'contains', 'nfs') | list }}"
   loop_control:
     label: "{{ item.device }}"
 
