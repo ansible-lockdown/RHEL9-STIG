@@ -1,4 +1,4 @@
-# Ubuntu22CIS
+# RHEL9STIG
 
 ## 1.2.1 Based on STIG V1R2 Jan24 2024
 
