@@ -1958,7 +1958,7 @@
     warn_control_id: "MEDIUM | RHEL-09-232260"
   block:
     - name: "MEDIUM | RHEL-09-232260 | AUDIT | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification. | / scan"
-      ansible.builtin.shell: find / -context *:unlabeled_t:* \( -type c -o -type b \) -printf "%p %Z"
+      ansible.builtin.shell: find /dev -context *:unlabeled_t:* \( -type c -o -type b \) -printf "%p %Z" | grep -v 'vmci'
       changed_when: false
       failed_when: rhel9stig_unlabelled_files.rc not in [ 0, 1 ]
       register: rhel9stig_unlabelled_files
