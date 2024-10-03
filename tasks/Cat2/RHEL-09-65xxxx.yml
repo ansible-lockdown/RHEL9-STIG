@@ -4,7 +4,6 @@
   when:
     - rhel_09_651010
     - rhel9stig_use_aide
-    - "'aide' not in ansible_facts.packages"
   tags:
     - RHEL-09-651010
     - CAT2
