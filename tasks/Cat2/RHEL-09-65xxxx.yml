@@ -17,6 +17,7 @@
     - NIST800-53R4_SI-6
     - aide
   notify: Build_aide_db
+  changed_when: true
   ansible.builtin.package:
     name: aide
     state: present
