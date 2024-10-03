@@ -173,7 +173,6 @@
 - name: "MEDIUM | RHEL-09-231060 | PATCH | RHEL 9 must be configured so that the Network File System (NFS) is configured to use RPCSEC_GSS."
   when:
     - rhel_09_231060
-    - ansible_facts['mounts']| selectattr('fstype', '==', 'nfs')
     - "'nfs-utils' in ansible_facts.packages"
     - rhel9stig_disruption_high
   tags:
@@ -190,7 +189,7 @@
     path: "{{ item.mount }}"
     src: "{{ item.device }}"
     state: present
-  loop: "{{ ansible_facts.mounts }}"
+  loop: "{{ ansible_facts.mounts | selectattr('fstype', 'contains', 'nfs') | rejectattr('fstype', 'equalto', 'autofs') | list }}"
   loop_control:
     label: "{{ item.device }}"
 
@@ -214,7 +213,7 @@
     path: "{{ item.mount }}"
     src: "{{ item.device }}"
     state: present
-  loop: "{{ ansible_facts.mounts | selectattr('fstype', 'contains', 'nfs') | list }}"
+  loop: "{{ ansible_facts.mounts | selectattr('fstype', 'contains', 'nfs') | rejectattr('fstype', 'equalto', 'autofs') | list }}"
   loop_control:
     label: "{{ item.device }}"
 
@@ -238,7 +237,7 @@
     path: "{{ item.mount }}"
     src: "{{ item.device }}"
     state: present
-  loop: "{{ ansible_facts.mounts | selectattr('fstype', 'contains', 'nfs') | list }}"
+  loop: "{{ ansible_facts.mounts | selectattr('fstype', 'contains', 'nfs') | rejectattr('fstype', 'equalto', 'autofs') | list }}"
   loop_control:
     label: "{{ item.device }}"
 
@@ -262,7 +261,7 @@
     path: "{{ item.mount }}"
     src: "{{ item.device }}"
     state: present
-  loop: "{{ ansible_facts.mounts | selectattr('fstype', 'contains', 'nfs') | list }}"
+  loop: "{{ ansible_facts.mounts | selectattr('fstype', 'contains', 'nfs') | rejectattr('fstype', 'equalto', 'autofs') | list }}"
   loop_control:
     label: "{{ item.device }}"
 
