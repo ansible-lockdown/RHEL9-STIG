@@ -740,9 +740,9 @@ rhel9stig_postfix_client_conf: permit_mynetworks,reject
 ### ACCOUNTS and AUTH ###
 ## PAM and password settings
 rhel9stig_pass:
-  max_days: '60'
-  min_days: '1'
-  minlen: '15'
+  max_days: 60
+  min_days: 1
+  minlen: 15
 
 rhel9stig_user_inactive_days: '35'
 
@@ -778,13 +778,13 @@ rhel9stig_pam:
   rounds: '5000'
 
 rhel9stig_pwquality:
-  dcredit: '-1'
-  dictcheck: '1'
-  difok: '8'
-  lcredit: '-1'
-  maxclassrepeat: '4'
-  maxrepeat: '3'
-  minclass: '4'
+  dcredit: -1
+  dictcheck: 1
+  difok: 8
+  lcredit: -1
+  maxclassrepeat: 4
+  maxrepeat: 3
+  minclass: 4
   ocredit: -1
   ucredit: -1
 
