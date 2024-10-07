@@ -26,7 +26,7 @@ gpg_key_package: "{{ ansible_distribution | lower }}-gpg-keys"
 discover_int_uid: true
 
 # Default for facts
-reboot_required: false
+change_requires_reboot: false
 update_audit_template: false
 
 # DOD encryption
