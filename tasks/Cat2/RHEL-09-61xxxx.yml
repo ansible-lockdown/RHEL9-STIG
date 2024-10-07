@@ -581,7 +581,7 @@
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: \s*dictcheck\s*=\s*
-    line: dictcheck="{{ rhel9stig_pwquality.dictcheck }}"
+    line: dictcheck = "{{ rhel9stig_pwquality.dictcheck }}"
     backrefs: true
   loop: "{{ rhel9stig_pwquality_conf_files.stdout_lines }}"
 
