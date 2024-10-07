@@ -526,7 +526,7 @@
     - NIST800-53R4_IA-11
   ansible.builtin.lineinfile:
     path: /etc/security/pwquality.conf
-    regexp: \s*minlen\s*=\s*([0-9]|1[0-4])
+    regexp: \s*minlen\s*=\s*
     line: "minlen = {{ rhel9stig_pass.minlen }}"
     backrefs: true
 
