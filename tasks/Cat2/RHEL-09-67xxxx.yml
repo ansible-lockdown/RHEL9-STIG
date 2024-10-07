@@ -265,7 +265,7 @@
       when:
         - "'FIPS' not in crypto_policies_check.stdout"
         - rhel9stig_disruption_high
-      ansible.builtin.shell: fips-mode-setup --enable
+      ansible.builtin.shell: fips-mode-setup --set FIPS
 
     - name: "MEDIUM | RHEL-09-672045 | WARN | RHEL 9 must implement a system-wide encryption policy."
       when:
