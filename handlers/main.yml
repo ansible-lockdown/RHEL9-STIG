@@ -4,10 +4,6 @@
   ansible.builtin.systemd:
     daemon_reload: true
 
-- name: Change_requires_reboot
-  ansible.builtin.set_fact:
-    reboot_required: true
-
 - name: Sshd_restart
   ansible.builtin.systemd:
     name: sshd
@@ -95,6 +91,10 @@
   notify: change_requires_reboot
   ansible.builtin.debug:
     msg: "Reboot required for auditd to apply new rules as immutable set"
+
+- name: Change_requires_reboot
+  ansible.builtin.set_fact:
+    change_requires_reboot: true
 
 - name: Restart_auditd
   tags:
