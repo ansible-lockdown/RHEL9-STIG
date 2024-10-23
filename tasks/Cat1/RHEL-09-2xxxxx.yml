@@ -31,10 +31,10 @@
     - NIST800-53R4_AC-6
   notify: Systemd_daemon_reload
   ansible.builtin.lineinfile:
-    create: true
-    line: CtrlAltDelBurstAction=none
     path: /etc/systemd/system.conf
     regexp: ^CtrlAltDelBurstAction=none
+    line: CtrlAltDelBurstAction=none
+    create: true
 
 - name: HIGH | RHEL-09-211050 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled
   when:
@@ -79,10 +79,10 @@
     - grub
   notify: Rebuild_grub
   ansible.builtin.lineinfile:
-    insertafter: "{{ grub_superusers.after }}"
-    line: "{{ grub_superusers.line }}"
     path: /etc/grub2.cfg
     regexp: "{{ grub_superusers.regexp }}"
+    line: "{{ grub_superusers.line }}"
+    insertafter: "{{ grub_superusers.after }}"
   loop:
     - { regexp: '^set_superusers=', line: 'set superusers="{{ rhel9stig_grub_superuser }}"', after: "### BEGIN /etc/grub.d/01_users ###" }
     - { regexp: export superusers, line: 'export superusers', after: set_superusers= }
@@ -104,9 +104,9 @@
     - dnf
     - packages
   ansible.builtin.lineinfile:
-    line: gpgcheck=1
     path: /etc/dnf/dnf.conf
     regexp: ^gpgcheck
+    line: gpgcheck=1
 
 - name: HIGH | RHEL-09-214020 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation.
   when:
@@ -122,9 +122,9 @@
     - dnf
     - packages
   ansible.builtin.lineinfile:
-    line: localpkg_gpgcheck=1
     path: /etc/dnf/dnf.conf
     regexp: ^localpkg_gpgcheck
+    line: localpkg_gpgcheck=1
 
 - name: HIGH | RHEL-09-214025 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation.
   when:
@@ -197,7 +197,7 @@
     name: tftp-server
     state: absent
 
-- name: HIGH | RHEL-08-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
+- name: HIGH | RHEL-09-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
     of all information that requires at rest protection.
   when:
     - rhel_09_231190
@@ -218,14 +218,14 @@
   vars:
     warn_control_id: "HIGH | RHEL-09-231190"
   block:
-    - name: HIGH | RHEL-08-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
+    - name: HIGH | RHEL-09-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
         of all information that requires at rest protection. | Get partition layout
       ansible.builtin.shell: blkid
       changed_when: false
       failed_when: false
       register: rhel_09_231190_partition_layout
 
-    - name: HIGH | RHEL-08-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
+    - name: HIGH | RHEL-09-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
         of all information that requires at rest protection. | Message out warning
       ansible.builtin.debug:
         msg:
@@ -233,7 +233,7 @@
           - If partitions other than pseudo file systems (such as /proc or /sys or tmpfs) this is a finding
           - "{{ rhel_09_231190_partition_layout.stdout_lines }}"
 
-    - name: HIGH | RHEL-08-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
+    - name: HIGH | RHEL-09-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
         of all information that requires at rest protection. | Message out warning
       ansible.builtin.import_tasks:
         file: warning_facts.yml
@@ -329,9 +329,9 @@
     - NIST800-53R4_IA-2
     - ssh
   ansible.builtin.lineinfile:
-    line: PermitEmptyPasswords no
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)PermitEmptyPasswords yes
+    line: PermitEmptyPasswords no
     validate: sshd -t -f %s
   notify: Sshd_restart
 
@@ -350,9 +350,9 @@
     - pam
   notify: Sshd_restart
   ansible.builtin.lineinfile:
-    line: UsePAM yes
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)usepam
+    line: UsePAM yes
     validate: sshd -t -f %s
 
 - name: HIGH | RHEL-09-271040 | PATCH | RHEL 9 must not allow unattended or automatic logon via the graphical user interface.
@@ -369,10 +369,10 @@
     - NIST800-53R4_CM-6
     - gui
   ansible.builtin.lineinfile:
-    insertafter: "{{ autologin.after | default(omit) }}"
-    line: "{{ autologin.line }}"
     path: /etc/gdm/custom.conf
     regexp: "{{ autologin.regexp }}"
+    line: "{{ autologin.line }}"
+    insertafter: "{{ autologin.after | default(omit) }}"
     create: true
   loop:
     - { regexp: "[daemon]", line: "[daemon]" }

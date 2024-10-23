@@ -34,9 +34,9 @@
     - NIST800-53R4_AC-10
     - limits
   ansible.builtin.lineinfile:
-    line: "* hard maxlogins 10"
     path: /etc/security/limits.conf
     regexp: '^\s*\*\s+hard\s+maxlogins\s+\d{1,}'
+    line: "* hard maxlogins 10"
 
 - name: "LOW | RHEL-09-412075 | PATCH | RHEL 9 must display the date and time of the last successful account logon upon logon."
   when:
@@ -50,8 +50,16 @@
     - V-258076
     - NIST800-53R4_CM-6
     - pam
-  ansible.builtin.lineinfile:
-    insertbefore: BOF
-    line: session required pam_lastlog.so showfailed
-    path: /etc/pam.d/postlogin
-    regex: session required pam_lastlog.so showfailed
+  block:
+    - name: "LOW | RHEL-09-412075 | PATCH | RHEL 9 must display the date and time of the last successful account logon upon logon."
+      ansible.builtin.lineinfile:
+        path: /etc/pam.d/postlogin
+        regex: session required pam_lastlog.so showfailed
+        line: session required pam_lastlog.so showfailed
+        insertbefore: BOF
+
+    - name: "LOW | RHEL-09-412075 | PATCH | RHEL 9 must display the date and time of the last successful account logon upon logon."
+      ansible.builtin.replace:
+        path: /etc/pam.d/postlogin
+        replace: '\1\2'
+        regexp: '^(.*\spam_lastlog\.so\s.*)silent(\s.*)$'

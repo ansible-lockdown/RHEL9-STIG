@@ -4,7 +4,6 @@
   when:
     - rhel_09_651010
     - rhel9stig_use_aide
-    - "'aide' not in ansible_facts.packages"
   tags:
     - RHEL-09-651010
     - CAT2
@@ -18,6 +17,7 @@
     - NIST800-53R4_SI-6
     - aide
   notify: Build_aide_db
+  changed_when: true
   ansible.builtin.package:
     name: aide
     state: present
@@ -183,8 +183,7 @@
         line: '#\1\2\3'
         path: "{{ item.path }}"
         regex: (Input|ModLoad)(TCP|UDP|RELP|imtcp|imudp|imrelp)(.*)
-      loop:
-        - "{{ rhel9stig_rsyslog_conf.files }}"
+      loop: "{{ rhel9stig_rsyslog_conf.files }}"
 
 - name: "MEDIUM | RHEL-09-652030 | PATCH | All RHEL 9 remote access methods must be monitored."
   when:
@@ -200,9 +199,8 @@
     - rsyslog
   notify: Restart_rsyslog
   ansible.builtin.lineinfile:
-    line: 'auth.*;authpriv.*;daemon.* /var/log/secure'
     path: /etc/rsyslog.conf
-
+    line: 'auth.*;authpriv.*;daemon.* /var/log/secure'
 ## Required for 652035 to run
 - name: "MEDIUM | RHEL-09-653130 | PATCH | RHEL 9 audispd-plugins package must be installed"
   when:
@@ -238,9 +236,9 @@
     - rsyslog
   notify: Restart_rsyslog
   ansible.builtin.lineinfile:
-    line: 'active = yes'
     path: /etc/audit/plugins.d/syslog.conf
     regexp: 'active\s*='
+    line: 'active = yes'
 
 - name: "MEDIUM | RHEL-09-652040 | AUDIT | RHEL 9 must authenticate the remote logging server for offloading audit logs via rsyslog."
   when:
@@ -407,9 +405,9 @@
     - NIST800-53R4_CM-6
     - rsyslog
   ansible.builtin.lineinfile:
-    line: "*.* {{ rhel9stig_remotelog_server.protocol }}{{ rhel9stig_remotelog_server.server }}:{{ rhel9stig_remotelog_server.port }}"
     path: /etc/rsyslog.conf
     regexp: '^.*\@\@'
+    line: "*.* {{ rhel9stig_remotelog_server.protocol }}{{ rhel9stig_remotelog_server.server }}:{{ rhel9stig_remotelog_server.port }}"
 
 - name: "MEDIUM | RHEL-09-652060 | PATCH | RHEL 9 must use cron logging."
   when:
@@ -424,11 +422,11 @@
     - NIST800-53R4_CM-6
     - rsyslog
   ansible.builtin.lineinfile:
-    backrefs: true
-    insertafter: "# Log cron stuff"
-    line: 'cron.*\1/var/log/cron'
     path: /etc/rsyslog.conf
     regexp: 'cron\.\*(\s+)'
+    line: 'cron.*\1/var/log/cron'
+    backrefs: true
+    insertafter: "# Log cron stuff"
 
 - name: "MEDIUM | RHEL-09-653010 | PATCH | RHEL 9 audit package must be installed."
   when:
@@ -586,9 +584,9 @@
     - NIST800-53R4_AU-5
     - auditd
   ansible.builtin.lineinfile:
-    line: disk_error_action = {{ rhel9stig_audit_conf.disk_error_action }}
     path: /etc/audit/auditd.conf
     regexp: ^\s*disk_error_action
+    line: disk_error_action = {{ rhel9stig_audit_conf.disk_error_action }}
 
 - name: "MEDIUM | RHEL-09-653025 | PATCH | RHEL 9 audit system must take appropriate action when the audit storage volume is full."
   when:
@@ -603,9 +601,9 @@
     - NIST800-53R4_AU-5
     - auditd
   ansible.builtin.lineinfile:
-    line: disk_full_action = {{ rhel9stig_audit_conf.disk_full_action }}
     path: /etc/audit/auditd.conf
     regexp: ^\s*disk_full_action
+    line: disk_full_action = {{ rhel9stig_audit_conf.disk_full_action }}
 
 - name: "MEDIUM | RHEL-09-653030 | AUDIT | RHEL 9 must allocate audit record storage capacity to store at least one week's worth of audit records."
   when:
@@ -656,9 +654,9 @@
     - NIST800-53R4_AU-5
     - auditd
   ansible.builtin.lineinfile:
-    line: space_left = {{ rhel9stig_audit_conf.space_left }}
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)space_left\s*=
+    line: space_left = {{ rhel9stig_audit_conf.space_left }}
 
 - name: "MEDIUM | RHEL-09-653040 | PATCH | RHEL 9 must notify the system administrator (SA) and information system security officer (ISSO) (at a minimum) when allocated audit record storage volume 75 percent utilization."
   when:
@@ -673,9 +671,9 @@
     - NIST800-53R4_AU-5
     - auditd
   ansible.builtin.lineinfile:
-    line: space_left_action = {{ rhel9stig_audit_conf.space_left_action }}
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)space_left_action\s*=
+    line: space_left_action = {{ rhel9stig_audit_conf.space_left_action }}
 
 - name: "MEDIUM | RHEL-09-653045 | PATCH | RHEL 9 must take action when allocated audit record storage volume reaches 95 percent of the audit record storage capacity."
   when:
@@ -690,9 +688,9 @@
     - NIST800-53R4_AU-5
     - auditd
   ansible.builtin.lineinfile:
-    line: admin_space_left = {{ rhel9stig_audit_conf.admin_space_left }}
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)admin_space_left\s*=
+    line: admin_space_left = {{ rhel9stig_audit_conf.admin_space_left }}
 
 - name: "MEDIUM | RHEL-09-653050 | PATCH | RHEL 9 must take action when allocated audit record storage volume reaches 95 percent of the repository maximum audit record storage capacity."
   when:
@@ -707,9 +705,9 @@
     - NIST800-53R4_AU-5
     - auditd
   ansible.builtin.lineinfile:
-    line: admin_space_left_action = {{ rhel9stig_audit_conf.admin_space_left_action }}
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)admin_space_left_action\s*
+    line: admin_space_left_action = {{ rhel9stig_audit_conf.admin_space_left_action }}
 
 - name: "MEDIUM | RHEL-09-653055 | PATCH | RHEL 9 audit system must take appropriate action when the audit files have reached maximum size."
   when:
@@ -724,9 +722,9 @@
     - NIST800-53R4_AU-5
     - auditd
   ansible.builtin.lineinfile:
-    line: max_log_file_action = {{ rhel9stig_audit_conf.max_log_file_action }}
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)max_log_file_action
+    line: max_log_file_action = {{ rhel9stig_audit_conf.max_log_file_action }}
 
 - name: "MEDIUM | RHEL-09-653060 | PATCH | RHEL 9 must label all offloaded audit logs before sending them to the central log server."
   when:
@@ -742,9 +740,9 @@
     - NIST800-53R4_AU-4
     - auditd
   ansible.builtin.lineinfile:
-    line: name_format = {{ rhel9stig_audit_conf.name_format }}
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)name_format
+    line: name_format = {{ rhel9stig_audit_conf.name_format }}
 
 - name: "MEDIUM | RHEL-09-653065 | PATCH | RHEL 9 must take appropriate action when the internal event queue is full."
   when:
@@ -759,9 +757,9 @@
     - NIST800-53R4_AU-4
     - auditd
   ansible.builtin.lineinfile:
-    line: overflow_action = {{ rhel9stig_audit_conf.overflow_action }}
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)overflow_action
+    line: overflow_action = {{ rhel9stig_audit_conf.overflow_action }}
 
 - name: "MEDIUM | RHEL-09-653070 | PATCH | RHEL 9 System Administrator (SA) and/or information system security officer (ISSO) (at a minimum) must be alerted of an audit processing failure event."
   when:
@@ -779,9 +777,9 @@
     - NIST800-53R4_AU-5
     - auditd
   ansible.builtin.lineinfile:
-    line: overflow_action = {{ rhel9stig_audit_conf.overflow_action }}
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)overflow_action
+    line: overflow_action = {{ rhel9stig_audit_conf.overflow_action }}
 
 - name: "MEDIUM | RHEL-09-653075 | PATCH | RHEL 9 audit system must audit local events."
   when:
@@ -799,9 +797,9 @@
     - NIST800-53R4_CM-6
     - auditd
   ansible.builtin.lineinfile:
-    line: overflow_action = {{ rhel9stig_audit_conf.overflow_action }}
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)overflow_action
+    line: overflow_action = {{ rhel9stig_audit_conf.overflow_action }}
 
 - name: "MEDIUM | RHEL-09-653080 | PATCH | RHEL 9 audit logs must be group-owned by root or by a restricted logging group to prevent unauthorized read access."
   when:
@@ -823,9 +821,9 @@
   block:
     - name: "MEDIUM | RHEL-09-653080 | PATCH | RHEL 9 audit logs must be group-owned by root or by a restricted logging group to prevent unauthorized read access. | set logfile_group"
       ansible.builtin.lineinfile:
-        line: log_group = {{ rhel9stig_audit_conf.logfile_group }}
         path: /etc/audit/auditd.conf
         regexp: ^(#|\s*)log_group
+        line: log_group = {{ rhel9stig_audit_conf.logfile_group }}
 
     - name: "MEDIUM | RHEL-09-653080 | PATCH | RHEL 9 audit logs must be group-owned by root or by a restricted logging group to prevent unauthorized read access. | Set perms"
       ansible.builtin.file:
@@ -871,8 +869,8 @@
     - NIST800-53R4_SI-11
     - auditd
   ansible.builtin.file:
-    mode: go-rwx
     path: "{{ discovered_auditd_logfile.stdout }}"
+    mode: go-rwx
 
 - name: "MEDIUM | RHEL-09-653095 | PATCH | RHEL 9 must periodically flush audit records to disk to prevent the loss of audit records."
   when:
@@ -887,9 +885,9 @@
     - NIST800-53R4_AU-6
     - auditd
   ansible.builtin.lineinfile:
-    line: freq = {{ rhel9stig_audit_conf.freq }}
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)freq\s*=
+    line: freq = {{ rhel9stig_audit_conf.freq }}
 
 - name: "MEDIUM | RHEL-09-653100 | PATCH | RHEL 9 must produce audit records containing information to establish the identity of any individual or process associated with the event."
   when:
@@ -907,9 +905,9 @@
     - NIST800-53R4_CM-6
     - auditd
   ansible.builtin.lineinfile:
-    line: log_format = {{ rhel9stig_audit_conf.log_format }}
     path: /etc/audit/auditd.conf
     regexp: ^(#|\s*)log_format\s*=
+    line: log_format = {{ rhel9stig_audit_conf.log_format }}
 
 - name: "MEDIUM | RHEL-09-653105 | PATCH | RHEL 9 must write audit records to disk."
   when:
@@ -924,9 +922,9 @@
     - NIST800-53R4_CM-6
     - auditd
   ansible.builtin.lineinfile:
-    line: write_logs = {{ rhel9stig_audit_conf.write_logs }}
     path: /etc/audit/auditd.conf
     regexp: ^\s*write_logs
+    line: write_logs = {{ rhel9stig_audit_conf.write_logs }}
 
 - name: "MEDIUM | RHEL-09-653110 | PATCH | RHEL 9 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM) to select which auditable events are to be audited."
   when:
@@ -966,10 +964,10 @@
     - NIST800-53R4_AU-12
     - auditd
   ansible.builtin.file:
-    mode: '0640'
     path: /etc/audit/auditd.conf
+    mode: u-x,g-wx,o-rwx
 
-- name: "MEDIUM | RHEL-09-653125 | PATCH | RHEL 9 /etc/audit/auditd.conf file must have 0640 or less permissive to prevent unauthorized access."
+- name: "MEDIUM | RHEL-09-653125 | PATCH | RHEL 9 must have mail aliases to notify the information system security officer (ISSO) and system administrator (SA) (at a minimum) in the event of an audit processing failure."
   when:
     - rhel_09_653125
   tags:
@@ -982,6 +980,6 @@
     - NIST800-53R4_AU-5
     - postfix
   ansible.builtin.lineinfile:
-    line: 'root: ISSO'
     path: /etc/aliases
     regexp: '^root:\s.*'
+    line: 'root: ISSO'

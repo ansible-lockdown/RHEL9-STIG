@@ -36,9 +36,9 @@
   block:
     - name: "MEDIUM | RHEL-09-211020 | PATCH | RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system via a command line user logon. | Uncomment banner keyword and set banner path"
       ansible.builtin.lineinfile:
-        line: 'Banner /etc/issue'
         path: /etc/ssh/sshd_config
         regexp: '(?i)^#?Banner'
+        line: 'Banner /etc/issue'
       when:
         - rhel9stig_ssh_required
 
@@ -271,10 +271,10 @@
     - name: "MEDIUM | RHEL-09-212035 | PATCH | RHEL 9 must disable virtual system calls. | Set default"
       when: rhel9stig_212035_def_grub_vsyscall.rc != 0
       ansible.builtin.lineinfile:
-        backrefs: true
-        line: '\1\2 vsyscall=none'
         path: /etc/default/grub
         regexp: ^(GRUB_CMDLINE_LINUX=")(.*)"
+        line: '\1\2 vsyscall=none'
+        backrefs: true
       notify: Rebuild_grub
 
     - name: "MEDIUM | RHEL-09-212035 | PATCH | RHEL 9 must disable virtual system calls. | Change default"
@@ -282,10 +282,10 @@
         - rhel9stig_212035_def_grub_vsyscall.rc == 0
         - "'vsyscall=none' not in rhel9stig_212035_def_grub_vsyscall.stdout"
       ansible.builtin.lineinfile:
-        backrefs: true
-        line: '\1\2vsyscall=none\3'
         path: /etc/default/grub
         regexp: ^(GRUB_CMDLINE_LINUX=)(".*)vsyscall=\w+(.*")
+        line: '\1\2vsyscall=none\3'
+        backrefs: true
       notify: Rebuild_grub
 
 - name: "MEDIUM | RHEL-09-212040 | PATCH | RHEL 9 must clear the page allocator to prevent use-after-free attacks."
@@ -322,19 +322,19 @@
     - name: "MEDIUM | RHEL-09-212040 | PATCH | RHEL 9 must clear the page allocator to prevent use-after-free attacks. | Set default"
       when: rhel9stig_212040_def_grub_poison.rc != 0
       ansible.builtin.lineinfile:
-        backrefs: true
-        line: '\1\2 page_poison=1"'
-        regexp: ^(GRUB_CMDLINE_LINUX=")(.*)"
         path: /etc/default/grub
+        regexp: ^(GRUB_CMDLINE_LINUX=")(.*)"
+        line: '\1\2 page_poison=1"'
+        backrefs: true
       notify: Rebuild_grub
 
     - name: "MEDIUM | RHEL-09-212040 | PATCH | RHEL 9 must clear the page allocator to prevent use-after-free attacks. | Change default"
       when: rhel9stig_212040_def_grub_poison.rc == 0
       ansible.builtin.lineinfile:
-        backrefs: true
-        line: '\1\2page_poison=1\3'
-        regexp: ^(GRUB_CMDLINE_LINUX=)(".*)page_poison=\d(.*")
         path: /etc/default/grub
+        regexp: ^(GRUB_CMDLINE_LINUX=)(".*)page_poison=\d(.*")
+        line: '\1\2page_poison=1\3'
+        backrefs: true
       notify: Rebuild_grub
 
 - name: "MEDIUM | RHEL-09-212045 | PATCH | RHEL 9 must clear SLUB/SLAB objects to prevent use-after-free attacks"
@@ -370,10 +370,11 @@
     - name: "MEDIUM | RHEL-09-212045 | PATCH | RHEL 9 must clear SLUB/SLAB objects to prevent use-after-free attacks | Set default"
       when: rhel9stig_212045_def_grub_slub.rc != 0
       ansible.builtin.lineinfile:
-        backrefs: true
-        line: '\1\2 slub_debug=P"'
-        regexp: ^(GRUB_CMDLINE_LINUX=")(.*)"
         path: /etc/default/grub
+        regexp: ^(GRUB_CMDLINE_LINUX=")(.*)"
+        line: '\1\2 slub_debug=P"'
+        backrefs: true
+
       notify: Rebuild_grub
 
     - name: "MEDIUM | RHEL-09-212045 | PATCH | RHEL 9 must clear SLUB/SLAB objects to prevent use-after-free attacks | Change default"
@@ -381,10 +382,10 @@
         - "'slub_debug=P' not in rhel9stig_212045_def_grub_slub.stdout"
         - rhel9stig_212045_def_grub_slub.rc == 0
       ansible.builtin.lineinfile:
-        backrefs: true
-        line: '\1\2slub_debug=P\3'
-        regexp: ^(GRUB_CMDLINE_LINUX=)(".*)slub_debug=\w+\b(.*")
         path: /etc/default/grub
+        regexp: ^(GRUB_CMDLINE_LINUX=)(".*)slub_debug=\w+\b(.*")
+        line: '\1\2slub_debug=P\3'
+        backrefs: true
       notify: Rebuild_grub
 
 - name: "MEDIUM | RHEL-09-213010 | PATCH | RHEL 9 must restrict access to the kernel message buffer."
@@ -707,9 +708,9 @@
     - V-257812
     - NIST800-53R4_CM-6
   ansible.builtin.lineinfile:
-    line: ProcessSizeMax=0
-    regexp: ^(#|)ProcessSizeMax\s*=\s*(?!0)\d+
     path: /etc/systemd/coredump.conf
+    regexp: ^(#|)ProcessSizeMax\s*=\s*(?!0)\d+
+    line: ProcessSizeMax=0
     create: true
 
 - name: "MEDIUM | RHEL-09-213090 | PATCH | RHEL 9 must storage core dumps."
@@ -724,9 +725,9 @@
     - V-257813
     - NIST800-53R4_CM-6
   ansible.builtin.lineinfile:
-    line: Storage=none
-    regexp: ^(#|)Storage=.*
     path: /etc/systemd/coredump.conf
+    regexp: ^(#|)Storage=.*
+    line: Storage=none
     create: true
 
 - name: "MEDIUM | RHEL-09-213095 | PATCH | RHEL 9 must disable core dumps for all users."
@@ -741,9 +742,9 @@
     - V-257814
     - NIST800-53R4_CM-6
   ansible.builtin.lineinfile:
-    line: '* hard core 0'
-    regexp: '^\* hard core (?!0)\d*'
     path: /etc/security/limits.conf
+    regexp: '^\* hard core (?!0)\d*'
+    line: '* hard core 0'
 
 - name: "MEDIUM | RHEL-09-213100 | PATCH | RHEL 9 must disable acquiring, saving, and processing core dumps."
   when:
@@ -934,6 +935,7 @@
   when:
     - rhel_09_215025
     - "'nfs-utils' in ansible_facts.packages"
+    - not rhel9stig_nfs_utils_required
   tags:
     - RHEL-09-215025
     - CAT2

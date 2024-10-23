@@ -79,7 +79,14 @@
         state: enabled
         target: DROP
 
-    - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems."
+    - name: "MEDIUM | RHEL-09-251020 | AUDIT | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Get default zone"
+      ansible.builtin.shell: "firewall-cmd --get-default-zone"
+      changed_when: false
+      failed_when: discovered_current_firewalld_zone.rc not in [ 0, 1 ]
+      register: discovered_current_firewalld_zone
+
+    - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Set zone if not curent"
+      when: "(discovered_current_firewalld_zone.stdout | default([])) not in rhel9stig_custom_firewall.zone"
       ansible.builtin.shell: "firewall-cmd --set-default-zone={{ rhel9stig_custom_firewall.zone }}"
 
     - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Setup Connections"
@@ -134,9 +141,9 @@
     - V-257939
     - NIST800-53R4_SC-5
   ansible.builtin.lineinfile:
-    line: FirewallBackend=nftables
-    regexp: ^(#|)FirewallBackend=.*
     path: /etc/firewalld/firewalld.conf
+    regexp: ^(#|)FirewallBackend=.*
+    line: FirewallBackend=nftables
 
 - name: "MEDIUM | RHEL-09-251035 | AUDIT | To prevent unauthorized connection of devices, unauthorized transfer of information, or unauthorized tunneling (i.e., embedding of data types within data types), organizations must disable or restrict unused or unnecessary physical and logical ports/protocols on information systems."
   when:
@@ -185,10 +192,10 @@
         - item not in rhel9stig_promisc_if
         - rhel9stig_disruption_high
       ansible.builtin.lineinfile:
-        create: true
-        line: PROMISC=NO
-        regexp: ^(?i)PROMISC=(YES|TRUE|NO|FALSE)
         path: "/etc/sysconfig/network-scripts/ifcfg-{{ item }}"
+        regexp: ^(?i)PROMISC=(YES|TRUE|NO|FALSE)
+        line: PROMISC=NO
+        create: true
       notify: Restart_NetworkManager
       loop: "{{ ansible_facts.interfaces }}"
 
@@ -310,6 +317,7 @@
     section: main
     state: present
     value: none
+    no_extra_spaces: true
   register: rhel09stig_dns_nm_set
 
 - name: "MEDIUM | RHEL-09-252035 | PATCH | RHEL 9 systems using Domain Name Servers (DNS) resolution must have at least two name servers configured."
@@ -330,9 +338,9 @@
           rhel9stig_network_manager_dns.stdout == 'none' or
           rhel9stig_network_manager_dns.stdout == 'unmanaged'
       ansible.builtin.template:
-        dest: /etc/resolv.conf.j2
+        dest: /etc/resolv.conf
         mode: '0644'
-        src: /etc/resolv.conf
+        src: etc/resolv.conf.j2
 
     - name: "MEDIUM | RHEL-09-252035 | PATCH | RHEL 9 systems using Domain Name Servers (DNS) resolution must have at least two name servers configured."
       when:
@@ -438,9 +446,9 @@
 
     - name: "MEDIUM | RHEL-09-252055 | PATCH | If the Trivial File Transfer Protocol (TFTP) server is required, RHEL 9 TFTP daemon must be configured to operate in secure mode."
       ansible.builtin.lineinfile:
-        line: ExecStart=/usr/sbin/in.tftpd -s /var/lib/tftpboot
         path: "{{ rhel9stig_tftp_systemd_file.stdout }}"
         regexp: ^ExecStart
+        line: ExecStart=/usr/sbin/in.tftpd -s /var/lib/tftpboot
 
 - name: "MEDIUM | RHEL-09-252060 | PATCH | RHEL 9 must forward mail from postmaster to the root account using a postfix alias."
   when:
@@ -456,10 +464,10 @@
     - NIST800-53R4_AU-5
   notify: Update_aliases
   ansible.builtin.lineinfile:
-    create: true
-    line: 'postmaster: root'
     path: /etc/aliases
     regexp: postmaster:\s*root
+    line: 'postmaster: root'
+    create: true
 
 - name: "MEDIUM | RHEL-09-252065 | PATCH | RHEL 9 libreswan package must be installed."
   when:
@@ -923,10 +931,10 @@
     - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
-    create: true
-    line: "banner {{ rhel9stig_sshd_config.banner_file }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)banner \/.*\/.*
+    line: "banner {{ rhel9stig_sshd_config.banner_file }}"
+    create: true
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255030 | PATCH | RHEL 9 must log SSH connection attempts and failures to the server."
@@ -943,10 +951,10 @@
     - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
-    create: true
-    line: "LogLevel {{ rhel9stig_sshd_config.loglevel }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)LogLevel.*
+    line: "LogLevel {{ rhel9stig_sshd_config.loglevel }}"
+    create: true
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255035 | PATCH | RHEL 9 SSHD must accept public key authentication"
@@ -969,10 +977,10 @@
     - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
-    create: true
-    line: "PubkeyAuthentication {{ rhel9stig_sshd_config.pubkeyauth }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)PubkeyAuthentication\s*(yes|no)
+    line: "PubkeyAuthentication {{ rhel9stig_sshd_config.pubkeyauth }}"
+    create: true
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255045 | PATCH | RHEL 9 must not permit direct logons to the root account using remote access via SSH."
@@ -992,10 +1000,10 @@
     - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
-    create: true
-    line: "PermitRootLogin {{ rhel9stig_sshd_config.permitroot }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)PermitRootLogin\s*(yes|no)
+    line: "PermitRootLogin {{ rhel9stig_sshd_config.permitroot }}"
+    create: true
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255055 | PATCH | RHEL 9 SSH daemon must be configured to use system-wide crypto policies."
@@ -1012,10 +1020,10 @@
     - ssh
   notify: Restart_sshd
   ansible.builtin.lineinfile:
-    create: true
-    line: "Include {{ rhel9stig_sshd_config.include_conf }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)Include.*
+    line: "Include {{ rhel9stig_sshd_config.include_conf }}"
+    create: true
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255060 | PATCH | RHEL 9 must implement DOD-approved encryption ciphers to protect the confidentiality of SSH client connections."
@@ -1032,10 +1040,10 @@
     - ssh
   notify: Restart_sshd
   ansible.builtin.lineinfile:
-    create: true
-    line: "Include {{ rhel9stig_sshd_config.include_conf }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)Include.*
+    line: "Include {{ rhel9stig_sshd_config.include_conf }}"
+    create: true
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255065 | PATCH | RHEL 9 must implement DOD-approved encryption ciphers to protect the confidentiality of SSH server connections."
@@ -1055,6 +1063,23 @@
     path: /etc/crypto-policies/back-ends/openssh.config
     regexp: ^Ciphers
 
+- name: "MEDIUM | RHEL-09-255070 | PATCH | RHEL 9 SSH client must be configured to use only Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms."
+  when:
+    - rhel_09_255070
+  tags:
+    - RHEL-09-255070
+    - CAT2
+    - CCI-001453
+    - SRG-OS-000250-GPOS-00093
+    - SV-257990r925957_rule
+    - V-257990
+    - NIST800-53R4_AC-17
+  notify: Change_requires_reboot
+  ansible.builtin.lineinfile:
+    line: "MACs {{ rhel9stig_sshd_config.macs_clients | join(',') }}"
+    path: /etc/crypto-policies/back-ends/openssh.config
+    regexp: ^MACs
+
 - name: "MEDIUM | RHEL-09-255075 | PATCH | RHEL 9 SSH server must be configured to use only Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms."
   when:
     - rhel_09_255075
@@ -1068,9 +1093,9 @@
     - NIST800-53R4_AC-17
   notify: Change_requires_reboot
   ansible.builtin.lineinfile:
-    line: "MACs {{ rhel9stig_sshd_config.macs | join(',') }}"
-    path: /etc/crypto-policies/back-ends/openssh.config
+    path: /etc/crypto-policies/back-ends/opensshserver.config
     regexp: ^MACs
+    line: "MACs {{ rhel9stig_sshd_config.macs_clients | join(',') + ',' + rhel9stig_sshd_config.macs_server | join(',') }}"
 
 - name: "MEDIUM | RHEL-09-255080 | PATCH | RHEL 9 must not allow a noncertificate trusted host SSH logon to the system."
   when:
@@ -1086,10 +1111,10 @@
     - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
-    create: true
-    line: "HostbasedAuthentication {{ rhel9stig_sshd_config.hostauth }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)HostbasedAuthentication\s*(yes|no)
+    line: "HostbasedAuthentication {{ rhel9stig_sshd_config.hostauth }}"
+    create: true
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255085 | PATCH | RHEL 9 must not allow users to override SSH environment variables."
@@ -1106,10 +1131,10 @@
     - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
-    create: true
-    line: "PermitUserEnvironment {{ rhel9stig_sshd_config.userenv }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)PermitUserEnvironments\s*(yes|no)
+    line: "PermitUserEnvironment {{ rhel9stig_sshd_config.userenv }}"
+    create: true
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255090 | PATCH | RHEL 9 must force a frequent session key renegotiation for SSH connections to the server."
@@ -1131,10 +1156,10 @@
     - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
-    create: true
-    line: "RekeyLimit {{ rhel9stig_sshd_config.rekeylimit }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)RekeyLimit.*
+    line: "RekeyLimit {{ rhel9stig_sshd_config.rekeylimit }}"
+    create: true
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255095 | PATCH | RHEL 9 must be configured so that all network connections associated with SSH traffic terminate after becoming unresponsive."
@@ -1155,10 +1180,10 @@
     - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
-    create: true
-    line: "ClientAliveCountMax {{ rhel9stig_sshd_config.clientalivecountmax }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)ClientAliveCountMax\s\d*
+    line: "ClientAliveCountMax {{ rhel9stig_sshd_config.clientalivecountmax }}"
+    create: true
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255100 | PATCH | RHEL 9 must be configured so that all network connections associated with SSH traffic are terminated after 10 minutes of becoming unresponsive."
@@ -1183,10 +1208,10 @@
     - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
-    create: true
-    line: "ClientAliveInterval {{ rhel9stig_sshd_config.clientaliveinterval }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)ClientAliveInterval\s\d*
+    line: "ClientAliveInterval {{ rhel9stig_sshd_config.clientaliveinterval }}"
+    create: true
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255105 | PATCH | RHEL 9 SSH server configuration file must be group-owned by root."
@@ -1301,10 +1326,10 @@
     - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
-    create: true
-    line: "Compression {{ rhel9stig_sshd_config.compress }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)Compression\s*(yes|no)
+    line: "Compression {{ rhel9stig_sshd_config.compress }}"
+    create: true
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255135 | PATCH | RHEL 9 SSH daemon must not allow GSSAPI authentication."
@@ -1324,10 +1349,10 @@
     - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
-    create: true
-    line: "GSSAPIAuthentication {{ rhel9stig_sshd_config.gssapiauth }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)GSSAPIAuthentication\s*(yes|no)
+    line: "GSSAPIAuthentication {{ rhel9stig_sshd_config.gssapiauth }}"
+    create: true
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255140 | PATCH | RHEL 9 SSH daemon must not allow Kerberos authentication."
@@ -1347,10 +1372,10 @@
     - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
-    create: true
-    line: "KerberosAuthentication {{ rhel9stig_sshd_config.gssapiauth }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)KerberosAuthentication\s*(yes|no)
+    line: "KerberosAuthentication {{ rhel9stig_sshd_config.kerbauth }}"
+    create: true
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255145 | PATCH | RHEL 9 SSH daemon must not allow rhosts authentication"
@@ -1367,10 +1392,10 @@
     - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
-    create: true
-    line: "IgnoreRhosts {{ rhel9stig_sshd_config.ignorerhosts }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)IgnoreRhosts\s*(yes|no)
+    line: "IgnoreRhosts {{ rhel9stig_sshd_config.ignorerhosts }}"
+    create: true
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255150 | PATCH | RHEL 9 SSH daemon must not allow known hosts authentication."
@@ -1387,10 +1412,10 @@
     - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
-    create: true
-    line: "IgnoreUserKnownHosts {{ rhel9stig_sshd_config.ignoreknownhosts }}"
-    path: "{{ rhel9stig_sshd_config_file }}"
+    path: /etc/ssh/sshd_config.d/50-redhat.conf
     regexp: ^(?i)(#|)IgnoreUserKnownHosts\s*(yes|no)
+    line: "IgnoreUserKnownHosts {{ rhel9stig_sshd_config.ignoreknownhosts }}"
+    create: true
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255155 | PATCH | RHEL 9 SSH daemon must disable remote X connections for interactive users."
@@ -1407,10 +1432,10 @@
     - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
-    create: true
-    line: "X11forwarding {{ rhel9stig_sshd_config.x11forward }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)X11forwarding\s*(yes|no)
+    line: "X11forwarding {{ rhel9stig_sshd_config.x11forward }}"
+    create: true
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255160 | PATCH | RHEL 9 SSH daemon must perform strict mode checking of home directory configuration files."
@@ -1427,10 +1452,10 @@
     - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
-    create: true
-    line: "StrictModes {{ rhel9stig_sshd_config.strictmodes }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)StrictModes\s*(yes|no)
+    line: "StrictModes {{ rhel9stig_sshd_config.strictmodes }}"
+    create: true
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255165 | PATCH | RHEL 9 SSH daemon must display the date and time of the last successful account logon upon an SSH logon."
@@ -1447,10 +1472,10 @@
     - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
-    create: true
-    line: "PrintLastLog {{ rhel9stig_sshd_config.lastlog }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)PrintLastLog\s*(yes|no)
+    line: "PrintLastLog {{ rhel9stig_sshd_config.lastlog }}"
+    create: true
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255170 | PATCH | RHEL 9 SSH daemon must display the date and time of the last successful account logon upon an SSH logon."
@@ -1467,10 +1492,10 @@
     - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
-    create: true
-    line: "UsePrivilegeSeparation {{ rhel9stig_sshd_config.privsep }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)UsePrivilegeSeparation\s*(yes|no)
+    line: "UsePrivilegeSeparation {{ rhel9stig_sshd_config.privsep }}"
+    create: true
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255175 | PATCH | RHEL 9 SSH daemon must prevent remote hosts from connecting to the proxy display."
@@ -1487,8 +1512,8 @@
     - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
-    create: true
-    line: "X11UseLocalhost {{ rhel9stig_sshd_config.x11uselocal }}"
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)X11UseLocalhost\s*(yes|no)
+    line: "X11UseLocalhost {{ rhel9stig_sshd_config.x11uselocal }}"
+    create: true
     validate: sshd -t -f %s

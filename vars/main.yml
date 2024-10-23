@@ -1,7 +1,7 @@
 ---
 # vars file for RHEL9-STIG
 
-min_ansible_version: 2.15.1
+min_ansible_version: 2.12.1
 
 rhel9stig_min_supported_os_ver:
     RedHat: "9.2"
@@ -26,7 +26,7 @@ gpg_key_package: "{{ ansible_distribution | lower }}-gpg-keys"
 discover_int_uid: true
 
 # Default for facts
-reboot_required: false
+change_requires_reboot: false
 update_audit_template: false
 
 # DOD encryption
@@ -46,3 +46,7 @@ rhel9stig_dod_macs:
 - umac-128@openssh.com
 - hmac-sha2-512
 rhel9stig_dod_kex:
+
+# Defaults added for searches
+rhel9stig_ungrouped_files_found: false
+rhel9stig_unowned_files_found: false
