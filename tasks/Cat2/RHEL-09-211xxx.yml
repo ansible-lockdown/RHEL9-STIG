@@ -1,0 +1,135 @@
+---
+
+- name: "MEDIUM | RHEL-09-211015 | PATCH | RHEL 9 vendor packaged system security patches and updates must be installed and up to date."
+  when:
+    - rhel_09_211015
+  notify: Change_requires_reboot
+  tags:
+    - RHEL-09-211015
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257778r991589_rule
+    - V-257778
+    - NIST800-53R4_CM-6b
+  ansible.builtin.package:
+    name: "*"
+    state: latest
+
+- name: "MEDIUM | RHEL-09-211020 | PATCH | RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system via a command line user logon."
+  when:
+    - rhel_09_211020
+  tags:
+    - RHEL-09-211020
+    - CAT2
+    - CCI-000048
+    - CCI-001384
+    - CCI-001385
+    - CCI-001386
+    - CCI-001387
+    - CCI-001388
+    - SRG-OS-000023-GPOS-00006
+    - SRG-OS-000228-GPOS-00088
+    - SV-257779r958390_rule
+    - V-257779
+    - NIST800-53R4_AC-8
+  block:
+    - name: "MEDIUM | RHEL-09-211020 | PATCH | RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system via a command line user logon. | Uncomment banner keyword and set banner path"
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '(?i)^#?Banner'
+        line: 'Banner /etc/issue'
+      when:
+        - rhel9stig_ssh_required
+
+    - name: "MEDIUM | RHEL-09-211020 | PATCH | RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system via a command line user logon. | Set banner message"
+      ansible.builtin.copy:  # noqa: template-instead-of-copy
+        content: "{{ rhel9stig_logon_banner }}"
+        dest: "{{ item }}"
+        group: root
+        mode: '0644'
+        owner: root
+      notify: Sshd_restart
+      loop:
+        - /etc/issue
+        - /etc/issue.net
+
+- name: "MEDIUM | RHEL-09-211025 | PATCH | RHEL 9 must implement the Endpoint Security for Linux Threat Prevention tool. | Alert no McAfee"
+  when:
+    - rhel_09_211025
+  tags:
+    - RHEL-09-211025
+    - CAT2
+    - CCI-001233
+    - SRG-OS-000191-GPOS-00080
+    - SV-257780r925327_rule
+    - V-257780
+    - NIST800-53R4_SI-2
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-211025"
+  block:
+    - name: "MEDIUM | RHEL-09-211025 | AUDIT | RHEL 9 must implement the Endpoint Security for Linux Threat Prevention tool. | McAfee process"
+      ansible.builtin.shell:
+        name: "ps -ef | grep -i {{ rhel9stig_av_service }} mfetpd | grep -v grep"
+      changed_when: false
+      failed_when: false
+      register: rhel9stig_av_pid
+
+    - name: MEDIUM | RHEL-09-211025 | WARN | RHEL 9 must implement the Endpoint Security for Linux Threat Prevention tool.
+      when:
+        - "'mcafeetp' not in ansible_facts.packages or
+           rhel9stig_av_pid is undefined"
+      ansible.builtin.import_tasks: warning_facts.yml
+
+- name: "MEDIUM | RHEL-09-211030 | PATCH | The graphical display manager must not be the default target on RHEL 9 unless approved."
+  when:
+    - rhel_09_211030
+  tags:
+    - RHEL-09-211030
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257781r991589_rule
+    - V-257781
+    - NIST800-53R4_CM-6
+  ansible.builtin.file:
+    dest: /etc/systemd/system/default.target
+    src: /usr/lib/systemd/system/multi-user.target
+    state: link
+
+- name: "MEDIUM | RHEL-09-211040 | PATCH | RHEL 9 systemd-journald service must be enabled."
+  when:
+    - rhel_09_211040
+  tags:
+    - RHEL-09-211040
+    - CAT2
+    - CCI-001665
+    - SRG-OS-000269-GPOS-00103
+    - SV-257783r991562_rule
+    - V-257783
+    - NIST800-53R4_SC-24
+  ansible.builtin.systemd:
+    enabled: true
+    name: systemd-journald
+    state: started
+  notify: Systemd_daemon_reload
+
+- name: "MEDIUM | RHEL-09-211055 | PATCH | RHEL 9 debug-shell systemd service must be disabled."
+  when:
+    - rhel_09_211055
+  tags:
+    - RHEL-09-211055
+    - CAT2
+    - CCI-001665
+    - SRG-OS-000324-GPOS-00125
+    - SRG-OS-000480-GPOS-00227
+    - SV-257786r958726_rule
+    - V-257786
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_AC-6
+  ansible.builtin.systemd:
+    enabled: false
+    masked: true
+    name: debug-shell.service
+    state: stopped
+  notify: Systemd_daemon_reload

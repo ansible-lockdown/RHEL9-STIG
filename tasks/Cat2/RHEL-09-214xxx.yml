@@ -1,0 +1,71 @@
+---
+
+- name: "MEDIUM | RHEL-09-214010 | PATCH | RHEL 9 must ensure cryptographic verification of vendor software packages."
+  when:
+    - rhel_09_214010
+  tags:
+    - RHEL-09-214010
+    - CAT2
+    - CCI-001749
+    - SRG-OS-000366-GPOS-00153
+    - SV-257819r997052_rule
+    - V-257819
+    - NIST800-53R4_CM-5
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-214010"
+  block:
+    - name: "MEDIUM | RHEL-09-214010 | AUDIT | RHEL 9 must ensure cryptographic verification of vendor software packages. | find keys"
+      ansible.builtin.shell: "rpm -qa | grep {{ os_gpg_key_pubkey_name }}"
+      changed_when: false
+      failed_when: false
+      register: os_installed_pub_keys
+
+    - name: "MEDIUM | RHEL-09-214010 | AUDIT | RHEL 9 must ensure cryptographic verification of vendor software packages. | query keys"
+      when: os_installed_pub_keys.rc == 0
+      ansible.builtin.shell: 'rpm -q --queryformat "%{PACKAGER} %{VERSION}\\n" {{ os_gpg_key_pubkey_name }} | grep "{{ os_gpg_key_pubkey_content }}"'
+      changed_when: false
+      failed_when: false
+      register: os_gpg_key_check
+
+    - name: "MEDIUM | RHEL-09-214010 | WARN | RHEL 9 must ensure cryptographic verification of vendor software packages. | Warning"
+      when:
+        - os_installed_pub_keys.rc == 1 or
+          os_gpg_key_check.rc == 1
+      ansible.builtin.debug:
+        msg: "Warning!! Installed GPG Keys do not meet expected values or expected keys are not installed"
+
+    - name: "MEDIUM | RHEL-09-214010 | WARN | RHEL 9 must ensure cryptographic verification of vendor software packages. | Warning"
+      when:
+        - os_installed_pub_keys.rc == 1 or
+          os_gpg_key_check.rc == 1
+      ansible.builtin.import_tasks: warning_facts.yml
+
+- name: "MEDIUM | RHEL-09-214030 | PATCH | RHEL 9 must be configured so that the cryptographic hashes of system files match vendor values."
+  when:
+    - rhel_09_214030
+    - rhel9stig_disruption_high
+  tags:
+    - RHEL-09-214030
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257823r991589_rule
+    - V-257823
+    - NIST800-53R4_CM-5
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-214030"
+  block:
+    - name: "MEDIUM | RHEL-09-214030 | AUDIT | RHEL 9 must be configured so that the cryptographic hashes of system files match vendor values."
+      ansible.builtin.shell: rpm -Va --noconfig | awk '$1 ~ /..5/ && $2 != "c"'
+      changed_when: false
+      failed_when: rhel9stig_214010_rpm_file_hash.rc not in [ 0, 1 ]
+      register: rhel9stig_214010_rpm_file_hash
+
+    - name: "MEDIUM | RHEL-09-214030 | WARN | RHEL 9 must be configured so that the cryptographic hashes of system files match vendor values."
+      when: rhel9stig_214010_rpm_file_hash.stdout | length > 0
+      ansible.builtin.debug:
+        msg: "Warning!! Packages have been found where Crypto graphic hashes differ"
+
+    - name: "MEDIUM | RHEL-09-214030 | AUDIT | RHEL 9 must be configured so that the cryptographic hashes of system files match vendor values."
+      when: rhel9stig_214010_rpm_file_hash.stdout | length > 0
+      ansible.builtin.import_tasks: warning_facts.yml

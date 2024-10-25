@@ -1,8 +1,24 @@
 ---
 
-- name: Run Cat 2 STIG 21xxxx tasks
+- name: Run Cat 2 STIG 211xxx Compliance tasks
   ansible.builtin.import_tasks:
-    file: RHEL-09-21xxxx.yml
+    file: RHEL-09-211xxx.yml
+
+- name: Run Cat 2 STIG 212xxx Bootloader tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-212xxx.yml
+
+- name: Run Cat 2 STIG 213xxx kernel tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-213xxx.yml
+
+- name: Run Cat 2 STIG 214xxx DNF/RPM tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-214xxx.yml
+
+- name: Run Cat 2 STIG 215xxx Package tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-213xxx.yml
 
 - name: Run Cat 2 STIG 23xxxx tasks
   ansible.builtin.import_tasks:
