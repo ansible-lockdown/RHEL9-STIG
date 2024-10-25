@@ -1,0 +1,231 @@
+---
+
+- name: "MEDIUM | RHEL-09-431015 | PATCH | RHEL 9 must enable the SELinux targeted policy."
+  when:
+    - rhel_09_431015
+  tags:
+    - RHEL-09-431015
+    - CAT2
+    - CCI-002696
+    - SRG-OS-000445-GPOS-00199
+    - SV-258079r958944_rule
+    - V-258079
+    - NIST800-53R4_SI-6
+  ansible.builtin.lineinfile:
+    path: /etc/selinux/config
+    regexp: ^(#|)SELINUXTYPE\s*=\s*\w+
+    line: SELINUXTYPE=targeted
+
+- name: "MEDIUM | RHEL-09-431025 | PATCH | RHEL 9 must have policycoreutils package installed."
+  when:
+    - rhel_09_431025
+  tags:
+    - RHEL-09-431025
+    - CAT2
+    - CCI-000044
+    - SRG-OS-000480-GPOS-00227
+    - SRG-OS-000134-GPOS-00068
+    - SV-258081r991589_rule
+    - V-258081
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_SC-3
+  ansible.builtin.package:
+    name: policycoreutils
+    state: present
+
+- name: "MEDIUM | RHEL-09-431030 | PATCH | RHEL 9 policycoreutils-python-utils package must be installed."
+  when:
+    - rhel_09_431030
+  tags:
+    - RHEL-09-431030
+    - CAT2
+    - CCI-000044
+    - SRG-OS-000480-GPOS-00227
+    - SV-258082r991589_rule
+    - V-258082
+    - NIST800-53R4_CM-6
+  ansible.builtin.package:
+    name: policycoreutils-python-utils
+    state: present
+
+## RHEL-09-431025 and 431030 are Pre-reqs for this control
+
+- name: "MEDIUM | RHEL-09-431020 | PATCH | RHEL 9 must enable the SELinux targeted policy."
+  when:
+    - rhel_09_431020
+  tags:
+    - RHEL-09-431020
+    - CAT2
+    - CCI-000044
+    - SRG-OS-000021-GPOS-00005
+    - SV-258080r958388_rule
+    - V-258080
+    - NIST800-53R4_AC-7
+  block:
+    - name: "MEDIUM | RHEL-09-431020 | PATCH | RHEL 9 must enable the SELinux targeted policy."
+      community.general.sefcontext:
+        target: "{{ rhel9stig_faillock.dir }}(/.*)?"
+        ftype: a
+        setype: faillog_t
+        seuser: system_u
+        state: present
+      register: add_faillock_secontext
+
+    - name: "MEDIUM | RHEL-09-431020 | PATCH | RHEL 9 must enable the SELinux targeted policy."
+      when: add_faillock_secontext.changed  # noqa no-handler
+      ansible.builtin.shell: "restorecon -irvF {{ rhel9stig_faillock.dir }}"
+
+- name: "MEDIUM | RHEL-09-432010 | PATCH | RHEL 9 must have the sudo package installed."
+  when:
+    - rhel_09_432010
+  tags:
+    - RHEL-09-432010
+    - CAT2
+    - CCI-002235
+    - SRG-OS-000324-GPOS-00125
+    - SV-258083r926236_rule
+    - V-258083
+    - NIST800-53R4_AC-6
+  ansible.builtin.package:
+    name: sudo
+    state: present
+
+- name: "MEDIUM | RHEL-09-432015 | PATCH | RHEL 9 must require reauthentication when using the 'sudo' command."
+  when:
+    - rhel_09_432015
+  tags:
+    - RHEL-09-432015
+    - CAT2
+    - CCI-002038
+    - SRG-OS-000373-GPOS-00156
+    - SV-258084r943061_rule
+    - V-258084
+    - NIST800-53R4_IA-11
+  ansible.builtin.lineinfile:
+    path: "{{ item }}"
+    regexp: ^Defaults timestamp_timeout\s*=\s*(-|)\d
+    line: Defaults timestamp_timeout=0
+  loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
+
+- name: "MEDIUM | RHEL-09-432020 | PATCH | RHEL 9 must use the invoking user's password for privilege escalation when using 'sudo'."
+  when:
+    - rhel_09_432020
+  tags:
+    - RHEL-09-432020
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-258085r943063_rule
+    - V-258085
+    - NIST800-53R4_CM-6
+  block:
+    - name: "MEDIUM | RHEL-09-432020 | PATCH | RHEL 9 must use the invoking user's password for privilege escalation when using 'sudo'. | targetpw"
+      ansible.builtin.lineinfile:
+        path: "{{ item }}"
+        regexp: ^(#|)Defaults !targetpw
+        line: Defaults !targetpw
+      loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
+
+    - name: "MEDIUM | RHEL-09-432020 | PATCH | RHEL 9 must use the invoking user's password for privilege escalation when using 'sudo'. | rootpw"
+      ansible.builtin.lineinfile:
+        path: "{{ item }}"
+        regexp: ^(#|)Defaults !rootpw
+        line: Defaults !rootpw
+      loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
+
+    - name: "MEDIUM | RHEL-09-432020 | PATCH | RHEL 9 must use the invoking user's password for privilege escalation when using 'sudo'. | runaspw"
+      ansible.builtin.lineinfile:
+        path: "{{ item }}"
+        regexp: ^(#|)Defaults !runaspw
+        line: Defaults !runaspw
+      loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
+
+- name: "MEDIUM | RHEL-09-432025 | PATCH |  RHEL 9 must require users to reauthenticate for privilege escalation."
+  when:
+    - rhel_09_432025
+  tags:
+    - RHEL-09-432025
+    - CAT2
+    - CCI-002038
+    - SRG-OS-000373-GPOS-00156
+    - SV-258086r943065_rule
+    - V-258086
+    - NIST800-53R4_IA-11
+  ansible.builtin.lineinfile:
+    path: "{{ item }}"
+    line: '!authenticate'
+    state: absent
+  loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
+
+- name: "MEDIUM | RHEL-09-432030 | PATCH | RHEL 9 must restrict privilege elevation to authorized personnel."
+  when:
+    - rhel_09_432030
+  tags:
+    - RHEL-09-432030
+    - CAT2
+    - CCI-002038
+    - SRG-OS-000480-GPOS-00227
+    - SV-258087r926248_rule
+    - V-258087
+    - NIST800-53R4_CM-6
+  ansible.builtin.lineinfile:
+    path: "{{ item }}"
+    regexp: ALL\s*ALL=\(ALL(:ALL|)\)\s*ALL
+    line: '!authenticate'
+    state: absent
+  loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
+
+- name: "MEDIUM | RHEL-09-432035 | PATCH | RHEL 9 must restrict the use of the 'su' command."
+  when:
+    - rhel_09_432035
+  tags:
+    - RHEL-09-432035
+    - CAT2
+    - CCI-002038
+    - SRG-OS-000373-GPOS-00156
+    - SRG-OS-000312-GPOS-00123
+    - SV-258088r926251_rule
+    - V-258088
+    - NIST800-53R4_IA-11
+    - NIST800-53R4_AC-3
+  ansible.builtin.lineinfile:
+    path: /etc/pam.d/su
+    regexp: ^(#|)(auth\s*required\s*)pam_wheel.so(.*)
+    line: auth    required    pam_wheel.so use_uid
+
+- name: "MEDIUM | RHEL-09-433010 | PATCH | RHEL 9 fapolicy module must be installed."
+  when:
+    - rhel_09_433010
+  tags:
+    - RHEL-09-433010
+    - CAT2
+    - CCI-01764
+    - CCI-01774
+    - SRG-OS-000370-GPOS-00155
+    - SRG-OS-000368-GPOS-00154
+    - SV-258089r926254_rule
+    - V-258089
+    - NIST800-53R4_IA-11
+    - NIST800-53R4_AC-3
+  ansible.builtin.package:
+    name: fapolicyd
+    state: present
+
+- name: "MEDIUM | RHEL-09-433015 | PATCH | RHEL 9 fapolicy module must be enabled."
+  when:
+    - rhel_09_433015
+  tags:
+    - RHEL-09-433015
+    - CAT2
+    - CCI-01764
+    - CCI-01774
+    - SRG-OS-000370-GPOS-00155
+    - SRG-OS-000368-GPOS-00154
+    - SV-258089r926257_rule
+    - V-258089
+    - NIST800-53R4_IA-11
+    - NIST800-53R4_AC-3
+  ansible.builtin.systemd:
+    enabled: true
+    name: fapolicyd
+    state: started

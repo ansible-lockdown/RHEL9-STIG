@@ -1,0 +1,246 @@
+---
+
+- name: "MEDIUM | RHEL-09-412010 | PATCH | RHEL 9 must have the tmux package installed."
+  when:
+    - rhel_09_412010
+    - "'tmux' not in ansible_facts.packages"
+  tags:
+    - RHEL-09-412010
+    - CAT2
+    - CCI-000056
+    - CCI-000058
+    - SRG-OS-000030-GPOS-00011
+    - SRG-OS-000028-GPOS-00009
+    - SV-258063r997079_rule
+    - V-258063
+    - NIST800-53R4_AC-11
+  ansible.builtin.package:
+    name: tmux
+    state: present
+
+- name: "MEDIUM | RHEL-09-412015 | PATCH | RHEL 9 must ensure session control is automatically started at shell initialization."
+  when:
+    - rhel_09_412015
+  tags:
+    - RHEL-09-412015
+    - CAT2
+    - CCI-000056
+    - CCI-000060
+    - SRG-OS-000031-GPOS-00012
+    - SRG-OS-000028-GPOS-00009
+    - SV-258064r958404_rule
+    - V-258064
+    - NIST800-53R4_AC-11
+  ansible.builtin.template:
+    dest: /etc/profile.d/tmux.sh
+    group: root
+    owner: root
+    mode: '0755'
+    src: etc/profile.d/tmux.sh.j2
+
+- name: "MEDIUM | RHEL-09-412020 | PATCH | RHEL 9 must have the tmux package installed."
+  when:
+    - rhel_09_412020
+  tags:
+    - RHEL-09-412020
+    - CAT2
+    - CCI-000056
+    - SRG-OS-000028-GPOS-00009
+    - SV-258065r958400_rule
+    - V-258065
+    - NIST800-53R4_AC-11
+  ansible.builtin.lineinfile:
+    path: /etc/tmux.conf
+    regexp: "{{ item }}"
+    line: "{{ item }}"
+    create: true
+    mode: '0644'
+    state: present
+  loop:
+    - 'set -g lock-command vlock'
+    - 'bind X lock-session'
+
+- name: "MEDIUM | RHEL-09-412025 | PATCH | RHEL 9 must automatically lock command line user sessions after 15 minutes of inactivity."
+  when:
+    - rhel_09_412025
+  tags:
+    - RHEL-09-412025
+    - CAT2
+    - CCI-000057
+    - CCI-000060
+    - SRG-OS-000029-GPOS-00010
+    - SRG-OS-000031-GPOS-00012
+    - SV-258066r958402_rule
+    - V-258066
+    - NIST800-53R4_AC-11
+  ansible.builtin.template:
+    dest: /etc/tmux.conf
+    group: root
+    owner: root
+    mode: '0644'
+    src: etc/tmux.conf.j2
+
+- name: "MEDIUM | RHEL-09-412035 | PATCH | RHEL 9 must automatically exit interactive command shell user sessions after 15 minutes of inactivity."
+  when:
+    - rhel_09_412035
+  tags:
+    - RHEL-09-412035
+    - CAT2
+    - CCI-000057
+    - CCI-001133
+    - SRG-OS-000029-GPOS-00010
+    - SRG-OS-000163-GPOS-00072
+    - SV-258068r970703_rule
+    - V-258068
+    - NIST800-53R4_AC-11
+    - NIST800-53R4_SC-10
+  ansible.builtin.template:
+    dest: /etc/profile.d/tmout.sh
+    group: root
+    owner: root
+    mode: '0755'
+    src: etc/profile.d/tmout.sh.j2
+
+- name: "MEDIUM | RHEL-09-412045 | PATCH | RHEL 9 must log username information when unsuccessful logon attempts occur."
+  when:
+    - rhel_09_412045
+  tags:
+    - RHEL-09-412045
+    - CAT2
+    - CCI-000044
+    - SRG-OS-000021-GPOS-00005
+    - SV-258070r958388_rule
+    - V-258070
+    - NIST800-53R4_AC-7
+  ansible.builtin.lineinfile:
+    path: /etc/security/faillock.conf
+    regexp: '^\s*audit'
+    line: "audit"
+
+- name: "MEDIUM | RHEL-09-412050 | PATCH | RHEL 9 must enforce a delay of at least four seconds between logon prompts following a failed logon attempt."
+  when:
+    - rhel_09_412050
+  tags:
+    - RHEL-09-412050
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00226
+    - SV-258071r991588_rule
+    - V-258071
+    - NIST800-53R4_CM-6
+  ansible.builtin.lineinfile:
+    path: /etc/login.defs
+    regexp: \s*FAIL_DELAY
+    line: "FAIL_DELAY {{ rhel9stig_login_defs.fail_delay }}"
+
+- name: "MEDIUM | RHEL-09-412055 | PATCH | RHEL 9 must define default permissions for the bash shell."
+  when:
+    - rhel_09_412055
+  tags:
+    - RHEL-09-412055
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00226
+    - SV-258072r991590_rule
+    - V-258072
+    - NIST800-53R4_CM-6
+  block:
+    - name: "MEDIUM | RHEL-09-412055 | PATCH | RHEL 9 must define default permissions for the bash shell. | Exists"
+      ansible.builtin.lineinfile:
+        path: /etc/bashrc
+        regexp: umask \d\d\d
+        line: umask 077
+
+    - name: "MEDIUM | RHEL-09-412055 | PATCH | RHEL 9 must define default permissions for the bash shell.| Amend all instances"
+      ansible.builtin.replace:
+        path: /etc/bashrc
+        regexp: umask \d\d\d
+        replace: umask 077
+
+- name: "MEDIUM | RHEL-09-412060 | PATCH | RHEL 9 must define default permissions for the c shell."
+  when:
+    - rhel_09_412060
+  tags:
+    - RHEL-09-412060
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00226
+    - SV-258073r991590_rule
+    - V-258073
+    - NIST800-53R4_CM-6
+  block:
+    - name: "MEDIUM | RHEL-09-412060 | PATCH | RHEL 9 must define default permissions for the c shell. | Exists"
+      ansible.builtin.lineinfile:
+        path: /etc/csh.cshrc
+        regexp: umask \d\d\d
+        line: umask 077
+
+    - name: "MEDIUM | RHEL-09-412060 | PATCH | RHEL 9 must define default permissions for the c shell.| Amend all instances"
+      ansible.builtin.replace:
+        path: /etc/csh.cshrc
+        regexp: umask \d\d\d
+        replace: umask 077
+
+- name: "MEDIUM | RHEL-09-412065 | PATCH | RHEL 9 must define default permissions for all authenticated users in such a way that the user can only read and modify their own files."
+  when:
+    - rhel_09_412065
+  tags:
+    - RHEL-09-412065
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00226
+    - SV-258074r991590_rule
+    - V-258074
+    - NIST800-53R4_CM-6
+  block:
+    - name: "MEDIUM | RHEL-09-412065 | PATCH | RHEL 9 must define default permissions for all authenticated users in such a way that the user can only read and modify their own files. | Exists"
+      ansible.builtin.lineinfile:
+        path: /etc/login.defs
+        regexp: UMASK \d\d\d
+        line: UMASK 077
+
+    - name: "MEDIUM | RHEL-09-412065 | PATCH | RHEL 9 must define default permissions for all authenticated users in such a way that the user can only read and modify their own files. | Amend all instances"
+      ansible.builtin.replace:
+        path: /etc/login.defs
+        regexp: UMASK\s+\d\d\d
+        replace: UMASK 077
+
+- name: "MEDIUM | RHEL-09-412070 | PATCH | RHEL 9 must define default permissions for the system default profile."
+  when:
+    - rhel_09_412070
+  tags:
+    - RHEL-09-412070
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00228
+    - SV-258075r991590_rule
+    - V-258075
+    - NIST800-53R4_CM-6
+  block:
+    - name: "MEDIUM | RHEL-09-412070 | PATCH | RHEL 9 must define default permissions for the system default profile. | Exists"
+      ansible.builtin.lineinfile:
+        path: /etc/profile
+        regexp: umask \d\d\d
+        line: umask 077
+
+    - name: "MEDIUM | RHEL-09-412070 | PATCH | RHEL 9 must define default permissions for the system default profile. | Amend all instances"
+      ansible.builtin.replace:
+        path: /etc/profile
+        regexp: umask \d\d\d
+        replace: umask 077
+
+- name: "MEDIUM | RHEL-09-412080 | PATCH | RHEL 9 must terminate idle user sessions."
+  when:
+    - rhel_09_412080
+  tags:
+    - RHEL-09-412080
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000163-GPOS-00072
+    - SV-258077r970703_rule
+    - V-258077
+    - NIST800-53R4_CM-6
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/logind.conf
+    regexp: ^(#|)StopIdleSessionSec\s*=\s*\d*
+    line: "StopIdleSessionSec={{ rhel9stig_logind_conf.stopsessionidle }}"

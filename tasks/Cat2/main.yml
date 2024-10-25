@@ -20,27 +20,63 @@
   ansible.builtin.import_tasks:
     file: RHEL-09-213xxx.yml
 
-- name: Run Cat 2 STIG 23xxxx tasks
+- name: Run Cat 2 STIG 231xxx filesystem tasks
   ansible.builtin.import_tasks:
-    file: RHEL-09-23xxxx.yml
+    file: RHEL-09-231xxx.yml
 
-- name: Run Cat 2 STIG 25xxxx tasks
+- name: Run Cat 2 STIG 232xxx file/dir permission tasks
   ansible.builtin.import_tasks:
-    file: RHEL-09-25xxxx.yml
+    file: RHEL-09-232xxx.yml
 
-- name: Run Cat 2 STIG 27xxxx tasks
+- name: Run Cat 2 STIG 251xxx firewall tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-251xxx.yml
+
+- name: Run Cat 2 STIG 252xxx services tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-252xxx.yml
+
+- name: Run Cat 2 STIG 253xxx ipv4 tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-253xxx.yml
+
+- name: Run Cat 2 STIG 254xxx ipv6 tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-254xxx.yml
+
+- name: Run Cat 2 STIG 255xxx ssh tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-255xxx.yml
+
+- name: Run Cat 2 STIG 271xxx gnome desktop tasks
   when:
     - rhel9stig_gui
   ansible.builtin.import_tasks:
-    file: RHEL-09-27xxxx.yml
+    file: RHEL-09-271xxx.yml
 
-- name: Run Cat 2 STIG 29xxxx tasks
+- name: Run Cat 2 STIG 291xxx hardware tasks
   ansible.builtin.import_tasks:
-    file: RHEL-09-29xxxx.yml
+    file: RHEL-09-291xxx.yml
 
-- name: Run Cat 2 STIG 4xxxxx tasks
+- name: Run Cat 2 STIG 411xxx User - Account tasks
   ansible.builtin.import_tasks:
-    file: RHEL-09-4xxxxx.yml
+    file: RHEL-09-411xxx.yml
+
+- name: Run Cat 2 STIG 412xxx User - Session tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-412xxx.yml
+
+- name: Run Cat 2 STIG 431xxx User - SELinux tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-431xxx.yml
+
+- name: Run Cat 2 STIG 432xxx User - Sudo tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-432xxx.yml
+
+- name: Run Cat 2 STIG 433xxx User - FAPolicy tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-433xxx.yml
 
 - name: Run Cat 2 STIG 61xxxx tasks
   ansible.builtin.import_tasks:
