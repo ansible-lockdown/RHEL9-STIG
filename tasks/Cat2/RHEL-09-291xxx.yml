@@ -6,7 +6,6 @@
   tags:
     - RHEL-09-291010
     - CAT2
-    - CCI-000366
     - CCI-000778
     - CCI-001958
     - SRG-OS-000114-GPOS-00059
@@ -14,7 +13,6 @@
     - SRG-OS-000480-GPOS-00227
     - SV-258034r997116_rule
     - V-258034
-    - NIST800-53R4_CM-6
     - NIST800-53R4_IA-3
   vars:
     blacklist: 'usb-storage'

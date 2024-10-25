@@ -51,13 +51,11 @@
     - RHEL-09-213020
     - CAT2
     - CCI-000366
-    - CCI-00749
     - SRG-OS-000480-GPOS-00227
     - SRG-OS-000366-GPOS-00153
     - SV-257799r997051_rule
     - V-257799
     - NIST800-53R4_CM-6
-    - NIST800-53R4_CM-5
   ansible.posix.sysctl:
     name: kernel.kexec_load_disabled
     state: present

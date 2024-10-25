@@ -21,11 +21,11 @@
   tags:
     - RHEL-09-432015
     - CAT2
-    - CCI-002038
+    - CCI-000000
     - SRG-OS-000373-GPOS-00156
     - SV-258084r997080_rule
     - V-258084
-    - NIST800-53R4_IA-11
+    - NIST800-53R4_NA
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: ^Defaults timestamp_timeout\s*=\s*(-|)\d
@@ -71,11 +71,11 @@
   tags:
     - RHEL-09-432025
     - CAT2
-    - CCI-002038
+    - CCI-000000
     - SRG-OS-000373-GPOS-00156
     - SV-258086r997081_rule
     - V-258086
-    - NIST800-53R4_IA-11
+    - NIST800-53R4_NA
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     line: '!authenticate'
@@ -111,7 +111,6 @@
     - SRG-OS-000312-GPOS-00123
     - SV-258088r997082_rule
     - V-258088
-    - NIST800-53R4_IA-11
     - NIST800-53R4_AC-3
   ansible.builtin.lineinfile:
     path: /etc/pam.d/su

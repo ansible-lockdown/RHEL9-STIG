@@ -6,11 +6,11 @@
   tags:
     - RHEL-09-411010
     - CAT2
-    - CCI-000199
+    - CCI-000000
     - SRG-OS-000076-GPOS-00044
     - SV-258041r997076_rule
     - V-258041
-    - NIST800-53R4_IA-5
+    - NIST800-53R4_NA
   ansible.builtin.lineinfile:
     path: /etc/login.defs
     regexp: '^PASS_MAX_DAYS'
@@ -22,11 +22,11 @@
   tags:
     - RHEL-09-411015
     - CAT2
-    - CCI-000199
+    - CCI-000000
     - SRG-OS-000076-GPOS-00044
     - SV-258042r997077_rule
     - V-258042
-    - NIST800-53R4_IA-5
+    - NIST800-53R4_NA
   vars:
     warn_control_id: "MEDIUM | RHEL-09-411015"
   block:
@@ -242,11 +242,11 @@
   tags:
     - RHEL-09-411050
     - CAT2
-    - CCI-000764
+    - CCI-000000
     - SRG-OS-000118-GPOS-00060
     - SV-258049r997078_rule
     - V-258049
-    - NIST800-53R4_IA-4
+    - NIST800-53R4_NA
   block:
     - name: "MEDIUM | RHEL-09-411050 | AUDIT | RHEL 9 must disable account identifiers (individuals, groups, roles, and devices) after 35 days of inactivity."
       ansible.builtin.shell: grep -i inactive /etc/default/useradd | cut -f2 -d=

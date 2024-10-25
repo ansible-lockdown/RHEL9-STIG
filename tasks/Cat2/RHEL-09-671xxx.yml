@@ -6,13 +6,11 @@
   tags:
     - RHEL-09-671015
     - CAT2
-    - CCI-000196
     - CCI-000803
     - SRG-OS-000073-GPOS-00041
     - SRG-OS-000120-GPOS-00061
     - SV-258231r997114_rule
     - V-258231
-    - NIST800-53R4_IA-5
     - NIST800-53R4_IA-7
     - fips
     - users

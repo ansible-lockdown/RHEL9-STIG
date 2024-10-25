@@ -8,11 +8,11 @@
   tags:
     - RHEL-09-215010
     - CAT2
-    - CCI-001749
+    - CCI-000000
     - SRG-OS-000366-GPOS-00153
     - SV-257825r997056_rule
     - V-257825
-    - NIST800-53R4_CM-5
+    - NIST800-53R4_NA
   ansible.builtin.package:
     name: subscription-manager
     state: present
@@ -191,7 +191,6 @@
     - RHEL-09-215075
     - CAT2
     - CCI-000765
-    - CCI-001948
     - CCI-001953
     - CCI-001954
     - SRG-OS-000105-GPOS-00052

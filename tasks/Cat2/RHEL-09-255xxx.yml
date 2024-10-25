@@ -113,8 +113,6 @@
     - CAT2
     - CCI-000765
     - CCI-000766
-    - CCI-000767
-    - CCI-000768
     - SRG-OS-000105-GPOS-00052
     - SRG-OS-000106-GPOS-00053
     - SRG-OS-000107-GPOS-00054
@@ -138,13 +136,11 @@
     - RHEL-09-255045
     - CAT2
     - CCI-000366
-    - CCI-000770
     - SRG-OS-000109-GPOS-00056
     - SRG-OS-000480-GPOS-00227
     - SV-257985r997069_rule
     - V-257985
     - NIST800-53R4_CM-6
-    - NIST800-53R4_IA-2
     - ssh
   notify: Restart_ssh
   ansible.builtin.lineinfile:
@@ -340,7 +336,6 @@
   tags:
     - RHEL-09-255100
     - CAT2
-    - CCI-000879
     - CCI-001133
     - CCI-002361
     - CCI-002891
