@@ -8,7 +8,7 @@
     - CAT1
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257777r925318_rule
+    - SV-257777r991589_rule
     - V-257777
     - NIST800-53R4_CM-6
   ansible.builtin.debug:
@@ -25,7 +25,7 @@
     - CCI-002235
     - SRG-OS-000324-GPOS-00125
     - SRG-OS-000480-GPOS-00227
-    - SV-257784r925339_rule
+    - SV-257784r958726_rule
     - V-257784
     - NIST800-53R4_CM-6
     - NIST800-53R4_AC-6
@@ -46,7 +46,7 @@
     - CCI-002235
     - SRG-OS-000324-GPOS-00125
     - SRG-OS-000480-GPOS-00227
-    - SV-257785r925342_rule
+    - SV-257785r958726_rule
     - V-257785
     - NIST800-53R4_CM-6
     - NIST800-53R4_AC-6
@@ -73,7 +73,7 @@
     - CAT1
     - CCI-000213
     - SRG-OS-000080-GPOS-00048
-    - SV-257789r943055_rule
+    - SV-257785r958726_rule
     - V-257789
     - NIST800-53R4_AC-3
     - grub
@@ -98,7 +98,7 @@
     - CAT1
     - CCI-001749
     - SRG-OS-000366-GPOS-00153
-    - SV-257820r925447_rule
+    - SV-257820r997053_rule
     - V-257820
     - NIST800-53R4_CM-5
     - dnf
@@ -116,7 +116,7 @@
     - CAT1
     - CCI-001749
     - SRG-OS-000366-GPOS-00153
-    - SV-257821r925450_rule
+    - SV-257821r997054_rule
     - V-257821
     - NIST800-53R4_CM-5
     - dnf
@@ -134,7 +134,7 @@
     - CAT1
     - CCI-001749
     - SRG-OS-000366-GPOS-00153
-    - SV-257822r925453_rule
+    - SV-257822r997055_rule
     - V-257822
     - NIST800-53R4_CM-5
     - dnf
@@ -171,7 +171,7 @@
     - SRG-OS-000074-GPOS-00042
     - SRG-OS-000095-GPOS-00049
     - SRG-OS-000480-GPOS-00227
-    - SV-257826r925465_rule
+    - SV-257826r987796_rule
     - V-257826
     - NIST800-53R4_IA-5
     - NIST800-53R4_CM-6
@@ -189,7 +189,7 @@
     - CAT1
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257835r952171_rule
+    - SV-257835r991589_rule
     - V-257835
     - NIST800-53R4_CM-6
     - tftp
@@ -210,7 +210,7 @@
     - SRG-OS-000405-GPOS-00184
     - SRG-OS-000185-GPOS-00079
     - SRG-OS-000404-GPOS-0018
-    - SV-257879r925624_rule
+    - SV-257879r958872_rule
     - V-257879
     - NIST800-53R4_SC-28
     - encrypt
@@ -246,7 +246,7 @@
     - CAT1
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257955r925852_rule
+    - SV-257955r991589_rule
     - V-257955
     - NIST800-53R4_CM-6
     - files
@@ -283,7 +283,7 @@
     - CAT1
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257956r925855_rule
+    - SV-257956r991589_rule
     - V-257956
     - NIST800-53R4_CM-6
     - files
@@ -323,7 +323,7 @@
     - SRG-OS-000106-GPOS-00053
     - SRG-OS-000480-GPOS-00229
     - SRG-OS-000480-GPOS-00227
-    - SV-257984r952179_rule
+    - SV-257984r958486_rule
     - V-257984
     - NIST800-53R4_CM-6
     - NIST800-53R4_IA-2
@@ -343,7 +343,7 @@
     - CAT1
     - CCI-000877
     - SRG-OS-000125-GPOS-00065
-    - SV-257986r952183_rule
+    - SV-257986r958510_rule
     - V-257986
     - NIST800-53R4_MA-4
     - ssh
@@ -364,7 +364,7 @@
     - CAT1
     - CCI-000366
     - SRG-OS-000480-GPOS-0022
-    - SV-258018r926041_rule
+    - SV-258018r991591_rule
     - V-258018
     - NIST800-53R4_CM-6
     - gui

@@ -8,7 +8,7 @@
     - CAT1
     - CCI-00366
     - SRG-OS-000480-GPOS-00227
-    - SV-258059r926164_rule
+    - SV-258059r991589_rule
     - V-258059
     - NIST800-53R4_CM-6
     - account
@@ -49,7 +49,7 @@
     - CCI-02696
     - SRG-OS-000445-GPOS-00199
     - SRG-OS-000134-GPOS-00068
-    - SV-258078r926221_rule
+    - SV-258078r958944_rule
     - V-258078
     - NIST800-53R4_SC-3
     - NIST800-53R4_SI-6
