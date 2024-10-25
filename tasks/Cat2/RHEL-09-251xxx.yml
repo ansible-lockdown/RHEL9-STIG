@@ -1,0 +1,233 @@
+---
+
+- name: "MEDIUM | RHEL-09-251010 | PATCH | RHEL 9 must have the firewalld package installed."
+  when:
+    - rhel_09_251010
+  tags:
+    - RHEL-09-251010
+    - CAT2
+    - CCI-000366
+    - CCI-000382
+    - CCI-002314
+    - CCI-002322
+    - SRG-OS-000096-GPOS-00050
+    - SRG-OS-000297-GPOS-00115
+    - SRG-OS-000298-GPOS-00116
+    - SRG-OS-000480-GPOS-00227
+    - SRG-OS-000480-GPOS-00232
+    - SV-257935r958480_rule
+    - V-257935
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_CM-7
+    - NIST800-53R4_AC-17
+  ansible.builtin.package:
+    name: "firewalld"
+    state: present
+
+- name: "MEDIUM | RHEL-09-251015 | PATCH | The firewalld service on RHEL 9 must be active"
+  when:
+    - rhel_09_251015
+  tags:
+    - RHEL-09-251015
+    - CAT2
+    - CCI-000366
+    - CCI-000382
+    - CCI-002314
+    - CCI-002322
+    - SRG-OS-000096-GPOS-00050
+    - SRG-OS-000297-GPOS-00115
+    - SRG-OS-000298-GPOS-00116
+    - SRG-OS-000480-GPOS-00227
+    - SRG-OS-000480-GPOS-00232
+    - SV-257936r958480_rule
+    - V-257936
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_CM-7
+    - NIST800-53R4_AC-17
+  ansible.builtin.systemd:
+    name: "firewalld"
+    enabled: true
+    state: started
+
+- name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems."
+  when:
+    - rhel_09_251020
+  notify: Firewalld_reload
+  tags:
+    - RHEL-09-251020
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257937r991589_rule
+    - V-257937
+    - NIST800-53R4_CM-6
+  block:
+    - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Setup Connections"
+      ansible.posix.firewalld:
+        zone: "{{ rhel9stig_custom_firewall.zone }}"
+        permanent: true
+        state: enabled
+        service: "{{ (item == (item | regex_search('^[a-z]+$'))) | bool | ternary(item, omit) }}"
+        port: "{{ (item == (item | regex_search('^[0-9]+/[a-z]+$'))) | bool | ternary(item, omit) }}"
+      with_items:
+        - "{{ rhel9stig_white_list_services }}"
+
+    - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems."
+      ansible.posix.firewalld:
+        zone: "{{ rhel9stig_custom_firewall.zone }}"
+        permanent: true
+        state: enabled
+        target: DROP
+
+    - name: "MEDIUM | RHEL-09-251020 | AUDIT | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Get default zone"
+      ansible.builtin.shell: "firewall-cmd --get-default-zone"
+      changed_when: false
+      failed_when: discovered_current_firewalld_zone.rc not in [ 0, 1 ]
+      register: discovered_current_firewalld_zone
+
+    - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Set zone if not curent"
+      when: "(discovered_current_firewalld_zone.stdout | default([])) not in rhel9stig_custom_firewall.zone"
+      ansible.builtin.shell: "firewall-cmd --set-default-zone={{ rhel9stig_custom_firewall.zone }}"
+
+    - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Setup Connections"
+      ansible.posix.firewalld:
+        zone: "{{ rhel9stig_custom_firewall.zone }}"
+        permanent: true
+        state: enabled
+        interface: "{{ item }}"
+      loop:
+        - "{{ rhel9stig_custom_firewall.interface }}"
+
+- name: "MEDIUM | RHEL-09-251025 | AUDIT | RHEL 9 must control remote access methods."
+  when:
+    - rhel_09_251025
+  tags:
+    - RHEL-09-251025
+    - CAT2
+    - CCI-000382
+    - CCI-002314
+    - SRG-OS-000096-GPOS-00050
+    - SRG-OS-000297-GPOS-00115
+    - SV-257938r958480_rule
+    - V-257938
+    - NIST800-53R4_CM-7
+    - NIST800-53R4_AC-17
+  block:
+    - name: "MEDIUM | RHEL-09-251025 | AUDIT | RHEL 9 must control remote access methods. | Get services using firewalld"
+      ansible.builtin.shell: firewall-cmd --list-all | grep services | cut -d ':' -f 2 | tr " " "\n" | sed '/^$/d' | sort -u
+      register: rhel9stig_ppsm_clsa_check_firewalld
+      changed_when: false
+      failed_when: false
+      check_mode: false
+
+    - name: "MEDIUM | RHEL-09-251025 | AUDIT | RHEL 9 must control remote access methods. | Message out findings"
+      when:
+        - rhel9stig_ppsm_clsa_check_firewalld.stdout_lines is defined
+      ansible.builtin.debug:
+        msg:
+          - "The following output is what firewalld is accepting on service ports to {{ ansible_hostname }}."
+          - "{{ rhel9stig_ppsm_clsa_check_firewalld.stdout_lines }}"
+      changed_when: true
+
+- name: "MEDIUM | RHEL-09-251030 | AUDIT |  RHEL 9 must protect against or limit the effects of denial-of-service (DoS) attacks by ensuring rate-limiting measures on impacted network interfaces are implemented."
+  when:
+    - rhel_09_251030
+  tags:
+    - RHEL-09-251030
+    - CAT2
+    - CCI-002385
+    - SRG-OS-000420-GPOS-00186
+    - SV-257939r958902_rule
+    - V-257939
+    - NIST800-53R4_SC-5
+  ansible.builtin.lineinfile:
+    path: /etc/firewalld/firewalld.conf
+    regexp: ^(#|)FirewallBackend=.*
+    line: FirewallBackend=nftables
+
+- name: "MEDIUM | RHEL-09-251035 | AUDIT | To prevent unauthorized connection of devices, unauthorized transfer of information, or unauthorized tunneling (i.e., embedding of data types within data types), organizations must disable or restrict unused or unnecessary physical and logical ports/protocols on information systems."
+  when:
+    - rhel_09_251035
+  tags:
+    - RHEL-09-251035
+    - CAT2
+    - CCI-000382
+    - SRG-OS-000096-GPOS-00050
+    - SV-257940r958480_rule
+    - V-257940
+    - NIST800-53R4_CM-7
+  block:
+    - name: "MEDIUM | RHEL-09-251035 | AUDIT | To prevent unauthorized connection of devices, unauthorized transfer of information, or unauthorized tunneling (i.e., embedding of data types within data types), organizations must disable or restrict unused or unnecessary physical and logical ports/protocols on information systems.. | Get services using firewalld"
+      ansible.builtin.shell: firewall-cmd --list-all
+      register: rhel9stig_ppsm_clsa_zone_config
+      changed_when: false
+      failed_when: false
+      check_mode: false
+
+    - name: "MEDIUM | RHEL-09-251035 | AUDIT | To prevent unauthorized connection of devices, unauthorized transfer of information, or unauthorized tunneling (i.e., embedding of data types within data types), organizations must disable or restrict unused or unnecessary physical and logical ports/protocols on information systems. | Message out findings"
+      when:
+        - rhel9stig_ppsm_clsa_zone_config.stdout_lines is defined
+      ansible.builtin.debug:
+        msg:
+          - "The following output is what firewalld is configured for {{ ansible_hostname }}."
+          - "{{ rhel9stig_ppsm_clsa_zone_config.stdout_lines }}"
+      changed_when: true
+
+- name: "MEDIUM | RHEL-09-251040 | AUDIT | RHEL 9 network interfaces must not be in promiscuous mode."
+  when:
+    - rhel_09_251040
+  tags:
+    - RHEL-09-251040
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257941r991589_rule
+    - V-257941
+    - NIST800-53R4_CM-5
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-251040"
+  block:
+    - name: "MEDIUM | RHEL-09-251040 | PATCH | RHEL 9 network interfaces must not be in promiscuous mode."
+      when:
+        - item not in rhel9stig_promisc_if
+        - rhel9stig_disruption_high
+      ansible.builtin.lineinfile:
+        path: "/etc/sysconfig/network-scripts/ifcfg-{{ item }}"
+        regexp: ^(?i)PROMISC=(YES|TRUE|NO|FALSE)
+        line: PROMISC=NO
+        create: true
+      notify: Restart_NetworkManager
+      loop: "{{ ansible_facts.interfaces }}"
+
+    - name: "MEDIUM | RHEL-09-251040 | PATCH | RHEL 9 network interfaces must not be in promiscuous mode."
+      when:
+        - not rhel9stig_disruption_high
+        - item in rhel9stig_promisc_if
+      ansible.builtin.debug:
+        msg: "Warning!! You have interfaces set to promicious mode no in the exception list"
+      loop: "{{ ansible_facts.interfaces }}"
+
+    - name: "MEDIUM | RHEL-09-251040 | PATCH | RHEL 9 network interfaces must not be in promiscuous mode."
+      when:
+        - not rhel9stig_disruption_high
+        - item in rhel9stig_promisc_if
+      ansible.builtin.include_tasks:
+        file: warning_facts.yml
+      loop: "{{ ansible_facts.interfaces }}"
+
+- name: "MEDIUM | RHEL-09-251045 | PATCH | RHEL 9 must enable hardening for the Berkeley Packet Filter just-in-time compiler."
+  when:
+    - rhel_09_251045
+  tags:
+    - RHEL-09-251045
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257942r991589_rule
+    - V-257942
+    - NIST800-53R4_CM-5
+  ansible.posix.sysctl:
+    name: net.core.bpf_jit_harden
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '2'
