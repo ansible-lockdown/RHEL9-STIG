@@ -9,7 +9,7 @@
     - CAT2
     - CCI-000192
     - SRG-OS-000069-GPOS-00037
-    - SV-258091r926260_rule
+    - SV-258091r997083_rule
     - V-258091
     - NIST800-53R4_IA-5
   block:
@@ -131,7 +131,7 @@
     - CAT2
     - CCI-000044
     - SRG-OS-000021-GPOS-00005
-    - SV-258095r926272_rule
+    - SV-258095r958388_rule
     - V-258095
     - NIST800-53R4_AC-7
   notify: Restart_sssd
@@ -180,7 +180,7 @@
     - CAT2
     - CCI-000044
     - SRG-OS-000021-GPOS-00005
-    - SV-258096r926275_rule
+    - SV-258096r958388_rule
     - V-258096
     - NIST800-53R4_AC-7
   notify: Restart_sssd
@@ -233,7 +233,7 @@
     - SRG-OS-000069-GPOS-00037
     - SRG-OS-000070-GPOS-00038
     - SRG-OS-000480-GPOS-00227
-    - V-258097r926278_rule
+    - SV-258097r997084_rule
     - V-258097
     - NIST800-53R4_CM-6
     - NIST800-53R4_IA-5
@@ -265,7 +265,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - V-258098r926281_rule
+    - SV-258098r991589_rule
     - V-258098
     - NIST800-53R4_CM-6
   block:
@@ -298,7 +298,7 @@
     - CCI-000803
     - SRG-OS-000073-GPOS-00041
     - SRG-OS-000120-GPOS-00061
-    - V-258099r926284_rule
+    - SV-258099r997085_rule
     - V-258099
     - NIST800-53R4_IA-5
     - NIST800-53R4_IA-7
@@ -321,7 +321,7 @@
     - CCI-000803
     - SRG-OS-000073-GPOS-00041
     - SRG-OS-000120-GPOS-00061
-    - V-258100r926287_rule
+    - SV-258100r997086_rule
     - V-258100
     - NIST800-53R4_IA-5
     - NIST800-53R4_IA-7
@@ -354,7 +354,7 @@
     - SRG-OS-000078-GPOS-00046
     - SRG-OS-000480-GPOS-00225
     - SRG-OS-000069-GPOS-00037
-    - V-258101r926290_rule
+    - SV-258101r997087_rule
     - V-258101
     - NIST800-53R4_CM-6
     - NIST800-53R4_IA-5
@@ -374,7 +374,7 @@
     - CAT2
     - CCI-000193
     - SRG-OS-000070-GPOS-00038
-    - V-258102r926293_rule
+    - SV-258102r997088_rule
     - V-258102
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
@@ -393,7 +393,7 @@
     - CAT2
     - CCI-000194
     - SRG-OS-000071-GPOS-00039
-    - V-258103r926296_rule
+    - SV-258103r997089_rule
     - V-258103
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
@@ -412,7 +412,7 @@
     - CAT2
     - CCI-000198
     - SRG-OS-000075-GPOS-00043
-    - V-258104r926299_rule
+    - SV-258104r997090_rule
     - V-258104
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
@@ -429,7 +429,7 @@
     - CAT2
     - CCI-000198
     - SRG-OS-000075-GPOS-00043
-    - V-258105r926302_rule
+    - SV-258105r997091_rule
     - V-258105
     - NIST800-53R4_IA-5
   vars:
@@ -475,7 +475,7 @@
     - SRG-OS-000373-GPOS-00156
     - SRG-OS-000373-GPOS-00157
     - SRG-OS-000373-GPOS-00158
-    - SV-258106r926305_rule
+    - SV-258106r997092_rule
     - V-258106
     - NIST800-53R4_IA-11
   vars:
@@ -521,7 +521,7 @@
     - CAT2
     - CCI-000205
     - SRG-OS-000078-GPOS-00046
-    - SV-258107r926308_rule
+    - SV-258107r997093_rule
     - V-258107
     - NIST800-53R4_IA-11
   ansible.builtin.lineinfile:
@@ -538,7 +538,7 @@
     - CAT2
     - CCI-000205
     - SRG-OS-000078-GPOS-00046
-    - SV-258108r926311_rule
+    - SV-258108r997094_rule
     - V-258108
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
@@ -556,7 +556,7 @@
     - CAT2
     - CCI-001619
     - SRG-OS-000266-GPOS-00101
-    - V-258109r926314_rule
+    - SV-258109r997095_rule
     - V-258109
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
@@ -575,7 +575,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00225
-    - V-258110r926317_rule
+    - SV-258110r991587_rule
     - V-258110
     - NIST800-53R4_CM-6
   ansible.builtin.lineinfile:
@@ -594,7 +594,7 @@
     - CAT2
     - CCI-000192
     - SRG-OS-000069-GPOS-00037
-    - V-258111r926320_rule
+    - SV-258111r997096_rule
     - V-258111
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
@@ -613,7 +613,7 @@
     - CAT2
     - CCI-000195
     - SRG-OS-000072-GPOS-00040
-    - V-258112r926323_rule
+    - SV-258112r997097_rule
     - V-258112
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
@@ -632,7 +632,7 @@
     - CAT2
     - CCI-000195
     - SRG-OS-000072-GPOS-00040
-    - V-258113r926326_rule
+    - SV-258113r997098_rule
     - V-258113
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
@@ -650,7 +650,7 @@
     - CAT2
     - CCI-000195
     - SRG-OS-000072-GPOS-00040
-    - V-258114r926329_rule
+    - SV-258114r997099_rule
     - V-258114
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
@@ -668,7 +668,7 @@
     - CAT2
     - CCI-000195
     - SRG-OS-000072-GPOS-00040
-    - V-258115r926332_rule
+    - SV-258115r997100_rule
     - V-258115
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
@@ -686,7 +686,7 @@
     - CAT2
     - CCI-000196
     - SRG-OS-000073-GPOS-00041
-    - V-258116r926335_rule
+    - SV-258116r997101_rule
     - V-258116
     - NIST800-53R4_IA-5
   community.general.ini_file:
@@ -704,7 +704,7 @@
     - CAT2
     - CCI-000196
     - SRG-OS-000073-GPOS-00041
-    - V-258117r926338_rule
+    - SV-258117r997102_rule
     - V-258117
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
@@ -722,7 +722,7 @@
     - CAT2
     - CCI-000196
     - SRG-OS-000373-GPOS-00156
-    - V-258118r926341_rule
+    - SV-258118r997103_rule
     - V-258118
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
@@ -741,8 +741,8 @@
     - CCI-000196
     - CCI-000803
     - SRG-OS-000073-GPOS-00041
-    - V-258120r926347_rule
-    - V-258120
+    - SV-258119r997104_rule
+    - V-258119
     - NIST800-53R4_IA-5
     - NIST800-53R4_IA-7
   ansible.builtin.lineinfile:
@@ -761,7 +761,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - V-258120r926347_rule
+    - SV-258120r991589_rule
     - V-258120
     - NIST800-53R4_CM-6
   vars:
@@ -787,6 +787,7 @@
         password_lock: true
       loop: "{{ rhel9stig_empty_password_accounts.stdout_lines }}"
 
+# Prerequistire for 611160-611180
 - name: "MEDIUM | RHEL-09-611185 | PATCH | RHEL 9 must have the opensc package installed."
   when:
     - rhel_09_611185
@@ -799,7 +800,7 @@
     - CCI-001953
     - SRG-OS-000375-GPOS-00160
     - SRG-OS-000376-GPOS-00161
-    - V-2581126r926365_rule
+    - V-258126r997110_rule
     - V-258126
     - NIST800-53R4_IA-2
   ansible.builtin.package:
@@ -828,7 +829,7 @@
     - SRG-OS-000108-GPOS-00055
     - SRG-OS-000112-GPOS-00057
     - SRG-OS-000113-GPOS-00058
-    - V-2581121r926350_rule
+    - SV-258121r997105_rule
     - V-258121
     - NIST800-53R4_IA-2
   ansible.builtin.lineinfile:
@@ -851,7 +852,7 @@
     - CCI-001948
     - SRG-OS-000105-GPOS-00052
     - SRG-OS-000375-GPOS-00160
-    - V-2581122r926353_rule
+    - SV-258122r997106_rule
     - V-258122
     - NIST800-53R4_IA-2
   ansible.builtin.lineinfile:
@@ -872,7 +873,7 @@
     - CCI-001954
     - SRG-OS-000375-GPOS-00160
     - SRG-OS-000377-GPOS-00162
-    - V-2581123r926356_rule
+    - SV-258123r997107_rule
     - V-258123
     - NIST800-53R4_IA-2
   notify: Restart_sssd
@@ -914,7 +915,7 @@
     - CAT2
     - CCI-001948
     - SRG-OS-000375-GPOS-00160
-    - V-2581124r926359_rule
+    - SV-258124r997108_rule
     - V-258124
     - NIST800-53R4_IA-2
   ansible.builtin.package:
@@ -930,7 +931,7 @@
     - CAT2
     - CCI-001948
     - SRG-OS-000375-GPOS-00160
-    - V-2581125r926362_rule
+    - SV-258125r997109_rule
     - V-258125
     - NIST800-53R4_IA-2
   ansible.builtin.systemd:
@@ -946,7 +947,7 @@
     - CAT2
     - CCI-000186
     - SRG-OS-000067-GPOS-00035
-    - V-2581127r926368_rule
+    - SV-258127r958450_rule
     - V-258127
     - NIST800-53R4_IA-2
   vars:
@@ -968,7 +969,7 @@
     - CAT2
     - CCI-000213
     - SRG-OS-000080-GPOS-00048
-    - V-2581128r926371_rule
+    - SV-258128r958472_rule
     - V-258128
     - NIST800-53R4_AC-3
   ansible.builtin.lineinfile:
@@ -985,7 +986,7 @@
     - CAT2
     - CCI-000213
     - SRG-OS-000080-GPOS-00048
-    - V-2581129r926374_rule
+    - SV-258129r958472_rule
     - V-258129
     - NIST800-53R4_AC-3
   ansible.builtin.lineinfile:
@@ -1003,7 +1004,7 @@
     - CAT2
     - CCI-000803
     - SRG-OS-000120-GPOS-00061
-    - V-2581130r926377_rule
+    - SV-258130r971535_rule
     - V-258130
     - NIST800-53R4_IA-7
   block:

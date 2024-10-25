@@ -8,7 +8,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257782r942961_rule
+    - SV-257782r991589_rule
     - V-257782
     - NIST800-53R4_CM-6
     - entropy
@@ -27,7 +27,7 @@
     - CCI-002824
     - SRG-OS-000433-GPOS-00193
     - SRG-OS-000095-GPOS-00049
-    - SV-257795r925372_rule
+    - SV-257795r958928_rule
     - V-257795
     - NIST800-53R4_CM-7
     - NIST800-53R4_SI-16
@@ -67,7 +67,7 @@
     - SRG-OS-000471-GPOS-00215
     - SRG-OS-000473-GPOS-00218
     - SRG-OS-000254-GPOS-00095
-    - SV-257796r925375_rule
+    - SV-257796r958412_rule
     - V-257796
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -98,7 +98,7 @@
     - CAT2
     - CCI-0002617
     - SRG-OS-000437-GPOS-00194
-    - SV-257824r925459_rule
+    - SV-257824r958936_rule
     - V-257824
     - NIST800-53R4_SI-2
     - dnf
@@ -116,7 +116,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257845r925522_rule
+    - SV-257845r991589_rule
     - V-257845
     - NIST800-53R4_CM-6
     - filesystem
@@ -140,7 +140,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257846r925525_rule
+    - SV-257846r991589_rule
     - V-257846
     - NIST800-53R4_CM-6
     - filesystem
@@ -164,7 +164,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257847r925528_rule
+    - SV-257847r958752_rule
     - V-257847
     - NIST800-53R4_CM-6
     - filesystem
@@ -187,7 +187,7 @@
     - CAT2
     - CCI-000381
     - SRG-OS-000095-GPOS-00049
-    - SV-257880r942957_rule
+    - SV-257880r958478_rule
     - V-257880
     - NIST800-53R4_CM-7
     - modprobe
@@ -209,7 +209,7 @@
     - CCI-000382
     - SRG-OS-000095-GPOS-00049
     - SRG-OS-000096-GPOS-00050
-    - SV-257946r925825_rule
+    - SV-257946r958480_rule
     - V-257946
     - NIST800-53R4_CM-7
     - chrony
@@ -228,8 +228,8 @@
     - CCI-000382
     - SRG-OS-000095-GPOS-00049
     - SRG-OS-000096-GPOS-00050
-    - SV-257946r925825_rule
-    - V-257946
+    - SV-257947r958480_rule
+    - V-257947
     - NIST800-53R4_CM-7
     - chrony
   ansible.builtin.lineinfile:
@@ -245,7 +245,7 @@
     - CAT2
     - CCI-000169
     - SRG-OS-000062-GPOS-00031
-    - SV-258037r926098_rule
+    - SV-258037r958442_rule
     - V-258037
     - NIST800-53R4_AU-12
     - usb

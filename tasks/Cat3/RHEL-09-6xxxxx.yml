@@ -8,7 +8,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258138r926401_rule
+    - SV-258138r991589_rule
     - V-258138
     - NIST800-53R4_CM-6
     - aide
@@ -24,7 +24,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258139r926404_rule
+    - SV-258139r991589_rule
     - V-258139
     - NIST800-53R4_CM-6
     - aide
@@ -42,7 +42,7 @@
     - CCI-001849
     - SRG-OS-000254-GPOS-00095
     - SRG-OS-000341-GPOS-00132
-    - SV-258173r926506_rule
+    - SV-258173r991555_rule
     - V-258173
     - NIST800-53R4_AU-4
     - NIST800-53R4_AU-14

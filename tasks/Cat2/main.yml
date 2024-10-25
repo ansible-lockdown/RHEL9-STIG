@@ -78,26 +78,34 @@
   ansible.builtin.import_tasks:
     file: RHEL-09-433xxx.yml
 
-- name: Run Cat 2 STIG 61xxxx tasks
+- name: Run Cat 2 STIG 611xxx Authentication tasks
   ansible.builtin.import_tasks:
-    file: RHEL-09-61xxxx.yml
+    file: RHEL-09-611xxx.yml
 
-- name: Run Cat 2 STIG 63xxxx tasks
+- name: Run Cat 2 STIG 631xxx Authorization tasks
   ansible.builtin.import_tasks:
-    file: RHEL-09-63xxxx.yml
+    file: RHEL-09-631xxx.yml
 
-- name: Run Cat 2 STIG 65xxxx tasks
+- name: Run Cat 2 STIG 651xxx Aide tasks
   ansible.builtin.import_tasks:
-    file: RHEL-09-65xxxx.yml
+    file: RHEL-09-651xxx.yml
 
-- name: Run Cat 2 STIG 654xxx tasks
+- name: Run Cat 2 STIG 652xxx rsyslog tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-652xxx.yml
+
+- name: Run Cat 2 STIG 653xxx auditd tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-653xxx.yml
+
+- name: Run Cat 2 STIG 654xxx auditd rules tasks
   ansible.builtin.import_tasks:
     file: RHEL-09-654xxx.yml
-  tags:
-    - test
 
-- name: Run Cat 2 STIG 67xxxx tasks
+- name: Run Cat 2 STIG 671xxx FIPS tasks
   ansible.builtin.import_tasks:
-    file: RHEL-09-67xxxx.yml
-  tags:
-    - test
+    file: RHEL-09-671xxx.yml
+
+- name: Run Cat 2 STIG 672xxx cryptopolicy tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-672xxx.yml

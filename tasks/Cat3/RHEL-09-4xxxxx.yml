@@ -10,7 +10,7 @@
     - CCI-002235
     - SRG-OS-000324-GPOS-00125
     - SRG-OS-000028-GPOS-00009
-    - SV-258067r926188_rule
+    - SV-258067r958726_rule
     - V-258067
     - NIST800-53R4_AC-6
     - NIST800-53R4_AC-11
@@ -29,7 +29,7 @@
     - CAT2
     - CCI-000054
     - SRG-OS-000027-GPOS-00008
-    - SV-258069r926194_rule
+    - SV-258069r958398_rule
     - V-258069
     - NIST800-53R4_AC-10
     - limits
@@ -46,7 +46,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258076r926215_rule
+    - SV-258076r991589_rule
     - V-258076
     - NIST800-53R4_CM-6
     - pam

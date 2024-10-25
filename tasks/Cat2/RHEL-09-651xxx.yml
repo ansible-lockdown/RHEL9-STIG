@@ -1,0 +1,90 @@
+---
+
+- name: "MEDIUM | RHEL-09-651010 | PATCH | RHEL 9 must have the AIDE package installed."
+  when:
+    - rhel_09_651010
+    - rhel9stig_use_aide
+  tags:
+    - RHEL-09-651010
+    - CAT2
+    - CCI-001744
+    - CCI-002696
+    - SRG-OS-000363-GPOS-00150
+    - SRG-OS-000445-GPOS-00199
+    - SV-258134r958794_rule
+    - V-258134
+    - NIST800-53R4_CM-3
+    - NIST800-53R4_SI-6
+    - aide
+  notify: Build_aide_db
+  changed_when: true
+  ansible.builtin.package:
+    name: aide
+    state: present
+
+- name: "MEDIUM | RHEL-09-651015 | PATCH | RHEL 9 must routinely check the baseline configuration for unauthorized changes and notify the system administrator when anomalies in the operation of any security functions are discovered."
+  when:
+    - rhel_09_651015
+    - rhel9stig_use_aide
+  tags:
+    - RHEL-09-651015
+    - CAT2
+    - CCI-001744
+    - CCI-002699
+    - CCI-002702
+    - SRG-OS-000363-GPOS-00150
+    - SRG-OS-000446-GPOS-00200
+    - SRG-OS-000447-GPOS-00201
+    - SV-258135r958794_rule
+    - V-258135
+    - NIST800-53R4_CM-3
+    - NIST800-53R4_SI-6
+    - aide
+  ansible.builtin.cron:
+    cron_file: "{{ rhel9stig_aide_cron_file }}"
+    hour: "{{ rhel9stig_aide_cron.hour }}"
+    job: "{{ rhel9stig_aide_cron.job }}"
+    minute: "{{ rhel9stig_aide_cron.minute }}"
+    name: "{{ rhel9stig_aide_cron.name }}"
+    state: present
+    user: root
+
+- name: "MEDIUM | RHEL-09-651020 | PATCH | RHEL 9 must routinely check the baseline configuration for unauthorized changes and notify the system administrator when anomalies in the operation of any security functions are discovered."
+  when:
+    - rhel_09_651020
+    - rhel9stig_use_aide
+  tags:
+    - RHEL-09-651020
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-258136r991589_rule
+    - V-258136
+    - NIST800-53R4_CM-6
+    - aide
+  ansible.builtin.template:
+    dest: /etc/aide.conf
+    src: etc/aide.conf.j2
+
+- name: "MEDIUM | RHEL-09-651025 | PATCH | RHEL 9 must use a file integrity tool that is configured to use FIPS 140-3-approved cryptographic hashes for validating file contents and directories."
+  when:
+    - rhel_09_651025
+    - rhel9stig_use_aide
+  tags:
+    - RHEL-09-651025
+    - CAT2
+    - CCI-001493
+    - CCI-001494
+    - CCI-001495
+    - CCI-001496
+    - SRG-OS-000256-GPOS-00097
+    - SRG-OS-000257-GPOS-00098
+    - SRG-OS-000258-GPOS-00099
+    - SRG-OS-000278-GPOS-00108
+    - SV-258137r991557_rule
+    - V-258137
+    - NIST800-53R4_AU-9
+    - aide
+  ansible.builtin.template:
+    dest: /etc/aide.conf
+    src: etc/aide.conf.j2
