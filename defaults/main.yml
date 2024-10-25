@@ -132,7 +132,6 @@ rhel_09_672030: true
 #### CAT 2
 rhel_09_211015: true
 rhel_09_211020: true
-rhel_09_211025: true
 rhel_09_211030: true
 rhel_09_211040: true
 rhel_09_211055: true
@@ -663,10 +662,6 @@ rhel9stig_logon_banner_nice: |
     by attorneys, psychotherapists, or clergy, and their assistants. Such
     communications and work product are private and confidential. See User
     Agreement for details.
-
-# Threat Protection
-rhel9stig_av_pkg: 'mcafeetp'
-rhel9stig_av_service: 'mfetpd'
 
 # Packages and services
 rhel9stig_is_ftp_server: false
