@@ -3,6 +3,7 @@
 - name: "LOW | RHEL-09-211035 | PATCH | RHEL 9 must enable the hardware random number generator entropy gatherer service."
   when:
     - rhel_09_211035
+    - not rhel_09_672045  # Dont run if FIPs Enabled
   tags:
     - RHEL-09-211035
     - CAT2
