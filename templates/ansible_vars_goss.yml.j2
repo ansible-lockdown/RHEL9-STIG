@@ -27,10 +27,10 @@ gpg_key:
     fingerprint: '6A6A A7C9 7C88 90AE C6AE  BFE2 F76F 66C3 D409 2792'
 {% elif ansible_facts.distribution == "Rocky" %}
 # rocky
-rpm_gpg_key: /etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial
+rpm_gpg_key: /etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9
 gpg_key:
   - name: 'Release Engineering'
-    fingerprint: '7051 C470 A929 F454 CEBE  37B7 15AF 5DAC 6D74 5A60'
+    fingerprint: '21CB 256A E16F C54C 6E65  2949 702D 426D 350D 275D'
 {% elif ansible_facts.distribution == "AlmaLinux" %}
 # Alma
 rpm_gpg_key: /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
