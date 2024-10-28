@@ -159,27 +159,27 @@
     warn_control_id: "MEDIUM | RHEL-09-672045"
   block:
     - name: "MEDIUM | RHEL-09-672045 | AUDIT | RHEL 9 must implement a system-wide encryption policy."
-      ansible.builtin.shell: update-crypto-policies --check
+      ansible.builtin.shell: update-crypto-policies --show
       changed_when: false
-      failed_when: crypto_policies_check.rc not in [0 , 1]
-      register: crypto_policies_check
+      failed_when: discovered_crypto_policies_check.rc not in [0 , 1]
+      register: discovered_crypto_policies_check
 
     - name: "MEDIUM | RHEL-09-672045 | PATCH | RHEL 9 must implement a system-wide encryption policy."
       when:
-        - "'FIPS' not in crypto_policies_check.stdout"
+        - "'FIPS' not in discovered_crypto_policies_check.stdout"
         - rhel9stig_disruption_high
-      ansible.builtin.shell: fips-mode-setup --set FIPS
+      ansible.builtin.shell: fips-mode-setup --enable
 
     - name: "MEDIUM | RHEL-09-672045 | WARN | RHEL 9 must implement a system-wide encryption policy."
       when:
-        - "'FIPS' not in crypto_policies_check.stdout"
+        - "'FIPS' not in discovered_crypto_policies_check.stdout"
         - not rhel9stig_disruption_high
       ansible.builtin.debug:
         msg: WARNING!! - Crypto-Policies is not set to FIPS
 
     - name: "MEDIUM | RHEL-09-672045 | WARN | RHEL 9 must implement a system-wide encryption policy."
       when:
-        - "'FIPS' not in crypto_policies_check.stdout"
+        - "'FIPS' not in discovered_crypto_policies_check.stdout"
         - not rhel9stig_disruption_high
       ansible.builtin.import_tasks:
         file: warning_facts.yml
@@ -202,5 +202,5 @@
     - encryption
   ansible.builtin.lineinfile:
     path: /etc/named.conf
-    regexp: ^(|\s*)include = /etc/crypto-policies
+    regexp: ^(|\s*)include "/etc/crypto-policies/back-ends/bind.config"
     line: 'include "/etc/crypto-policies/back-ends/bind.config";'
