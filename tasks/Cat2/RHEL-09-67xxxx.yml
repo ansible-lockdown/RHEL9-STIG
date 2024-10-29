@@ -256,7 +256,7 @@
     warn_control_id: "MEDIUM | RHEL-09-672045"
   block:
     - name: "MEDIUM | RHEL-09-672045 | AUDIT | RHEL 9 must implement a system-wide encryption policy."
-      ansible.builtin.shell: update-crypto-policies --check
+      ansible.builtin.shell: update-crypto-policies --show
       changed_when: false
       failed_when: crypto_policies_check.rc not in [0 , 1]
       register: crypto_policies_check
