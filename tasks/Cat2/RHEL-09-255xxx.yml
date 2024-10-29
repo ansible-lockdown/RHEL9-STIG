@@ -203,9 +203,9 @@
     - NIST800-53R4_AC-17
   notify: Change_requires_reboot
   ansible.builtin.lineinfile:
-    line: "Ciphers {{ rhel9stig_sshd_config.ciphers | join(',') }}"
     path: /etc/crypto-policies/back-ends/openssh.config
     regexp: ^Ciphers
+    line: "Ciphers {{ rhel9stig_sshd_config.ciphers | join(',') }}"
 
 - name: "MEDIUM | RHEL-09-255075 | PATCH | RHEL 9 SSH server must be configured to use only Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms."
   when:
@@ -222,7 +222,7 @@
   ansible.builtin.lineinfile:
     path: /etc/crypto-policies/back-ends/openssh.config
     regexp: ^MACs
-    line: "MACs {{ rhel9stig_sshd_config.macs }}"
+    line: "MACs {{ rhel9stig_sshd_config.macs | join(',') }}"
 
 - name: "MEDIUM | RHEL-09-255080 | PATCH | RHEL 9 must not allow a noncertificate trusted host SSH logon to the system."
   when:
