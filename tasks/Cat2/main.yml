@@ -18,7 +18,7 @@
 
 - name: Run Cat 2 STIG 215xxx Package tasks
   ansible.builtin.import_tasks:
-    file: RHEL-09-213xxx.yml
+    file: RHEL-09-215xxx.yml
 
 - name: Run Cat 2 STIG 231xxx filesystem tasks
   ansible.builtin.import_tasks:
