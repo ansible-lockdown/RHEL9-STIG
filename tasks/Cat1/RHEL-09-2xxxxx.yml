@@ -73,13 +73,13 @@
     - CAT1
     - CCI-000213
     - SRG-OS-000080-GPOS-00048
-    - SV-257785r958726_rule
+    - SV-257789r1014822_rule
     - V-257789
     - NIST800-53R4_AC-3
     - grub
   notify: Rebuild_grub
   ansible.builtin.lineinfile:
-    path: /etc/grub2.cfg
+    path: /etc/grub.d/01_users
     regexp: "{{ grub_superusers.regexp }}"
     line: "{{ grub_superusers.line }}"
     insertafter: "{{ grub_superusers.after }}"
@@ -196,47 +196,6 @@
   ansible.builtin.package:
     name: tftp-server
     state: absent
-
-- name: HIGH | RHEL-09-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
-    of all information that requires at rest protection.
-  when:
-    - rhel_09_231190
-  tags:
-    - RHEL-09-231190
-    - CAT1
-    - CCI-001199
-    - CCI-002475
-    - CCI-002476
-    - SRG-OS-000405-GPOS-00184
-    - SRG-OS-000185-GPOS-00079
-    - SRG-OS-000404-GPOS-0018
-    - SV-257879r958872_rule
-    - V-257879
-    - NIST800-53R4_SC-28
-    - encrypt
-    - filesystem
-  vars:
-    warn_control_id: "HIGH | RHEL-09-231190"
-  block:
-    - name: HIGH | RHEL-09-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
-        of all information that requires at rest protection. | Get partition layout
-      ansible.builtin.shell: blkid
-      changed_when: false
-      failed_when: false
-      register: rhel_09_231190_partition_layout
-
-    - name: HIGH | RHEL-09-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
-        of all information that requires at rest protection. | Message out warning
-      ansible.builtin.debug:
-        msg:
-          - WARNING!! Below is the partition layout. Please run the "blkid" command to confirm every persistent disk partition has an entry for TYPE=crypto_LUKS.
-          - If partitions other than pseudo file systems (such as /proc or /sys or tmpfs) this is a finding
-          - "{{ rhel_09_231190_partition_layout.stdout_lines }}"
-
-    - name: HIGH | RHEL-09-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
-        of all information that requires at rest protection. | Message out warning
-      ansible.builtin.import_tasks:
-        file: warning_facts.yml
 
 - name: HIGH | RHEL-09-252070 | There must be no shosts.equiv files on RHEL 9.
   when:
