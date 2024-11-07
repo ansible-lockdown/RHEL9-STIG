@@ -571,7 +571,7 @@
     - CAT2
     - CCI-000000
     - SRG-OS-000073-GPOS-00041
-    - SV-258116r997101_rule
+    - SV-258116r1015115_rule
     - V-258116
     - NIST800-53R4_NA
   community.general.ini_file:

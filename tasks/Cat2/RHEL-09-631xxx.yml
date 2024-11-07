@@ -40,13 +40,14 @@
     - CAT2
     - CCI-000187
     - SRG-OS-000068-GPOS-00036
-    - SV-258132r958452_rule
+    - SV-258132r1014905_rule
     - V-258132
     - NIST800-53R4_IA-5
   ansible.builtin.blockinfile:
     block: "{{ rhel9stig_sssd_config_certmap }}"
     marker: "<!-- {mark} Ansible-Lockdown RHEL9-STIG -->"
     path: /etc/sssd/sssd.conf
+  notify: Restart_sssd
 
 - name: "MEDIUM | RHEL-09-631020 | PATCH | RHEL 9 must prohibit the use of cached authenticators after one day."
   when:

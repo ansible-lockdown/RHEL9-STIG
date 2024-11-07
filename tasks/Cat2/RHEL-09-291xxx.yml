@@ -29,7 +29,7 @@
     - CAT2
     - CCI-001958
     - SRG-OS-000378-GPOS-00163
-    - SV-258035r997117_rule
+    - SV-258035r1014859_rule
     - V-258035
     - NIST800-53R4_IA-3
   ansible.builtin.package:
@@ -44,7 +44,7 @@
     - CAT2
     - CCI-001958
     - SRG-OS-000378-GPOS-00163
-    - SV-258036r997118_rule
+    - SV-258036r1014861_rule
     - V-258036
     - NIST800-53R4_IA-3
   ansible.builtin.systemd:
@@ -60,7 +60,7 @@
     - CAT2
     - CCI-001958
     - SRG-OS-000378-GPOS-00163
-    - SV-258038r958820_rule
+    - SV-258038r1017033_rule
     - V-258038
     - NIST800-53R4_IA-3
   block:

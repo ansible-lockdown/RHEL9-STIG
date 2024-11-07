@@ -10,16 +10,16 @@
     - CCI-001133
     - SRG-OS-000029-GPOS-00010
     - SRG-OS-000163-GPOS-00072
-    - SV-258068r970703_rule
+    - SV-258068r1014872_rule
     - V-258068
     - NIST800-53R4_AC-11
     - NIST800-53R4_SC-10
   ansible.builtin.template:
+    src: etc/profile.d/tmout.sh.j2
     dest: /etc/profile.d/tmout.sh
     group: root
     owner: root
     mode: '0755'
-    src: etc/profile.d/tmout.sh.j2
 
 - name: "MEDIUM | RHEL-09-412045 | PATCH | RHEL 9 must log username information when unsuccessful logon attempts occur."
   when:
@@ -157,7 +157,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000163-GPOS-00072
-    - SV-258077r970703_rule
+    - SV-258077r1014874_rule
     - V-258077
     - NIST800-53R4_CM-6
   ansible.builtin.lineinfile:

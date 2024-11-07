@@ -49,7 +49,7 @@
         group: root
         mode: '0644'
         owner: root
-      notify: Sshd_restart
+      notify: Restart_ssh
       loop:
         - /etc/issue
         - /etc/issue.net
