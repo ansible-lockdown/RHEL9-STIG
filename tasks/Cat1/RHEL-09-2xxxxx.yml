@@ -333,7 +333,7 @@
     regexp: (?i)^(#|)PermitEmptyPasswords yes
     line: PermitEmptyPasswords no
     validate: sshd -t -f %s
-  notify: Sshd_restart
+  notify: Restart_ssh
 
 - name: HIGH | RHEL-09-255050 | PATCH | RHEL 9 must enable the Pluggable Authentication Module (PAM) interface for SSHD.
   when:
@@ -348,7 +348,7 @@
     - NIST800-53R4_MA-4
     - ssh
     - pam
-  notify: Sshd_restart
+  notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)usepam
