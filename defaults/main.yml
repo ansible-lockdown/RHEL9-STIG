@@ -126,7 +126,6 @@ rhel_09_411100: true
 rhel_09_431010: true
 rhel_09_611025: true
 rhel_09_671010: true
-rhel_09_672015: true
 rhel_09_672030: true
 
 #### CAT 2
@@ -190,7 +189,6 @@ rhel_09_231040: true
 rhel_09_231045: true
 rhel_09_231050: true
 rhel_09_231055: true
-rhel_09_231060: true
 rhel_09_231065: true
 rhel_09_231070: true
 rhel_09_231075: true
@@ -216,7 +214,6 @@ rhel_09_231170: true
 rhel_09_231175: true
 rhel_09_231180: true
 rhel_09_231185: true
-
 rhel_09_231200: true
 rhel_09_232010: true
 rhel_09_232015: true
@@ -275,7 +272,6 @@ rhel_09_232270: true
 rhel_09_251010: true
 rhel_09_251015: true
 rhel_09_251020: true
-rhel_09_251025: true
 rhel_09_251030: true
 rhel_09_251035: true
 rhel_09_251040: true
@@ -288,7 +284,6 @@ rhel_09_252035: true
 rhel_09_252040: true
 rhel_09_252045: true
 rhel_09_252050: true
-rhel_09_252055: true
 rhel_09_252060: true
 rhel_09_252065: true
 rhel_09_253010: true
@@ -341,7 +336,6 @@ rhel_09_255150: true
 rhel_09_255155: true
 rhel_09_255160: true
 rhel_09_255165: true
-rhel_09_255170: true
 rhel_09_255175: true
 rhel_09_271010: true
 rhel_09_271015: true
@@ -394,10 +388,6 @@ rhel_09_411095: true
 rhel_09_411105: true
 rhel_09_411110: true
 rhel_09_411115: true
-rhel_09_412010: true
-rhel_09_412015: true
-rhel_09_412020: true
-rhel_09_412025: true
 rhel_09_412035: true
 rhel_09_412045: true
 rhel_09_412050: true
@@ -434,7 +424,6 @@ rhel_09_611075: true
 rhel_09_611080: true
 rhel_09_611085: true
 rhel_09_611090: true
-rhel_09_611095: true
 rhel_09_611100: true
 rhel_09_611105: true
 rhel_09_611110: true
@@ -445,7 +434,6 @@ rhel_09_611130: true
 rhel_09_611135: true
 rhel_09_611140: true
 rhel_09_611145: true
-rhel_09_611150: true
 rhel_09_611155: true
 rhel_09_611160: true
 rhel_09_611165: true
@@ -733,7 +721,6 @@ rhel9stig_postfix_client_conf: permit_mynetworks,reject
 rhel9stig_pass:
   max_days: 60
   min_days: 1
-  minlen: 15
 
 rhel9stig_user_inactive_days: '35'
 
@@ -765,7 +752,6 @@ rhel9stig_logind_conf:
 
 rhel9stig_pam:
   retry: '3'
-  rounds: '5000'
 
 rhel9stig_pwquality:
   dcredit: -1

@@ -164,7 +164,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257951r991589_rule
+    - SV-257951r1014843_rule
     - V-257951
     - NIST800-53R4_CM-6
   vars:
@@ -191,31 +191,6 @@
       when: rhel9stig_postfix_client_conf not in postfix_client_restrict
       ansible.builtin.import_tasks:
         file: warning_facts.yml
-
-- name: "MEDIUM | RHEL-09-252055 | PATCH | If the Trivial File Transfer Protocol (TFTP) server is required, RHEL 9 TFTP daemon must be configured to operate in secure mode."
-  when:
-    - rhel_09_252055
-    - "'tftp-server' in ansible_facts.packages"
-  tags:
-    - RHEL-09-252050
-    - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257952r991589_rule
-    - V-257952
-    - NIST800-53R4_CM-6
-  block:
-    - name: "MEDIUM | RHEL-09-252055 | AUDIT | If the Trivial File Transfer Protocol (TFTP) server is required, RHEL 9 TFTP daemon must be configured to operate in secure mode."
-      ansible.builtin.shell: systemctl show tftp | grep FragmentPath= | cut -d = -f 2
-      changed_when: false
-      failed_when: rhel9stig_tftp_systemd_file.rc not in [ 0, 1 ]
-      register: rhel9stig_tftp_systemd_file
-
-    - name: "MEDIUM | RHEL-09-252055 | PATCH | If the Trivial File Transfer Protocol (TFTP) server is required, RHEL 9 TFTP daemon must be configured to operate in secure mode."
-      ansible.builtin.lineinfile:
-        path: "{{ rhel9stig_tftp_systemd_file.stdout }}"
-        regexp: ^ExecStart
-        line: ExecStart=/usr/sbin/in.tftpd -s /var/lib/tftpboot
 
 - name: "MEDIUM | RHEL-09-252060 | PATCH | RHEL 9 must forward mail from postmaster to the root account using a postfix alias."
   when:

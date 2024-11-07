@@ -117,7 +117,7 @@
     - SRG-OS-000106-GPOS-00053
     - SRG-OS-000107-GPOS-00054
     - SRG-OS-000108-GPOS-00055
-    - SV-257983r997068_rule
+    - SV-257983r1015084_rule
     - V-257983
     - NIST800-53R4_IA-2
     - ssh
@@ -601,26 +601,6 @@
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: ^(?i)(#|)PrintLastLog\s*(yes|no)
     line: "PrintLastLog {{ rhel9stig_sshd_config.lastlog }}"
-    create: true
-    validate: sshd -t -f %s
-
-- name: "MEDIUM | RHEL-09-255170 | PATCH | RHEL 9 SSH daemon must display the date and time of the last successful account logon upon an SSH logon."
-  when:
-    - rhel_09_255170
-  tags:
-    - RHEL-09-255170
-    - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-258010r991589_rule
-    - V-258010
-    - NIST800-53R4_CM-6
-    - ssh
-  notify: Restart_ssh
-  ansible.builtin.lineinfile:
-    path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)UsePrivilegeSeparation\s*(yes|no)
-    line: "UsePrivilegeSeparation {{ rhel9stig_sshd_config.privsep }}"
     create: true
     validate: sshd -t -f %s
 

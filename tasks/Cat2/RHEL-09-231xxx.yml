@@ -72,6 +72,7 @@
 - name: "MEDIUM | RHEL-09-231040 | PATCH | RHEL 9 file system automount function must be disabled unless required."
   when:
     - rhel_09_231040
+    - "'autofs' in ansible_facts.packages"
   tags:
     - RHEL-09-231040
     - CAT2
@@ -81,7 +82,7 @@
     - SRG-OS-000114-GPOS-00059
     - SRG-OS-000378-GPOS-00163
     - SRG-OS-000480-GPOS-00227
-    - SV-257849r958498_rule
+    - SV-257849r1014829_rule
     - V-257849
     - NIST800-53R4_CM-6
     - NIST800-53R4_IA-3
@@ -167,29 +168,6 @@
     src: "{{ item.device }}"
     state: present
   loop: "{{ ansible_facts.mounts }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231060 | PATCH | RHEL 9 must be configured so that the Network File System (NFS) is configured to use RPCSEC_GSS."
-  when:
-    - rhel_09_231060
-    - "'nfs-utils' in ansible_facts.packages"
-    - rhel9stig_disruption_high
-  tags:
-    - RHEL-09-231060
-    - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257853r991589_rule
-    - V-257853
-    - NIST800-53R4_CM-6
-  ansible.posix.mount:
-    fstype: "nfs"
-    opts: "sec=krb5p:krb5i:krb5"
-    path: "{{ item.mount }}"
-    src: "{{ item.device }}"
-    state: present
-  loop: "{{ ansible_facts.mounts | selectattr('fstype', 'contains', 'nfs') | rejectattr('fstype', 'equalto', 'autofs') | list }}"
   loop_control:
     label: "{{ item.device }}"
 

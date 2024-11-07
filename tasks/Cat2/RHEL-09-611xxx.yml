@@ -432,23 +432,6 @@
     line: "minlen = {{ rhel9stig_pass.minlen }}"
     backrefs: true
 
-- name: "MEDIUM | RHEL-09-611095 | PATCH | RHEL 9 passwords for new users must have a minimum of 15 characters."
-  when:
-    - rhel_09_611095
-  tags:
-    - RHEL-09-611095
-    - CAT2
-    - CCI-000000
-    - SRG-OS-000078-GPOS-00046
-    - SV-258108r997094_rule
-    - V-258108
-    - NIST800-53R4_NA
-  ansible.builtin.lineinfile:
-    path: /etc/login.defs
-    regexp: PASS_MIN_LEN
-    line: "PASS_MIN_LEN {{ rhel9stig_pass.minlen }}"
-    backrefs: true
-
 - name: "MEDIUM | RHEL-09-611100 | PATCH | RHEL 9 must enforce password complexity by requiring that at least one special character be used."
   when:
     - rhel_09_611100
@@ -633,24 +616,6 @@
     line: '\1\2'
     backrefs: true
 
-- name: "MEDIUM | RHEL-09-611150 | PATCH | RHEL 9 shadow password suite must be configured to use a sufficient number of hashing rounds."
-  when:
-    - rhel_09_611150
-    - rhel9stig_disruption_high
-  tags:
-    - RHEL-09-611150
-    - CAT2
-    - CCI-000803
-    - SRG-OS-000073-GPOS-00041
-    - SV-258119r997104_rule
-    - V-258119
-    - NIST800-53R4_IA-7
-  ansible.builtin.lineinfile:
-    path: /etc/login.defs
-    regexp: \s*SHA_CRYPT_MIN_ROUNDS
-    line: "SHA_CRYPT_MIN_ROUNDS {{ rhel9stig_pam.rounds }}"
-    backrefs: true
-
 - name: "MEDIUM | RHEL-09-611155 | PATCH | RHEL 9 must not have accounts configured with blank or null passwords."
   when:
     - rhel_09_611155
@@ -747,7 +712,7 @@
     - CCI-000765
     - SRG-OS-000105-GPOS-00052
     - SRG-OS-000375-GPOS-00160
-    - SV-258122r997106_rule
+    - SV-258122r1015120_rule
     - V-258122
     - NIST800-53R4_IA-2
   ansible.builtin.lineinfile:
@@ -768,7 +733,7 @@
     - CCI-001954
     - SRG-OS-000375-GPOS-00160
     - SRG-OS-000377-GPOS-00162
-    - SV-258123r997107_rule
+    - SV-258123r1015121_rule
     - V-258123
     - NIST800-53R4_IA-2
   notify: Restart_sssd
@@ -810,7 +775,7 @@
     - CAT2
     - CCI-000000
     - SRG-OS-000375-GPOS-00160
-    - SV-258124r997108_rule
+    - SV-258124r1015122_rule
     - V-258124
     - NIST800-53R4_NA
   ansible.builtin.package:

@@ -98,37 +98,6 @@
       loop:
         - "{{ rhel9stig_custom_firewall.interface }}"
 
-- name: "MEDIUM | RHEL-09-251025 | AUDIT | RHEL 9 must control remote access methods."
-  when:
-    - rhel_09_251025
-  tags:
-    - RHEL-09-251025
-    - CAT2
-    - CCI-000382
-    - CCI-002314
-    - SRG-OS-000096-GPOS-00050
-    - SRG-OS-000297-GPOS-00115
-    - SV-257938r958480_rule
-    - V-257938
-    - NIST800-53R4_CM-7
-    - NIST800-53R4_AC-17
-  block:
-    - name: "MEDIUM | RHEL-09-251025 | AUDIT | RHEL 9 must control remote access methods. | Get services using firewalld"
-      ansible.builtin.shell: firewall-cmd --list-all | grep services | cut -d ':' -f 2 | tr " " "\n" | sed '/^$/d' | sort -u
-      register: rhel9stig_ppsm_clsa_check_firewalld
-      changed_when: false
-      failed_when: false
-      check_mode: false
-
-    - name: "MEDIUM | RHEL-09-251025 | AUDIT | RHEL 9 must control remote access methods. | Message out findings"
-      when:
-        - rhel9stig_ppsm_clsa_check_firewalld.stdout_lines is defined
-      ansible.builtin.debug:
-        msg:
-          - "The following output is what firewalld is accepting on service ports to {{ ansible_hostname }}."
-          - "{{ rhel9stig_ppsm_clsa_check_firewalld.stdout_lines }}"
-      changed_when: true
-
 - name: "MEDIUM | RHEL-09-251030 | AUDIT |  RHEL 9 must protect against or limit the effects of denial-of-service (DoS) attacks by ensuring rate-limiting measures on impacted network interfaces are implemented."
   when:
     - rhel_09_251030

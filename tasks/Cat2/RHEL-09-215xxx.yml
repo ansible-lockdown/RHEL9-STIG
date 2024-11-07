@@ -197,7 +197,7 @@
     - SRG-OS-000375-GPOS-00160
     - SRG-OS-000376-GPOS-00161
     - SRG-OS-000377-GPOS-00162
-    - SV-257838r997057_rule
+    - SV-257838r1015080_rule
     - V-257838
     - NIST800-53R4_IA-2
   ansible.builtin.package:
