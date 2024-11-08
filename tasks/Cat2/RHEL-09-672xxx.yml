@@ -148,7 +148,7 @@
     - SRG-OS-000396-GPOS-00176
     - SRG-OS-000393-GPOS-00173
     - SRG-OS-000394-GPOS-00174
-    - SV-258241r987791_rule
+    - SV-258241r1017572_rule
     - V-258241
     - NIST800-53R4_SC-3
     - NIST800-53R4_MA-4
@@ -172,15 +172,13 @@
 
     - name: "MEDIUM | RHEL-09-672045 | WARN | RHEL 9 must implement a system-wide encryption policy."
       when:
-        - "'FIPS' not in discovered_crypto_policies_check.stdout"
-        - not rhel9stig_disruption_high
+        - not discovered_crypto_policies_check.stdout == 'FIPS'
       ansible.builtin.debug:
-        msg: WARNING!! - Crypto-Policies is not set to FIPS
+        msg: "WARNING!! - Crypto-Policies is not set to FIPS only - Current {{ discovered_crypto_policies_check.stdout }}"
 
     - name: "MEDIUM | RHEL-09-672045 | WARN | RHEL 9 must implement a system-wide encryption policy."
       when:
-        - "'FIPS' not in discovered_crypto_policies_check.stdout"
-        - not rhel9stig_disruption_high
+        - not discovered_crypto_policies_check.stdout == 'FIPS'
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
