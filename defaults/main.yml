@@ -766,6 +766,10 @@ rhel9stig_pwquality:
   ocredit: -1
   ucredit: -1
 
+rhel9stig_sudoers_exclude_nopasswd_list:
+- ec2-user
+- vagrant
+
 rhel9stig_smartcard_reader: false
 
 ### SSSD

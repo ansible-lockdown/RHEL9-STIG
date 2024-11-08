@@ -9,7 +9,7 @@
     - CAT2
     - CCI-000000
     - SRG-OS-000069-GPOS-00037
-    - SV-258091r997083_rule
+    - SV-258091r1015097_rule
     - V-258091
     - NIST800-53R4_NA
   block:
@@ -47,7 +47,7 @@
     - CAT2
     - CCI-000044
     - SRG-OS-000021-GPOS-00005
-    - SV-258095r958388_rule
+    - SV-258095r1014881_rule
     - V-258095
     - NIST800-53R4_AC-7
   notify: Restart_sssd
@@ -96,7 +96,7 @@
     - CAT2
     - CCI-000044
     - SRG-OS-000021-GPOS-00005
-    - SV-258096r958388_rule
+    - SV-258096r1014883_rule
     - V-258096
     - NIST800-53R4_AC-7
   notify: Restart_sssd
@@ -147,7 +147,7 @@
     - SRG-OS-000069-GPOS-00037
     - SRG-OS-000070-GPOS-00038
     - SRG-OS-000480-GPOS-00227
-    - SV-258097r997084_rule
+    - SV-258097r1015098_rule
     - V-258097
     - NIST800-53R4_NA
   block:
@@ -178,7 +178,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258098r991589_rule
+    - SV-258098r1014887_rule
     - V-258098
     - NIST800-53R4_CM-6
   block:
@@ -210,7 +210,7 @@
     - CCI-000803
     - SRG-OS-000073-GPOS-00041
     - SRG-OS-000120-GPOS-00061
-    - SV-258099r997085_rule
+    - SV-258099r1015099_rule
     - V-258099
     - NIST800-53R4_IA-7
   community.general.pamd:
@@ -231,7 +231,7 @@
     - CCI-000803
     - SRG-OS-000073-GPOS-00041
     - SRG-OS-000120-GPOS-00061
-    - SV-258100r997086_rule
+    - SV-258100r1015100_rule
     - V-258100
     - NIST800-53R4_IA-7
   community.general.pamd:
@@ -377,7 +377,7 @@
     - SRG-OS-000373-GPOS-00156
     - SRG-OS-000373-GPOS-00157
     - SRG-OS-000373-GPOS-00158
-    - SV-258106r997092_rule
+    - SV-258106r1015106_rule
     - V-258106
     - NIST800-53R4_NA
   vars:
@@ -386,34 +386,33 @@
     - name: "MEDIUM | RHEL-09-611085 | AUDIT | RHEL 9 must require users to provide a password for privilege escalation"
       ansible.builtin.shell: grep -r NOPASSWD /etc/sudoers /etc/sudoers.d/
       changed_when: false
-      failed_when: rhel9stig_sudo_nopasswd.rc not in [ 0, 1 ]
-      register: rhel9stig_sudo_nopasswd
+      failed_when: discovered_sudoers_nopasswd.rc not in [ 0, 1 ]
+      register: discovered_sudoers_nopasswd
 
     - name: "MEDIUM | RHEL-09-611085 | PATCH | RHEL 9 must require users to provide a password for privilege escalation"
       when:
-        - rhel9stig_sudo_nopasswd.stdout | length > 0
+        - discovered_sudoers_nopasswd.stdout | length > 0
         - not rhel9stig_disruption_high
       ansible.builtin.debug:
         msg: "Warning!! You have sudo commands that require NO Password Please Investigate"
 
     - name: "MEDIUM | RHEL-09-611085 | PATCH | RHEL 9 must require users to provide a password for privilege escalation"
       when:
-        - rhel9stig_sudo_nopasswd.stdout | length > 0
+        - discovered_sudoers_nopasswd | length > 0
         - not rhel9stig_disruption_high
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
     - name: "MEDIUM | RHEL-09-611085 | PATCH | RHEL 9 must require users to provide a password for privilege escalation"
       when:
-        - rhel9stig_sudo_nopasswd.stdout | length > 0
+        - discovered_sudoers_nopasswd.stdout | length > 0
         - rhel9stig_disruption_high
-      ansible.builtin.lineinfile:
+      ansible.builtin.replace:
         path: "{{ item }}"
-        regexp: (.*)(?!#)NOPASSWD(.*)
-        line: '#\1NOPASSWD\2'
-        backrefs: true
-        validate: visudo -cf %s
-      loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
+        regexp: '^((?!#|{% for name in rhel9stig_sudoers_exclude_nopasswd_list %}{{ name }}{% if not loop.last -%}|{%- endif -%}{% endfor %}).*)NOPASSWD(.*)'
+        replace: '\1PASSWD\2'
+        validate: '/usr/sbin/visudo -cf %s'
+      loop: "{{ discovered_sudoers_nopasswd.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-611090 | PATCH | RHEL 9 passwords must be created with a minimum of 15 characters."
   when:
