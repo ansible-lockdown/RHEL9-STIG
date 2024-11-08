@@ -7,11 +7,11 @@
   tags:
     - RHEL-09-611010
     - CAT2
-    - CCI-000000
+    - CCI-000192
     - SRG-OS-000069-GPOS-00037
     - SV-258091r1015097_rule
     - V-258091
-    - NIST800-53R4_NA
+    - NIST800-53R4_IA-5
   block:
     - name: "MEDIUM | RHEL-09-611010 | PATCH | RHEL 9 must ensure the password complexity module in the system-auth file is configured for three retries or less."
       ansible.builtin.shell: grep "password.*pam_pwquality.so" /etc/pam.d/system-auth
@@ -143,13 +143,14 @@
   tags:
     - RHEL-09-611040
     - CAT2
-    - CCI-000000
+    - CCI-000192
+    - CCI-000193
     - SRG-OS-000069-GPOS-00037
     - SRG-OS-000070-GPOS-00038
     - SRG-OS-000480-GPOS-00227
     - SV-258097r1015098_rule
     - V-258097
-    - NIST800-53R4_NA
+    - NIST800-53R4_IA-5
   block:
     - name: "MEDIUM | RHEL-09-611040 | PATCH | RHEL 9 must ensure the password complexity module is enabled in the password-auth file."
       ansible.builtin.lineinfile:
@@ -249,7 +250,11 @@
   tags:
     - RHEL-09-611060
     - CAT2
-    - CCI-000000
+    - CCI-000192
+    - CCI-000193
+    - CCI-000195
+    - CCI-000205
+    - CCI-001619
     - SRG-OS-000072-GPOS-00040
     - SRG-OS-000071-GPOS-00039
     - SRG-OS-000070-GPOS-00038
@@ -257,9 +262,9 @@
     - SRG-OS-000078-GPOS-00046
     - SRG-OS-000480-GPOS-00225
     - SRG-OS-000069-GPOS-00037
-    - SV-258101r997087_rule
+    - SV-258101r1015101_rule
     - V-258101
-    - NIST800-53R4_NA
+    - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: ^#\s*enforce_for_root
@@ -274,11 +279,11 @@
   tags:
     - RHEL-09-611065
     - CAT2
-    - CCI-000000
+    - CCI-000193
     - SRG-OS-000070-GPOS-00038
-    - SV-258102r997088_rule
+    - SV-258102r1015102_rule
     - V-258102
-    - NIST800-53R4_NA
+    - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: \s*lcredit =
@@ -293,11 +298,11 @@
   tags:
     - RHEL-09-611070
     - CAT2
-    - CCI-000000
+    - CCI-000194
     - SRG-OS-000071-GPOS-00039
-    - SV-258103r997089_rule
+    - SV-258103r1015103_rule
     - V-258103
-    - NIST800-53R4_NA
+    - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: \s*dcredit =
@@ -312,11 +317,11 @@
   tags:
     - RHEL-09-611075
     - CAT2
-    - CCI-000000
+    - CCI-000198
     - SRG-OS-000075-GPOS-00043
-    - SV-258104r997090_rule
+    - SV-258104r1015104_rule
     - V-258104
-    - NIST800-53R4_NA
+    - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: /etc/login.defs
     regexp: \s*PASS_MIN_DAYS\s*
@@ -329,11 +334,11 @@
   tags:
     - RHEL-09-611080
     - CAT2
-    - CCI-000000
+    - CCI-000198
     - SRG-OS-000075-GPOS-00043
-    - SV-258105r997091_rule
+    - SV-258105r1015105_rule
     - V-258105
-    - NIST800-53R4_NA
+    - NIST800-53R4_IA-5
   vars:
     warn_control_id: "MEDIUM | RHEL-09-611080"
   block:
@@ -373,13 +378,13 @@
   tags:
     - RHEL-09-611085
     - CAT2
-    - CCI-000000
+    - CCI-002038
     - SRG-OS-000373-GPOS-00156
     - SRG-OS-000373-GPOS-00157
     - SRG-OS-000373-GPOS-00158
     - SV-258106r1015106_rule
     - V-258106
-    - NIST800-53R4_NA
+    - NIST800-53R4_IA-11
   vars:
     warn_control_id: "MEDIUM | RHEL-09-611085"
   block:
@@ -420,11 +425,11 @@
   tags:
     - RHEL-09-611090
     - CAT2
-    - CCI-000000
+    - CCI-000205
     - SRG-OS-000078-GPOS-00046
-    - SV-258107r997093_rule
+    - SV-258107r1015107_rule
     - V-258107
-    - NIST800-53R4_NA
+    - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: /etc/security/pwquality.conf
     regexp: \s*minlen\s*=\s*
@@ -438,11 +443,11 @@
   tags:
     - RHEL-09-611100
     - CAT2
-    - CCI-000000
+    - CCI-001619
     - SRG-OS-000266-GPOS-00101
-    - SV-258109r997095_rule
+    - SV-258109r1015109_rule
     - V-258109
-    - NIST800-53R4_NA
+    - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: \s*ocredit =
@@ -476,11 +481,11 @@
   tags:
     - RHEL-09-611110
     - CAT2
-    - CCI-000000
+    - CCI-000192
     - SRG-OS-000069-GPOS-00037
-    - SV-258111r997096_rule
+    - SV-258111r1015110_rule
     - V-258111
-    - NIST800-53R4_NA
+    - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: \s*ucredit\s*=\s*
@@ -495,11 +500,11 @@
   tags:
     - RHEL-09-611115
     - CAT2
-    - CCI-000000
+    - CCI-000195
     - SRG-OS-000072-GPOS-00040
-    - SV-258112r997097_rule
+    - SV-258112r1015111_rule
     - V-258112
-    - NIST800-53R4_NA
+    - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: \s*difok\s*=\s*
@@ -514,11 +519,11 @@
   tags:
     - RHEL-09-611120
     - CAT2
-    - CCI-000000
+    - CCI-000195
     - SRG-OS-000072-GPOS-00040
-    - SV-258113r997098_rule
+    - SV-258113r1015112_rule
     - V-258113
-    - NIST800-53R4_NA
+    - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: /etc/security/pwquality.conf
     regexp: \s*maxclassrepeat\s*=\s*
@@ -532,11 +537,11 @@
   tags:
     - RHEL-09-611125
     - CAT2
-    - CCI-000000
+    - CCI-000195
     - SRG-OS-000072-GPOS-00040
-    - SV-258114r997099_rule
+    - SV-258114r1015113_rule
     - V-258114
-    - NIST800-53R4_NA
+    - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: /etc/security/pwquality.conf
     regexp: \s*maxrepeat\s*=\s*
@@ -550,11 +555,11 @@
   tags:
     - RHEL-09-611130
     - CAT2
-    - CCI-000000
+    - CCI-000195
     - SRG-OS-000072-GPOS-00040
-    - SV-258115r997100_rule
+    - SV-258115r1015114_rule
     - V-258115
-    - NIST800-53R4_NA
+    - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: /etc/security/pwquality.conf
     regexp: \s*minclass\s*=\s*
@@ -568,11 +573,11 @@
   tags:
     - RHEL-09-611135
     - CAT2
-    - CCI-000000
+    - CCI-000196
     - SRG-OS-000073-GPOS-00041
     - SV-258116r1015115_rule
     - V-258116
-    - NIST800-53R4_NA
+    - NIST800-53R4_IA-5
   community.general.ini_file:
     option: crypt_style
     path: /etc/libuser.conf
@@ -586,11 +591,11 @@
   tags:
     - RHEL-09-611140
     - CAT2
-    - CCI-000000
+    - CCI-000196
     - SRG-OS-000073-GPOS-00041
-    - SV-258117r997102_rule
+    - SV-258117r1015116_rule
     - V-258117
-    - NIST800-53R4_NA
+    - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: /etc/login.defs
     regexp: \s*ENCRYPT_METHOD
@@ -604,11 +609,11 @@
   tags:
     - RHEL-09-611145
     - CAT2
-    - CCI-000000
+    - CCI-002038
     - SRG-OS-000373-GPOS-00156
-    - SV-258118r997103_rule
+    - SV-258118r1015117_rule
     - V-258118
-    - NIST800-53R4_INA
+    - NIST800-53R4_IA-11
   ansible.builtin.lineinfile:
     path: /etc/pam.d/sudo
     regexp: ^(.*)pam_succeed_if(.)
@@ -772,11 +777,11 @@
   tags:
     - RHEL-09-611175
     - CAT2
-    - CCI-000000
+    - CCI-001948
     - SRG-OS-000375-GPOS-00160
     - SV-258124r1015122_rule
     - V-258124
-    - NIST800-53R4_NA
+    - NIST800-53R4_IA2
   ansible.builtin.package:
     name: pcsc-lite
     state: present
@@ -788,11 +793,11 @@
   tags:
     - RHEL-09-611180
     - CAT2
-    - CCI-000000
+    - CCI-001948
     - SRG-OS-000375-GPOS-00160
-    - SV-258125r997109_rule
+    - SV-258125r1015123_rule
     - V-258125
-    - NIST800-53R4_NA
+    - NIST800-53R4_IA-2
   ansible.builtin.systemd:
     enabled: true
     name: pcscd

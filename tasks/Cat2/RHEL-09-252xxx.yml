@@ -6,11 +6,11 @@
   tags:
     - RHEL-09-252010
     - CAT2
-    - CCI-000000
+    - CCI-001891
     - SRG-OS-000355-GPOS-00143
     - SV-257943r997065_rule
     - V-257943
-    - NIST800-53R4_NA
+    - NIST800-53R4_AU-8
   ansible.builtin.package:
     name: chrony
 
@@ -20,11 +20,11 @@
   tags:
     - RHEL-09-252015
     - CAT2
-    - CCI-000000
+    - CCI-001891
     - SRG-OS-000355-GPOS-00143
-    - SV-257944r997066_rule
+    - SV-257944r1015082_rule
     - V-257944
-    - NIST800-53R4_NA
+    - NIST800-53R4_AU-8
   ansible.builtin.systemd:
     enabled: true
     name: chronyd
