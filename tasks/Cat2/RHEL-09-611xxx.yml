@@ -384,7 +384,7 @@
     warn_control_id: "MEDIUM | RHEL-09-611085"
   block:
     - name: "MEDIUM | RHEL-09-611085 | AUDIT | RHEL 9 must require users to provide a password for privilege escalation"
-      ansible.builtin.shell: grep -r NOPASSWD /etc/sudoers /etc/sudoers.d/
+      ansible.builtin.shell: grep -Ei '(nopasswd)' /etc/sudoers /etc/sudoers.d/* | cut -d':' -f1
       changed_when: false
       failed_when: discovered_sudoers_nopasswd.rc not in [ 0, 1 ]
       register: discovered_sudoers_nopasswd
