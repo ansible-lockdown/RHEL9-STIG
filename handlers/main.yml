@@ -78,6 +78,15 @@
     name: rsyslog.service
     state: restarted
 
+# Must be prior to fapolicyd restart
+- name: Generate fapolicyd rules
+  ansible.builtin.shell: fagenrules --load
+
+- name: Restart fapolicyd
+  ansible.builtin.service:
+    name: fapolicyd
+    state: restarted
+
 ## Auditd tasks note order for handlers to run
 
 - name: Auditd_immutable_check
