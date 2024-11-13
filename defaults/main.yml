@@ -42,6 +42,13 @@ container_vars_file: is_container.yml
 # system_is_ec2 toggle will disable tasks that fail on Amazon EC2 instances. Set true to skip and false to run tasks
 system_is_ec2: false
 
+# Connecting user, due to the way many users work differently this is to try and assist the use of connecting user if required
+# This is useful when part of kickstart build or running as root and not defining the ansible_user option
+# used @ RHEL-09-411015
+rhel9stig_default_user: root
+rhel9stig_connecting_user: "{{ ansible_env.SUDO_USER | default(rhel9stig_default_user) }}"
+rhel9stig_playbook_user: "{{ ansible_user | default(rhel9stig_connecting_user) }}"
+
 # Whether to skip the reboot
 skip_reboot: true
 
