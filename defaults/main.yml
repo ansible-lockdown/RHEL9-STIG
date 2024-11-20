@@ -727,13 +727,12 @@ rhel9stig_chrony_server_options: "iburst maxpoll 16"  # Max Settings is maxpoll 
 # Allow adding of fapolicy rules uses whitelist below
 rhel9stig_add_fapolicy_policy: false
 
-# rhel9stig_fapolicy_white_list is the whitelist for fapolicyd, the last item in the list must be deny all all
+# rhel9stig_fapolicy_white_list is the whitelist for fapolicyd
 rhel9stig_fapolicy_white_list:
+- '# Allow Ansible'
 - "allow perm=any trust=1 : dir={{ ansible_env.PWD }}/.ansible/"
 - 'allow perm=any trust=1 : dir=/root/.ansible/'
 - 'allow perm=any trust=1 : dir=/tmp/ansible/'
-- 'deny_audit perm=any pattern=ld_so : all'
-- 'deny perm=any all : all'
 
 ## DNS
 # Please adjust accordingly for ipv4 or ipv6

@@ -1066,7 +1066,7 @@
         dest: '/etc/fapolicyd/rules.d/99-stig-whitelist.rules'
         mode: '0644'
         owner: root
-        group: root
+        group: fapolicyd
       notify:
         - Generate fapolicyd rules
         - Restart fapolicyd

@@ -1,7 +1,6 @@
-# allow ansible
-allow perm=any trust=1 : dir={{ ansible_env.PWD }}/.ansible/
-allow perm=any trust=1 : dir=/root/.ansible/
-allow perm=any trust=1 : dir=/tmp/ansible/
+{% for rule in rhel9stig_fapolicy_white_list %}
+{{ rule }}
+{% endfor %}
 
 # Always final entry to deny all
 deny perm=any all : all
