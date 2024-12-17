@@ -184,7 +184,7 @@
     path: "{{ rhel9stig_sshd_config_file }}"
     owner: root
     group: root
-    mode: "0600"
+    mode: 'u-x,go-rwx'
     state: touch
   when:
     - rhel9stig_sshd_config_file != '/etc/ssh/sshd_config'
