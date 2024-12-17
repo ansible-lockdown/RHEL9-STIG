@@ -64,7 +64,7 @@
   ansible.builtin.template:
     dest: /etc/chrony.conf
     src: etc/chrony.conf.j2
-    mode: '0644'
+    mode: 'u-x,go-wx'
 
 # Required before 252035 to set DNS value in NetworkManager
 - name: "MEDIUM | RHEL-09-252040 | PATCH | RHEL 9 must configure a DNS processing mode in Network Manager."
@@ -106,7 +106,7 @@
           rhel9stig_network_manager_dns.stdout == 'unmanaged'
       ansible.builtin.template:
         dest: /etc/resolv.conf
-        mode: '0644'
+        mode: 'u-x,go-wx'
         src: etc/resolv.conf.j2
 
     - name: "MEDIUM | RHEL-09-252035 | PATCH | RHEL 9 systems using Domain Name Servers (DNS) resolution must have at least two name servers configured."

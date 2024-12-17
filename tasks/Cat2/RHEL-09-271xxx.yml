@@ -48,7 +48,7 @@
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
     line: /org/gnome/login-screen/banner-message-enable
     create: true
-    mode: '0644'
+    mode: 'u-x,go-wx'
     modification_time: preserve
     state: present
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
@@ -72,7 +72,7 @@
   notify: Update_dconf
   community.general.ini_file:
     create: true
-    mode: '0644'
+    mode: 'u-x,go-wx'
     option: automount-open
     path: "/etc/dconf/db/{{ item }}.d/00-security-settings"
     section: 'org/gnome/desktop/media-handling'

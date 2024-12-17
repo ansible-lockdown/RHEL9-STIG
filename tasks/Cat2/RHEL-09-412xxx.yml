@@ -19,7 +19,7 @@
     dest: /etc/profile.d/tmout.sh
     group: root
     owner: root
-    mode: '0755'
+    mode: 'u+x,go-w'
 
 - name: "MEDIUM | RHEL-09-412045 | PATCH | RHEL 9 must log username information when unsuccessful logon attempts occur."
   when:

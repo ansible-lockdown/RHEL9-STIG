@@ -583,6 +583,6 @@
     - name: "MEDIUM | RHEL-09-411115 | AUDIT | Local RHEL 9 initialization files must not execute world-writable programs."
       when: rhel9stig_user_exec_ww_files is defined
       ansible.builtin.file:
-        mode: go-w
+        mode: 'go-w'
         path: "{{ item }}"
       loop: "{{ rhel9stig_user_exec_ww_files.stdout_lines }}"
