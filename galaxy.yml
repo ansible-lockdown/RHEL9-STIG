@@ -33,7 +33,6 @@ license:
 # requirements as 'namespace' and 'name'
 tags:
 - ansible-lockdown
-- mindpointgroup
 - stig
 - disa
 - devsecops
@@ -41,6 +40,8 @@ tags:
 - rhel7-stig
 - rhel8
 - rhel8-stig
+- rhel9
+- rhel9-stig
 - ubuntu18
 - ubuntu18-stig
 - ubuntu20
