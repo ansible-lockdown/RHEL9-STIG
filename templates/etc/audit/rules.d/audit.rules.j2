@@ -1,5 +1,5 @@
 ## Auditd Configured by ansible-lockdown RHEL9-STIG
-# Sponsored by MindPoint Group
+# Sponsored by Mindpoint Group - A Tyto Athene Company
 {% if rhel_09_654010 %}
 # RHEL9-STIG rule 654010
 -a always,exit -F arch=b32 -S execve -C uid!=euid -F euid=0 -k execpriv
