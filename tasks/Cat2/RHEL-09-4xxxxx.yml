@@ -583,7 +583,7 @@
     - name: "MEDIUM | RHEL-09-411115 | AUDIT | Local RHEL 9 initialization files must not execute world-writable programs."
       when: rhel9stig_user_exec_ww_files is defined
       ansible.builtin.file:
-        mode: go-w
+        mode: 'go-wx'
         path: "{{ item }}"
       loop: "{{ rhel9stig_user_exec_ww_files.stdout_lines }}"
 
@@ -622,7 +622,7 @@
     dest: /etc/profile.d/tmux.sh
     group: root
     owner: root
-    mode: '0755'
+    mode: 'u+x,go-w'
     src: etc/profile.d/tmux.sh.j2
 
 - name: "MEDIUM | RHEL-09-412020 | PATCH | RHEL 9 must have the tmux package installed."
@@ -641,7 +641,7 @@
     regexp: "{{ item }}"
     line: "{{ item }}"
     create: true
-    mode: '0644'
+    mode: 'u-x,go-wx'
     state: present
   loop:
     - 'set -g lock-command vlock'
@@ -664,7 +664,7 @@
     dest: /etc/tmux.conf
     group: root
     owner: root
-    mode: '0644'
+    mode: 'u-x,go-wx'
     src: etc/tmux.conf.j2
 
 - name: "MEDIUM | RHEL-09-412035 | PATCH | RHEL 9 must automatically exit interactive command shell user sessions after 15 minutes of inactivity."
@@ -685,7 +685,7 @@
     dest: /etc/profile.d/tmout.sh
     group: root
     owner: root
-    mode: '0755'
+    mode: 'u+x,go-w'
     src: etc/profile.d/tmout.sh.j2
 
 - name: "MEDIUM | RHEL-09-412045 | PATCH | RHEL 9 must log username information when unsuccessful logon attempts occur."

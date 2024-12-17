@@ -890,7 +890,7 @@
         group: root
         option: certificate_verification
         owner: root
-        mode: '0600'
+        mode: 'u-x,go-rwx'
         path: /etc/sssd/conf.d/certificate_verification.conf
         section: 'sssd'
         value: 'ocsp_dgst=sha512'
