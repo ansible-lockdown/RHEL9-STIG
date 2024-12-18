@@ -69,9 +69,55 @@
   ansible.builtin.command: dconf update
   changed_when: true
 
-- name: Build_aide_db
-  ansible.builtin.command: /usr/sbin/aide --init && mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
+#  "Build aide DB"
+
+- name: "Build aide db | Check current db file"
+  ansible.builtin.stat:
+    path: "{{ rhel9stig_aide_db_file }}"
+  register: discovered_aide_db_file
+  listen: Build aide db
+
+- name: "Build aide db | Check current db file age"
+  when: discovered_aide_db_file.stat.exists
+  ansible.builtin.find:
+    path: "{{ rhel9stig_aide_db_file | dirname }}"
+    pattern: "{{ rhel9stig_aide_db_file | basename }}"
+    age: "{{ rhel9stig_aide_db_file_age }}"
+  register: discovered_aide_db_age
+  listen: Build aide db
+
+- name: "Build aide db | Build AIDE DB if older than {{ rhel9stig_aide_db_file_age }}"  # noqa name[title]
+  when:
+    - not ansible_check_mode
+    - not discovered_aide_db_file.stat.exists or
+      (discovered_aide_db_age.files | length > 0) or
+      rhel9stig_aide_db_recreate
+  ansible.builtin.command: "{{ aide_initiate_command }}"
   changed_when: true
+  listen: Build aide db
+
+- name: "Build aide db | Build AIDE DB | Wait for file before continuing"
+  when:
+    - not ansible_check_mode
+    - not discovered_aide_db_file.stat.exists or
+      (discovered_aide_db_age.files | length > 0) or
+      rhel9stig_aide_db_recreate
+  ansible.builtin.wait_for:
+    path: /var/lib/aide/aide.db.new.gz
+  listen: Build aide db
+
+- name: "Build aide db | Build AIDE DB | copy AIDE DB"
+  when:
+    - not ansible_check_mode
+    - not discovered_aide_db_file.stat.exists or
+      (discovered_aide_db_age.files | length > 0) or
+      rhel9stig_aide_db_recreate
+  ansible.builtin.copy:
+    src: /var/lib/aide/aide.db.new.gz
+    dest: /var/lib/aide/aide.db.gz
+    remote_src: true
+    mode: 'ug-wx,o-rwx'
+  listen: Build aide db
 
 - name: Restart_rsyslog
   ansible.builtin.systemd:

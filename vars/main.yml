@@ -47,3 +47,8 @@ rhel9stig_dod_kex:
 # Defaults added for searches
 rhel9stig_ungrouped_files_found: false
 rhel9stig_unowned_files_found: false
+
+aide_packages:
+  - aide
+# Aide initiate command for new DB creation
+aide_initiate_command: /usr/sbin/aide --init
