@@ -230,7 +230,6 @@
   ansible.builtin.template:
     dest: "/etc/modprobe.d/{{ blacklist }}.conf"
     src: etc/modprobe.d/module.conf.j2
-    create: true
     mode: 'u-x,go-wx'
   notify: Change_requires_reboot
 
