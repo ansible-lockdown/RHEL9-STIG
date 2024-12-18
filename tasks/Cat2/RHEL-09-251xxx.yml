@@ -158,6 +158,8 @@
         path: "/etc/sysconfig/network-scripts/ifcfg-{{ item }}"
         regexp: (?i)^PROMISC=(YES|TRUE|NO|FALSE)
         line: PROMISC=NO
+        create: true
+        mode: 'u-x,go-wx'
       notify: Restart_NetworkManager
       loop: "{{ ansible_facts.interfaces }}"
 
