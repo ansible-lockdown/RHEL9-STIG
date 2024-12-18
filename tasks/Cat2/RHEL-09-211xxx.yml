@@ -1,8 +1,7 @@
 ---
 
 - name: "MEDIUM | RHEL-09-211015 | PATCH | RHEL 9 vendor packaged system security patches and updates must be installed and up to date."
-  when:
-    - rhel_09_211015
+  when: rhel_09_211015
   notify: Change_requires_reboot
   tags:
     - RHEL-09-211015
@@ -17,8 +16,7 @@
     state: latest
 
 - name: "MEDIUM | RHEL-09-211020 | PATCH | RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system via a command line user logon."
-  when:
-    - rhel_09_211020
+  when: rhel_09_211020
   tags:
     - RHEL-09-211020
     - CAT2
@@ -55,8 +53,7 @@
         - /etc/issue.net
 
 - name: "MEDIUM | RHEL-09-211030 | PATCH | The graphical display manager must not be the default target on RHEL 9 unless approved."
-  when:
-    - rhel_09_211030
+  when: rhel_09_211030
   tags:
     - RHEL-09-211030
     - CAT2
@@ -71,8 +68,7 @@
     state: link
 
 - name: "MEDIUM | RHEL-09-211040 | PATCH | RHEL 9 systemd-journald service must be enabled."
-  when:
-    - rhel_09_211040
+  when: rhel_09_211040
   tags:
     - RHEL-09-211040
     - CAT2
@@ -88,8 +84,7 @@
   notify: Systemd_daemon_reload
 
 - name: "MEDIUM | RHEL-09-211055 | PATCH | RHEL 9 debug-shell systemd service must be disabled."
-  when:
-    - rhel_09_211055
+  when: rhel_09_211055
   tags:
     - RHEL-09-211055
     - CAT2

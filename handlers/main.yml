@@ -141,6 +141,13 @@
   ansible.builtin.set_fact:
     change_requires_reboot: true
 
-- name: Restart_auditd
-  ansible.builtin.command: service auditd restart
+- name: Stop auditd process
+  ansible.builtin.command: systemctl kill auditd
   changed_when: true
+  listen: Restart_auditd
+
+- name: Start auditd process
+  ansible.builtin.systemd_service:
+    name: auditd
+    state: started
+  listen: Restart_auditd
