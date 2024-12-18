@@ -716,19 +716,19 @@ rhel9stig_remotelog_server:
 ### AUDITD
 rhel9stig_audit_log_filesystem: /var/log/audit
 rhel9stig_audit_conf:
-  action_mail_acct: {{ rhel9stig_audit_conf.action_mail_acct }}
-  admin_space_left: {{ rhel9stig_audit_conf.admin_space_left }}
-  admin_space_left_action: {{ rhel9stig_audit_conf.admin_space_left_action }}
-  disk_error_action: {{ rhel9stig_audit_conf.disk_error_action }}  # Can be one of "SYSLOG", "SINGLE", or "HALT"
-  disk_full_action: {{ rhel9stig_audit_conf.disk_full_action }}  # Can be one of "SYSLOG", "SINGLE", or "HALT"
-  freq: {{ rhel9stig_audit_conf.freq }}
-  local_events: {{ rhel9stig_audit_conf.local_events }}
-  log_format: {{ rhel9stig_audit_conf.log_format }}
-  logfile: {{ rhel9stig_audit_conf.logfile }}
-  log_group: {{ rhel9stig_audit_conf.logfile_group }}
-  max_log_file_action: {{ rhel9stig_audit_conf.max_log_file_action }}
-  name_format: {{ rhel9stig_audit_conf.name_format }}
-  overflow_action: {{ rhel9stig_audit_conf.overflow_action }}
-  space_left: {{ rhel9stig_audit_conf.space_left }}
-  space_left_action: {{ rhel9stig_audit_conf.space_left_action }}
-  write_logs: {{ rhel9stig_audit_conf.write_logs }}
+  action_mail_acct: {{ rhel9stig_audit_conf_action_mail_acct }}
+  admin_space_left: {{ rhel9stig_audit_conf_admin_space_left }}
+  admin_space_left_action: {{ rhel9stig_audit_conf_admin_space_left_action }}
+  disk_error_action: {{ rhel9stig_audit_conf_disk_error_action }}  # Can be one of "SYSLOG", "SINGLE", or "HALT"
+  disk_full_action: {{ rhel9stig_audit_conf_disk_full_action }}  # Can be one of "SYSLOG", "SINGLE", or "HALT"
+  freq: {{ rhel9stig_audit_conf_freq }}
+  local_events: {{ rhel9stig_audit_conf_local_events }}
+  log_format: {{ rhel9stig_audit_conf_log_format }}
+  logfile: {{ rhel9stig_audit_conf_logfile }}
+  log_group: {{ rhel9stig_audit_conf_logfile_group }}
+  max_log_file_action: {{ rhel9stig_audit_conf_max_log_file_action }}
+  name_format: {{ rhel9stig_audit_conf_name_format }}
+  overflow_action: {{ rhel9stig_audit_conf_overflow_action }}
+  space_left: {{ rhel9stig_audit_conf_space_left }}
+  space_left_action: {{ rhel9stig_audit_conf_space_left_action }}
+  write_logs: {{ rhel9stig_audit_conf_write_logs }}
