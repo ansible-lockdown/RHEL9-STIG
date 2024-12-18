@@ -65,3 +65,4 @@
     path: /etc/sssd/sssd.conf
     section: pam
     value: 1
+    mode: 'u-x,g-wx,o-rwx'

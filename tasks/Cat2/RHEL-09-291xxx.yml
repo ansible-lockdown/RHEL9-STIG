@@ -90,6 +90,7 @@
   ansible.builtin.template:
     dest: "/etc/modprobe.d/{{ blacklist }}.conf"
     src: etc/modprobe.d/module.conf.j2
+    mode: 'u-x,go-wx'
   notify: Change_requires_reboot
 
 - name: "MEDIUM | RHEL-09-291040 | PATCH | RHEL 9 wireless network adapters must be disabled."

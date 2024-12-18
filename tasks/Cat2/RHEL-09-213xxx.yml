@@ -400,8 +400,9 @@
       register: rhel9stig_213110_nxdx
 
     - name: "MEDIUM | RHEL-09-213110 | PATCH | RHEL 9 must implement nonexecutable data to protect its memory from unauthorized code execution."
-      ansible.builtin.shell: grubby --update-kernel=ALL --remove-args=noexec
       when: "'protection: active' not in rhel9stig_213110_nxdx.stdout"
+      ansible.builtin.command: grubby --update-kernel=ALL --remove-args=noexec
+      changed_when: true
 
 - name: "MEDIUM | RHEL-09-213115 | PATCH | The kdump service on RHEL 9 must be disabled."
   when:

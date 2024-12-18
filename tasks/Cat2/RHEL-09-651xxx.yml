@@ -47,7 +47,6 @@
     name: "{{ rhel9stig_aide_cron_name }}"
     state: present
     user: root
-    mode: 'u-x,g-wx,o-rwx'
 
 - name: "MEDIUM | RHEL-09-651020 | PATCH | RHEL 9 must routinely check the baseline configuration for unauthorized changes and notify the system administrator when anomalies in the operation of any security functions are discovered."
   when:

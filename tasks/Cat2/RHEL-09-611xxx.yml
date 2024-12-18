@@ -367,7 +367,8 @@
         - rhel9stig_24hr_passwd_restrict.stdout | length > 0
         - rhel9stig_disruption_high
         - item in rhel9stig_interactive_users
-      ansible.builtin.shell: "passwd -n 1 {{ item }}"
+      ansible.builtin.command: "passwd -n 1 {{ item }}"
+      changed_when: true
       loop: "{{ rhel9stig_24hr_passwd_restrict.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-611085 | PATCH | RHEL 9 must require users to provide a password for privilege escalation"

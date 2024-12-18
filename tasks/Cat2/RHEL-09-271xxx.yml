@@ -48,10 +48,9 @@
   ansible.builtin.lineinfile:
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
     line: /org/gnome/login-screen/banner-message-enable
+    state: present
     create: true
     mode: 'u-x,go-wx'
-    modification_time: preserve
-    state: present
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271020 | PATCH | RHEL 9 must disable the graphical user interface automount function unless required."
@@ -73,10 +72,10 @@
   notify: Update_dconf
   community.general.ini_file:
     path: "/etc/dconf/db/{{ item }}.d/00-security-settings"
-    mode: 'u-x,go-wx'
     option: automount-open
     section: 'org/gnome/desktop/media-handling'
     value: 'false'
+    mode: 'u-x,go-wx'
     create: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
@@ -101,6 +100,7 @@
   ansible.builtin.lineinfile:
     path: "/etc/dconf/db/{{ item }}.d/locks/00-security-settings-lock"
     line: /org/gnome/desktop/media-handling/automount-open
+    mode: 'u-x,go-wx'
     create: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 

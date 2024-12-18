@@ -253,7 +253,8 @@
         - rhel9stig_inactive_user_setting is defined
         - "'-1' in rhel9stig_inactive_user_setting.stdout"
         - "rhel9stig_user_inactive_days not in rhel9stig_inactive_user_setting.stdout"
-      ansible.builtin.shell: "useradd -D -f {{ rhel9stig_user_inactive_days }}"
+      ansible.builtin.command: "useradd -D -f {{ rhel9stig_user_inactive_days }}"
+      changed_when: true
 
 - name: "MEDIUM | RHEL-09-411055 | PATCH | Executable search paths within the initialization files of all local interactive RHEL 9 users must only contain paths that resolve to the system default or the users home directory."
   when: rhel_09_411055
@@ -313,7 +314,7 @@
         group: "{{ item.gid }}"
         mode: 'o-rwx'
       register: rhel9stig_home_dir
-      loop: "{{ rhel9stig_passwd  | selectattr('uid', '>=', min_int_uid | int ) | selectattr('uid', '<=', max_int_uid | int) | list }}"
+      loop: "{{ rhel9stig_passwd | selectattr('uid', '>=', min_int_uid | int) | selectattr('uid', '<=', max_int_uid | int) | list }}"
       loop_control:
         label: "{{ item.id }}"
 
@@ -362,7 +363,7 @@
     group: "{{ item.gid }}"
     state: directory
     mode: 'o-rwx'
-  loop: "{{ rhel9stig_passwd  | selectattr('gid', '>=', min_int_uid | int) | selectattr('gid', '<=', max_int_uid | int) | list }}"
+  loop: "{{ rhel9stig_passwd | selectattr('gid', '>=', min_int_uid | int) | selectattr('gid', '<=', max_int_uid | int) | list }}"
   loop_control:
     label: "{{ item.id }}"
 
