@@ -1,8 +1,7 @@
 ---
 
 - name: "MEDIUM | RHEL-09-631010 | PATCH | RHEL 9, for PKI-based authentication, must validate certificates by constructing a certification path (which includes status information) to an accepted trust anchor."
-  when:
-    - rhel_09_631010
+  when: rhel_09_631010
   tags:
     - RHEL-09-631010
     - CAT2

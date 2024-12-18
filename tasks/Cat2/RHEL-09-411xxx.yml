@@ -1,8 +1,7 @@
 ---
 
 - name: "MEDIUM | RHEL-09-411010 | PATCH | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
-  when:
-    - rhel_09_411010
+  when: rhel_09_411010
   tags:
     - RHEL-09-411010
     - CAT2
@@ -17,8 +16,7 @@
     line: "PASS_MAX_DAYS {{ rhel9stig_pass['max_days'] }}"
 
 - name: "MEDIUM | RHEL-09-411015 | PATCH | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
-  when:
-    - rhel_09_411015
+  when: rhel_09_411015
   tags:
     - RHEL-09-411015
     - CAT2
@@ -42,7 +40,8 @@
         - rhel9stig_users_passwd_max is defined
         - rhel9stig_users_passwd_max.stdout | length > 0
         - "ansible_user not in item"
-      ansible.builtin.shell: "chage -M 60 {{ item }}"
+      ansible.builtin.command: "chage -M 60 {{ item }}"
+      changed_when: true
       failed_when: rhel9stig_users_passwd_max.rc not in [ 0, 1 ]
       loop: "{{ rhel9stig_users_passwd_max.stdout_lines }}"
 
@@ -63,8 +62,7 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-411020 | PATCH | All RHEL 9 local interactive user accounts must be assigned a home directory upon creation."
-  when:
-    - rhel_09_411020
+  when: rhel_09_411020
   tags:
     - RHEL-09-411020
     - CAT2
@@ -79,8 +77,7 @@
     line: "CREATE_HOME yes"
 
 - name: "MEDIUM | RHEL-09-411025 | PATCH | RHEL 9 must set the umask value to 077 for all local interactive user accounts."
-  when:
-    - rhel_09_411025
+  when: rhel_09_411025
   tags:
     - RHEL-09-411025
     - CAT2
@@ -113,8 +110,7 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-411030 | PATCH | RHEL 9 duplicate User IDs (UIDs) must not exist for interactive users."
-  when:
-    - rhel_09_411030
+  when: rhel_09_411030
   tags:
     - RHEL-09-411030
     - CAT2
@@ -177,8 +173,7 @@
     label: "{{ item.id }}"
 
 - name: "MEDIUM | RHEL-09-411040 | WARN | RHEL 9 must automatically expire temporary accounts within 72 hours."
-  when:
-    - rhel_09_411040
+  when: rhel_09_411040
   tags:
     - RHEL-09-411040
     - CAT2
@@ -197,8 +192,7 @@
       - 'To set account expire run sudo chage -E `date -d "+3 days" +%Y-%m-%d` account_name'
 
 - name: "MEDIUM | RHEL-09-411045 | AUDIT | All RHEL 9 interactive users must have a primary group that exists."
-  when:
-    - rhel_09_411045
+  when: rhel_09_411045
   tags:
     - RHEL-09-411045
     - CAT2
@@ -211,13 +205,13 @@
     warn_control_id: "MEDIUM | RHEL-09-411045"
   block:
     - name: "MEDIUM | RHEL-09-411045 | AUDIT | All RHEL 9 interactive users must have a primary group that exists."
-      ansible.builtin.shell: pwck -qr
+      ansible.builtin.command: pwck -qr
       changed_when: false
       failed_when: rhel9stig_gid_exists.rc not in [ 0, 1, 2 ]
       register: rhel9stig_gid_exists
 
     - name: "MEDIUM | RHEL-09-411045 | AUDIT | All RHEL 9 interactive users must have a primary group that exists."
-      ansible.builtin.shell: "cat /etc/passwd | awk -F: '{ print $4 }' | sort | uniq -d | awk '$1 > {{ uid_min_id }}' "
+      ansible.builtin.command: "cat /etc/passwd | awk -F: '{ print $4 }' | sort | uniq -d | awk '$1 > {{ uid_min_id }}' "
       changed_when: false
       failed_when: rhel9stig_duplicate_gids.rc not in [ 0, 1 ]
       register: rhel9stig_duplicate_gids
@@ -237,8 +231,7 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-411050 | PATCH | RHEL 9 must disable account identifiers (individuals, groups, roles, and devices) after 35 days of inactivity."
-  when:
-    - rhel_09_411050
+  when: rhel_09_411050
   tags:
     - RHEL-09-411050
     - CAT2
@@ -263,8 +256,7 @@
       ansible.builtin.shell: "useradd -D -f {{ rhel9stig_user_inactive_days }}"
 
 - name: "MEDIUM | RHEL-09-411055 | PATCH | Executable search paths within the initialization files of all local interactive RHEL 9 users must only contain paths that resolve to the system default or the users home directory."
-  when:
-    - rhel_09_411055
+  when: rhel_09_411055
   tags:
     - RHEL-09-411055
     - CAT2
@@ -297,7 +289,8 @@
     "MEDIUM | RHEL-09-411060 | PATCH | All RHEL 9 local interactive users must have a home directory assigned in the /etc/passwd file."
     "MEDIUM | RHEL-09-411065 | PATCH | All RHEL 9 local interactive user home directories defined in the /etc/passwd file must exist."
   when:
-    - rhel_09_411060 or rhel_09_411065
+    - rhel_09_411060 or
+      rhel_09_411065
   tags:
     - RHEL-09-411060
     - RHEL-09-411065
@@ -318,8 +311,9 @@
         state: directory
         owner: "{{ item.id }}"
         group: "{{ item.gid }}"
+        mode: 'o-rwx'
       register: rhel9stig_home_dir
-      loop: "{{ rhel9stig_passwd  | selectattr('uid', '>=', min_int_uid | int ) | selectattr('uid', '<=', max_int_uid | int ) | list }}"
+      loop: "{{ rhel9stig_passwd  | selectattr('uid', '>=', min_int_uid | int ) | selectattr('uid', '<=', max_int_uid | int) | list }}"
       loop_control:
         label: "{{ item.id }}"
 
@@ -367,13 +361,13 @@
     path: "{{ item.dir }}"
     group: "{{ item.gid }}"
     state: directory
-  loop: "{{ rhel9stig_passwd  | selectattr('gid', '>=', min_int_uid | int ) | selectattr('gid', '<=', max_int_uid | int ) | list }}"
+    mode: 'o-rwx'
+  loop: "{{ rhel9stig_passwd  | selectattr('gid', '>=', min_int_uid | int) | selectattr('gid', '<=', max_int_uid | int) | list }}"
   loop_control:
     label: "{{ item.id }}"
 
 - name: "MEDIUM | RHEL-09-411075 | PATCH | RHEL 9 must automatically lock an account when three unsuccessful logon attempts occur."
-  when:
-    - rhel_09_411075
+  when: rhel_09_411075
   tags:
     - RHEL-09-411075
     - CAT2
@@ -388,8 +382,7 @@
     line: "deny = {{ rhel9stig_faillock.deny }}"
 
 - name: "MEDIUM | RHEL-09-411080 | PATCH | RHEL 9 must automatically lock the root account until the root account is released by an administrator when three unsuccessful logon attempts occur during a 15-minute time period."
-  when:
-    - rhel_09_411080
+  when: rhel_09_411080
   tags:
     - RHEL-09-411080
     - CAT2
@@ -406,8 +399,7 @@
     line: even_deny_root
 
 - name: "MEDIUM | RHEL-09-411085 | PATCH | RHEL 9 must automatically lock an account when three unsuccessful logon attempts occur during a 15-minute time period."
-  when:
-    - rhel_09_411085
+  when: rhel_09_411085
   tags:
     - RHEL-09-411085
     - CAT2
@@ -461,16 +453,15 @@
         path: "/etc/pam.d/system-auth"
         regexp: "{{ item.regexp }}"
         line: "{{ item.line }}"
-        insertbefore: "{{ item.before | default(omit)}}"
-        insertafter: "{{ item.after | default(omit)}}"
+        insertbefore: "{{ item.before | default(omit) }}"
+        insertafter: "{{ item.after | default(omit) }}"
       loop:
         - { regexp: '^auth\s+required\s+pam_faillock.so preauth silent deny=.*unlock_time=.*', line: 'auth        required      pam_faillock.so preauth silent deny={{ rhel9stig_faillock.deny }} unlock_time={{ rhel9stig_faillock.unlock_time }}', before: '^auth\s+sufficient\s+pam_unix.so try_first_pass'}
         - { regexp: '^auth\s+required\s+pam_faillock.so authfail deny=.*unlock_time=.*', line: 'auth        required      pam_faillock.so authfail deny={{ rhel9stig_faillock.deny }} unlock_time={{ rhel9stig_faillock.unlock_time }}', before: '^auth\s+required\s+pam_deny.so'}
         - { regexp: '^account\s+required\s+pam_faillock.so', line: 'account     required      pam_faillock.so', before: '^account     required      pam_unix.so'}
 
 - name: "MEDIUM | RHEL-09-411095 | PATCH | RHEL 9 must not have unauthorized accounts."
-  when:
-    - rhel_09_411095
+  when: rhel_09_411095
   tags:
     - RHEL-09-411095
     - CAT2
@@ -481,7 +472,7 @@
     - NIST800-53R4_CM-6
   block:
     - name: "MEDIUM | RHEL-09-411095 | AUDIT | RHEL 9 must not have unauthorized accounts. | Find unnecessary accounts"
-      ansible.builtin.shell: "grep '^{{ item }}:' /etc/passwd"
+      ansible.builtin.command: "grep '^{{ item }}:' /etc/passwd"
       check_mode: false
       failed_when: rhel9stig_unnecessary_accounts_found.rc not in [ 0, 1 ]
       changed_when: false
@@ -506,8 +497,7 @@
         rhel9stig_passwd_tasks: "RHEL-09-411095"  # pragma: allowlist secret
 
 - name: "MEDIUM | RHEL-09-411105 | PATCH | RHEL 9 must ensure account lockouts persist."
-  when:
-    - rhel_09_411105
+  when: rhel_09_411105
   tags:
     - RHEL-09-411105
     - CAT2
@@ -519,10 +509,11 @@
   block:
     - name: "MEDIUM | RHEL-09-411105 | PATCH | RHEL 9 must ensure account lockouts persist."
       ansible.builtin.file:
+        path: "{{ rhel9stig_faillock.dir }}"
         group: root
         owner: root
-        path: "{{ rhel9stig_faillock.dir }}"
         state: directory
+        mode: 'g-w,o-wx'
 
     - name: "MEDIUM | RHEL-09-411105 | PATCH | RHEL 9 must ensure account lockouts persist."
       ansible.builtin.lineinfile:
@@ -532,8 +523,7 @@
       notify: Change_requires_reboot
 
 - name: "MEDIUM | RHEL-09-411110 | PATCH | RHEL 9 groups must have unique Group ID (GID)."
-  when:
-    - rhel_09_411110
+  when: rhel_09_411110
   tags:
     - RHEL-09-411110
     - CAT2
@@ -553,18 +543,17 @@
       register: rhel9stig_dup_group_check
 
     - name: "MEDIUM | RHEL-09-411110 | WARN | RHEL 9 groups must have unique Group ID (GID). | Warning"
+      when: rhel9stig_dup_group_check.stdout | length > 0
       ansible.builtin.debug:
         msg: "Warning!! The following group names are duplicates: {{ rhel9stig_dup_group_check.stdout_lines }}"
-      when: rhel9stig_dup_group_check.stdout | length > 0
 
     - name: "MEDIUM | RHEL-09-411110 | WARN | RHEL 9 groups must have unique Group ID (GID). | Warning count"
+      when: rhel9stig_dup_group_check.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
-      when: rhel9stig_dup_group_check.stdout | length > 0
 
 - name: "MEDIUM | RHEL-09-411115 | PATCH | Local RHEL 9 initialization files must not execute world-writable programs."
-  when:
-    - rhel_09_411115
+  when: rhel_09_411115
   tags:
     - RHEL-09-411115
     - CAT2

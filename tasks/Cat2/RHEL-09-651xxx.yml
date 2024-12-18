@@ -47,6 +47,7 @@
     name: "{{ rhel9stig_aide_cron_name }}"
     state: present
     user: root
+    mode: 'u-x,g-wx,o-rwx'
 
 - name: "MEDIUM | RHEL-09-651020 | PATCH | RHEL 9 must routinely check the baseline configuration for unauthorized changes and notify the system administrator when anomalies in the operation of any security functions are discovered."
   when:
@@ -64,6 +65,7 @@
   ansible.builtin.template:
     dest: /etc/aide.conf
     src: etc/aide.conf.j2
+    mode: 'u-x,go-rwx'
 
 - name: "MEDIUM | RHEL-09-651025 | PATCH | RHEL 9 must use a file integrity tool that is configured to use FIPS 140-3-approved cryptographic hashes for validating file contents and directories."
   when:
@@ -87,3 +89,4 @@
   ansible.builtin.template:
     dest: /etc/aide.conf
     src: etc/aide.conf.j2
+    mode: 'u-x,go-rwx'
