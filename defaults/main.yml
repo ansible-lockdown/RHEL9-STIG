@@ -93,7 +93,7 @@ audit_content: git
 # If using either archive, copy, get_url:
 ## Note will work with .tar files - zip will require extra configuration
 ### If using get_url this is expecting github url in tar.gz format e.g.
-### https://github.com/ansible-lockdown/UBUNTU22-CIS-Audit/archive/refs/heads/benchmark-v1.0.0.tar.gz
+### https://github.com/ansible-lockdown/RHEL9-STIG-Audit/archive/refs/heads/benchmark-v1.0.0.tar.gz
 audit_conf_source: "some path or url to copy from"
 
 # Destination for the audit content to be placed on managed node
@@ -783,12 +783,28 @@ rhel9stig_sssd_config_certmap: |
 ### Aide
 rhel9stig_use_aide: true
 rhel9stig_aide_cron_file: /etc/cron.daily/aide  # NOTE the path may change if not running daily
-rhel9stig_aide_cron:
-  day: '*'
-  hour: '4'
-  minute: '30'
-  job: '/usr/sbin/aide --check | /bin/mail -s "$HOSTNAME - Daily aide integrity check run" root@sysname.mil'
-  name: 'Aide Job runs Daily at 0430'
+rhel9stig_aide_cron_day: '*'
+rhel9stig_aide_cron_hour: '4'
+rhel9stig_aide_cron_minute: '30'
+rhel9stig_aide_cron_job: '/usr/sbin/aide --check | /bin/mail -s "$HOSTNAME - Daily aide integrity check run" root@sysname.mil'
+rhel9stig_aide_cron_name: 'Aide Job runs Daily at 0430'
+
+# AIDE is a file integrity checking tool, similar in nature to Tripwire.
+# While it cannot prevent intrusions, it can detect unauthorized changes
+# to configuration files by alerting when the files are changed. Review
+# the AIDE quick start guide and AIDE documentation before proceeding.
+# By setting this variable to `true`, all of the settings related to AIDE will be applied!
+rhel9stig_config_aide: true
+
+# If DB file older than below will automatically rebuild DB
+# e.g. options:1w = 1 week, 1d = 1day 1h = 1 hour
+rhel9stig_aide_db_file_age: 1w
+
+# If aide already setup this forces a new DB to be created
+rhel9stig_aide_db_recreate: false
+
+# allows to change db file, not config need to be adjusted too
+rhel9stig_aide_db_file: /var/lib/aide/aide.db.gz
 
 ### Rsyslog
 # Set the following to true if the server accepts incoming syslog data using rsyslog
