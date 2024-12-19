@@ -1,8 +1,7 @@
 ---
 
 - name: "MEDIUM | RHEL-09-412035 | PATCH | RHEL 9 must automatically exit interactive command shell user sessions after 15 minutes of inactivity."
-  when:
-    - rhel_09_412035
+  when: rhel_09_412035
   tags:
     - RHEL-09-412035
     - CAT2
@@ -22,8 +21,7 @@
     mode: 'u+x,go-w'
 
 - name: "MEDIUM | RHEL-09-412045 | PATCH | RHEL 9 must log username information when unsuccessful logon attempts occur."
-  when:
-    - rhel_09_412045
+  when: rhel_09_412045
   tags:
     - RHEL-09-412045
     - CAT2
@@ -38,8 +36,7 @@
     line: "audit"
 
 - name: "MEDIUM | RHEL-09-412050 | PATCH | RHEL 9 must enforce a delay of at least four seconds between logon prompts following a failed logon attempt."
-  when:
-    - rhel_09_412050
+  when: rhel_09_412050
   tags:
     - RHEL-09-412050
     - CAT2
@@ -54,8 +51,7 @@
     line: "FAIL_DELAY {{ rhel9stig_login_defs.fail_delay }}"
 
 - name: "MEDIUM | RHEL-09-412055 | PATCH | RHEL 9 must define default permissions for the bash shell."
-  when:
-    - rhel_09_412055
+  when: rhel_09_412055
   tags:
     - RHEL-09-412055
     - CAT2
@@ -78,8 +74,7 @@
         replace: umask 077
 
 - name: "MEDIUM | RHEL-09-412060 | PATCH | RHEL 9 must define default permissions for the c shell."
-  when:
-    - rhel_09_412060
+  when: rhel_09_412060
   tags:
     - RHEL-09-412060
     - CAT2
@@ -102,8 +97,7 @@
         replace: umask 077
 
 - name: "MEDIUM | RHEL-09-412065 | PATCH | RHEL 9 must define default permissions for all authenticated users in such a way that the user can only read and modify their own files."
-  when:
-    - rhel_09_412065
+  when: rhel_09_412065
   tags:
     - RHEL-09-412065
     - CAT2
@@ -126,8 +120,7 @@
         replace: UMASK 077
 
 - name: "MEDIUM | RHEL-09-412070 | PATCH | RHEL 9 must define default permissions for the system default profile."
-  when:
-    - rhel_09_412070
+  when: rhel_09_412070
   tags:
     - RHEL-09-412070
     - CAT2
@@ -150,8 +143,7 @@
         replace: umask 077
 
 - name: "MEDIUM | RHEL-09-412080 | PATCH | RHEL 9 must terminate idle user sessions."
-  when:
-    - rhel_09_412080
+  when: rhel_09_412080
   tags:
     - RHEL-09-412080
     - CAT2

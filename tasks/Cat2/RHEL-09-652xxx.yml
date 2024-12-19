@@ -24,8 +24,7 @@
     state: present
 
 - name: "MEDIUM | RHEL-09-652015 | PATCH | RHEL 9 must have the packages required for encrypting offloaded audit logs installed."
-  when:
-    - rhel_09_652015
+  when: rhel_09_652015
   tags:
     - RHEL-09-652015
     - CAT2
@@ -43,8 +42,7 @@
     state: present
 
 - name: "MEDIUM | RHEL-09-652020 | PATCH | The rsyslog service on RHEL 9 must be active."
-  when:
-    - rhel_09_652020
+  when: rhel_09_652020
   tags:
     - RHEL-09-652020
     - CAT2
@@ -87,8 +85,7 @@
         regex: (Input|ModLoad)(TCP|UDP|RELP|imtcp|imudp|imrelp)(.*)
 
     - name: "MEDIUM | RHEL-09-652025 | PATCH | RHEL 9 must be configured so that the rsyslog daemon does not accept log messages from other servers unless the server is being used for log aggregation."
-      when:
-        - rhel9stig_rsyslog_conf.matched > 1
+      when: rhel9stig_rsyslog_conf.matched > 1
       ansible.builtin.lineinfile:
         backrefs: true
         line: '#\1\2\3'
@@ -97,8 +94,7 @@
       loop: "{{ rhel9stig_rsyslog_conf.files }}"
 
 - name: "MEDIUM | RHEL-09-652030 | PATCH | All RHEL 9 remote access methods must be monitored."
-  when:
-    - rhel_09_652030
+  when: rhel_09_652030
   tags:
     - RHEL-09-652030
     - CAT2
@@ -133,8 +129,7 @@
     state: present
 
 - name: "MEDIUM | RHEL-09-652035 | PATCH | RHEL 9 must be configured to offload audit records onto a different system from the system being audited via syslog."
-  when:
-    - rhel_09_652035
+  when: rhel_09_652035
   tags:
     - RHEL-09-652035
     - CAT2
@@ -152,8 +147,7 @@
     line: 'active = yes'
 
 - name: "MEDIUM | RHEL-09-652040 | AUDIT | RHEL 9 must authenticate the remote logging server for offloading audit logs via rsyslog."
-  when:
-    - rhel_09_652040
+  when: rhel_09_652040
   tags:
     - RHEL-09-652040
     - CAT2
@@ -284,8 +278,7 @@
     line: "*.* {{ rhel9stig_remotelog_server.protocol }}{{ rhel9stig_remotelog_server.server }}:{{ rhel9stig_remotelog_server.port }}"
 
 - name: "MEDIUM | RHEL-09-652060 | PATCH | RHEL 9 must use cron logging."
-  when:
-    - rhel_09_652060
+  when: rhel_09_652060
   tags:
     - RHEL-09-652060
     - CAT2

@@ -12,9 +12,15 @@
   - RHEL-09-412030
 - RHEL-09-611085 - enhance with sudoers nopasswd exclude list
 - RHEL-09-412035 - Changed tmout to be consistent across STIGS.
+- lint files updated
+- new lint layout
+- file mode changed to symbolic for greater idempotency
+- Aide logic rewritten
+- nested variables removed and renamed
+  - aide
+  - auditd
 
 Many rules now linked with nist and CCI (not on official revision history)
-
 
 ## 1.4.0 Based on STIG V2R1 Jul24 2024
 

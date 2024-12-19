@@ -19,8 +19,7 @@
     state: started
 
 - name: "LOW | RHEL-09-212050 | PATCH | RHEL 9 must enable mitigations against processor-based vulnerabilities."
-  when:
-    - rhel_09_212050
+  when: rhel_09_212050
   tags:
     - RHEL-09-212050
     - CAT2
@@ -46,11 +45,11 @@
       when:
         - rhel9stig_grub_pti_enabled is defined
         - rhel9stig_grub_pti_enabled.rc == 1
-      ansible.builtin.shell: grubby --update-kernel=ALL --args="pti=on"
+      ansible.builtin.command: grubby --update-kernel=ALL --args="pti=on"
+      changed_when: true
 
 - name: "LOW | RHEL-09-212055 | PATCH | RHEL 9 must enable auditing of processes that start prior to the audit daemon."
-  when:
-    - rhel_09_212055
+  when: rhel_09_212055
   tags:
     - RHEL-09-212055
     - CAT2
@@ -89,11 +88,11 @@
       when:
         - rhel9stig_grub_audit_enabled is defined
         - rhel9stig_grub_audit_enabled.rc == 1
-      ansible.builtin.shell: grubby --update-kernel=ALL --args="audit=1"
+      ansible.builtin.command: grubby --update-kernel=ALL --args="audit=1"
+      changed_when: true
 
 - name: "LOW | RHEL-09-214035 | PATCH | RHEL 9 must remove all software components after updated versions have been installed."
-  when:
-    - rhel_09_214035
+  when: rhel_09_214035
   tags:
     - RHEL-09-214035
     - CAT2
@@ -181,8 +180,7 @@
         file: warning_facts.yml
 
 - name: "LOW | RHEL-09-231195 | PATCH | RHEL 9 must disable mounting of cramfs."
-  when:
-    - rhel_09_231195
+  when: rhel_09_231195
   tags:
     - RHEL-09-231195
     - CAT2
@@ -199,10 +197,10 @@
   ansible.builtin.template:
     dest: "/etc/modprobe.d/{{ blacklist }}.conf"
     src: etc/modprobe.d/module.conf.j2
+    mode: 'u-x,go-wx'
 
 - name: "LOW | RHEL-09-252025 | PATCH | RHEL 9 must disable the chrony daemon from acting as a server."
-  when:
-    - rhel_09_252025
+  when: rhel_09_252025
   tags:
     - RHEL-09-252025
     - CAT2
@@ -220,8 +218,7 @@
     line: 'port 0'
 
 - name: "LOW | RHEL-09-252030 | PATCH | RHEL 9 must disable network management of the chrony daemon."
-  when:
-    - rhel_09_252030
+  when: rhel_09_252030
   tags:
     - RHEL-09-252030
     - CAT2
@@ -239,8 +236,7 @@
     line: 'cmdport 0'
 
 - name: "LOW | RHEL-09-291025 | PATCH | RHEL 9 must enable Linux audit logging for the USBGuard daemon."
-  when:
-    - rhel_09_291025
+  when: rhel_09_291025
   tags:
     - RHEL-09-291025
     - CAT2

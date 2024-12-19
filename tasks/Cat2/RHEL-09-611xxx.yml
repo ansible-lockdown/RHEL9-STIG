@@ -329,8 +329,7 @@
     backrefs: true
 
 - name: "MEDIUM | RHEL-09-611080 | PATCH | RHEL 9 passwords must have a 24 hours minimum password lifetime restriction in /etc/shadow."
-  when:
-    - rhel_09_611080
+  when: rhel_09_611080
   tags:
     - RHEL-09-611080
     - CAT2
@@ -343,7 +342,7 @@
     warn_control_id: "MEDIUM | RHEL-09-611080"
   block:
     - name: "MEDIUM | RHEL-09-611080 | AUDIT | RHEL 9 passwords must have a 24 hours minimum password lifetime restriction in /etc/shadow. | Capture accts"
-      ansible.builtin.shell: "awk -F: '$4 < 1 {print $1}' /etc/shadow"
+      ansible.builtin.command: "awk -F: '$4 < 1 {print $1}' /etc/shadow"
       changed_when: false
       failed_when: rhel9stig_24hr_passwd_restrict.rc not in [ 0, 1 ]
       register: rhel9stig_24hr_passwd_restrict
@@ -368,7 +367,8 @@
         - rhel9stig_24hr_passwd_restrict.stdout | length > 0
         - rhel9stig_disruption_high
         - item in rhel9stig_interactive_users
-      ansible.builtin.shell: "passwd -n 1 {{ item }}"
+      ansible.builtin.command: "passwd -n 1 {{ item }}"
+      changed_when: true
       loop: "{{ rhel9stig_24hr_passwd_restrict.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-611085 | PATCH | RHEL 9 must require users to provide a password for privilege escalation"
@@ -420,8 +420,7 @@
       loop: "{{ discovered_sudoers_nopasswd.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-611090 | PATCH | RHEL 9 passwords must be created with a minimum of 15 characters."
-  when:
-    - rhel_09_611090
+  when: rhel_09_611090
   tags:
     - RHEL-09-611090
     - CAT2
@@ -579,10 +578,11 @@
     - V-258116
     - NIST800-53R4_IA-5
   community.general.ini_file:
-    option: crypt_style
     path: /etc/libuser.conf
+    option: crypt_style
     section: 'default'
     value: 'sha512'
+    mode: 'u-x,go-wx'
 
 - name: "MEDIUM | RHEL-09-611140 | PATCH | RHEL 9 must be configured to use the shadow file to store only encrypted representations of passwords."
   when:
@@ -637,20 +637,17 @@
     warn_control_id: "MEDIUM | RHEL-09-611155"
   block:
     - name: "MEDIUM | RHEL-09-611155 | WARN | RHEL 9 must not have accounts configured with blank or null passwords."
-      when:
-        - not rhel9stig_disruption_high
+      when: not rhel9stig_disruption_high
       ansible.builtin.debug:
         msg: "Warning!! You have accounts with blank passwords"
 
     - name: "MEDIUM | RHEL-09-611155 | WARN | RHEL 9 must not have accounts configured with blank or null passwords."
-      when:
-        - not rhel9stig_disruption_high
+      when: not rhel9stig_disruption_high
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
     - name: "MEDIUM | RHEL-09-611155 | PATCH | RHEL 9 must not have accounts configured with blank or null passwords."
-      when:
-        - rhel9stig_disruption_high
+      when: rhel9stig_disruption_high
       ansible.builtin.user:
         name: "{{ item }}"
         password_lock: true
@@ -701,6 +698,7 @@
     path: /etc/opensc.conf
     regexp: ^(#|)card_drivers(\s*=\s*)(.*)cac(.*);
     line: card_drivers = cac,\3\4;
+    mode: 'u-x,go-wx'
     create: true
     backrefs: true
 
@@ -751,14 +749,14 @@
     - name: "MEDIUM | RHEL-09-611170 | PATCH | RHEL 9 must implement certificate status checking for multifactor authentication. | Add if missing"
       when: rhel9stig_sssd_cert_verification_files.stdout | length == 0
       community.general.ini_file:
-        create: true
-        group: root
-        option: certificate_verification
-        owner: root
-        mode: 'u-x,go-rwx'
         path: /etc/sssd/conf.d/certificate_verification.conf
         section: 'sssd'
         value: 'ocsp_dgst=sha512'
+        option: certificate_verification
+        group: root
+        owner: root
+        mode: 'u-x,go-rwx'
+        create: true
 
     - name: "MEDIUM | RHEL-09-611170 | PATCH | RHEL 9 must implement certificate status checking for multifactor authentication. | Add if missing"
       when: rhel9stig_sssd_cert_verification_files.stdout | length > 0
@@ -804,8 +802,7 @@
     state: started
 
 - name: "MEDIUM | RHEL-09-611190 | PATCH | RHEL 9, for PKI-based authentication, must enforce authorized access to the corresponding private key."
-  when:
-    - rhel_09_611190
+  when: rhel_09_611190
   tags:
     - RHEL-09-611190
     - CAT2
@@ -826,8 +823,7 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-611195 | PATCH | RHEL 9 must require authentication to access emergency mode."
-  when:
-    - rhel_09_611195
+  when: rhel_09_611195
   tags:
     - RHEL-09-611195
     - CAT2
@@ -843,8 +839,7 @@
     backrefs: true
 
 - name: "MEDIUM | RHEL-09-611200 | PATCH | RHEL 9 must require authentication to access single-user mode"
-  when:
-    - rhel_09_611200
+  when: rhel_09_611200
   tags:
     - RHEL-09-611200
     - CAT2
@@ -879,8 +874,7 @@
       register: rhel9stig_keytab_files
 
     - name: "MEDIUM | RHEL-09-611205 | PATCH | RHEL 9 must require authentication to access single-user mode"
-      when:
-        - rhel9stig_keytab_files.matched > 0
+      when: rhel9stig_keytab_files.matched > 0
       ansible.builtin.file:
         path: "{{ item.path }}"
         state: absent
