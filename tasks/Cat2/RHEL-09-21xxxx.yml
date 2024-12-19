@@ -47,7 +47,7 @@
         content: "{{ rhel9stig_logon_banner }}"
         dest: "{{ item }}"
         group: root
-        mode: '0644'
+        mode: 'u-x,go-wx'
         owner: root
       notify: Sshd_restart
       loop:
@@ -158,7 +158,7 @@
         owner: root
         src: "{{ item.file }}.j2"
       loop:
-        - { file: 'boot/grub2/user.cfg', mode: '0644' }
+        - { file: 'boot/grub2/user.cfg', mode: 'u-x,go-wx' }
 
     - name: "MEDIUM | RHEL-09-212010 | AUDIT | RHEL 9 must require a boot loader superuser password.| warning"
       when: not rhel9stig_set_bootloader_password
