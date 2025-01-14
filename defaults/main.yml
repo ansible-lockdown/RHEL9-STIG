@@ -596,7 +596,10 @@ rhel_09_653120: true
 
 ### CONTROLS
 
-## Graphical/Gnome interface required
+## Graphical/Gnome interface approved to be present
+rhel9stig_gui_approved: false
+
+# If gui not installed
 rhel9stig_gui: "{{ rhel_09_gnome_present.stat.exists | default(false) }}"
 
 ## SSHD

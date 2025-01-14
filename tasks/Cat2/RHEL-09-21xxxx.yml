@@ -84,6 +84,7 @@
 - name: "MEDIUM | RHEL-09-211030 | PATCH | The graphical display manager must not be the default target on RHEL 9 unless approved."
   when:
     - rhel_09_211030
+    - not rhel9stig_gui_approved
   tags:
     - RHEL-09-211030
     - CAT2
@@ -1063,9 +1064,14 @@
     name: quagga
     state: absent
 
+# Note if groups installed via ansible previously https://bugzilla.redhat.com/show_bug.cgi?id=1620324.
+# More efficient to remove as a list but conditional required a loop
 - name: "MEDIUM | RHEL-09-215070 | PATCH | A graphical display manager must not be installed on RHEL 9 unless approved."
   when:
     - rhel_09_215070
+    - not rhel9stig_gui_approved
+    - rhel9stig_gui
+    - "item in ansible_facts.packages"
   tags:
     - RHEL-09-215070
     - CAT2
@@ -1075,8 +1081,13 @@
     - V-257837
     - NIST800-53R4_CM-6
   ansible.builtin.package:
-    name: "xorg*common"
+    name: "{{ item }}"
     state: absent
+  loop:
+    - "xorg*common"
+    - "workstation-product-environment"
+    - "graphical-server-environment"
+    - "gnome-desktop"
 
 - name: "MEDIUM | RHEL-09-215075 | PATCH | RHEL 9 must have the openssl-pkcs11 package installed."
   when:
