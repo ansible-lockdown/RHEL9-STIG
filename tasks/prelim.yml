@@ -179,7 +179,7 @@
   register: discovered_auditd_logfile
 
 # Added to ensure ssh drop in file exists if not default /etc/ssh/sshd_config
-- name: PRELIM | SSH
+- name: PRELIM | SSH | create config file if absent
   ansible.builtin.file:
     path: "{{ rhel9stig_sshd_config_file }}"
     owner: root
@@ -191,6 +191,12 @@
     - "'openssh-server' in ansible_facts.packages"
   tags:
     - ssh
+
+- name: PRELIM | SSH | existing ssh config files
+  ansible.builtin.find:
+    path: /etc/ssh
+    patterns: '*.conf'
+  register: prelim_sshd_config_files
 
 - name: "PRELIM | Interactive User accounts"
   ansible.builtin.shell: 'cat /etc/passwd | grep -Ev "nologin|/sbin" | cut -d: -f6'
