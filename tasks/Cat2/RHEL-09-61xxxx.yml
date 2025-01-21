@@ -446,8 +446,7 @@
         - rhel9stig_24hr_passwd_restrict.stdout | length > 0
         - not rhel9stig_disruption_high
       ansible.builtin.debug:
-        msg: |
-          "Warning!! Accounts have been found to have an incorrect password lifetime"
+        msg: "Warning!! Accounts have been found to have an incorrect password lifetime"
 
     - name: "MEDIUM | RHEL-09-611080 | WARN | RHEL 9 passwords must have a 24 hours minimum password lifetime restriction in /etc/shadow. | Warning"
       when:
@@ -460,7 +459,7 @@
       when:
         - rhel9stig_24hr_passwd_restrict.stdout | length > 0
         - rhel9stig_disruption_high
-        - item in rhel9stig_interactive_users
+        - item in rhel9stig_interactive_users.stdout_lines
       ansible.builtin.shell: "passwd -n 1 {{ item }}"
       loop: "{{ rhel9stig_24hr_passwd_restrict.stdout_lines }}"
 
