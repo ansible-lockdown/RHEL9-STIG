@@ -981,14 +981,7 @@
     modification_time: preserve
     owner: root
     path: "{{ item }}"
-  loop:
-    - /sbin/auditctl
-    - /sbin/aureport
-    - /sbin/ausearch
-    - /sbin/autrace
-    - /sbin/auditd
-    - /sbin/rsyslogd
-    - /sbin/augenrules
+  loop: "{{ audit_bins }}"
 
 - name: "MEDIUM | RHEL-09-232040 | PATCH | RHEL 9 cron configuration directories must have a mode of 0700 or less permissive."
   when:
@@ -1723,14 +1716,7 @@
   ansible.builtin.file:
     owner: root
     path: "{{ item }}"
-  loop:
-    - '/sbin/auditctl'
-    - '/sbin/aureport'
-    - '/sbin/ausearch'
-    - '/sbin/autrace'
-    - '/sbin/auditd'
-    - '/sbin/rsyslogd'
-    - '/sbin/augenrules'
+  loop: "{{ audit_bins}}"
 
 - name: "MEDIUM | RHEL-09-232225 | PATCH | RHEL 9 audit tools must be group-owned by root."
   when:
@@ -1746,14 +1732,7 @@
   ansible.builtin.file:
     group: root
     path: "{{ item }}"
-  loop:
-    - '/sbin/auditctl'
-    - '/sbin/aureport'
-    - '/sbin/ausearch'
-    - '/sbin/autrace'
-    - '/sbin/auditd'
-    - '/sbin/rsyslogd'
-    - '/sbin/augenrules'
+  loop: "{{ audit_bins }}"
 
 - name: "MEDIUM | RHEL-09-232230 | PATCH | RHEL 9 cron configuration files directory must be owned by root."
   when:
