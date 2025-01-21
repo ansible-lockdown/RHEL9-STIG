@@ -192,11 +192,21 @@
   tags:
     - ssh
 
-- name: PRELIM | SSH | existing ssh config files
+- name: PRELIM | SSH | find existing ssh config files
   ansible.builtin.find:
-    path: /etc/ssh
-    patterns: '*.conf'
+    paths:
+      - /etc/ssh/
+      - /etc/ssh/sshd_config.d
+    patterns: 'sshd_config,*.conf'
+    recurse: false
   register: prelim_sshd_config_files
+  tags:
+    - always
+
+- name: Debug
+  ansible.builtin.debug:
+    msg: "{{ prelim_sshd_config_files }}"
+  tags: always
 
 - name: "PRELIM | Interactive User accounts"
   ansible.builtin.shell: 'cat /etc/passwd | grep -Ev "nologin|/sbin" | cut -d: -f6'
