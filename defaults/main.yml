@@ -605,6 +605,7 @@ rhel9stig_gui: "{{ rhel_09_gnome_present.stat.exists | default(false) }}"
 ## SSHD
 rhel9stig_sshd_config_file: /etc/ssh/sshd_config
 rhel9stig_ssh_required: true
+rhel9stig_sshd_config_maxlogins: 10
 rhel9stig_sshd_config:
   banner_file: /etc/issue
   ciphers: "{{ rhel9stig_dod_ciphers }}"
