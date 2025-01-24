@@ -52,18 +52,17 @@
     - NIST800-53R4_AC-6
   notify: Systemd_daemon_reload
   block:
-    - name: HIGH | RHEL-09-211050 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled | systemctl disable
-      ansible.builtin.systemd:
-        enabled: false
-        masked: true
-        name: ctrl-alt-del.target
-        state: stopped
-
     - name: HIGH | RHEL-09-211050 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled | Create symlink to /dev/null
       ansible.builtin.file:
         dest: /etc/systemd/system/ctrl-alt-del.target
         src: /dev/null
         state: link
+
+    - name: HIGH | RHEL-09-211050 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled | systemctl disable
+      ansible.builtin.systemd:
+        masked: true
+        name: ctrl-alt-del.target
+        state: stopped
 
 - name: HIGH | RHEL-09-212020 | PATCH | RHEL 9 must require a unique superusers name upon booting into single-user and maintenance modes.
   when:

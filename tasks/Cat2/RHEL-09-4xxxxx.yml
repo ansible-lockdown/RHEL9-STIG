@@ -41,7 +41,7 @@
         - rhel9stig_disruption_high
         - rhel9stig_users_passwd_max is defined
         - rhel9stig_users_passwd_max.stdout | length > 0
-        - "ansible_user not in item"
+        - item != rhel9stig_playbook_user
       ansible.builtin.shell: "chage -M 60 {{ item }}"
       failed_when: rhel9stig_users_passwd_max.rc not in [ 0, 1 ]
       loop: "{{ rhel9stig_users_passwd_max.stdout_lines }}"
@@ -1046,6 +1046,7 @@
 - name: "MEDIUM | RHEL-09-433015 | PATCH | RHEL 9 fapolicy module must be enabled."
   when:
     - rhel_09_433015
+    - rhel9stig_disruption_high
   tags:
     - RHEL-09-433015
     - CAT2
@@ -1057,7 +1058,21 @@
     - V-258089
     - NIST800-53R4_IA-11
     - NIST800-53R4_AC-3
-  ansible.builtin.systemd:
-    enabled: true
-    name: fapolicyd
-    state: started
+  block:
+    - name: MEDIUM | RHEL-09-433015 | PATCH | RHEL 9 fapolicy module must be enabled. | Policy
+      when: rhel9stig_add_fapolicy_policy
+      ansible.builtin.template:
+        src: 'etc/fapolicyd/rules.d/99-stig-whitelist.rules.j2'
+        dest: '/etc/fapolicyd/rules.d/99-stig-whitelist.rules'
+        mode: '0644'
+        owner: root
+        group: fapolicyd
+      notify:
+        - Generate fapolicyd rules
+        - Restart fapolicyd
+
+    - name: MEDIUM | RHEL-09-433015 | PATCH | RHEL 9 fapolicy module must be enabled. | Package
+      ansible.builtin.systemd:
+        enabled: true
+        name: fapolicyd
+        state: started

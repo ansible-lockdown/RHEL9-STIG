@@ -78,16 +78,26 @@
     name: rsyslog.service
     state: restarted
 
+# Must be prior to fapolicyd restart
+- name: Generate fapolicyd rules
+  ansible.builtin.shell: fagenrules --load
+
+- name: Restart fapolicyd
+  ansible.builtin.service:
+    name: fapolicyd
+    state: restarted
+
 ## Auditd tasks note order for handlers to run
 
 - name: Auditd_immutable_check
   ansible.builtin.shell: grep -c "^-e 2" /etc/audit/rules.d/audit.rules
   changed_when: false
+  failed_when: auditd_immutable_check.rc not in [ 0, 1 ]
   register: auditd_immutable_check
 
 - name: Audit_immutable_fact
   when:
-    - auditd_immutable_check.stdout == '1'
+    - auditd_immutable_check.stdout >= '1'
   notify: change_requires_reboot
   ansible.builtin.debug:
     msg: "Reboot required for auditd to apply new rules as immutable set"
