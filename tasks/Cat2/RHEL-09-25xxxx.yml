@@ -930,12 +930,23 @@
     - NIST800-53R4_AC-8
     - ssh
   notify: Restart_ssh
-  ansible.builtin.lineinfile:
-    path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)banner \/.*\/.*
-    line: "banner {{ rhel9stig_sshd_config.banner_file }}"
-    create: true
-    validate: sshd -t -f %s
+  block:
+    - name: "MEDIUM | RHEL-09-255025 | PATCH | RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system via a SSH logon. | Remove"
+      when: "item.path != rhel9stig_sshd_config_file"
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: (?i)(^banner.*)
+        replace: '#\1'
+      failed_when: discovered_banner_exists.rc != 257
+      register: discovered_banner_exists
+      loop: "{{ prelim_sshd_config_files.files }}"
+
+    - name: "MEDIUM | RHEL-09-255025 | PATCH | RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system via a SSH logon. | Remove"
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_sshd_config_file }}"
+        regexp: (?i)^(?#)banner .*
+        line: "banner {{ rhel9stig_sshd_config.banner_file }}"
+        validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255030 | PATCH | RHEL 9 must log SSH connection attempts and failures to the server."
   when:
@@ -950,12 +961,23 @@
     - NIST800-53R4_AC-17
     - ssh
   notify: Restart_ssh
-  ansible.builtin.lineinfile:
-    path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)LogLevel.*
-    line: "LogLevel {{ rhel9stig_sshd_config.loglevel }}"
-    create: true
-    validate: sshd -t -f %s
+  block:
+    - name: "MEDIUM | RHEL-09-255030 | PATCH | RHEL 9 must log SSH connection attempts and failures to the server. | Remove"
+      when: "item.path != rhel9stig_sshd_config_file"
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: (?i)(^LogLevel.*)
+        replace: '#\1'
+      failed_when: discovered_loglevel_exists.rc != 257
+      register: discovered_loglevel_exists
+      loop: "{{ prelim_sshd_config_files.files }}"
+
+    - name: "MEDIUM | RHEL-09-255030 | PATCH | RHEL 9 must log SSH connection attempts and failures to the server. | Exists"
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_sshd_config_file }}"
+        regexp: (?i)^(#|)LogLevel.*
+        line: "LogLevel {{ rhel9stig_sshd_config.loglevel }}"
+        validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255035 | PATCH | RHEL 9 SSHD must accept public key authentication"
   when:
@@ -976,12 +998,23 @@
     - NIST800-53R4_IA-2
     - ssh
   notify: Restart_ssh
-  ansible.builtin.lineinfile:
-    path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)PubkeyAuthentication\s*(yes|no)
-    line: "PubkeyAuthentication {{ rhel9stig_sshd_config.pubkeyauth }}"
-    create: true
-    validate: sshd -t -f %s
+  block:
+    - name: "MEDIUM | RHEL-09-255035 | PATCH | RHEL 9 SSHD must accept public key authentication | Remove"
+      when: "item.path != rhel9stig_sshd_config_file"
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: (?i)(^PubkeyAuthentication.*)
+        replace: '#\1'
+      failed_when: discovered_pubkey_exists.rc != 257
+      register: discovered_pubkey_exists
+      loop: "{{ prelim_sshd_config_files.files }}"
+
+    - name: "MEDIUM | RHEL-09-255035 | PATCH | RHEL 9 SSHD must accept public key authentication | Exists"
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_sshd_config_file }}"
+        regexp: (?i)^(#|)PubkeyAuthentication\s*(yes|no|true|false)
+        line: "PubkeyAuthentication {{ rhel9stig_sshd_config.pubkeyauth }}"
+        validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255045 | PATCH | RHEL 9 must not permit direct logons to the root account using remote access via SSH."
   when:
@@ -999,12 +1032,23 @@
     - NIST800-53R4_IA-2
     - ssh
   notify: Restart_ssh
-  ansible.builtin.lineinfile:
-    path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)PermitRootLogin\s*(yes|no)
-    line: "PermitRootLogin {{ rhel9stig_sshd_config.permitroot }}"
-    create: true
-    validate: sshd -t -f %s
+  block:
+    - name: "MEDIUM | RHEL-09-255045 | PATCH | RHEL 9 must not permit direct logons to the root account using remote access via SSH. | Remove existing"
+      when: "item.path != rhel9stig_sshd_config_file"
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: (?i)(^PermitRootLogin.*)
+        replace: '#\1'
+      failed_when: discovered_rootlogin_exists.rc != 257
+      register: discovered_rootlogin_exists
+      loop: "{{ prelim_sshd_config_files.files }}"
+
+    - name: "MEDIUM | RHEL-09-255045 | PATCH | RHEL 9 must not permit direct logons to the root account using remote access via SSH. | Remove existing"
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_sshd_config_file }}"
+        regexp: (?i)^(#|)PermitRootLogin\s*(yes|no|true|false)
+        line: "PermitRootLogin {{ rhel9stig_sshd_config.permitroot }}"
+        validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255055 | PATCH | RHEL 9 SSH daemon must be configured to use system-wide crypto policies."
   when:
@@ -1019,12 +1063,23 @@
     - NIST800-53R4_AC-17
     - ssh
   notify: Restart_sshd
-  ansible.builtin.lineinfile:
-    path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)Include.*
-    line: "Include {{ rhel9stig_sshd_config.include_conf }}"
-    create: true
-    validate: sshd -t -f %s
+  block:
+    - name: "MEDIUM | RHEL-09-255055 | PATCH | RHEL 9 SSH daemon must be configured to use system-wide crypto policies. | Remove existing"
+      when: "item.path != rhel9stig_sshd_config_file"
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: (?i)^Include.*(?!etc\/crypto-policies\/back-ends\/opensshserver\.config)
+        replace: '#\1'
+      failed_when: discovered_sshinclude_exists.rc != 257
+      register: discovered_sshinclude_exists
+      loop: "{{ prelim_sshd_config_files.files }}"
+
+    - name: "MEDIUM | RHEL-09-255055 | PATCH | RHEL 9 SSH daemon must be configured to use system-wide crypto policies. | Esnure exists"
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_sshd_config_file }}"
+        regexp: (?i)^(?#)\s*Include.*
+        line: "Include {{ rhel9stig_sshd_config.include_conf }}"
+        validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255060 | PATCH | RHEL 9 must implement DOD-approved encryption ciphers to protect the confidentiality of SSH client connections."
   when:
@@ -1041,7 +1096,7 @@
   notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)Include.*
+    regexp: ^(?i)(?#)Include.*
     line: "Include {{ rhel9stig_sshd_config.include_conf }}"
     create: true
     validate: sshd -t -f %s
@@ -1093,12 +1148,24 @@
     - NIST800-53R4_CM-6
     - ssh
   notify: Restart_ssh
-  ansible.builtin.lineinfile:
-    path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)HostbasedAuthentication\s*(yes|no)
-    line: "HostbasedAuthentication {{ rhel9stig_sshd_config.hostauth }}"
-    create: true
-    validate: sshd -t -f %s
+  block:
+    - name: "MEDIUM | RHEL-09-255080 | PATCH | RHEL 9 must not allow a noncertificate trusted host SSH logon to the system. | Remove"
+      when: "item.path != rhel9stig_sshd_config_file"
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: (?i)^(HostbasedAuthentication.*)
+        replace: '#\1'
+      failed_when: discovered_hostbasedauth_exists.rc != 257
+      register: discovered_hostbasedauth_exists
+      loop: "{{ prelim_sshd_config_files.files }}"
+
+    - name: "MEDIUM | RHEL-09-255080 | PATCH | RHEL 9 must not allow a noncertificate trusted host SSH logon to the system. | Exists"
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_sshd_config_file }}"
+        regexp: (?i)^(?#)HostbasedAuthentication\s*(yes|no|true|false)
+        line: "HostbasedAuthentication {{ rhel9stig_sshd_config.hostauth }}"
+        create: true
+        validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255085 | PATCH | RHEL 9 must not allow users to override SSH environment variables."
   when:
@@ -1113,12 +1180,24 @@
     - NIST800-53R4_CM-6
     - ssh
   notify: Restart_ssh
-  ansible.builtin.lineinfile:
-    path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)PermitUserEnvironments\s*(yes|no)
-    line: "PermitUserEnvironment {{ rhel9stig_sshd_config.userenv }}"
-    create: true
-    validate: sshd -t -f %s
+  block:
+    - name: "MEDIUM | RHEL-09-255085 | PATCH | RHEL 9 must not allow users to override SSH environment variables. | Remove"
+      when: "item.path != rhel9stig_sshd_config_file"
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: (?i)^(PermitUserEnvironment.*)
+        replace: '#\1'
+      failed_when: discovered_userenv_exists.rc != 257
+      register: discovered_userenv_exists
+      loop: "{{ prelim_sshd_config_files.files }}"
+
+    - name: "MEDIUM | RHEL-09-255085 | PATCH | RHEL 9 must not allow users to override SSH environment variables. | Exists"
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_sshd_config_file }}"
+        regexp: (?i)^(?#)\s*PermitUserEnvironment\s*(yes|no)
+        line: "PermitUserEnvironment {{ rhel9stig_sshd_config.userenv }}"
+        create: true
+        validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255090 | PATCH | RHEL 9 must force a frequent session key renegotiation for SSH connections to the server."
   when:
@@ -1138,12 +1217,24 @@
     - NIST800-53R4_SC-8
     - ssh
   notify: Restart_ssh
-  ansible.builtin.lineinfile:
-    path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)RekeyLimit.*
-    line: "RekeyLimit {{ rhel9stig_sshd_config.rekeylimit }}"
-    create: true
-    validate: sshd -t -f %s
+  block:
+    - name: "MEDIUM | RHEL-09-255090 | PATCH | RHEL 9 must force a frequent session key renegotiation for SSH connections to the server. | Remove"
+      when: "item.path != rhel9stig_sshd_config_file"
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: (?i)(^RekeyLimit.*)
+        replace: '#\1'
+      failed_when: discovered_rekey_exists.rc != 257
+      register: discovered_rekey_exists
+      loop: "{{ prelim_sshd_config_files.files }}"
+
+    - name: "MEDIUM | RHEL-09-255090 | PATCH | RHEL 9 must force a frequent session key renegotiation for SSH connections to the server. | Exists"
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_sshd_config_file }}"
+        regexp: (?i)^(?#)\s*RekeyLimit.*
+        line: "RekeyLimit {{ rhel9stig_sshd_config.rekeylimit }}"
+        create: true
+        validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255095 | PATCH | RHEL 9 must be configured so that all network connections associated with SSH traffic terminate after becoming unresponsive."
   when:
@@ -1162,12 +1253,24 @@
     - NIST800-53R4_AC-12
     - ssh
   notify: Restart_ssh
-  ansible.builtin.lineinfile:
-    path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)ClientAliveCountMax\s\d*
-    line: "ClientAliveCountMax {{ rhel9stig_sshd_config.clientalivecountmax }}"
-    create: true
-    validate: sshd -t -f %s
+  block:
+    - name: "MEDIUM | RHEL-09-255095 | PATCH | RHEL 9 must be configured so that all network connections associated with SSH traffic terminate after becoming unresponsive. | Remove"
+      when: "item.path != rhel9stig_sshd_config_file"
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: (?i)^(ClientAliveCountMax .*)
+        replace: '#\1'
+      failed_when: discovered_alivecount_exists.rc != 257
+      register: discovered_alivecount_exists
+      loop: "{{ prelim_sshd_config_files.files }}"
+
+    - name: "MEDIUM | RHEL-09-255095 | PATCH | RHEL 9 must be configured so that all network connections associated with SSH traffic terminate after becoming unresponsive. | exists"
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_sshd_config_file }}"
+        regexp: (?i)^(?#)ClientAliveCountMax\s\d*
+        line: "ClientAliveCountMax {{ rhel9stig_sshd_config.clientalivecountmax }}"
+        create: true
+        validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255100 | PATCH | RHEL 9 must be configured so that all network connections associated with SSH traffic are terminated after 10 minutes of becoming unresponsive."
   when:
@@ -1190,12 +1293,24 @@
     - NIST800-53R4_AC-12
     - ssh
   notify: Restart_ssh
-  ansible.builtin.lineinfile:
-    path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)ClientAliveInterval\s\d*
-    line: "ClientAliveInterval {{ rhel9stig_sshd_config.clientaliveinterval }}"
-    create: true
-    validate: sshd -t -f %s
+  block:
+    - name: "MEDIUM | RHEL-09-255100 | PATCH | RHEL 9 must be configured so that all network connections associated with SSH traffic are terminated after 10 minutes of becoming unresponsive. | Remove"
+      when: "item.path != rhel9stig_sshd_config_file"
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: (?i)^(ClientAliveInterval.*)
+        replace: '#\1'
+      failed_when: discovered_liveinterval_exists.rc != 257
+      register: discovered_liveinterval_exists
+      loop: "{{ prelim_sshd_config_files.files }}"
+
+    - name: "MEDIUM | RHEL-09-255100 | PATCH | RHEL 9 must be configured so that all network connections associated with SSH traffic are terminated after 10 minutes of becoming unresponsive."
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_sshd_config_file }}"
+        regexp: (?i)^(?#)ClientAliveInterval\s\d*
+        line: "ClientAliveInterval {{ rhel9stig_sshd_config.clientaliveinterval }}"
+        create: true
+        validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255105 | PATCH | RHEL 9 SSH server configuration file must be group-owned by root."
   when:
@@ -1306,12 +1421,23 @@
     - NIST800-53R4_CM-6
     - ssh
   notify: Restart_ssh
-  ansible.builtin.lineinfile:
-    path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)Compression\s*(yes|no)
-    line: "Compression {{ rhel9stig_sshd_config.compress }}"
-    create: true
-    validate: sshd -t -f %s
+  block:
+    - name: "MEDIUM | RHEL-09-255135 | PATCH | RHEL 9 SSH daemon must not allow compression or must only allow compression after successful authentication. | Remove"
+      when: "item.path != rhel9stig_sshd_config_file"
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: (?i)^(compression .*)
+        replace: '#\1'
+      failed_when: discovered_compression_exists.rc != 257
+      register: discovered_compression_exists
+      loop: "{{ prelim_sshd_config_files.files }}"
+
+    - name: "MEDIUM | RHEL-09-255135 | PATCH | RHEL 9 SSH daemon must not allow compression or must only allow compression after successful authentication. | Exists in correct file"
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_sshd_config_file }}"
+        regexp: (?i)^(?#)Compression\s*(yes|no|true|false)
+        line: "Compression {{ rhel9stig_sshd_config.compress }}"
+        validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255135 | PATCH | RHEL 9 SSH daemon must not allow GSSAPI authentication."
   when:
@@ -1329,12 +1455,21 @@
     - NIST800-53R4_CM-6
     - ssh
   notify: Restart_ssh
-  ansible.builtin.lineinfile:
-    path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)GSSAPIAuthentication\s*(yes|no)
-    line: "GSSAPIAuthentication {{ rhel9stig_sshd_config.gssapiauth }}"
-    create: true
-    validate: sshd -t -f %s
+  block:
+    - name: "MEDIUM | RHEL-09-255135 | PATCH | RHEL 9 SSH daemon must not allow GSSAPI authentication. | Remove"
+      when: "item.path != rhel9stig_sshd_config_file"
+      ansible.builtin.replace:
+        path: "{{ item.path }}"
+        regexp: (?i)^(GSSAPIAuthentication (yes|true))
+        replace: '#\1'
+      loop: "{{ prelim_sshd_config_files.files }}"
+
+    - name: "MEDIUM | RHEL-09-255135 | PATCH | RHEL 9 SSH daemon must not allow GSSAPI authentication. | Exists"
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_sshd_config_file }}"
+        regexp: (?i)^(?#)GSSAPIAuthentication\s*(yes|no)
+        line: "GSSAPIAuthentication {{ rhel9stig_sshd_config.gssapiauth }}"
+        validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255140 | PATCH | RHEL 9 SSH daemon must not allow Kerberos authentication."
   when:
@@ -1352,12 +1487,23 @@
     - NIST800-53R4_CM-6
     - ssh
   notify: Restart_ssh
-  ansible.builtin.lineinfile:
-    path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)KerberosAuthentication\s*(yes|no)
-    line: "KerberosAuthentication {{ rhel9stig_sshd_config.kerbauth }}"
-    create: true
-    validate: sshd -t -f %s
+  block:
+    - name: "MEDIUM | RHEL-09-255140 | PATCH | RHEL 9 SSH daemon must not allow Kerberos authentication. | Remove"
+      when: "item.path != rhel9stig_sshd_config_file"
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: (?i)^(KerberosAuthentication (yes|true))
+        replace: '#\1'
+      failed_when: discovered_kerberosauth_exists.rc != 257
+      register: discovered_kerberosauth_exists
+      loop: "{{ prelim_sshd_config_files.files }}"
+
+    - name: "MEDIUM | RHEL-09-255140 | PATCH | RHEL 9 SSH daemon must not allow Kerberos authentication. | Exists"
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_sshd_config_file }}"
+        regexp: (?i)^(?#)KerberosAuthentication\s*(yes|no|true|false)
+        line: "KerberosAuthentication {{ rhel9stig_sshd_config.kerbauth }}"
+        validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255145 | PATCH | RHEL 9 SSH daemon must not allow rhosts authentication"
   when:
@@ -1372,12 +1518,23 @@
     - NIST800-53R4_CM-6
     - ssh
   notify: Restart_ssh
-  ansible.builtin.lineinfile:
-    path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)IgnoreRhosts\s*(yes|no)
-    line: "IgnoreRhosts {{ rhel9stig_sshd_config.ignorerhosts }}"
-    create: true
-    validate: sshd -t -f %s
+  block:
+    - name: "MEDIUM | RHEL-09-255145 | PATCH | RHEL 9 SSH daemon must not allow rhosts authentication | Remove"
+      when: "item.path != rhel9stig_sshd_config_file"
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: (?i)^(IgnoreRhosts (no|false))
+        replace: '#\1'
+      failed_when: discovered_ignorerhosts_exists.rc != 257
+      register: discovered_ignorerhosts_exists
+      loop: "{{ prelim_sshd_config_files.files }}"
+
+    - name: "MEDIUM | RHEL-09-255145 | PATCH | RHEL 9 SSH daemon must not allow rhosts authentication | Exists"
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_sshd_config_file }}"
+        regexp: (?i)^(?#)IgnoreRhosts\s*(yes|no|true|false)
+        line: "IgnoreRhosts {{ rhel9stig_sshd_config.ignorerhosts }}"
+        validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255150 | PATCH | RHEL 9 SSH daemon must not allow known hosts authentication."
   when:
@@ -1392,12 +1549,24 @@
     - NIST800-53R4_CM-6
     - ssh
   notify: Restart_ssh
-  ansible.builtin.lineinfile:
-    path: /etc/ssh/sshd_config.d/50-redhat.conf
-    regexp: ^(?i)(#|)IgnoreUserKnownHosts\s*(yes|no)
-    line: "IgnoreUserKnownHosts {{ rhel9stig_sshd_config.ignoreknownhosts }}"
-    create: true
-    validate: sshd -t -f %s
+  block:
+    - name: "MEDIUM | RHEL-09-255150 | PATCH | RHEL 9 SSH daemon must not allow known hosts authentication. | Remove"
+      when: "item.path != rhel9stig_sshd_config_file"
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: (?i)^(IgnoreUserKnownHosts (no|false))
+        replace: '#\1'
+      failed_when: discovered_knownhosts_exists.rc != 257
+      register: discovered_knownhosts_exists
+      loop: "{{ prelim_sshd_config_files.files }}"
+
+    - name: "MEDIUM | RHEL-09-255150 | PATCH | RHEL 9 SSH daemon must not allow known hosts authentication. | Exists"
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_sshd_config_file }}"
+        regexp: (?i)^(?#)IgnoreUserKnownHosts\s*(yes|no|true|false)
+        line: "IgnoreUserKnownHosts {{ rhel9stig_sshd_config.ignoreknownhosts }}"
+        create: true
+        validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255155 | PATCH | RHEL 9 SSH daemon must disable remote X connections for interactive users."
   when:
@@ -1412,12 +1581,24 @@
     - NIST800-53R4_CM-6
     - ssh
   notify: Restart_ssh
-  ansible.builtin.lineinfile:
-    path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)X11forwarding\s*(yes|no)
-    line: "X11forwarding {{ rhel9stig_sshd_config.x11forward }}"
-    create: true
-    validate: sshd -t -f %s
+  block:
+    - name: "MEDIUM | RHEL-09-255155 | PATCH | RHEL 9 SSH daemon must disable remote X connections for interactive users. | Remove"
+      when: "item.path != rhel9stig_sshd_config_file"
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: (?i)(^X11Forwarding (yes|true))
+        replace: '#\1'
+      failed_when: discovered_x11forward_exists.rc != 257
+      register: discovered_x11forward_exists
+      loop: "{{ prelim_sshd_config_files.files }}"
+
+    - name: "MEDIUM | RHEL-09-255155 | PATCH | RHEL 9 SSH daemon must disable remote X connections for interactive users. | Exists"
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_sshd_config_file }}"
+        regexp: (?i)^(?#)X11forwarding\s*(yes|no|true|false)
+        line: "X11forwarding {{ rhel9stig_sshd_config.x11forward }}"
+        create: true
+        validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255160 | PATCH | RHEL 9 SSH daemon must perform strict mode checking of home directory configuration files."
   when:
@@ -1432,12 +1613,24 @@
     - NIST800-53R4_CM-6
     - ssh
   notify: Restart_ssh
-  ansible.builtin.lineinfile:
-    path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)StrictModes\s*(yes|no)
-    line: "StrictModes {{ rhel9stig_sshd_config.strictmodes }}"
-    create: true
-    validate: sshd -t -f %s
+  block:
+    - name: "MEDIUM | RHEL-09-255160 | PATCH | RHEL 9 SSH daemon must perform strict mode checking of home directory configuration files. | Remove"
+      when: "item.path != rhel9stig_sshd_config_file"
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: (?i)^(StrictModes (no|false))
+        replace: '#\1'
+      failed_when: discovered_strictmode_exists.rc != 257
+      register: discovered_strictmode_exists
+      loop: "{{ prelim_sshd_config_files.files }}"
+
+    - name: "MEDIUM | RHEL-09-255160 | PATCH | RHEL 9 SSH daemon must perform strict mode checking of home directory configuration files. | Exists"
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_sshd_config_file }}"
+        regexp: (?i)^(?#)StrictModes\s*(yes|no|true|false)
+        line: "StrictModes {{ rhel9stig_sshd_config.strictmodes }}"
+        create: true
+        validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255165 | PATCH | RHEL 9 SSH daemon must display the date and time of the last successful account logon upon an SSH logon."
   when:
@@ -1452,14 +1645,26 @@
     - NIST800-53R4_CM-6
     - ssh
   notify: Restart_ssh
-  ansible.builtin.lineinfile:
-    path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)PrintLastLog\s*(yes|no)
-    line: "PrintLastLog {{ rhel9stig_sshd_config.lastlog }}"
-    create: true
-    validate: sshd -t -f %s
+  block:
+    - name: "MEDIUM | RHEL-09-255165 | PATCH | RHEL 9 SSH daemon must display the date and time of the last successful account logon upon an SSH logon. | Remove"
+      when: "item.path != rhel9stig_sshd_config_file"
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: (?i)^(PrintLastLog (no|false))
+        replace: '#\1'
+      failed_when: discovered_printlastlog_exists.rc != 257
+      register: discovered_printlastlog_exists
+      loop: "{{ prelim_sshd_config_files.files }}"
 
-- name: "MEDIUM | RHEL-09-255170 | PATCH | RHEL 9 SSH daemon must display the date and time of the last successful account logon upon an SSH logon."
+    - name: "MEDIUM | RHEL-09-255165 | PATCH | RHEL 9 SSH daemon must display the date and time of the last successful account logon upon an SSH logon. | Exists"
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_sshd_config_file }}"
+        regexp: (?i)^(?#)PrintLastLog\s*(yes|no|true|false)
+        line: "PrintLastLog {{ rhel9stig_sshd_config.lastlog }}"
+        create: true
+        validate: sshd -t -f %s
+
+- name: "MEDIUM | RHEL-09-255170 | PATCH | RHEL 9 SSH daemon must be configured to use privilege separation."
   when:
     - rhel_09_255170
   tags:
@@ -1472,12 +1677,24 @@
     - NIST800-53R4_CM-6
     - ssh
   notify: Restart_ssh
-  ansible.builtin.lineinfile:
-    path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)UsePrivilegeSeparation\s*(yes|no)
-    line: "UsePrivilegeSeparation {{ rhel9stig_sshd_config.privsep }}"
-    create: true
-    validate: sshd -t -f %s
+  block:
+    - name: "MEDIUM | RHEL-09-255170 | PATCH | RHEL 9 SSH daemon must be configured to use privilege separation. | Remove"
+      when: "item.path != rhel9stig_sshd_config_file"
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: (?i)^(UsePrivilegeSeparation.*)
+        replace: '#\1'
+      failed_when: discovered_privseperation_exists.rc != 257
+      register: discovered_privseperation_exists
+      loop: "{{ prelim_sshd_config_files.files }}"
+
+    - name: "MEDIUM | RHEL-09-255170 | PATCH | RHEL 9 SSH daemon must be configured to use privilege separation. | Exists"
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_sshd_config_file }}"
+        regexp: (?i)^(?#)UsePrivilegeSeparation\s*(yes|no|sandbox)
+        line: "UsePrivilegeSeparation {{ rhel9stig_sshd_config.privsep }}"
+        create: true
+        validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255175 | PATCH | RHEL 9 SSH daemon must prevent remote hosts from connecting to the proxy display."
   when:
@@ -1492,9 +1709,21 @@
     - NIST800-53R4_CM-6
     - ssh
   notify: Restart_ssh
-  ansible.builtin.lineinfile:
-    path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)X11UseLocalhost\s*(yes|no)
-    line: "X11UseLocalhost {{ rhel9stig_sshd_config.x11uselocal }}"
-    create: true
-    validate: sshd -t -f %s
+  block:
+    - name: "MEDIUM | RHEL-09-255175 | PATCH | RHEL 9 SSH daemon must prevent remote hosts from connecting to the proxy display. | Remove"
+      when: "item.path != rhel9stig_sshd_config_file"
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: (?i)^(X11UseLocalhost.*)
+        replace: '#\1'
+      failed_when: discovered_x11localhost_exists.rc != 257
+      register: discovered_x11localhost_exists
+      loop: "{{ prelim_sshd_config_files.files }}"
+
+    - name: "MEDIUM | RHEL-09-255175 | PATCH | RHEL 9 SSH daemon must prevent remote hosts from connecting to the proxy display. | Exists"
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_sshd_config_file }}"
+        regexp: (?i)^(?#)X11UseLocalhost\s*(yes|no|true|false)
+        line: "X11UseLocalhost {{ rhel9stig_sshd_config.x11uselocal }}"
+        create: true
+        validate: sshd -t -f %s
