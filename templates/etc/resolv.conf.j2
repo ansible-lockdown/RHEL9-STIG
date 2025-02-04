@@ -1,9 +1,9 @@
 # Configured as Part of Ansible-Locksdown
 # https://github.com/ansible-lockdown
-# Sponsored by MindPointGroup.com
+# Sponsored by Mindpoint Group - A Tyto Athene Company
 {% if rhel9stig_resolv_domains is defined %}
 # Domains
-{% for domains in rhel9stig_resolv_domains
+{% for domains in rhel9stig_resolv_domains %}
 domain {{ rhel9stig_resolv_domains }}
 {% endfor %}
 {% endif %}

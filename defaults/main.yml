@@ -1,7 +1,7 @@
 ---
 
 ## metadata for Audit benchmark
-benchmark_version: 'v1r2'
+benchmark_version: 'v1r3'
 
 ## Benchmark name used by audting control role
 # The audit variable found at the base
@@ -41,6 +41,13 @@ container_vars_file: is_container.yml
 # rhel9stig is left off the front of this var for consistency in testing pipeline
 # system_is_ec2 toggle will disable tasks that fail on Amazon EC2 instances. Set true to skip and false to run tasks
 system_is_ec2: false
+
+# Connecting user, due to the way many users work differently this is to try and assist the use of connecting user if required
+# This is useful when part of kickstart build or running as root and not defining the ansible_user option
+# used @ RHEL-09-411015
+rhel9stig_default_user: root
+rhel9stig_connecting_user: "{{ ansible_env.SUDO_USER | default(rhel9stig_default_user) }}"
+rhel9stig_playbook_user: "{{ ansible_user | default(rhel9stig_connecting_user) }}"
 
 # Whether to skip the reboot
 skip_reboot: true
@@ -323,7 +330,6 @@ rhel_09_255045: true
 rhel_09_255055: true
 rhel_09_255060: true
 rhel_09_255065: true
-rhel_09_255070: true
 rhel_09_255075: true
 rhel_09_255080: true
 rhel_09_255085: true
@@ -597,12 +603,16 @@ rhel_09_653120: true
 
 ### CONTROLS
 
-## Grahical/Gnome interface required
-rhel9stig_gui: false
+## Graphical/Gnome interface approved to be present
+rhel9stig_gui_approved: false
+
+# If gui not installed
+rhel9stig_gui: "{{ rhel_09_gnome_present.stat.exists | default(false) }}"
 
 ## SSHD
 rhel9stig_sshd_config_file: /etc/ssh/sshd_config
 rhel9stig_ssh_required: true
+rhel9stig_sshd_config_maxlogins: 10
 rhel9stig_sshd_config:
   banner_file: /etc/issue
   ciphers: "{{ rhel9stig_dod_ciphers }}"
@@ -617,8 +627,7 @@ rhel9stig_sshd_config:
   kerbauth: 'no'
   lastlog: 'yes'
   loglevel: VERBOSE
-  macs_clients: "{{ rhel9stig_dod_macs_clients }}"
-  macs_server: "{{ rhel9stig_dod_macs_server }}"
+  macs: "{{ rhel9stig_dod_macs }}"
   pubkeyauth: 'yes'
   permitroot: 'no'
   privsep: sandbox
@@ -718,6 +727,17 @@ rhel9stig_time_synchronization_servers:
 - '1.us.pool.ntp.mil'
 rhel9stig_chrony_server_options: "iburst maxpoll 16"  # Max Settings is maxpoll 16
 
+## fapolicy
+# Allow adding of fapolicy rules uses whitelist below
+rhel9stig_add_fapolicy_policy: false
+
+# rhel9stig_fapolicy_white_list is the whitelist for fapolicyd
+rhel9stig_fapolicy_white_list:
+- '# Allow Ansible'
+- "allow perm=any trust=1 : dir={{ ansible_env.PWD }}/.ansible/"
+- 'allow perm=any trust=1 : dir=/root/.ansible/'
+- 'allow perm=any trust=1 : dir=/tmp/ansible/'
+
 ## DNS
 # Please adjust accordingly for ipv4 or ipv6
 rhel9stig_dns_ip4_servers:
@@ -740,9 +760,9 @@ rhel9stig_postfix_client_conf: permit_mynetworks,reject
 ### ACCOUNTS and AUTH ###
 ## PAM and password settings
 rhel9stig_pass:
-  max_days: '60'
-  min_days: '1'
-  minlen: '15'
+  max_days: 60
+  min_days: 1
+  minlen: 15
 
 rhel9stig_user_inactive_days: '35'
 
@@ -778,13 +798,13 @@ rhel9stig_pam:
   rounds: '5000'
 
 rhel9stig_pwquality:
-  dcredit: '-1'
-  dictcheck: '1'
-  difok: '8'
-  lcredit: '-1'
-  maxclassrepeat: '4'
-  maxrepeat: '3'
-  minclass: '4'
+  dcredit: -1
+  dictcheck: 1
+  difok: 8
+  lcredit: -1
+  maxclassrepeat: 4
+  maxrepeat: 3
+  minclass: 4
   ocredit: -1
   ucredit: -1
 
@@ -822,7 +842,7 @@ rhel9stig_remotelog_server:
 # Ensure this matches the filesystem where the audit logs are stored.
 # It will affect checks for control RHEL-09-653030
 
-rhel9stig_audit_log_filesystem: /var/log/audit
+rhel9stig_audit_log_filesystem: '/var/log/audit'
 rhel9stig_audit_conf:
   action_mail_acct: root
   admin_space_left: 5%

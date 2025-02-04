@@ -274,7 +274,6 @@ rhel_09_255045: {{ rhel_09_255045 }}
 rhel_09_255055: {{ rhel_09_255055 }}
 rhel_09_255060: {{ rhel_09_255060 }}
 rhel_09_255065: {{ rhel_09_255065 }}
-rhel_09_255070: {{ rhel_09_255070 }}
 rhel_09_255075: {{ rhel_09_255075 }}
 rhel_09_255080: {{ rhel_09_255080 }}
 rhel_09_255085: {{ rhel_09_255085 }}
@@ -659,16 +658,7 @@ rhel9stig_sshd_config:
   kerbauth: {{ rhel9stig_sshd_config.kerbauth }}
   lastlog: {{ rhel9stig_sshd_config.lastlog }}
   loglevel: {{ rhel9stig_sshd_config.loglevel }}
-  macs_clients:
-  {% for macs in rhel9stig_sshd_config.macs_clients %}
-  - {{ macs }}
-  {% endfor -%}
-
-  macs_server:
-  {% for macs in rhel9stig_sshd_config.macs_server %}
-  - {{ macs }}
-  {% endfor -%}
-
+  macs: {{ rhel9stig_sshd_config.macs }}
   pubkeyauth: {{ rhel9stig_sshd_config.pubkeyauth }}
   permitroot: {{ rhel9stig_sshd_config.permitroot }}
   privsep: {{ rhel9stig_sshd_config.privsep }}

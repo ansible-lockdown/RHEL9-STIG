@@ -1,5 +1,5 @@
 ## Auditd Configured by ansible-lockdown RHEL9-STIG
-# Sponsored by MindPoint Group
+# Sponsored by Mindpoint Group - A Tyto Athene Company
 {% if rhel_09_654010 %}
 # RHEL9-STIG rule 654010
 -a always,exit -F arch=b32 -S execve -C uid!=euid -F euid=0 -k execpriv
@@ -170,15 +170,9 @@
 # RHEL9-STIG rule 654200
 -a always,exit -F path=/usr/sbin/shutdown -F perm=x -F auid>=1000 -F auid!=unset -k privileged-shutdown
 {% endif %}
-{% if rhel_09_654030 %}
-# RHEL9-STIG rule 654030
-#-a always,exit -F arch=b32 -S umount -F auid>=1000 -F auid!=unset -k perm_mod
-#-a always,exit -F arch=b64 -S umount -F auid>=1000 -F auid!=unset -k perm_mod
-{% endif %}
 {% if rhel_09_654205 %}
 # RHEL9-STIG rule 654205
 -a always,exit -F arch=b32 -S umount -F auid>=1000 -F auid!=unset -k perm_mod
--a always,exit -F arch=b64 -S umount -F auid>=1000 -F auid!=unset -k perm_mod
 {% endif %}
 {% if rhel_09_654210 %}
 # RHEL9-STIG rule 654210

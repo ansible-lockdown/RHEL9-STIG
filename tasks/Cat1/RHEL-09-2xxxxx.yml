@@ -52,18 +52,17 @@
     - NIST800-53R4_AC-6
   notify: Systemd_daemon_reload
   block:
-    - name: HIGH | RHEL-09-211050 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled | systemctl disable
-      ansible.builtin.systemd:
-        enabled: false
-        masked: true
-        name: ctrl-alt-del.target
-        state: stopped
-
     - name: HIGH | RHEL-09-211050 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled | Create symlink to /dev/null
       ansible.builtin.file:
         dest: /etc/systemd/system/ctrl-alt-del.target
         src: /dev/null
         state: link
+
+    - name: HIGH | RHEL-09-211050 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled | systemctl disable
+      ansible.builtin.systemd:
+        masked: true
+        name: ctrl-alt-del.target
+        state: stopped
 
 - name: HIGH | RHEL-09-212020 | PATCH | RHEL 9 must require a unique superusers name upon booting into single-user and maintenance modes.
   when:
@@ -182,19 +181,19 @@
 
 - name: HIGH | RHEL-09-215060 | PATCH | RHEL 9 must not have a Trivial File Transfer Protocol (TFTP) server package installed.
   when:
-    - "'tftp' in ansible_facts.packages"
+    - "'tftp-server' in ansible_facts.packages"
     - rhel_09_215060
   tags:
     - RHEL-09-215060
     - CAT1
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257835r925492_rule
+    - SV-257835r952171_rule
     - V-257835
     - NIST800-53R4_CM-6
     - tftp
   ansible.builtin.package:
-    name: tftp
+    name: tftp-server
     state: absent
 
 - name: HIGH | RHEL-09-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
@@ -323,7 +322,7 @@
     - SRG-OS-000106-GPOS-00053
     - SRG-OS-000480-GPOS-00229
     - SRG-OS-000480-GPOS-00227
-    - SV-257984r943034_rule
+    - SV-257984r952179_rule
     - V-257984
     - NIST800-53R4_CM-6
     - NIST800-53R4_IA-2
@@ -343,7 +342,7 @@
     - CAT1
     - CCI-000877
     - SRG-OS-000125-GPOS-00065
-    - SV-257986r943038_rule
+    - SV-257986r952183_rule
     - V-257986
     - NIST800-53R4_MA-4
     - ssh

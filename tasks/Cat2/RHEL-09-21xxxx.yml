@@ -47,7 +47,7 @@
         content: "{{ rhel9stig_logon_banner }}"
         dest: "{{ item }}"
         group: root
-        mode: '0644'
+        mode: 'u-x,go-wx'
         owner: root
       notify: Sshd_restart
       loop:
@@ -84,6 +84,7 @@
 - name: "MEDIUM | RHEL-09-211030 | PATCH | The graphical display manager must not be the default target on RHEL 9 unless approved."
   when:
     - rhel_09_211030
+    - not rhel9stig_gui_approved
   tags:
     - RHEL-09-211030
     - CAT2
@@ -158,7 +159,7 @@
         owner: root
         src: "{{ item.file }}.j2"
       loop:
-        - { file: 'boot/grub2/user.cfg', mode: '0644' }
+        - { file: 'boot/grub2/user.cfg', mode: 'u-x,go-wx' }
 
     - name: "MEDIUM | RHEL-09-212010 | AUDIT | RHEL 9 must require a boot loader superuser password.| warning"
       when: not rhel9stig_set_bootloader_password
@@ -346,7 +347,7 @@
     - CCI-001084
     - SRG-OS-000433-GPOS-00192
     - SRG-OS-000134-GPOS-00068
-    - SV-257794r925369_rule
+    - SV-257794r952164_rule
     - V-257794
     - NIST800-53R4_SC-3
     - NIST800-53R4_SI-16
@@ -602,7 +603,7 @@
     - CAT2
     - CCI-000381
     - SRG-OS-000095-GPOS-00049
-    - SV-257807r925408_rule
+    - SV-257807r952166_rule
     - V-257807
     - NIST800-53R4_CM-7
   vars:
@@ -662,7 +663,7 @@
     - CCI-001082
     - SRG-OS-000132-GPOS-00067
     - SRG-OS-000480-GPOS-00227
-    - SV-257810r942977_rule
+    - SV-257810r952168_rule
     - V-257810
     - NIST800-53R4_CM-6
     - NIST800-53R4_SC-2
@@ -935,6 +936,7 @@
   when:
     - rhel_09_215025
     - "'nfs-utils' in ansible_facts.packages"
+    - not rhel9stig_nfs_utils_required
   tags:
     - RHEL-09-215025
     - CAT2
@@ -1062,9 +1064,14 @@
     name: quagga
     state: absent
 
+# Note if groups installed via ansible previously https://bugzilla.redhat.com/show_bug.cgi?id=1620324.
+# More efficient to remove as a list but conditional required a loop
 - name: "MEDIUM | RHEL-09-215070 | PATCH | A graphical display manager must not be installed on RHEL 9 unless approved."
   when:
     - rhel_09_215070
+    - not rhel9stig_gui_approved
+    - rhel9stig_gui
+    - "item in ansible_facts.packages"
   tags:
     - RHEL-09-215070
     - CAT2
@@ -1074,8 +1081,13 @@
     - V-257837
     - NIST800-53R4_CM-6
   ansible.builtin.package:
-    name: "xorg*common"
+    name: "{{ item }}"
     state: absent
+  loop:
+    - "xorg*common"
+    - "workstation-product-environment"
+    - "graphical-server-environment"
+    - "gnome-desktop"
 
 - name: "MEDIUM | RHEL-09-215075 | PATCH | RHEL 9 must have the openssl-pkcs11 package installed."
   when:

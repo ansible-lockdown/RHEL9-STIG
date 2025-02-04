@@ -1,0 +1,6 @@
+{% for rule in rhel9stig_fapolicy_white_list %}
+{{ rule }}
+{% endfor %}
+
+# Always final entry to deny all
+deny perm=any all : all

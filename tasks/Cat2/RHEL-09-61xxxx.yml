@@ -24,7 +24,7 @@
       ansible.builtin.lineinfile:
         path: /etc/pam.d/system-auth
         regexp: '^(password\s+)(required|requisite)(\s+pam_pwquality.so.*)\sretry=\d(.*)'
-        line: '\1required\3 retry="{{ rhel9stig_pam.retry }}"\4'
+        line: '"\1required\3 retry={{ rhel9stig_pam.retry }}\4"'
         insertafter: '^password'
         backrefs: true
 
@@ -380,7 +380,7 @@
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: \s*lcredit =
-    line: lcredit = "{{ rhel9stig_pwquality.lcredit }}"
+    line: "lcredit = {{ rhel9stig_pwquality.lcredit }}"
     backrefs: true
   loop: "{{ rhel9stig_pwquality_conf_files.stdout_lines }}"
 
@@ -399,7 +399,7 @@
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: \s*dcredit =
-    line: dcredit = "{{ rhel9stig_pwquality.dcredit }}"
+    line: "dcredit = {{ rhel9stig_pwquality.dcredit }}"
     backrefs: true
   loop: "{{ rhel9stig_pwquality_conf_files.stdout_lines }}"
 
@@ -418,7 +418,7 @@
   ansible.builtin.lineinfile:
     path: /etc/login.defs
     regexp: \s*PASS_MIN_DAYS\s*
-    line: PASS_MIN_DAYS "{{ rhel9stig_pass.min_days }}"
+    line: "PASS_MIN_DAYS {{ rhel9stig_pass.min_days }}"
     backrefs: true
 
 - name: "MEDIUM | RHEL-09-611080 | PATCH | RHEL 9 passwords must have a 24 hours minimum password lifetime restriction in /etc/shadow."
@@ -446,8 +446,7 @@
         - rhel9stig_24hr_passwd_restrict.stdout | length > 0
         - not rhel9stig_disruption_high
       ansible.builtin.debug:
-        msg: |
-          "Warning!! Accounts have been found to have an incorrect password lifetime"
+        msg: "Warning!! Accounts have been found to have an incorrect password lifetime"
 
     - name: "MEDIUM | RHEL-09-611080 | WARN | RHEL 9 passwords must have a 24 hours minimum password lifetime restriction in /etc/shadow. | Warning"
       when:
@@ -460,7 +459,7 @@
       when:
         - rhel9stig_24hr_passwd_restrict.stdout | length > 0
         - rhel9stig_disruption_high
-        - item in rhel9stig_interactive_users
+        - item in rhel9stig_interactive_users.stdout_lines
       ansible.builtin.shell: "passwd -n 1 {{ item }}"
       loop: "{{ rhel9stig_24hr_passwd_restrict.stdout_lines }}"
 
@@ -482,7 +481,7 @@
     warn_control_id: "MEDIUM | RHEL-09-611085"
   block:
     - name: "MEDIUM | RHEL-09-611085 | AUDIT | RHEL 9 must require users to provide a password for privilege escalation"
-      ansible.builtin.shell: grep -r NOPASSWD /etc/sudoers /etc/sudoers.d/
+      ansible.builtin.shell: grep -Er "^(?\!#).*NOPASSWD" /etc/sudoers /etc/sudoers.d/
       changed_when: false
       failed_when: rhel9stig_sudo_nopasswd.rc not in [ 0, 1 ]
       register: rhel9stig_sudo_nopasswd
@@ -526,8 +525,8 @@
     - NIST800-53R4_IA-11
   ansible.builtin.lineinfile:
     path: /etc/security/pwquality.conf
-    regexp: \s*minlen\s*=\s*([0-9]|1[0-4])
-    line: minlen = "{{ rhel9stig_pass.minlen }}"
+    regexp: \s*minlen\s*=\s*
+    line: "minlen = {{ rhel9stig_pass.minlen }}"
     backrefs: true
 
 - name: "MEDIUM | RHEL-09-611095 | PATCH | RHEL 9 passwords for new users must have a minimum of 15 characters."
@@ -544,7 +543,7 @@
   ansible.builtin.lineinfile:
     path: /etc/login.defs
     regexp: PASS_MIN_LEN
-    line: PASS_MIN_LEN "{{ rhel9stig_pass.minlen }}"
+    line: "PASS_MIN_LEN {{ rhel9stig_pass.minlen }}"
     backrefs: true
 
 - name: "MEDIUM | RHEL-09-611100 | PATCH | RHEL 9 must enforce password complexity by requiring that at least one special character be used."
@@ -562,7 +561,7 @@
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: \s*ocredit =
-    line: ocredit = "{{ rhel9stig_pwquality.ocredit }}"
+    line: "ocredit = {{ rhel9stig_pwquality.ocredit }}"
     backrefs: true
   loop: "{{ rhel9stig_pwquality_conf_files.stdout_lines }}"
 
@@ -581,7 +580,7 @@
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: \s*dictcheck\s*=\s*
-    line: dictcheck="{{ rhel9stig_pwquality.dictcheck }}"
+    line: "dictcheck = {{ rhel9stig_pwquality.dictcheck }}"
     backrefs: true
   loop: "{{ rhel9stig_pwquality_conf_files.stdout_lines }}"
 
@@ -600,7 +599,7 @@
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: \s*ucredit\s*=\s*
-    line: ucredit = "{{ rhel9stig_pwquality.ucredit }}"
+    line: "ucredit = {{ rhel9stig_pwquality.ucredit }}"
     backrefs: true
   loop: "{{ rhel9stig_pwquality_conf_files.stdout_lines }}"
 
@@ -619,7 +618,7 @@
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: \s*difok\s*=\s*
-    line: difok = "{{ rhel9stig_pwquality.difok }}"
+    line: "difok = {{ rhel9stig_pwquality.difok }}"
     backrefs: true
   loop: "{{ rhel9stig_pwquality_conf_files.stdout_lines }}"
 
@@ -638,7 +637,7 @@
   ansible.builtin.lineinfile:
     path: /etc/security/pwquality.conf
     regexp: \s*maxclassrepeat\s*=\s*
-    line: maxclassrepeat = "{{ rhel9stig_pwquality.maxclassrepeat }}"
+    line: "maxclassrepeat = {{ rhel9stig_pwquality.maxclassrepeat }}"
     backrefs: true
 
 - name: "MEDIUM | RHEL-09-611125 | PATCH | RHEL 9 must require the maximum number of repeating characters be limited to three when passwords are changed."
@@ -656,7 +655,7 @@
   ansible.builtin.lineinfile:
     path: /etc/security/pwquality.conf
     regexp: \s*maxrepeat\s*=\s*
-    line: maxrepeat = "{{ rhel9stig_pwquality.maxrepeat }}"
+    line: "maxrepeat = {{ rhel9stig_pwquality.maxrepeat }}"
     backrefs: true
 
 - name: "MEDIUM | RHEL-09-611130 | PATCH | RHEL 9 must require the change of at least four character classes when passwords are changed."
@@ -674,7 +673,7 @@
   ansible.builtin.lineinfile:
     path: /etc/security/pwquality.conf
     regexp: \s*minclass\s*=\s*
-    line: minclass = "{{ rhel9stig_pwquality.minclass }}"
+    line: "minclass = {{ rhel9stig_pwquality.minclass }}"
     backrefs: true
 
 - name: "MEDIUM | RHEL-09-611135 | PATCH | RHEL 9 must be configured so that user and group account administration utilities are configured to store only encrypted representations of passwords."
@@ -890,7 +889,7 @@
         group: root
         option: certificate_verification
         owner: root
-        mode: '0600'
+        mode: 'u-x,go-rwx'
         path: /etc/sssd/conf.d/certificate_verification.conf
         section: 'sssd'
         value: 'ocsp_dgst=sha512'

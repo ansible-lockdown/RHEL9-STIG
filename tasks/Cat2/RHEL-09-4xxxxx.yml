@@ -41,14 +41,14 @@
         - rhel9stig_disruption_high
         - rhel9stig_users_passwd_max is defined
         - rhel9stig_users_passwd_max.stdout | length > 0
-        - "item in rhel9stig_interactive_users.stdout_lines"
+        - item != rhel9stig_playbook_user
       ansible.builtin.shell: "chage -M 60 {{ item }}"
       failed_when: rhel9stig_users_passwd_max.rc not in [ 0, 1 ]
       loop: "{{ rhel9stig_users_passwd_max.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-411015 | WARN | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
       when:
-        - not rhel9stig_disruption_high
+        - not rhel9stig_disruption_high or "ansible_facts.user in rhel9stig_interactive_users.stdout_lines"
         - rhel9stig_users_passwd_max is defined
         - rhel9stig_users_passwd_max.stdout | length > 0
       ansible.builtin.debug:
@@ -452,9 +452,9 @@
         line: "{{ item.line }}"
         insertbefore: "{{ item.before }}"
       loop:
-        - { 'regexp': '^auth\s+required\s+pam_faillock.so preauth silent deny=.*unlock_time=.*', 'line': 'auth            required       pam_faillock.so preauth silent deny={{ rhel9stig_faillock.deny }} unlock_time={{ rhel9stig_faillock.unlock_time }}', 'before':'^auth\s+sufficient\s+pam_unix.so try_first_pass'}
-        - { 'regexp': '^auth\s+required\s+pam_faillock.so authfail deny=.*unlock_time=.*', 'line': 'auth            required       pam_faillock.so authfail deny={{ rhel9stig_faillock.deny }} unlock_time={{ rhel9stig_faillock.unlock_time }}', 'before':'^auth\s+required\s+pam_deny.so'}
-        - { 'regexp': '^account\s+required\s+pam_faillock.so', 'line': 'account      required       pam_faillock.so', 'before':'^account     required      pam_unix.so'}
+        - { regexp: '^auth\s+required\s+pam_faillock.so preauth silent deny=.*unlock_time=.*', line: 'auth            required       pam_faillock.so preauth silent deny={{ rhel9stig_faillock.deny }} unlock_time={{ rhel9stig_faillock.unlock_time }}', before: '^auth\s+sufficient\s+pam_unix.so try_first_pass'}
+        - { regexp: '^auth\s+required\s+pam_faillock.so authfail deny=.*unlock_time=.*', line: 'auth            required       pam_faillock.so authfail deny={{ rhel9stig_faillock.deny }} unlock_time={{ rhel9stig_faillock.unlock_time }}', before: '^auth\s+required\s+pam_deny.so'}
+        - { regexp: '^account\s+required\s+pam_faillock.so', line: 'account      required       pam_faillock.so', before: '^account     required      pam_unix.so'}
 
     - name: "MEDIUM | RHEL-09-411090 | AUDIT | RHEL 9 must maintain an account lock until the locked account is released by an administrator. | not auth select profile"
       ansible.builtin.lineinfile:
@@ -464,9 +464,9 @@
         insertbefore: "{{ item.before | default(omit)}}"
         insertafter: "{{ item.after | default(omit)}}"
       loop:
-        - { 'regexp': '^auth\s+required\s+pam_faillock.so preauth silent deny=.*unlock_time=.*', 'line':'auth        required      pam_faillock.so preauth silent deny={{ rhel9stig_faillock.deny }} unlock_time={{ rhel9stig_faillock.unlock_time }}', 'before':'^auth\s+sufficient\s+pam_unix.so try_first_pass'}
-        - { 'regexp': '^auth\s+required\s+pam_faillock.so authfail deny=.*unlock_time=.*', 'line': 'auth        required      pam_faillock.so authfail deny={{ rhel9stig_faillock.deny }} unlock_time={{ rhel9stig_faillock.unlock_time }}', 'before':'^auth\s+required\s+pam_deny.so'}
-        - { 'regexp': '^account\s+required\s+pam_faillock.so', 'line': 'account     required      pam_faillock.so', 'before':'^account     required      pam_unix.so'}
+        - { regexp: '^auth\s+required\s+pam_faillock.so preauth silent deny=.*unlock_time=.*', line: 'auth        required      pam_faillock.so preauth silent deny={{ rhel9stig_faillock.deny }} unlock_time={{ rhel9stig_faillock.unlock_time }}', before: '^auth\s+sufficient\s+pam_unix.so try_first_pass'}
+        - { regexp: '^auth\s+required\s+pam_faillock.so authfail deny=.*unlock_time=.*', line: 'auth        required      pam_faillock.so authfail deny={{ rhel9stig_faillock.deny }} unlock_time={{ rhel9stig_faillock.unlock_time }}', before: '^auth\s+required\s+pam_deny.so'}
+        - { regexp: '^account\s+required\s+pam_faillock.so', line: 'account     required      pam_faillock.so', before: '^account     required      pam_unix.so'}
 
 - name: "MEDIUM | RHEL-09-411095 | PATCH | RHEL 9 must not have unauthorized accounts."
   when:
@@ -583,7 +583,7 @@
     - name: "MEDIUM | RHEL-09-411115 | AUDIT | Local RHEL 9 initialization files must not execute world-writable programs."
       when: rhel9stig_user_exec_ww_files is defined
       ansible.builtin.file:
-        mode: go-w
+        mode: 'go-wx'
         path: "{{ item }}"
       loop: "{{ rhel9stig_user_exec_ww_files.stdout_lines }}"
 
@@ -622,7 +622,7 @@
     dest: /etc/profile.d/tmux.sh
     group: root
     owner: root
-    mode: '0755'
+    mode: 'u+x,go-w'
     src: etc/profile.d/tmux.sh.j2
 
 - name: "MEDIUM | RHEL-09-412020 | PATCH | RHEL 9 must have the tmux package installed."
@@ -641,7 +641,7 @@
     regexp: "{{ item }}"
     line: "{{ item }}"
     create: true
-    mode: '0644'
+    mode: 'u-x,go-wx'
     state: present
   loop:
     - 'set -g lock-command vlock'
@@ -664,7 +664,7 @@
     dest: /etc/tmux.conf
     group: root
     owner: root
-    mode: '0644'
+    mode: 'u-x,go-wx'
     src: etc/tmux.conf.j2
 
 - name: "MEDIUM | RHEL-09-412035 | PATCH | RHEL 9 must automatically exit interactive command shell user sessions after 15 minutes of inactivity."
@@ -685,7 +685,7 @@
     dest: /etc/profile.d/tmout.sh
     group: root
     owner: root
-    mode: '0755'
+    mode: 'u+x,go-w'
     src: etc/profile.d/tmout.sh.j2
 
 - name: "MEDIUM | RHEL-09-412045 | PATCH | RHEL 9 must log username information when unsuccessful logon attempts occur."
@@ -1046,6 +1046,7 @@
 - name: "MEDIUM | RHEL-09-433015 | PATCH | RHEL 9 fapolicy module must be enabled."
   when:
     - rhel_09_433015
+    - rhel9stig_disruption_high
   tags:
     - RHEL-09-433015
     - CAT2
@@ -1057,7 +1058,21 @@
     - V-258089
     - NIST800-53R4_IA-11
     - NIST800-53R4_AC-3
-  ansible.builtin.systemd:
-    enabled: true
-    name: fapolicyd
-    state: started
+  block:
+    - name: MEDIUM | RHEL-09-433015 | PATCH | RHEL 9 fapolicy module must be enabled. | Policy
+      when: rhel9stig_add_fapolicy_policy
+      ansible.builtin.template:
+        src: 'etc/fapolicyd/rules.d/99-stig-whitelist.rules.j2'
+        dest: '/etc/fapolicyd/rules.d/99-stig-whitelist.rules'
+        mode: '0644'
+        owner: root
+        group: fapolicyd
+      notify:
+        - Generate fapolicyd rules
+        - Restart fapolicyd
+
+    - name: MEDIUM | RHEL-09-433015 | PATCH | RHEL 9 fapolicy module must be enabled. | Package
+      ansible.builtin.systemd:
+        enabled: true
+        name: fapolicyd
+        state: started

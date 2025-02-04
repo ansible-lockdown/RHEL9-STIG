@@ -4,7 +4,6 @@
   when:
     - rhel_09_651010
     - rhel9stig_use_aide
-    - "'aide' not in ansible_facts.packages"
   tags:
     - RHEL-09-651010
     - CAT2
@@ -18,6 +17,7 @@
     - NIST800-53R4_SI-6
     - aide
   notify: Build_aide_db
+  changed_when: true
   ansible.builtin.package:
     name: aide
     state: present
@@ -870,7 +870,7 @@
     - auditd
   ansible.builtin.file:
     path: "{{ discovered_auditd_logfile.stdout }}"
-    mode: go-rwx
+    mode: 'go-rwx'
 
 - name: "MEDIUM | RHEL-09-653095 | PATCH | RHEL 9 must periodically flush audit records to disk to prevent the loss of audit records."
   when:
@@ -941,12 +941,12 @@
   block:
     - name: "MEDIUM | RHEL-09-653110 | PATCH | RHEL 9 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM) to select which auditable events are to be audited."
       ansible.builtin.file:
-        mode: '0640'
+        mode: 'u-x,g-w,o-rwx'
         path: /etc/audit/auditd.conf
 
     - name: "MEDIUM | RHEL-09-653110 | PATCH | RHEL 9 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM) to select which auditable events are to be audited."
       ansible.builtin.file:
-        mode: '0640'
+        mode: 'u-x,g-w,o-rwx'
         path: "{{ item }}"
       with_fileglob:
         - "etc/audit/rules.d/*.rules"
@@ -965,7 +965,7 @@
     - auditd
   ansible.builtin.file:
     path: /etc/audit/auditd.conf
-    mode: u-x,g-wx,o-rwx
+    mode: 'u-x,g-wx,o-rwx'
 
 - name: "MEDIUM | RHEL-09-653125 | PATCH | RHEL 9 must have mail aliases to notify the information system security officer (ISSO) and system administrator (SA) (at a minimum) in the event of an audit processing failure."
   when:

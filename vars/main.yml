@@ -1,7 +1,7 @@
 ---
 # vars file for RHEL9-STIG
 
-min_ansible_version: 2.15.1
+min_ansible_version: 2.12.1
 
 rhel9stig_min_supported_os_ver:
     RedHat: "9.2"
@@ -26,24 +26,37 @@ gpg_key_package: "{{ ansible_distribution | lower }}-gpg-keys"
 discover_int_uid: true
 
 # Default for facts
-reboot_required: false
+change_requires_reboot: false
 update_audit_template: false
 
 # DOD encryption
 rhel9stig_dod_ciphers:
 - aes256-gcm@openssh.com
-- chacha20-poly1305@openssh.com
+# - chacha20-poly1305@openssh.com  # Removed due to terrapin ssh cve
 - aes256-ctr
 - aes128-gcm@openssh.com
 - aes128-ctr
-rhel9stig_dod_macs_clients:
+rhel9stig_dod_macs:
 - hmac-sha2-256-etm@openssh.com
+# - hmac-sha1-etm@openssh.com
+# - umac-128-etm@openssh.com
 - hmac-sha2-256
 - hmac-sha2-512-etm@openssh.com
+# - hmac-sha1
+# - umac-128@openssh.com
 - hmac-sha2-512
-rhel9stig_dod_macs_server:  # Server also has client mac listed above don't duplicate
-- hmac-sha1-etm@openssh.com
-- umac-128-etm@openssh.com
-- hmac-sha1
-- umac-128@openssh.com
 rhel9stig_dod_kex:
+
+# Defaults added for searches
+rhel9stig_ungrouped_files_found: false
+rhel9stig_unowned_files_found: false
+
+# Audit binaries
+audit_bins:
+- '/usr/sbin/auditctl'
+- '/usr/sbin/aureport'
+- '/usr/sbin/ausearch'
+- '/usr/sbin/autrace'
+- '/usr/sbin/auditd'
+- '/usr/sbin/rsyslogd'
+- '/usr/sbin/augenrules'
