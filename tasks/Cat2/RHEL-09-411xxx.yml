@@ -31,33 +31,33 @@
     - name: "MEDIUM | RHEL-09-411015 | AUDIT | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
       ansible.builtin.shell: "awk -F: '$1 !~ /^root$/ && $2 !~ /^[!*]/ && $5 > {{ rhel9stig_pass['max_days'] }} {print $1}' /etc/shadow"
       changed_when: false
-      failed_when: rhel9stig_users_passwd_max.rc not in [ 0, 1 ]
-      register: rhel9stig_users_passwd_max
+      failed_when: discovered_users_passwd_max.rc not in [ 0, 1 ]
+      register: discovered_users_passwd_max
 
     - name: "MEDIUM | RHEL-09-411015 | PATCH | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
       when:
         - rhel9stig_disruption_high
-        - rhel9stig_users_passwd_max is defined
-        - rhel9stig_users_passwd_max.stdout | length > 0
+        - discovered_users_passwd_max is defined
+        - discovered_users_passwd_max.stdout | length > 0
         - "ansible_user not in item"
       ansible.builtin.command: "chage -M 60 {{ item }}"
       changed_when: true
-      failed_when: rhel9stig_users_passwd_max.rc not in [ 0, 1 ]
-      loop: "{{ rhel9stig_users_passwd_max.stdout_lines }}"
+      failed_when: discovered_users_passwd_max.rc not in [ 0, 1 ]
+      loop: "{{ discovered_users_passwd_max.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-411015 | WARN | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
       when:
         - not rhel9stig_disruption_high or "ansible_facts.user in rhel9stig_interactive_users.stdout_lines"
-        - rhel9stig_users_passwd_max is defined
-        - rhel9stig_users_passwd_max.stdout | length > 0
+        - discovered_users_passwd_max is defined
+        - discovered_users_passwd_max.stdout | length > 0
       ansible.builtin.debug:
-        msg: "Warning!! The following users do not match maximum password life {{ rhel9stig_users_passwd_max.stdout_lines }}"
+        msg: "Warning!! The following users do not match maximum password life {{ discovered_users_passwd_max.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-411015 | WARN | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs.| Warning Count"
       when:
         - not rhel9stig_disruption_high
-        - rhel9stig_users_passwd_max is defined
-        - rhel9stig_users_passwd_max.stdout | length > 0
+        - discovered_users_passwd_max is defined
+        - discovered_users_passwd_max.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -92,20 +92,20 @@
     - name: "MEDIUM | RHEL-09-411025 | AUDIT | RHEL 9 must set the umask value to 077 for all local interactive user accounts."
       ansible.builtin.shell: grep -ri umask {{ rhel9stig_home_filesystem }}/*/.[^.]*
       changed_when: false
-      failed_when: rhel9stig_homedirs_umasks_set.rc not in [ 0, 1 ]
-      register: rhel9stig_homedirs_umasks_set
+      failed_when: discovered_homedirs_umasks_set.rc not in [ 0, 1 ]
+      register: discovered_homedirs_umasks_set
 
     - name: "MEDIUM | RHEL-09-411025 | WARN | RHEL 9 must set the umask value to 077 for all local interactive user accounts"
       when:
-        - rhel9stig_homedirs_umasks_set is defined
-        - rhel9stig_homedirs_umasks_set.stdout | length > 0
+        - discovered_homedirs_umasks_set is defined
+        - discovered_homedirs_umasks_set.stdout | length > 0
       ansible.builtin.debug:
         msg: "Warning!! Umask setting have been found in homes directories Please investigate"
 
     - name: "MEDIUM | RHEL-09-411025 | WARN | RHEL 9 must set the umask value to 077 for all local interactive user accounts"
       when:
-        - rhel9stig_homedirs_umasks_set is defined
-        - rhel9stig_homedirs_umasks_set.stdout | length > 0
+        - discovered_homedirs_umasks_set is defined
+        - discovered_homedirs_umasks_set.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -129,20 +129,20 @@
     - name: "MEDIUM | RHEL-09-411030 | PATCH | RHEL 9 duplicate User IDs (UIDs) must not exist for interactive users."
       ansible.builtin.shell: "cat /etc/passwd | awk -F: '{ print $3}' | sort -n | uniq -d"
       changed_when: false
-      failed_when: rhel9stig_duplicate_uids.rc not in [ 0, 1 ]
-      register: rhel9stig_duplicate_uids
+      failed_when: discovered_duplicate_uids.rc not in [ 0, 1 ]
+      register: discovered_duplicate_uids
 
     - name: "MEDIUM | RHEL-09-411030 | WARN | RHEL 9 duplicate User IDs (UIDs) must not exist for interactive users."
       when:
-        - rhel9stig_duplicate_uids is defined
-        - rhel9stig_duplicate_uids.stdout | length > 0
+        - discovered_duplicate_uids is defined
+        - discovered_duplicate_uids.stdout | length > 0
       ansible.builtin.debug:
         msg: "Warning!! Duplicate UIDs have been found Please investigate"
 
     - name: "MEDIUM | RHEL-09-411030 | WARN | RHEL 9 duplicate User IDs (UIDs) must not exist for interactive users."
       when:
-        - rhel9stig_duplicate_uids is defined
-        - rhel9stig_duplicate_uids.stdout | length > 0
+        - discovered_duplicate_uids is defined
+        - discovered_duplicate_uids.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -207,26 +207,26 @@
     - name: "MEDIUM | RHEL-09-411045 | AUDIT | All RHEL 9 interactive users must have a primary group that exists."
       ansible.builtin.command: pwck -qr
       changed_when: false
-      failed_when: rhel9stig_gid_exists.rc not in [ 0, 1, 2 ]
-      register: rhel9stig_gid_exists
+      failed_when: discovered_gid_exists.rc not in [ 0, 1, 2 ]
+      register: discovered_gid_exists
 
     - name: "MEDIUM | RHEL-09-411045 | AUDIT | All RHEL 9 interactive users must have a primary group that exists."
       ansible.builtin.command: "cat /etc/passwd | awk -F: '{ print $4 }' | sort | uniq -d | awk '$1 > {{ uid_min_id }}' "
       changed_when: false
-      failed_when: rhel9stig_duplicate_gids.rc not in [ 0, 1 ]
-      register: rhel9stig_duplicate_gids
+      failed_when: discovered_duplicate_gids.rc not in [ 0, 1 ]
+      register: discovered_duplicate_gids
 
     - name: "MEDIUM | RHEL-09-411045 | WARN | All RHEL 9 interactive users must have a primary group that exists."
-      when: rhel9stig_duplicate_gids is defined or rhel9stig_gid_exists is defined
+      when: discovered_duplicate_gids is defined or discovered_gid_exists is defined
       ansible.builtin.debug:
         msg: "Warning!! Issues with primary user groups have been found Please investigate"
       loop:
-        - "{{ rhel9stig_duplicate_gids.stdout_lines }}"
+        - "{{ discovered_duplicate_gids.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-411045 | WARN | All RHEL 9 interactive users must have a primary group that exists.."
       when:
-        - rhel9stig_duplicate_gids is defined
-        - rhel9stig_duplicate_gids.stdout | length > 0
+        - discovered_duplicate_gids is defined
+        - discovered_duplicate_gids.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -244,15 +244,15 @@
     - name: "MEDIUM | RHEL-09-411050 | AUDIT | RHEL 9 must disable account identifiers (individuals, groups, roles, and devices) after 35 days of inactivity."
       ansible.builtin.shell: grep -i inactive /etc/default/useradd | cut -f2 -d=
       changed_when: false
-      failed_when: rhel9stig_inactive_user_setting.rc not in [ 0, 1 ]
+      failed_when: discovered_inactive_user_setting.rc not in [ 0, 1 ]
       check_mode: false
-      register: rhel9stig_inactive_user_setting
+      register: discovered_inactive_user_setting
 
     - name: "MEDIUM | RHEL-09-411050 | PATCH | RHEL 9 must disable account identifiers (individuals, groups, roles, and devices) after 35 days of inactivity."
       when:
-        - rhel9stig_inactive_user_setting is defined
-        - "'-1' in rhel9stig_inactive_user_setting.stdout"
-        - "rhel9stig_user_inactive_days not in rhel9stig_inactive_user_setting.stdout"
+        - discovered_inactive_user_setting is defined
+        - "'-1' in discovered_inactive_user_setting.stdout"
+        - "rhel9stig_user_inactive_days not in discovered_inactive_user_setting.stdout"
       ansible.builtin.command: "useradd -D -f {{ rhel9stig_user_inactive_days }}"
       changed_when: true
 
@@ -277,14 +277,14 @@
         read_whole_file: true
         recurse: true
         use_regex: true
-      register: rhel9stig_user_initialization
+      register: discovered_user_initialization
 
     - name: "MEDIUM | RHEL-09-411055 | PATCH | Executable search paths within the initialization files of all local interactive RHEL 9 users must only contain paths that resolve to the system default or the users home directory."
       ansible.builtin.lineinfile:
         path: "{{ item.path }}"
         regexp: ^\s*PATH
         line: "PATH={{ rhel9stig_env_path }}"
-      loop: "{{ rhel9stig_user_initialization.files }}"
+      loop: "{{ discovered_user_initialization.files }}"
 
 - name: |
     "MEDIUM | RHEL-09-411060 | PATCH | All RHEL 9 local interactive users must have a home directory assigned in the /etc/passwd file."
@@ -313,7 +313,7 @@
         owner: "{{ item.id }}"
         group: "{{ item.gid }}"
         mode: 'o-rwx'
-      register: rhel9stig_home_dir
+      register: discovered_home_dir
       loop: "{{ rhel9stig_passwd | selectattr('uid', '>=', min_int_uid | int) | selectattr('uid', '<=', max_int_uid | int) | list }}"
       loop_control:
         label: "{{ item.id }}"
@@ -328,7 +328,7 @@
         etype: group
         permissions: rx
         state: present
-      loop: "{{ rhel9stig_home_dir.results }}"
+      loop: "{{ discovered_home_dir.results }}"
       when: not system_is_container
 
     - name: |
@@ -340,7 +340,7 @@
         etype: other
         permissions: 0
         state: present
-      loop: "{{ rhel9stig_home_dir.results }}"
+      loop: "{{ discovered_home_dir.results }}"
       when: not system_is_container
 
 - name: "MEDIUM | RHEL-09-411070 | PATCH | All RHEL 9 local interactive user home directories must be group-owned by the home directory owner's primary group.."
@@ -475,9 +475,9 @@
     - name: "MEDIUM | RHEL-09-411095 | AUDIT | RHEL 9 must not have unauthorized accounts. | Find unnecessary accounts"
       ansible.builtin.command: "grep '^{{ item }}:' /etc/passwd"
       check_mode: false
-      failed_when: rhel9stig_unnecessary_accounts_found.rc not in [ 0, 1 ]
+      failed_when: discovered_unnecessary_accounts_found.rc not in [ 0, 1 ]
       changed_when: false
-      register: rhel9stig_unnecessary_accounts_found
+      register: discovered_unnecessary_accounts_found
       loop:
         - "{{ rhel9stig_unnecessary_accounts }}"
 
@@ -486,12 +486,12 @@
         name: "{{ item }}"
         state: absent
         remove: "{{ rhel9stig_remove_unnecessary_user_files }}"
-      register: rhel9stig_accounts_removed
+      register: discovered_accounts_removed
       loop:
         - "{{ rhel9stig_unnecessary_accounts }}"
 
     - name: "MEDIUM | RHEL-09-411095 | PATCH | RHEL 9 must not have unauthorized accounts. | Re-parse passwd file"
-      when: rhel9stig_accounts_removed is changed  # noqa no-handler
+      when: discovered_accounts_removed is changed  # noqa no-handler
       ansible.builtin.include_tasks:
         file: ../parse_etc_passwd.yml
       vars:
@@ -539,17 +539,17 @@
     - name: "MEDIUM | RHEL-09-411110 | AUDIT | RHEL 9 groups must have unique Group ID (GID)."
       ansible.builtin.shell: 'getent passwd | cut -d: -f1 | sort -n | uniq -d'
       changed_when: false
-      failed_when: rhel9stig_dup_group_check.rc not in [ 0, 1 ]
+      failed_when: discovered_dup_group_check.rc not in [ 0, 1 ]
       check_mode: false
-      register: rhel9stig_dup_group_check
+      register: discovered_dup_group_check
 
     - name: "MEDIUM | RHEL-09-411110 | WARN | RHEL 9 groups must have unique Group ID (GID). | Warning"
-      when: rhel9stig_dup_group_check.stdout | length > 0
+      when: discovered_dup_group_check.stdout | length > 0
       ansible.builtin.debug:
-        msg: "Warning!! The following group names are duplicates: {{ rhel9stig_dup_group_check.stdout_lines }}"
+        msg: "Warning!! The following group names are duplicates: {{ discovered_dup_group_check.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-411110 | WARN | RHEL 9 groups must have unique Group ID (GID). | Warning count"
-      when: rhel9stig_dup_group_check.stdout | length > 0
+      when: discovered_dup_group_check.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -567,12 +567,12 @@
     - name: "MEDIUM | RHEL-09-411115 | AUDIT | Local RHEL 9 initialization files must not execute world-writable programs."
       ansible.builtin.shell: find /home -perm -002 -type f -name ".[^.]*" -exec ls -ld {} \;
       changed_when: false
-      failed_when: rhel9stig_user_exec_ww_files.rc not in [ 0, 1 ]
-      register: rhel9stig_user_exec_ww_files
+      failed_when: discovered_user_exec_ww_files.rc not in [ 0, 1 ]
+      register: discovered_user_exec_ww_files
 
     - name: "MEDIUM | RHEL-09-411115 | AUDIT | Local RHEL 9 initialization files must not execute world-writable programs."
-      when: rhel9stig_user_exec_ww_files is defined
+      when: discovered_user_exec_ww_files is defined
       ansible.builtin.file:
         mode: 'go-wx'
         path: "{{ item }}"
-      loop: "{{ rhel9stig_user_exec_ww_files.stdout_lines }}"
+      loop: "{{ discovered_user_exec_ww_files.stdout_lines }}"

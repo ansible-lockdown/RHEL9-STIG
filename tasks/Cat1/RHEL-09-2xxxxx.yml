@@ -140,14 +140,14 @@
         path: /etc/yum.repos.d
         patterns: "*.repo"
         use_regex: true
-      register: repo_list
+      register: discovered_repo_list
 
     - name: HIGH | RHEL-09-214025 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation. | Set gpgcheck
       ansible.builtin.replace:
         path: "{{ item }}"
         regexp: ^gpgcheck
         replace: gpgcheck=1
-      loop: "{{ repo_list.files }}"
+      loop: "{{ discovered_repo_list.files }}"
 
 - name: HIGH | RHEL-09-215015 | PATCH | RHEL 9 must not have a File Transfer Protocol (FTP) server package installed.
   when:
@@ -215,7 +215,7 @@
       ansible.builtin.command: blkid
       changed_when: false
       failed_when: false
-      register: rhel_09_231190_partition_layout
+      register: discovered_partition_layout
 
     - name: HIGH | RHEL-08-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
         of all information that requires at rest protection. | Message out warning
@@ -223,7 +223,7 @@
         msg:
           - WARNING!! Below is the partition layout. Please run the "blkid" command to confirm every persistent disk partition has an entry for TYPE=crypto_LUKS.
           - If partitions other than pseudo file systems (such as /proc or /sys or tmpfs) this is a finding
-          - "{{ rhel_09_231190_partition_layout.stdout_lines }}"
+          - "{{ discovered_partition_layout.stdout_lines }}"
 
     - name: HIGH | RHEL-08-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
         of all information that requires at rest protection. | Message out warning
@@ -248,20 +248,20 @@
       ansible.builtin.find:
         path: /
         pattern: shosts.equiv
-      register: rhel9stig_shosts_equiv
+      register: discovered_shosts_equiv
 
     - name: HIGH | RHEL-09-252070 | PATCH | There must be no shosts.equiv files on RHEL 9. | Remove files
       when:
-        - rhel9stig_shosts_equiv.files | length > 0
+        - discovered_shosts_equiv.files | length > 0
         - rhel9stig_disruption_high
       ansible.builtin.file:
         path: "{{ item }}"
         state: absent
-      loop: "{{ rhel9stig_shosts_equiv.files }}"
+      loop: "{{ discovered_shosts_equiv.files }}"
 
     - name: HIGH | RHEL-09-252070 | WARN | There must be no shosts.equiv files on RHEL 9. | Warn if not removing files found
       when:
-        - rhel9stig_shosts_equiv.files | length > 0
+        - discovered_shosts_equiv.files | length > 0
         - not rhel9stig_disruption_high
       ansible.builtin.import_tasks:
         file: warning_facts.yml
@@ -285,20 +285,20 @@
         hidden: true
         path: /
         pattern: .shosts
-      register: rhel9stig_dot_shosts
+      register: discovered_dot_shosts
 
     - name: HIGH | RHEL-09-252075 | PATCH | There must be no .shosts files on RHEL 9. | Remove files
       when:
-        - rhel9stig_dot_shosts is defined
+        - discovered_dot_shosts is defined
         - rhel9stig_disruption_high
       ansible.builtin.file:
         path: "{{ item }}"
         state: absent
-      loop: "{{ rhel9stig_dot_shosts.files }}"
+      loop: "{{ discovered_dot_shosts.files }}"
 
     - name: HIGH | RHEL-09-252075 | WARN | There must be no .shosts files on RHEL 9. | Warn if not removing files found
       when:
-        - rhel9stig_dot_shosts is defined
+        - discovered_dot_shosts is defined
         - not rhel9stig_disruption_high
       ansible.builtin.import_tasks: warning_facts.yml
 

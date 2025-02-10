@@ -101,25 +101,25 @@
     - name: HIGH | RHEL-09-672030 | AUDIT | RHEL 9 must implement DOD-approved TLS encryption in the GnuTLS package. | Capture crypto state
       ansible.builtin.command: update-crypto-policies --show
       changed_when: false
-      register: crypto_policies_state
+      register: discovered_crypto_policies_state
 
     - name: HIGH | RHEL-09-672030 | PATCH | RHEL 9 must implement DOD-approved TLS encryption in the GnuTLS package. | Enable FIPS
       when:
-        - not "'FIPS' in crypto_policies_state.stdout"
+        - not "'FIPS' in discovered_crypto_policies_state.stdout"
         - rhel9stig_disruption_high
       ansible.builtin.command: fips-mode-setup --enable
       changed_when: true
 
     - name: HIGH | RHEL-09-672030 | WARN | RHEL 9 must implement DOD-approved TLS encryption in the GnuTLS package. | Give Warning
       when:
-        - not "'FIPS' in crypto_policies_state.stdout"
+        - not "'FIPS' in discovered_crypto_policies_state.stdout"
         - not rhel9stig_disruption_high
       ansible.builtin.debug:
         msg: WARNING!! - Crypto-Policies is not set to FIPS
 
     - name: HIGH | RHEL-09-672030 | WARN | RHEL 9 must implement DOD-approved TLS encryption in the GnuTLS package. | Warning Count
       when:
-        - not "'FIPS' in crypto_policies_state.stdout"
+        - not "'FIPS' in discovered_crypto_policies_state.stdout"
         - not rhel9stig_disruption_high
       ansible.builtin.import_tasks:
         file: warning_facts.yml

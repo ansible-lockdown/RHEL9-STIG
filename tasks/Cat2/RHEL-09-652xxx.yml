@@ -75,7 +75,7 @@
     - name: "MEDIUM | RHEL-09-652025 | AUDIT | RHEL 9 must be configured so that the rsyslog daemon does not accept log messages from other servers unless the server is being used for log aggregation."
       ansible.builtin.find:
         paths: /etc/rsyslog.d/
-      register: rhel9stig_rsyslog_conf
+      register: discovered_rsyslog_conf
 
     - name: "MEDIUM | RHEL-09-652025 | PATCH | RHEL 9 must be configured so that the rsyslog daemon does not accept log messages from other servers unless the server is being used for log aggregation."
       ansible.builtin.lineinfile:
@@ -85,13 +85,13 @@
         regex: (Input|ModLoad)(TCP|UDP|RELP|imtcp|imudp|imrelp)(.*)
 
     - name: "MEDIUM | RHEL-09-652025 | PATCH | RHEL 9 must be configured so that the rsyslog daemon does not accept log messages from other servers unless the server is being used for log aggregation."
-      when: rhel9stig_rsyslog_conf.matched > 1
+      when: discovered_rsyslog_conf.matched > 1
       ansible.builtin.lineinfile:
         backrefs: true
         line: '#\1\2\3'
         path: "{{ item.path }}"
         regex: (Input|ModLoad)(TCP|UDP|RELP|imtcp|imudp|imrelp)(.*)
-      loop: "{{ rhel9stig_rsyslog_conf.files }}"
+      loop: "{{ discovered_rsyslog_conf.files }}"
 
 - name: "MEDIUM | RHEL-09-652030 | PATCH | All RHEL 9 remote access methods must be monitored."
   when: rhel_09_652030
@@ -164,20 +164,20 @@
     - name: "MEDIUM | RHEL-09-652040 | AUDIT | RHEL 9 must authenticate the remote logging server for offloading audit logs via rsyslog."
       ansible.builtin.shell: grep -i "^\$ActionSendStreamDriverAuthMode" /etc/rsyslog.conf /etc/rsyslog.d/*.conf
       changed_when: false
-      failed_when: rhel9stig_rsyslog_remote_auth_x509.rc not in [ 0, 1, 2 ]
-      register: rhel9stig_rsyslog_remote_auth_x509
+      failed_when: discovered_rsyslog_remote_auth_x509.rc not in [ 0, 1, 2 ]
+      register: discovered_rsyslog_remote_auth_x509
 
     - name: "MEDIUM | RHEL-09-652040 | WARN | RHEL 9 must authenticate the remote logging server for offloading audit logs via rsyslog."
       when:
-        - rhel9stig_rsyslog_remote_auth_x509 is defined
-        - "'x509' not in rhel9stig_rsyslog_remote_auth_x509.stdout"
+        - discovered_rsyslog_remote_auth_x509 is defined
+        - "'x509' not in discovered_rsyslog_remote_auth_x509.stdout"
       ansible.builtin.debug:
         msg: "Warning!! Please ensure rule RHEL-09-652040 remote syslog control requirements are met for your environment"
 
     - name: "MEDIUM | RHEL-09-652040 | WARN | RHEL 9 must authenticate the remote logging server for offloading audit logs via rsyslog."
       when:
-        - rhel9stig_rsyslog_remote_auth_x509 is defined
-        - "'x509' not in rhel9stig_rsyslog_remote_auth_x509.stdout"
+        - discovered_rsyslog_remote_auth_x509 is defined
+        - "'x509' not in discovered_rsyslog_remote_auth_x509.stdout"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -201,20 +201,20 @@
     - name: "MEDIUM | RHEL-09-652045 | AUDIT | RHEL 9 must encrypt the transfer of audit records offloaded onto a different system or media from the system being audited via rsyslog."
       ansible.builtin.shell: grep -i "^\$ActionSendStreamDriverMode 1" /etc/rsyslog.conf /etc/rsyslog.d/*.conf
       changed_when: false
-      failed_when: rhel9stig_rsyslog_remote_stream_driver.rc not in [ 0, 1, 2 ]
-      register: rhel9stig_rsyslog_remote_stream_driver
+      failed_when: discovered_rsyslog_remote_stream_driver.rc not in [ 0, 1, 2 ]
+      register: discovered_rsyslog_remote_stream_driver
 
     - name: "MEDIUM | RHEL-09-652045 | WARN | RHEL 9 must encrypt the transfer of audit records offloaded onto a different system or media from the system being audited via rsyslog."
       when:
-        - rhel9stig_rsyslog_remote_stream_driver is defined
-        - rhel9stig_rsyslog_remote_stream_driver.rc == 2
+        - discovered_rsyslog_remote_stream_driver is defined
+        - discovered_rsyslog_remote_stream_driver.rc == 2
       ansible.builtin.debug:
         msg: "Warning!! Please ensure rule RHEL-09-652045 remote syslog control requirements are met for your environment"
 
     - name: "MEDIUM | RHEL-09-652045 | WARN | RHEL 9 must encrypt the transfer of audit records offloaded onto a different system or media from the system being audited via rsyslog."
       when:
-        - rhel9stig_rsyslog_remote_stream_driver is defined
-        - rhel9stig_rsyslog_remote_stream_driver.rc == 2
+        - discovered_rsyslog_remote_stream_driver is defined
+        - discovered_rsyslog_remote_stream_driver.rc == 2
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -238,20 +238,20 @@
     - name: "MEDIUM | RHEL-09-652050 | AUDIT | RHEL 9 must encrypt via the gtls driver the transfer of audit records offloaded onto a different system or media from the system being audited via rsyslog."
       ansible.builtin.shell: grep -i "^\$$DefaultNetstreamDriver" /etc/rsyslog.conf /etc/rsyslog.d/*.conf
       changed_when: false
-      failed_when: rhel9stig_rsyslog_remote_netstream_driver.rc not in [ 0, 1, 2 ]
-      register: rhel9stig_rsyslog_remote_netstream_driver
+      failed_when: discovered_rsyslog_remote_netstream_driver.rc not in [ 0, 1, 2 ]
+      register: discovered_rsyslog_remote_netstream_driver
 
     - name: "MEDIUM | RHEL-09-652050 | WARN | RHEL 9 must encrypt via the gtls driver the transfer of audit records offloaded onto a different system or media from the system being audited via rsyslog."
       when:
-        - rhel9stig_rsyslog_remote_netstream_driver is defined
-        - "'gtls' not in rhel9stig_rsyslog_remote_netstream_driver.stdout"
+        - discovered_rsyslog_remote_netstream_driver is defined
+        - "'gtls' not in discovered_rsyslog_remote_netstream_driver.stdout"
       ansible.builtin.debug:
         msg: "Warning!! Please ensure rule RHEL-09-652050 remote syslog control requirements are met for your environment"
 
     - name: "MEDIUM | RHEL-09-652050 | WARN | RHEL 9 must encrypt via the gtls driver the transfer of audit records offloaded onto a different system or media from the system being audited via rsyslog."
       when:
-        - rhel9stig_rsyslog_remote_netstream_driver is defined
-        - "'gtls' not in rhel9stig_rsyslog_remote_netstream_driver.stdout"
+        - discovered_rsyslog_remote_netstream_driver is defined
+        - "'gtls' not in discovered_rsyslog_remote_netstream_driver.stdout"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 

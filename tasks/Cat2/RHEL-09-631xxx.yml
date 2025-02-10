@@ -17,16 +17,16 @@
     - name: "MEDIUM | RHEL-09-631010 | AUDIT | RHEL 9, for PKI-based authentication, must validate certificates by constructing a certification path (which includes status information) to an accepted trust anchor."
       ansible.builtin.shell: "openssl x509 -text -in /etc/sssd/pki/sssd_auth_ca_db.pem | grep 'Issuer: C = US, O = U.S. Government, OU = DoD, OU = PKI, CN = DoD Root CA 3'"
       changed_when: false
-      failed_when: rhel9stig_dod_cert_check.rc not in [ 0 , 1 ]
-      register: rhel9stig_dod_cert_check
+      failed_when: discovered_dod_cert_check.rc not in [ 0 , 1 ]
+      register: discovered_dod_cert_check
 
     - name: "MEDIUM | RHEL-09-631010 | WARN | RHEL 9, for PKI-based authentication, must validate certificates by constructing a certification path (which includes status information) to an accepted trust anchor."
-      when: rhel9stig_dod_cert_check is defined
+      when: discovered_dod_cert_check is defined
       ansible.builtin.debug:
         msg: "Warning!! Please Investigate - Not a DOD issued ssl certificate "
 
     - name: "MEDIUM | RHEL-09-631010 | WARN | RHEL 9, for PKI-based authentication, must validate certificates by constructing a certification path (which includes status information) to an accepted trust anchor."
-      when: rhel9stig_dod_cert_check is defined
+      when: discovered_dod_cert_check is defined
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 

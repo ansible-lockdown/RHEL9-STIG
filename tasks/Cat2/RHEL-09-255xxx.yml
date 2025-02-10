@@ -78,7 +78,7 @@
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)banner \/.*\/.*
+    regexp: (?i)^(#|)banner \/.*\/.*
     line: "banner {{ rhel9stig_sshd_config.banner_file }}"
     validate: sshd -t -f %s
 
@@ -375,13 +375,13 @@
       ansible.builtin.find:
         path: /etc/ssh/
         pattern: '*_key'
-      register: rhel9stig_private_ssh_keys
+      register: discovered_private_ssh_keys
 
     - name: "MEDIUM | RHEL-09-255120 | PATCH | RHEL 9 SSH private host key files must have mode 0640 or less permissive."
       ansible.builtin.file:
         path: "{{ item.path }}"
         mode: 'u-x,g-wx,o-rwx'
-      loop: "{{ rhel9stig_private_ssh_keys.files }}"
+      loop: "{{ discovered_private_ssh_keys.files }}"
 
 - name: "MEDIUM | RHEL-09-255125 | PATCH | RHEL 9 SSH public host key files must have mode 0644 or less permissive."
   when: rhel_09_255125
@@ -398,13 +398,13 @@
       ansible.builtin.find:
         path: /etc/ssh
         pattern: '*.pub'
-      register: rhel9stig_pub_ssh_keys
+      register: discovered_pub_ssh_keys
 
     - name: "MEDIUM | RHEL-09-255125 | PATCH | RHEL 9 SSH public host key files must have mode 0644 or less permissive."
       ansible.builtin.file:
         path: "{{ item.path }}"
         mode: 'u-x,g-wx,o-wx'
-      loop: "{{ rhel9stig_pub_ssh_keys.files }}"
+      loop: "{{ discovered_pub_ssh_keys.files }}"
 
 - name: "MEDIUM | RHEL-09-255130 | PATCH | RHEL 9 SSH daemon must not allow compression or must only allow compression after successful authentication."
   when: rhel_09_255130

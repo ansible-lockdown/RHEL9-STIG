@@ -38,13 +38,13 @@
     - name: "LOW | RHEL-09-212050 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
       ansible.builtin.shell: grep "^GRUB_CMD" /etc/default/grub | grep pti
       changed_when: false
-      failed_when: rhel9stig_grub_pti_enabled.rc not in [ 0, 1 ]
-      register: rhel9stig_grub_pti_enabled
+      failed_when: discovered_grub_pti_enabled.rc not in [ 0, 1 ]
+      register: discovered_grub_pti_enabled
 
     - name: "LOW | RHEL-09-212050 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
       when:
-        - rhel9stig_grub_pti_enabled is defined
-        - rhel9stig_grub_pti_enabled.rc == 1
+        - discovered_grub_pti_enabled is defined
+        - discovered_grub_pti_enabled.rc == 1
       ansible.builtin.command: grubby --update-kernel=ALL --args="pti=on"
       changed_when: true
 
@@ -81,13 +81,13 @@
     - name: "LOW | RHEL-09-212055 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
       ansible.builtin.shell: grep "^GRUB_CMD" /etc/default/grub | grep 'audit=1'
       changed_when: false
-      failed_when: rhel9stig_grub_audit_enabled.rc not in [ 0, 1 ]
-      register: rhel9stig_grub_audit_enabled
+      failed_when: discovered_grub_audit_enabled.rc not in [ 0, 1 ]
+      register: discovered_grub_audit_enabled
 
     - name: "LOW | RHEL-09-212055 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
       when:
-        - rhel9stig_grub_audit_enabled is defined
-        - rhel9stig_grub_audit_enabled.rc == 1
+        - discovered_grub_audit_enabled is defined
+        - discovered_grub_audit_enabled.rc == 1
       ansible.builtin.command: grubby --update-kernel=ALL --args="audit=1"
       changed_when: true
 

@@ -395,11 +395,11 @@
     - name: "MEDIUM | RHEL-09-213110 | AUDIT | RHEL 9 must implement nonexecutable data to protect its memory from unauthorized code execution."
       ansible.builtin.shell: dmesg | grep '[NX|DX]*protection'
       changed_when: false
-      failed_when: rhel9stig_213110_nxdx.rc not in [ 0, 1 ]
-      register: rhel9stig_213110_nxdx
+      failed_when: discovered_nxdx.rc not in [ 0, 1 ]
+      register: discovered_nxdx
 
     - name: "MEDIUM | RHEL-09-213110 | PATCH | RHEL 9 must implement nonexecutable data to protect its memory from unauthorized code execution."
-      when: "'protection: active' not in rhel9stig_213110_nxdx.stdout"
+      when: "'protection: active' not in discovered_nxdx.stdout"
       ansible.builtin.command: grubby --update-kernel=ALL --remove-args=noexec
       changed_when: true
 

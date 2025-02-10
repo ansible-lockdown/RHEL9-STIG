@@ -16,16 +16,16 @@
     - name: "MEDIUM | RHEL-09-232010 | AUDIT | RHEL 9 system commands must have mode 755 or less permissive."
       ansible.builtin.shell: find -L /bin /sbin /usr/bin /usr/sbin /usr/libexec /usr/local/bin /usr/local/sbin -perm /022 -type f -exec ls -l {} \; | awk '{ print $NF}'
       changed_when: false
-      failed_when: rhel9stig_system_command_permissions.rc not in [ 0, 1 ]
-      register: rhel9stig_system_command_permissions
+      failed_when: discovered_system_command_permissions.rc not in [ 0, 1 ]
+      register: discovered_system_command_permissions
 
     - name: "MEDIUM | RHEL-09-232010 | PATCH | RHEL 9 system commands must have mode 755 or less permissive."
-      when: rhel9stig_system_command_permissions.stdout | length > 0
+      when: discovered_system_command_permissions.stdout | length > 0
       ansible.builtin.file:
         mode: 'u+x,go-w'
         path: "{{ item }}"
       loop:
-        - "{{ rhel9stig_system_command_permissions.stdout_lines }}"
+        - "{{ discovered_system_command_permissions.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232015 | PATCH | RHEL 9 library directories must have mode 755 or less permissive."
   when:
@@ -43,16 +43,16 @@
     - name: "MEDIUM | RHEL-09-232015 | AUDIT | RHEL 9 library directories must have mode 755 or less permissive."
       ansible.builtin.shell: find -L /lib /lib64 /usr/lib /usr/lib64 -perm /022 -type d -exec ls -l {} \; | awk '{ print $NF}'
       changed_when: false
-      failed_when: rhel9stig_library_directory_perms.rc not in [ 0, 1 ]
-      register: rhel9stig_library_directory_perms
+      failed_when: discovered_library_directory_perms.rc not in [ 0, 1 ]
+      register: discovered_library_directory_perms
 
     - name: "MEDIUM | RHEL-09-232015 | PATCH | RHEL 9 library directories must have mode 755 or less permissive."
-      when: rhel9stig_library_directory_perms.stdout | length > 0
+      when: discovered_library_directory_perms.stdout | length > 0
       ansible.builtin.file:
         mode: 'u+x,go-w'
         path: "{{ item }}"
       loop:
-        - "{{ rhel9stig_library_directory_perms.stdout_lines }}"
+        - "{{ discovered_library_directory_perms.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232020 | PATCH | RHEL 9 library files must have mode 755 or less permissive."
   when:
@@ -70,15 +70,15 @@
     - name: "MEDIUM | RHEL-09-232020 | AUDIT | RHEL 9 library files must have mode 755 or less permissive."
       ansible.builtin.shell: find -L /lib /lib64 /usr/lib /usr/lib64 -perm /022 -type f -exec ls -l {} \; | awk '{ print $NF}'
       changed_when: false
-      failed_when: rhel9stig_library_directory_perms.rc not in [ 0, 1 ]
-      register: rhel9stig_library_directory_perms
+      failed_when: discovered_library_file_perms.rc not in [ 0, 1 ]
+      register: discovered_library_file_perms
 
     - name: "MEDIUM | RHEL-09-232020 | PATCH | RHEL 9 library files must have mode 755 or less permissive."
-      when: rhel9stig_library_directory_perms.stdout | length > 0
+      when: discovered_library_file_perms.stdout | length > 0
       ansible.builtin.file:
         mode: 'u+x,go-w'
         path: "{{ item }}"
-      loop: "{{ rhel9stig_library_directory_perms.stdout_lines }}"
+      loop: "{{ discovered_library_file_perms.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232025 | PATCH | RHEL 9 /var/log directory must have mode 0755 or less permissive."
   when:
@@ -177,14 +177,14 @@
         path: ["{{ rhel9stig_home_filesystem }}", /root ]
         patterns: ".*"
         recurse: true
-      register: user_dot_files
+      register: discovered_user_dot_files
 
     - name: "MEDIUM | RHEL-09-232045 | AUDIT | All RHEL 9 local initialization files must have mode 0740 or less permissive. | update permissions"
       ansible.builtin.file:
         path: "{{ item.path }}"
         mode: 'g-wx,o-rwx'
         follow: false
-      loop: "{{ user_dot_files.files }}"
+      loop: "{{ discovered_user_dot_files.files }}"
       loop_control:
         label: "{{ item.path }}"
 
@@ -204,7 +204,7 @@
     - name: "MEDIUM | RHEL-09-232050 | AUDIT | All RHEL 9 local interactive user home directories must have mode 0750 or less permissive. | get stat"
       ansible.builtin.stat:
         path: "{{ item }}"
-      register: rhel9stig_home_dir_perms
+      register: discovered_home_dir_perms
       loop: "{{ rhel9stig_interactive_users_home.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-232050 | PATCH | All RHEL 9 local interactive user home directories must have mode 0750 or less permissive. | amend if needed"
@@ -213,7 +213,7 @@
         path: "{{ item.stat.path }}"
         state: directory
         mode: 'u+x,g-w,o-rwx'
-      loop: "{{ rhel9stig_home_dir_perms.results }}"
+      loop: "{{ discovered_home_dir_perms.results }}"
       loop_control:
         label: "{{ item }}"
 
@@ -228,7 +228,7 @@
         etype: group
         permissions: rx
         state: present
-      loop: "{{ rhel9stig_home_dir_perms.results }}"
+      loop: "{{ discovered_home_dir_perms.results }}"
       loop_control:
         label: "{{ item }}"
 
@@ -242,7 +242,7 @@
         etype: other
         permissions: 0
         state: present
-      loop: "{{ rhel9stig_home_dir_perms.results }}"
+      loop: "{{ discovered_home_dir_perms.results }}"
       loop_control:
         label: "{{ item }}"
 
@@ -673,15 +673,15 @@
     - name: "MEDIUM | RHEL-09-232190 | AUDIT | RHEL 9 system commands must be owned by root."
       ansible.builtin.shell: find -L /bin /sbin /usr/bin /usr/sbin /usr/libexec /usr/local/bin /usr/local/sbin ! -user root -exec ls {} \;
       changed_when: false
-      failed_when: rhel9stig_sys_commands_owner.rc not in [ 0, 1 ]
-      register: rhel9stig_sys_commands_owner
+      failed_when: discovered_sys_commands_owner.rc not in [ 0, 1 ]
+      register: discovered_sys_commands_owner
 
     - name: "MEDIUM | RHEL-09-232190 | PATCH | RHEL 9 system commands must be owned by root."
-      when: rhel9stig_sys_commands_owner.stdout | length > 0
+      when: discovered_sys_commands_owner.stdout | length > 0
       ansible.builtin.file:
         owner: root
         path: "{{ item }}"
-      loop: "{{ rhel9stig_sys_commands_owner.stdout_lines }}"
+      loop: "{{ discovered_sys_commands_owner.stdout_lines }}"
       loop_control:
         label: "{{ item }}"
 
@@ -701,18 +701,18 @@
     - name: "MEDIUM | RHEL-09-232195 | AUDIT | RHEL 9 system commands must be group-owned by root or a system account."
       ansible.builtin.shell: find -L /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin ! \( -group root -o -group tty \) -exec ls -l {} \;
       changed_when: false
-      failed_when: rhel9stig_sys_commands_group.rc not in [ 0, 1 ]
-      register: rhel9stig_sys_commands_group
+      failed_when: discovered_sys_commands_group.rc not in [ 0, 1 ]
+      register: discovered_sys_commands_group
 
     - name: "MEDIUM | RHEL-09-232195 | WARN | RHEL 9 system commands must be group-owned by root or a system account."
-      when: rhel9stig_sys_commands_group.stdout | length > 0
+      when: discovered_sys_commands_group.stdout | length > 0
       ansible.builtin.debug:
         msg: |
             "Warning!! Please validate group ownership of the following system commands
-             {{ rhel9stig_sys_commands_group.stdout_lines }}"
+             {{ discovered_sys_commands_group.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-232195 | WARN | RHEL 9 system commands must be group-owned by root or a system account."
-      when: rhel9stig_sys_commands_group.stdout | length > 0
+      when: discovered_sys_commands_group.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -730,15 +730,15 @@
     - name: "MEDIUM | RHEL-09-232200 | AUDIT | RHEL 9 library files must be owned by root."
       ansible.builtin.command: find -L /lib /lib64 /usr/lib /usr/lib64 ! -user root
       changed_when: false
-      failed_when: rhel9stig_lib_files_owner.rc not in [ 0, 1 ]
-      register: rhel9stig_lib_files_owner
+      failed_when: discovered_lib_files_owner.rc not in [ 0, 1 ]
+      register: discovered_lib_files_owner
 
     - name: "MEDIUM | RHEL-09-232200 | PATCH | RHEL 9 library files must be owned by root."
-      when: rhel9stig_lib_files_owner.stdout | length > 0
+      when: discovered_lib_files_owner.stdout | length > 0
       ansible.builtin.file:
         owner: root
         path: "{{ item }}"
-      loop: "{{ rhel9stig_lib_files_owner.stdout_lines }}"
+      loop: "{{ discovered_lib_files_owner.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232205 | PATCH | RHEL 9 library files must be group-owned by root or a system account."
   when: rhel_09_232205
@@ -756,18 +756,18 @@
     - name: "MEDIUM | RHEL-09-232205 | AUDIT | RHEL 9 library files must be group-owned by root or a system account."
       ansible.builtin.shell: find -L /lib /lib64 /usr/lib /usr/lib64 ! \( -group root -o -group utmp -o -group ssh_keys -o -group tty \) -exec ls {} \;
       changed_when: false
-      failed_when: rhel9stig_lib_files_group.rc not in [ 0, 1 ]
-      register: rhel9stig_lib_files_group
+      failed_when: discovered_lib_files_group.rc not in [ 0, 1 ]
+      register: discovered_lib_files_group
 
     - name: "MEDIUM | RHEL-09-232205 | WARN | RHEL 9 library files must be group-owned by root or a system account."
-      when: rhel9stig_lib_files_group.stdout | length > 0
+      when: discovered_lib_files_group.stdout | length > 0
       ansible.builtin.debug:
         msg: |
             "Warning!! Please validate group ownership of the following library files or symlinks
-             {{ rhel9stig_lib_files_group.stdout_lines }}"
+             {{ discovered_lib_files_group.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-232205 | WARN | RHEL 9 library files must be group-owned by root or a system account."
-      when: rhel9stig_lib_files_group.stdout | length > 0
+      when: discovered_lib_files_group.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -916,18 +916,18 @@
     - name: "MEDIUM | RHEL-09-232240 | AUDIT | All RHEL 9 world-writable directories must be owned by root, sys, bin, or an application user."
       ansible.builtin.shell: df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d -perm -0002 -uid +0
       changed_when: false
-      failed_when: rhel9stig_worldwide_dir_owners.rc not in [ 0, 1 ]
-      register: rhel9stig_worldwide_dir_owners
+      failed_when: discovered_worldwide_dir_owners.rc not in [ 0, 1 ]
+      register: discovered_worldwide_dir_owners
 
     - name: "MEDIUM | RHEL-09-232240 | WARN | All RHEL 9 world-writable directories must be owned by root, sys, bin, or an application user."
-      when: rhel9stig_worldwide_dir_owners.stdout | length > 0
+      when: discovered_worldwide_dir_owners.stdout | length > 0
       ansible.builtin.debug:
         msg: |
              "Warning!! The following Directories do not match requirements for RHEL_09_232240
-             {{ rhel9stig_worldwide_dir_owners.stdout_lines }}"
+             {{ discovered_worldwide_dir_owners.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-232240 | WARN | All RHEL 9 world-writable directories must be owned by root, sys, bin, or an application user."
-      when: rhel9stig_worldwide_dir_owners.stdout | length > 0
+      when: discovered_worldwide_dir_owners.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -949,31 +949,31 @@
     - name: "MEDIUM | RHEL-09-232245 | AUDIT | A sticky bit must be set on all RHEL 9 public directories."
       ansible.builtin.shell: df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d -perm -0002 -a ! -perm -1000 2>/dev/null
       changed_when: false
-      failed_when: rhel9stig_public_dirs_stickybit.rc not in [ 0, 1 ]
-      register: rhel9stig_public_dirs_stickybit
+      failed_when: discovered_public_dirs_stickybit.rc not in [ 0, 1 ]
+      register: discovered_public_dirs_stickybit
 
     - name: "MEDIUM | RHEL-09-232245 | PATCH | A sticky bit must be set on all RHEL 9 public directories."
       when:
         - rhel9stig_disruption_high
-        - rhel9stig_public_dirs_stickybit.stdout | length > 0
+        - discovered_public_dirs_stickybit.stdout | length > 0
       ansible.builtin.file:
         path: "{{ item }}"
         mode: +t
-      loop: "{{ rhel9stig_public_dirs_stickybit.stdout_lines }}"
+      loop: "{{ discovered_public_dirs_stickybit.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-232245 | WARN | A sticky bit must be set on all RHEL 9 public directories."
       when:
         - not rhel9stig_disruption_high
-        - rhel9stig_public_dirs_stickybit.stdout | length > 0
+        - discovered_public_dirs_stickybit.stdout | length > 0
       ansible.builtin.debug:
         msg: |
             "Warning!! The following file require sticky bit to be set
-            {{ rhel9stig_public_dirs_stickybit.stdout_lines }}"
+            {{ discovered_public_dirs_stickybit.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-232245 | WARN | A sticky bit must be set on all RHEL 9 public directories."
       when:
         - not rhel9stig_disruption_high
-        - rhel9stig_public_dirs_stickybit.stdout | length > 0
+        - discovered_public_dirs_stickybit.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -998,17 +998,17 @@
       check_mode: false
       failed_when: false
       changed_when: false
-      register: rhel9stig_ungrouped_files_dirs_audit
+      register: discovered_ungrouped_files_dirs_audit
       loop: "{{ ansible_facts.mounts }}"
       loop_control:
         label: "{{ item.mount }}"
 
     - name: "MEDIUM | RHEL-09-232250 | AUDIT | All RHEL 9 local files and directories must have a valid group owner."
       when:
-        - rhel9stig_ungrouped_files_dirs_audit.results | length > 0
-        - rhel9stig_ungrouped_files_dirs_audit is defined
+        - discovered_ungrouped_files_dirs_audit.results | length > 0
+        - discovered_ungrouped_files_dirs_audit is defined
       ansible.builtin.set_fact:
-        rhel9stig_ungrouped_files_results: "{{ rhel9stig_ungrouped_files_dirs_audit.results.0['stdout_lines'] }}"
+        rhel9stig_ungrouped_files_results: "{{ discovered_ungrouped_files_dirs_audit.results.0['stdout_lines'] }}"
 
     - name: "MEDIUM | RHEL-09-232250 | WARN | All RHEL 9 local files and directories must have a valid group owner."
       when: rhel9stig_ungrouped_files_results | length > 1
@@ -1041,17 +1041,17 @@
       check_mode: false
       failed_when: false
       changed_when: false
-      register: rhel9stig_unowned_files_dirs_audit
+      register: discovered_unowned_files_dirs_audit
       loop: "{{ ansible_facts.mounts }}"
       loop_control:
         label: "{{ item.mount }}"
 
     - name: "MEDIUM | RHEL-09-232255 | AUDIT | All RHEL 9 local files and directories must have a valid owner."
       when:
-        - rhel9stig_unowned_files_dirs_audit.results | length > 0
-        - rhel9stig_unowned_files_dirs_audit is defined
+        - discovered_unowned_files_dirs_audit.results | length > 0
+        - discovered_unowned_files_dirs_audit is defined
       ansible.builtin.set_fact:
-        rhel9stig_unowned_files_results: "{{ rhel9stig_unowned_files_dirs_audit.results.0['stdout_lines'] }}"
+        rhel9stig_unowned_files_results: "{{ discovered_unowned_files_dirs_audit.results.0['stdout_lines'] }}"
 
     - name: "MEDIUM | RHEL-09-232255 | WARN | All RHEL 9 local files and directories must have a valid owner."
       when: rhel9stig_unowned_files_results | length > 1
@@ -1079,27 +1079,27 @@
     - name: "MEDIUM | RHEL-09-232260 | AUDIT | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification. | / scan"
       ansible.builtin.command: find /dev \( -context *:unlabeled_t:* -o -context *:device_t:* \) \( -type c -o -type b \) -printf "%p %Z" | grep -v 'vmci'
       changed_when: false
-      failed_when: rhel9stig_unlabelled_files.rc not in [ 0, 1 ]
-      register: rhel9stig_unlabelled_files
+      failed_when: discovered_unlabelled_files.rc not in [ 0, 1 ]
+      register: discovered_unlabelled_files
 
     - name: "MEDIUM | RHEL-09-232260 | AUDIT | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification. | / scan"
       when:
-        - rhel9stig_unlabelled_files.stdout | length > 0
+        - discovered_unlabelled_files.stdout | length > 0
         - rhel9stig_disruption_high
       ansible.builtin.command: "restorecon -v {{ item }}"
       changed_when: true
-      loop: "{{ rhel9stig_unlabelled_files.stdout_lines }}"
+      loop: "{{ discovered_unlabelled_files.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-232260 | WARN | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification."
       when:
-        - rhel9stig_unlabelled_files.stdout | length > 0
+        - discovered_unlabelled_files.stdout | length > 0
         - not rhel9stig_disruption_high
       ansible.builtin.debug:
-        msg: "Warning!! Unlabelled device files found on the system {{ rhel9stig_unlabelled_files }}"
+        msg: "Warning!! Unlabelled device files found on the system {{ discovered_unlabelled_files }}"
 
     - name: "MEDIUM | RHEL-09-232260 | WARN | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification."
       when:
-        - rhel9stig_unlabelled_files.stdout | length > 0
+        - discovered_unlabelled_files.stdout | length > 0
         - not rhel9stig_disruption_high
       ansible.builtin.import_tasks:
         file: warning_facts.yml

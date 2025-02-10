@@ -44,20 +44,20 @@
     - name: "MEDIUM | RHEL-09-672020 | AUDIT | RHEL 9 crypto policy must not be overridden."
       ansible.builtin.shell: ls -l /etc/crypto-policies/back-ends/ | grep -v FIPS
       changed_when: false
-      failed_when: rhel9stig_crypto_policies_fips.rc not in [ 0, 1 ]
-      register: rhel9stig_crypto_policies_fips
+      failed_when: discovered_crypto_policies_fips.rc not in [ 0, 1 ]
+      register: discovered_crypto_policies_fips
 
     - name: "MEDIUM | RHEL-09-672020 | WARN | RHEL 9 crypto policy must not be overridden."
       when:
-        - rhel9stig_crypto_policies_fips is defined
-        - rhel9stig_crypto_policies_fips.stdout | length > 0
+        - discovered_crypto_policies_fips is defined
+        - discovered_crypto_policies_fips.stdout | length > 0
       ansible.builtin.debug:
         msg: "Warning!! Please Investigate 672020 - Crypto files not pointing to FIPS"
 
     - name: "MEDIUM | RHEL-09-672020 | WARN | RHEL 9 crypto policy must not be overridden."
       when:
-        - rhel9stig_crypto_policies_fips is defined
-        - rhel9stig_crypto_policies_fips.stdout | length > 0
+        - discovered_crypto_policies_fips is defined
+        - discovered_crypto_policies_fips.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -78,20 +78,20 @@
     - name: "MEDIUM | RHEL-09-672025 | AUDIT | RHEL 9 must use mechanisms meeting the requirements of applicable federal laws, executive orders, directives, policies, regulations, standards, and guidance for authentication to a cryptographic module."
       ansible.builtin.command: file /etc/crypto-policies/back-ends/krb5.config
       changed_when: false
-      failed_when: rhel9stig_crypto_krb5_fips.rc not in [ 0, 1 ]
-      register: rhel9stig_crypto_krb5_fips
+      failed_when: discovered_crypto_krb5_fips.rc not in [ 0, 1 ]
+      register: discovered_crypto_krb5_fips
 
     - name: "MEDIUM | RHEL-09-672025 | WARN | RHEL 9 must use mechanisms meeting the requirements of applicable federal laws, executive orders, directives, policies, regulations, standards, and guidance for authentication to a cryptographic module."
       when:
-        - rhel9stig_crypto_krb5_fips is defined
-        - "'FIPS/krb5.txt' not in rhel9stig_crypto_krb5_fips.stdout"
+        - discovered_crypto_krb5_fips is defined
+        - "'FIPS/krb5.txt' not in discovered_crypto_krb5_fips.stdout"
       ansible.builtin.debug:
         msg: "Warning!! Please Investigate 672025 - kerberos is not FIPS compliant"
 
     - name: "MEDIUM | RHEL-09-672025 | WARN | RHEL 9 must use mechanisms meeting the requirements of applicable federal laws, executive orders, directives, policies, regulations, standards, and guidance for authentication to a cryptographic module."
       when:
-        - rhel9stig_crypto_krb5_fips is defined
-        - "'FIPS/krb5.txt' not in rhel9stig_crypto_krb5_fips.stdout"
+        - discovered_crypto_krb5_fips is defined
+        - "'FIPS/krb5.txt' not in discovered_crypto_krb5_fips.stdout"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
