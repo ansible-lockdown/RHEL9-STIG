@@ -135,8 +135,7 @@
   loop: "{{ audit_bins }}"
 
 - name: "MEDIUM | RHEL-09-232040 | PATCH | RHEL 9 cron configuration directories must have a mode of 0700 or less permissive."
-  when:
-    - rhel_09_232040
+  when: rhel_09_232040
   tags:
     - RHEL-09-232040
     - CAT2
@@ -175,7 +174,7 @@
         depth: 3
         file_type: file
         hidden: true
-        path: ["{{ rhel9stig_home_filesystem}}", /root ]
+        path: ["{{ rhel9stig_home_filesystem }}", /root ]
         patterns: ".*"
         recurse: true
       register: user_dot_files
@@ -209,8 +208,7 @@
       loop: "{{ rhel9stig_interactive_users_home.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-232050 | PATCH | All RHEL 9 local interactive user home directories must have mode 0750 or less permissive. | amend if needed"
-      when:
-        - item.stat.path is defined
+      when: item.stat.path is defined
       ansible.builtin.file:
         path: "{{ item.stat.path }}"
         state: directory
@@ -249,8 +247,7 @@
         label: "{{ item }}"
 
 - name: "MEDIUM | RHEL-09-232055 | PATCH | RHEL 9 /etc/group file must have mode 0644 or less permissive to prevent unauthorized access."
-  when:
-    - rhel_09_232055
+  when: rhel_09_232055
   tags:
     - RHEL-09-232055
     - CAT2
@@ -264,8 +261,7 @@
     path: /etc/group
 
 - name: "MEDIUM | RHEL-09-232060 | PATCH | RHEL 9 /etc/group- file must have mode 0644 or less permissive to prevent unauthorized access."
-  when:
-    - rhel_09_232060
+  when: rhel_09_232060
   tags:
     - RHEL-09-232060
     - CAT2
@@ -281,8 +277,7 @@
   register: discovered_group_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232065 | PATCH | RHEL 9 /etc/gshadow file must have mode 0000 or less permissive to prevent unauthorized access."
-  when:
-    - rhel_09_232065
+  when: rhel_09_232065
   tags:
     - RHEL-09-232065
     - CAT2
@@ -298,8 +293,7 @@
   register: discovered_gshadow_file_exists
 
 - name: "MEDIUM | RHEL-09-232070 | PATCH | RHEL 9 /etc/gshadow- file must have mode 0000 or less permissive to prevent unauthorized access."
-  when:
-    - rhel_09_232070
+  when: rhel_09_232070
   tags:
     - RHEL-09-232070
     - CAT2
@@ -315,8 +309,7 @@
   register: discovered_gshadow_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232075 | PATCH | RHEL 9 /etc/passwd file must have mode 0644 or less permissive to prevent unauthorized access."
-  when:
-    - rhel_09_232075
+  when: rhel_09_232075
   tags:
     - RHEL-09-232075
     - CAT2
@@ -330,8 +323,7 @@
     path: /etc/passwd
 
 - name: "MEDIUM | RHEL-09-232080 | PATCH | RHEL 9 /etc/passwd- file must have mode 0644 or less permissive to prevent unauthorized access."
-  when:
-    - rhel_09_232080
+  when: rhel_09_232080
   tags:
     - RHEL-09-232080
     - CAT2
@@ -347,8 +339,7 @@
   register: discovered_passwd_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232085 | PATCH | RHEL 9 /etc/shadow- file must have mode 0000 or less permissive to prevent unauthorized access."
-  when:
-    - rhel_09_232085
+  when: rhel_09_232085
   tags:
     - RHEL-09-232085
     - CAT2
@@ -364,8 +355,7 @@
   register: discovered_shadow_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232090 | PATCH | RHEL 9 /etc/group file must be owned by root."
-  when:
-    - rhel_09_232090
+  when: rhel_09_232090
   tags:
     - RHEL-09-232090
     - CAT2
@@ -379,8 +369,7 @@
     path: /etc/group
 
 - name: "MEDIUM | RHEL-09-232095 | PATCH | RHEL 9 /etc/group file must be group-owned by root."
-  when:
-    - rhel_09_232095
+  when: rhel_09_232095
   tags:
     - RHEL-09-232095
     - CAT2
@@ -394,8 +383,7 @@
     path: /etc/group
 
 - name: "MEDIUM | RHEL-09-232100 | PATCH | RHEL 9 /etc/group- file must be owned by root."
-  when:
-    - rhel_09_232100
+  when: rhel_09_232100
   tags:
     - RHEL-09-232100
     - CAT2
@@ -411,8 +399,7 @@
   register: discovered_group_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232105 | PATCH | RHEL 9 /etc/group- file must be group-owned by root."
-  when:
-    - rhel_09_232105
+  when: rhel_09_232105
   tags:
     - RHEL-09-232105
     - CAT2
@@ -428,8 +415,7 @@
   register: discovered_group_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232110 | PATCH | RHEL 9 /etc/gshadow file must be owned by root."
-  when:
-    - rhel_09_232110
+  when: rhel_09_232110
   tags:
     - RHEL-09-232110
     - CAT2
@@ -445,8 +431,7 @@
   register: discovered_gshadow_file_exists
 
 - name: "MEDIUM | RHEL-09-232115 | PATCH | RHEL 9 /etc/gshadow file must be group-owned by root."
-  when:
-    - rhel_09_232115
+  when: rhel_09_232115
   tags:
     - RHEL-09-232115
     - CAT2
@@ -462,8 +447,7 @@
   register: discovered_gshadow_file_exists
 
 - name: "MEDIUM | RHEL-09-232120 | PATCH | RHEL 9 /etc/gshadow- file must be owned by root."
-  when:
-    - rhel_09_232120
+  when: rhel_09_232120
   tags:
     - RHEL-09-232120
     - CAT2
@@ -496,8 +480,7 @@
   register: discovered_gshadow_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232130 | PATCH | RHEL 9 /etc/passwd file must be owned by root."
-  when:
-    - rhel_09_232130
+  when: rhel_09_232130
   tags:
     - RHEL-09-232130
     - CAT2
@@ -511,8 +494,7 @@
     path: /etc/passwd
 
 - name: "MEDIUM | RHEL-09-232135 | PATCH | RHEL 9 /etc/passwd file must be group-owned by root."
-  when:
-    - rhel_09_232135
+  when: rhel_09_232135
   tags:
     - RHEL-09-232135
     - CAT2
@@ -526,8 +508,7 @@
     path: /etc/passwd
 
 - name: "MEDIUM | RHEL-09-232140 | PATCH | RHEL 9 /etc/passwd- file must be owned by root."
-  when:
-    - rhel_09_232140
+  when: rhel_09_232140
   tags:
     - RHEL-09-232140
     - CAT2
@@ -543,8 +524,7 @@
   register: discovered_passwd_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232145 | PATCH | RHEL 9 /etc/passwd- file must be group-owned by root."
-  when:
-    - rhel_09_232145
+  when: rhel_09_232145
   tags:
     - RHEL-09-232145
     - CAT2
@@ -560,8 +540,7 @@
   register: discovered_passwd_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232150 | PATCH | RHEL 9 /etc/shadow file must be owned by root."
-  when:
-    - rhel_09_232150
+  when: rhel_09_232150
   tags:
     - RHEL-09-232150
     - CAT2
@@ -575,8 +554,7 @@
     path: /etc/shadow
 
 - name: "MEDIUM | RHEL-09-232155 | PATCH | RHEL 9 /etc/shadow file must be group-owned by root."
-  when:
-    - rhel_09_232155
+  when: rhel_09_232155
   tags:
     - RHEL-09-232155
     - CAT2
@@ -590,8 +568,7 @@
     path: /etc/shadow
 
 - name: "MEDIUM | RHEL-09-232160 | PATCH | RHEL 9 /etc/shadow- file must be owned by root."
-  when:
-    - rhel_09_232160
+  when: rhel_09_232160
   tags:
     - RHEL-09-232160
     - CAT2
@@ -607,8 +584,7 @@
   register: discovered_shadow_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232165 | PATCH | RHEL 9 /etc/shadow- file must be group-owned by root."
-  when:
-    - rhel_09_232165
+  when: rhel_09_232165
   tags:
     - RHEL-09-232165
     - CAT2
@@ -624,8 +600,7 @@
   register: discovered_shadow_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232170 | PATCH | RHEL 9 /var/log directory must be owned by root."
-  when:
-    - rhel_09_232170
+  when: rhel_09_232170
   tags:
     - RHEL-09-232170
     - CAT2
@@ -635,13 +610,13 @@
     - V-257914
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: /var/log
+    owner: root
     state: directory
+    mode: 'u+x,o-w'
 
 - name: "MEDIUM | RHEL-09-232175 | PATCH | RHEL 9 /var/log directory must be group-owned by root."
-  when:
-    - rhel_09_232175
+  when: rhel_09_232175
   tags:
     - RHEL-09-232175
     - CAT2
@@ -651,13 +626,13 @@
     - V-257915
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: /var/log
+    group: root
     state: directory
+    mode: 'u+x,o-w'
 
 - name: "MEDIUM | RHEL-09-232180 | PATCH | RHEL 9 /var/log/messages file must be owned by root."
-  when:
-    - rhel_09_232180
+  when: rhel_09_232180
   tags:
     - RHEL-09-232180
     - CAT2
@@ -671,8 +646,7 @@
     path: /var/log/messages
 
 - name: "MEDIUM | RHEL-09-232185 | PATCH | RHEL 9 /var/log/messages file must be group-owned by root."
-  when:
-    - rhel_09_232185
+  when: rhel_09_232185
   tags:
     - RHEL-09-232185
     - CAT2
@@ -686,8 +660,7 @@
     path: /var/log/messages
 
 - name: "MEDIUM | RHEL-09-232190 | PATCH | RHEL 9 system commands must be owned by root."
-  when:
-    - rhel_09_232190
+  when: rhel_09_232190
   tags:
     - RHEL-09-232190
     - CAT2
@@ -713,8 +686,7 @@
         label: "{{ item }}"
 
 - name: "MEDIUM | RHEL-09-232195 | PATCH | RHEL 9 system commands must be group-owned by root or a system account."
-  when:
-    - rhel_09_232195
+  when: rhel_09_232195
   tags:
     - RHEL-09-232195
     - CAT2
@@ -745,8 +717,7 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-232200 | PATCH | RHEL 9 library files must be owned by root."
-  when:
-    - rhel_09_232200
+  when: rhel_09_232200
   tags:
     - RHEL-09-232200
     - CAT2
@@ -757,7 +728,7 @@
     - NIST800-53R4_CM-5
   block:
     - name: "MEDIUM | RHEL-09-232200 | AUDIT | RHEL 9 library files must be owned by root."
-      ansible.builtin.shell: find -L /lib /lib64 /usr/lib /usr/lib64 ! -user root
+      ansible.builtin.command: find -L /lib /lib64 /usr/lib /usr/lib64 ! -user root
       changed_when: false
       failed_when: rhel9stig_lib_files_owner.rc not in [ 0, 1 ]
       register: rhel9stig_lib_files_owner
@@ -770,8 +741,7 @@
       loop: "{{ rhel9stig_lib_files_owner.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232205 | PATCH | RHEL 9 library files must be group-owned by root or a system account."
-  when:
-    - rhel_09_232205
+  when: rhel_09_232205
   tags:
     - RHEL-09-232205
     - CAT2
@@ -802,8 +772,7 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-232210 | PATCH | RHEL 9 library directories must be owned by root."
-  when:
-    - rhel_09_232210
+  when: rhel_09_232210
   tags:
     - RHEL-09-232210
     - CAT2
@@ -822,8 +791,7 @@
     - '/usr/lib64'
 
 - name: "MEDIUM | RHEL-09-232215 | PATCH | RHEL 9 library directories must be group-owned by root or a system account."
-  when:
-    - rhel_09_232215
+  when: rhel_09_232215
   tags:
     - RHEL-09-232215
     - CAT2
@@ -854,8 +822,7 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-232220 | PATCH | RHEL 9 audit tools must be owned by root."
-  when:
-    - rhel_09_232220
+  when: rhel_09_232220
   tags:
     - RHEL-09-232220
     - CAT2
@@ -870,8 +837,7 @@
   loop: "{{ audit_bins}}"
 
 - name: "MEDIUM | RHEL-09-232225 | PATCH | RHEL 9 audit tools must be group-owned by root."
-  when:
-    - rhel_09_232225
+  when: rhel_09_232225
   tags:
     - RHEL-09-232225
     - CAT2
@@ -886,8 +852,7 @@
   loop: "{{ audit_bins }}"
 
 - name: "MEDIUM | RHEL-09-232230 | PATCH | RHEL 9 cron configuration files directory must be owned by root."
-  when:
-    - rhel_09_232230
+  when: rhel_09_232230
   tags:
     - RHEL-09-232230
     - CAT2
@@ -909,8 +874,7 @@
     - '/etc/crontab'
 
 - name: "MEDIUM | RHEL-09-232235 | PATCH | RHEL 9 cron configuration files directory must be group-owned by root."
-  when:
-    - rhel_09_232235
+  when: rhel_09_232235
   tags:
     - RHEL-09-232235
     - CAT2
@@ -1014,8 +978,7 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-232250 | PATCH | All RHEL 9 local files and directories must have a valid group owner."
-  when:
-    - rhel_09_232250
+  when: rhel_09_232250
   tags:
     - RHEL-09-232250
     - CAT2
@@ -1031,7 +994,7 @@
       when:
         - item['device'].startswith('/dev')
         - not 'bind' in item['options']
-      ansible.builtin.shell: find "{{ item.mount }}" -xdev -nogroup
+      ansible.builtin.command: find "{{ item.mount }}" -xdev -nogroup
       check_mode: false
       failed_when: false
       changed_when: false
@@ -1041,11 +1004,11 @@
         label: "{{ item.mount }}"
 
     - name: "MEDIUM | RHEL-09-232250 | AUDIT | All RHEL 9 local files and directories must have a valid group owner."
-      ansible.builtin.set_fact:
-        rhel9stig_ungrouped_files_results: "{{ rhel9stig_ungrouped_files_dirs_audit.results.0['stdout_lines'] }}"
       when:
         - rhel9stig_ungrouped_files_dirs_audit.results | length > 0
         - rhel9stig_ungrouped_files_dirs_audit is defined
+      ansible.builtin.set_fact:
+        rhel9stig_ungrouped_files_results: "{{ rhel9stig_ungrouped_files_dirs_audit.results.0['stdout_lines'] }}"
 
     - name: "MEDIUM | RHEL-09-232250 | WARN | All RHEL 9 local files and directories must have a valid group owner."
       when: rhel9stig_ungrouped_files_results | length > 1
@@ -1058,8 +1021,7 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-232255 | PATCH | All RHEL 9 local files and directories must have a valid owner."
-  when:
-    - rhel_09_232255
+  when: rhel_09_232255
   tags:
     - RHEL-09-232255
     - CAT2
@@ -1075,7 +1037,7 @@
       when:
         - item['device'].startswith('/dev')
         - not 'bind' in item['options']
-      ansible.builtin.shell: find "{{ item.mount }}" -xdev -nouser
+      ansible.builtin.command: find "{{ item.mount }}" -xdev -nouser
       check_mode: false
       failed_when: false
       changed_when: false
@@ -1085,11 +1047,11 @@
         label: "{{ item.mount }}"
 
     - name: "MEDIUM | RHEL-09-232255 | AUDIT | All RHEL 9 local files and directories must have a valid owner."
-      ansible.builtin.set_fact:
-        rhel9stig_unowned_files_results: "{{ rhel9stig_unowned_files_dirs_audit.results.0['stdout_lines'] }}"
       when:
         - rhel9stig_unowned_files_dirs_audit.results | length > 0
         - rhel9stig_unowned_files_dirs_audit is defined
+      ansible.builtin.set_fact:
+        rhel9stig_unowned_files_results: "{{ rhel9stig_unowned_files_dirs_audit.results.0['stdout_lines'] }}"
 
     - name: "MEDIUM | RHEL-09-232255 | WARN | All RHEL 9 local files and directories must have a valid owner."
       when: rhel9stig_unowned_files_results | length > 1
@@ -1102,8 +1064,7 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-232260 | PATCH | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification."
-  when:
-    - rhel_09_232260
+  when: rhel_09_232260
   tags:
     - RHEL-09-232260
     - CAT2
@@ -1116,7 +1077,7 @@
     warn_control_id: "MEDIUM | RHEL-09-232260"
   block:
     - name: "MEDIUM | RHEL-09-232260 | AUDIT | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification. | / scan"
-      ansible.builtin.shell: find /dev \( -context *:unlabeled_t:* -o -context *:device_t:* \) \( -type c -o -type b \) -printf "%p %Z" | grep -v 'vmci'
+      ansible.builtin.command: find /dev \( -context *:unlabeled_t:* -o -context *:device_t:* \) \( -type c -o -type b \) -printf "%p %Z" | grep -v 'vmci'
       changed_when: false
       failed_when: rhel9stig_unlabelled_files.rc not in [ 0, 1 ]
       register: rhel9stig_unlabelled_files
@@ -1125,7 +1086,8 @@
       when:
         - rhel9stig_unlabelled_files.stdout | length > 0
         - rhel9stig_disruption_high
-      ansible.builtin.shell: "restorecon -v {{ item }}"
+      ansible.builtin.command: "restorecon -v {{ item }}"
+      changed_when: true
       loop: "{{ rhel9stig_unlabelled_files.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-232260 | WARN | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification."
@@ -1143,8 +1105,7 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-232265 | PATCH | RHEL 9 /etc/crontab file must have mode 0600."
-  when:
-    - rhel_09_232265
+  when: rhel_09_232265
   tags:
     - RHEL-09-232265
     - CAT2
@@ -1158,8 +1119,7 @@
     mode: 'u-x,go-rwx'
 
 - name: "MEDIUM | RHEL-09-232270 | PATCH | RHEL 9 /etc/shadow file must have mode 0000 to prevent unauthorized access."
-  when:
-    - rhel_09_232270
+  when: rhel_09_232270
   tags:
     - RHEL-09-232270
     - CAT2

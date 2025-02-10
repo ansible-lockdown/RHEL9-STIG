@@ -1,8 +1,7 @@
 ---
 
 - name: Check OS version and family
-  when:
-    - not skip_os_check
+  when: not skip_os_check
   tags:
     - always
   ansible.builtin.assert:
@@ -21,7 +20,8 @@
 
 - name: Setup rules if container
   when:
-    - ansible_connection == 'docker' or ansible_virtualization_type in ["docker", "lxc", "openvz", "podman", "container"]
+    - ansible_connection == 'docker' or
+      ansible_virtualization_type in ["docker", "lxc", "openvz", "podman", "container"]
   tags:
     - container_discovery
     - always
@@ -34,7 +34,7 @@
       ansible.builtin.include_vars:
         file: "{{ container_vars_file }}"
 
-    - name: output if discovered is a container
+    - name: Output if discovered is a container
       when:
         - system_is_container
       ansible.builtin.debug:
@@ -53,7 +53,7 @@
       check_mode: false
       register: ansible_user_password_set
 
-    - name: Assert that password set for {{ ansible_env.SUDO_USER }} and account not locked
+    - name: Assert that password set for {{ ansible_env.SUDO_USER }} and account not locked  # noqa name[template]
       tags:
         - user_passwd
       ansible.builtin.assert:
@@ -96,8 +96,7 @@
     file: prelim.yml
 
 - name: Include CAT I patches
-  when:
-    - rhel9stig_cat1
+  when: rhel9stig_cat1
   tags:
     - CAT1
     - high
@@ -105,26 +104,23 @@
     file: Cat1/main.yml
 
 - name: Include CAT II patches
-  ansible.builtin.import_tasks:
-    file: Cat2/main.yml
-  when:
-    - rhel9stig_cat2
+  when: rhel9stig_cat2
   tags:
     - CAT2
     - medium
+  ansible.builtin.import_tasks:
+    file: Cat2/main.yml
 
 - name: Include CAT III patches
-  ansible.builtin.import_tasks:
-    file: Cat3/main.yml
-  when:
-    - rhel9stig_cat3
+  when: rhel9stig_cat3
   tags:
     - CAT3
     - low
+  ansible.builtin.import_tasks:
+    file: Cat3/main.yml
 
 - name: Run auditd logic
-  when:
-    - update_audit_template
+  when: update_audit_template
   tags:
     - always
   ansible.builtin.import_tasks:
@@ -134,49 +130,41 @@
   ansible.builtin.meta: flush_handlers
 
 - name: Reboot system if changes require it and not skipped
+  when: change_requires_reboot
+  vars:
+    warn_control_id: Reboot_required
   block:
     - name: POST | Reboot system if changes require it and not skipped
-      when:
-        - change_requires_reboot
-        - not skip_reboot
+      when: not skip_reboot
       ansible.builtin.reboot:
 
     - name: POST | Warning a reboot required but skip option set
-      when:
-        - change_requires_reboot
-        - skip_reboot
+      when: skip_reboot
       ansible.builtin.debug:
         msg: "Warning!! changes have been made that require a reboot to be implemented but skip reboot was set - Can affect compliance check results"
       changed_when: true
 
     - name: "POST | Warning a reboot required but skip option set | warning count"
-      when:
-        - change_requires_reboot
-        - skip_reboot
+      when: skip_reboot
       ansible.builtin.import_tasks:
         file: warning_facts.yml
-  vars:
-    warn_control_id: Reboot_required
 
 - name: Run post remediation audit
-  when:
-    - run_audit
+  when: run_audit
   tags:
     - run_audit
   ansible.builtin.import_tasks:
     file: post_remediation_audit.yml
 
 - name: Show Audit Summary
-  when:
-    - run_audit
+  when: run_audit
   tags:
     - run_audit
   ansible.builtin.debug:
     msg: "{{ audit_results.split('\n') }}"
 
 - name: If Warnings found Output count and control IDs affected
-  when:
-    - warn_count != 0
+  when: warn_count != 0
   tags:
     - always
   ansible.builtin.debug:

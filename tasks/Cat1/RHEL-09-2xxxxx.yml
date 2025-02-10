@@ -1,8 +1,7 @@
 ---
 
 - name: HIGH | RHEL-09-211010 | AUDIT | RHEL 9 must be a vendor-supported release.
-  when:
-    - rhel_09_211010
+  when: rhel_09_211010
   tags:
     - RHEL-09-211010
     - CAT1
@@ -16,8 +15,7 @@
   changed_when: ansible_facts.distribution_version is not version_compare(rhel9stig_min_supported_os_ver[ansible_facts.distribution], '>=')
 
 - name: HIGH | RHEL-09-211045 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled
-  when:
-    - rhel_09_211045
+  when: rhel_09_211045
   tags:
     - RHEL-09-211045
     - CAT1
@@ -35,10 +33,10 @@
     regexp: ^CtrlAltDelBurstAction=none
     line: CtrlAltDelBurstAction=none
     create: true
+    mode: 'u-x,go-wx'
 
 - name: HIGH | RHEL-09-211050 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled
-  when:
-    - rhel_09_211050
+  when: rhel_09_211050
   tags:
     - RHEL-09-211050
     - CAT1
@@ -65,8 +63,7 @@
         state: stopped
 
 - name: HIGH | RHEL-09-212020 | PATCH | RHEL 9 must require a unique superusers name upon booting into single-user and maintenance modes.
-  when:
-    - rhel_09_212020
+  when: rhel_09_212020
   tags:
     - RHEL-09-212020
     - CAT1
@@ -90,8 +87,7 @@
     loop_var: grub_superusers
 
 - name: HIGH | RHEL-09-214015 | PATCH | RHEL 9 must check the GPG signature of software packages originating from external software repositories before installation.
-  when:
-    - rhel_09_214015
+  when: rhel_09_214015
   tags:
     - RHEL-09-214015
     - CAT1
@@ -108,8 +104,7 @@
     line: gpgcheck=1
 
 - name: HIGH | RHEL-09-214020 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation.
-  when:
-    - rhel_09_214020
+  when: rhel_09_214020
   tags:
     - RHEL-09-214020
     - CAT1
@@ -126,8 +121,7 @@
     line: localpkg_gpgcheck=1
 
 - name: HIGH | RHEL-09-214025 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation.
-  when:
-    - rhel_09_214025
+  when: rhel_09_214025
   tags:
     - RHEL-09-214025
     - CAT1
@@ -198,8 +192,7 @@
 
 - name: HIGH | RHEL-08-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
     of all information that requires at rest protection.
-  when:
-    - rhel_09_231190
+  when: rhel_09_231190
   tags:
     - RHEL-09-231190
     - CAT1
@@ -219,7 +212,7 @@
   block:
     - name: HIGH | RHEL-08-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
         of all information that requires at rest protection. | Get partition layout
-      ansible.builtin.shell: blkid
+      ansible.builtin.command: blkid
       changed_when: false
       failed_when: false
       register: rhel_09_231190_partition_layout
@@ -238,8 +231,7 @@
         file: warning_facts.yml
 
 - name: HIGH | RHEL-09-252070 | There must be no shosts.equiv files on RHEL 9.
-  when:
-    - rhel_09_252070
+  when: rhel_09_252070
   tags:
     - RHEL-09-252070
     - CAT1
@@ -275,8 +267,7 @@
         file: warning_facts.yml
 
 - name: HIGH | RHEL-09-252075 | There must be no .shosts files on RHEL 9.
-  when:
-    - rhel_09_252075
+  when: rhel_09_252075
   tags:
     - RHEL-09-252075
     - CAT1
@@ -312,8 +303,7 @@
       ansible.builtin.import_tasks: warning_facts.yml
 
 - name: HIGH | RHEL-09-255040 | PATCH | RHEL 9 SSHD must not allow blank passwords.
-  when:
-    - rhel_09_255040
+  when: rhel_09_255040
   tags:
     - RHEL-09-255040
     - CAT1
@@ -335,8 +325,7 @@
   notify: Restart_ssh
 
 - name: HIGH | RHEL-09-255050 | PATCH | RHEL 9 must enable the Pluggable Authentication Module (PAM) interface for SSHD.
-  when:
-    - rhel_09_255050
+  when: rhel_09_255050
   tags:
     - RHEL-09-255050
     - CAT1
@@ -373,6 +362,7 @@
     line: "{{ autologin.line }}"
     insertafter: "{{ autologin.after | default(omit) }}"
     create: true
+    mode: 'u-x,go-wx'
   loop:
     - { regexp: "[daemon]", line: "[daemon]" }
     - { regexp: "(?i)^AutomaticLoginEnable=false", line: AutomaticLoginEnable=false, after: "[daemon]" }

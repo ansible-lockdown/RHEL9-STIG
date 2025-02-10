@@ -1,8 +1,7 @@
 ---
 
 - name: "MEDIUM | RHEL-09-671015 | PATCH | RHEL 9 must employ FIPS 140-3 approved cryptographic hashing algorithms for all stored passwords."
-  when:
-    - rhel_09_671015
+  when: rhel_09_671015
   tags:
     - RHEL-09-671015
     - CAT2
@@ -25,7 +24,8 @@
       when:
         - rhel9stig_non_fips_hashed_accounts.stdout | length > 0
         - rhel9stig_disruption_high
-      ansible.builtin.shell: "passwd -l {{ item }}"
+      ansible.builtin.command: "passwd -l {{ item }}"
+      changed_when: true
       loop:
         - "{{ rhel9stig_non_fips_hashed_accounts.stdout_lines }}"
 
@@ -58,8 +58,7 @@
     line: include /etc/crypto-policies/back-ends/libreswan.config
 
 - name: "MEDIUM | RHEL-09-671025 | PATCH |  RHEL 9 pam_unix.so module must be configured in the password-auth file to use a FIPS 140-3 approved cryptographic hashing algorithm for system authentication."
-  when:
-    - rhel_09_671025
+  when: rhel_09_671025
   tags:
     - RHEL-09-671025
     - CAT2

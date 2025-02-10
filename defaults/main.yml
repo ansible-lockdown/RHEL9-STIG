@@ -100,7 +100,7 @@ audit_content: git
 # If using either archive, copy, get_url:
 ## Note will work with .tar files - zip will require extra configuration
 ### If using get_url this is expecting github url in tar.gz format e.g.
-### https://github.com/ansible-lockdown/UBUNTU22-CIS-Audit/archive/refs/heads/benchmark-v1.0.0.tar.gz
+### https://github.com/ansible-lockdown/RHEL9-STIG-Audit/archive/refs/heads/benchmark-v1.0.0.tar.gz
 audit_conf_source: "some path or url to copy from"
 
 # Destination for the audit content to be placed on managed node
@@ -797,7 +797,7 @@ rhel9stig_smartcard_reader: false
 ### SSSD
 rhel9stig_sssd_configure: false
 rhel9stig_sssd_config_certmap: |
-  [certmap/{{ rhel9stig_sssd.domain }}/{{ rhel9stig_sssd.rulename}}"]
+  [certmap/{{ rhel9stig_sssd.domain }}/{{ rhel9stig_sssd.rulename }}"]
   matchrule ='.*example@mil'
   maprule = (userCertificate;binary={cert!bin})
   domains = example.com
@@ -805,12 +805,28 @@ rhel9stig_sssd_config_certmap: |
 ### Aide
 rhel9stig_use_aide: true
 rhel9stig_aide_cron_file: /etc/cron.daily/aide  # NOTE the path may change if not running daily
-rhel9stig_aide_cron:
-  day: '*'
-  hour: '4'
-  minute: '30'
-  job: '/usr/sbin/aide --check | /bin/mail -s "$HOSTNAME - Daily aide integrity check run" root@sysname.mil'
-  name: 'Aide Job runs Daily at 0430'
+rhel9stig_aide_cron_day: '*'
+rhel9stig_aide_cron_hour: '4'
+rhel9stig_aide_cron_minute: '30'
+rhel9stig_aide_cron_job: '/usr/sbin/aide --check | /bin/mail -s "$HOSTNAME - Daily aide integrity check run" root@sysname.mil'
+rhel9stig_aide_cron_name: 'Aide Job runs Daily at 0430'
+
+# AIDE is a file integrity checking tool, similar in nature to Tripwire.
+# While it cannot prevent intrusions, it can detect unauthorized changes
+# to configuration files by alerting when the files are changed. Review
+# the AIDE quick start guide and AIDE documentation before proceeding.
+# By setting this variable to `true`, all of the settings related to AIDE will be applied!
+rhel9stig_config_aide: true
+
+# If DB file older than below will automatically rebuild DB
+# e.g. options:1w = 1 week, 1d = 1day 1h = 1 hour
+rhel9stig_aide_db_file_age: 1w
+
+# If aide already setup this forces a new DB to be created
+rhel9stig_aide_db_recreate: false
+
+# allows to change db file, not config need to be adjusted too
+rhel9stig_aide_db_file: /var/lib/aide/aide.db.gz
 
 ### Rsyslog
 # Set the following to true if the server accepts incoming syslog data using rsyslog
@@ -827,22 +843,21 @@ rhel9stig_remotelog_server:
 # It will affect checks for control RHEL-09-653030
 
 rhel9stig_audit_log_filesystem: '/var/log/audit'
-rhel9stig_audit_conf:
-  action_mail_acct: root
-  admin_space_left: 5%
-  admin_space_left_action: single
-  disk_error_action: HALT  # Can be one of "SYSLOG", "SINGLE", or "HALT"
-  disk_full_action: HALT  # Can be one of "SYSLOG", "SINGLE", or "HALT"
-  freq: '100'
-  local_events: 'yes'
-  log_format: ENRICHED
-  logfile: "{{ rhel9stig_audit_log_filesystem }}/audit.log"
-  logfile_group: root
-  max_log_file_action: ROTATE
-  name_format: hostname
-  overflow_action: syslog
-  space_left: 25%
-  space_left_action: email
-  write_logs: 'yes'
+rhel9stig_audit_conf_action_mail_acct: root
+rhel9stig_audit_conf_admin_space_left: 5%
+rhel9stig_audit_conf_admin_space_left_action: single
+rhel9stig_audit_conf_disk_error_action: HALT  # Can be one of "SYSLOG", "SINGLE", or "HALT"
+rhel9stig_audit_conf_disk_full_action: HALT  # Can be one of "SYSLOG", "SINGLE", or "HALT"
+rhel9stig_audit_conf_freq: '100'
+rhel9stig_audit_conf_local_events: 'yes'
+rhel9stig_audit_conf_log_format: ENRICHED
+rhel9stig_audit_conf_logfile: "{{ rhel9stig_audit_log_filesystem }}/audit.log"
+rhel9stig_audit_conf_logfile_group: root
+rhel9stig_audit_conf_max_log_file_action: ROTATE
+rhel9stig_audit_conf_name_format: hostname
+rhel9stig_audit_conf_overflow_action: syslog
+rhel9stig_audit_conf_space_left: 25%
+rhel9stig_audit_conf_space_left_action: email
+rhel9stig_audit_conf_write_logs: 'yes'
 
 rhel9stig_audit_backlog_limit: 8192

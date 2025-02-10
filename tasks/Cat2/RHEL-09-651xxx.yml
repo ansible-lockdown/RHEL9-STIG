@@ -16,10 +16,9 @@
     - NIST800-53R4_CM-3
     - NIST800-53R4_SI-6
     - aide
-  notify: Build_aide_db
-  changed_when: true
+  notify: Build aide db
   ansible.builtin.package:
-    name: aide
+    name: "{{ aide_packages }}"
     state: present
 
 - name: "MEDIUM | RHEL-09-651015 | PATCH | RHEL 9 must routinely check the baseline configuration for unauthorized changes and notify the system administrator when anomalies in the operation of any security functions are discovered."
@@ -42,10 +41,10 @@
     - aide
   ansible.builtin.cron:
     cron_file: "{{ rhel9stig_aide_cron_file }}"
-    hour: "{{ rhel9stig_aide_cron.hour }}"
-    job: "{{ rhel9stig_aide_cron.job }}"
-    minute: "{{ rhel9stig_aide_cron.minute }}"
-    name: "{{ rhel9stig_aide_cron.name }}"
+    hour: "{{ rhel9stig_aide_cron_hour }}"
+    job: "{{ rhel9stig_aide_cron_job }}"
+    minute: "{{ rhel9stig_aide_cron_minute }}"
+    name: "{{ rhel9stig_aide_cron_name }}"
     state: present
     user: root
 
@@ -65,6 +64,7 @@
   ansible.builtin.template:
     dest: /etc/aide.conf
     src: etc/aide.conf.j2
+    mode: 'u-x,go-rwx'
 
 - name: "MEDIUM | RHEL-09-651025 | PATCH | RHEL 9 must use a file integrity tool that is configured to use FIPS 140-3-approved cryptographic hashes for validating file contents and directories."
   when:
@@ -88,3 +88,4 @@
   ansible.builtin.template:
     dest: /etc/aide.conf
     src: etc/aide.conf.j2
+    mode: 'u-x,go-rwx'

@@ -23,8 +23,7 @@
     state: present
 
 - name: "MEDIUM | RHEL-09-672020 | PATCH | RHEL 9 crypto policy must not be overridden."
-  when:
-    - rhel_09_672020
+  when: rhel_09_672020
   tags:
     - RHEL-09-672020
     - CAT2
@@ -63,8 +62,7 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-672025 | PATCH | RHEL 9 must use mechanisms meeting the requirements of applicable federal laws, executive orders, directives, policies, regulations, standards, and guidance for authentication to a cryptographic module."
-  when:
-    - rhel_09_672025
+  when: rhel_09_672025
   tags:
     - RHEL-09-672025
     - CAT2
@@ -78,7 +76,7 @@
     warn_control_id: "MEDIUM | RHEL-09-672025"
   block:
     - name: "MEDIUM | RHEL-09-672025 | AUDIT | RHEL 9 must use mechanisms meeting the requirements of applicable federal laws, executive orders, directives, policies, regulations, standards, and guidance for authentication to a cryptographic module."
-      ansible.builtin.shell: file /etc/crypto-policies/back-ends/krb5.config
+      ansible.builtin.command: file /etc/crypto-policies/back-ends/krb5.config
       changed_when: false
       failed_when: rhel9stig_crypto_krb5_fips.rc not in [ 0, 1 ]
       register: rhel9stig_crypto_krb5_fips
@@ -98,8 +96,7 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-672035 | PATCH | RHEL 9 must implement DOD-approved encryption in the OpenSSL package."
-  when:
-    - rhel_09_672035
+  when: rhel_09_672035
   tags:
     - RHEL-09-672035
     - CAT2
@@ -116,8 +113,7 @@
     line: '.include = /etc/crypto-policies/back-ends/opensslcnf.config'
 
 - name: "MEDIUM | RHEL-09-672040 | PATCH | RHEL 9 must implement DOD-approved TLS encryption in the OpenSSL package."
-  when:
-    - rhel_09_672040
+  when: rhel_09_672040
   tags:
     - RHEL-09-672040
     - CAT2
@@ -137,8 +133,7 @@
     - {line: 'DTLS.MinProtocol = DTLSv1.2', regexp: '^(\s*|#)DTLS.MinProtocol = '}
 
 - name: "MEDIUM | RHEL-09-672045 | PATCH | RHEL 9 must implement a system-wide encryption policy."
-  when:
-    - rhel_09_672045
+  when: rhel_09_672045
   tags:
     - RHEL-09-672045
     - CAT2
@@ -159,7 +154,7 @@
     warn_control_id: "MEDIUM | RHEL-09-672045"
   block:
     - name: "MEDIUM | RHEL-09-672045 | AUDIT | RHEL 9 must implement a system-wide encryption policy."
-      ansible.builtin.shell: update-crypto-policies --show
+      ansible.builtin.command: update-crypto-policies --show
       changed_when: false
       failed_when: discovered_crypto_policies_check.rc not in [0 , 1]
       register: discovered_crypto_policies_check
@@ -168,17 +163,16 @@
       when:
         - "'FIPS' not in discovered_crypto_policies_check.stdout"
         - rhel9stig_disruption_high
-      ansible.builtin.shell: fips-mode-setup --enable
+      ansible.builtin.command: fips-mode-setup --enable
+      changed_when: true
 
     - name: "MEDIUM | RHEL-09-672045 | WARN | RHEL 9 must implement a system-wide encryption policy."
-      when:
-        - not discovered_crypto_policies_check.stdout == 'FIPS'
+      when: not discovered_crypto_policies_check.stdout == 'FIPS'
       ansible.builtin.debug:
         msg: "WARNING!! - Crypto-Policies is not set to FIPS only - Current {{ discovered_crypto_policies_check.stdout }}"
 
     - name: "MEDIUM | RHEL-09-672045 | WARN | RHEL 9 must implement a system-wide encryption policy."
-      when:
-        - not discovered_crypto_policies_check.stdout == 'FIPS'
+      when: not discovered_crypto_policies_check.stdout == 'FIPS'
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
