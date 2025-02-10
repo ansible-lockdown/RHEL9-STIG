@@ -834,7 +834,7 @@
   ansible.builtin.file:
     owner: root
     path: "{{ item }}"
-  loop: "{{ audit_bins}}"
+  loop: "{{ audit_bins }}"
 
 - name: "MEDIUM | RHEL-09-232225 | PATCH | RHEL 9 audit tools must be group-owned by root."
   when: rhel_09_232225

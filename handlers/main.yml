@@ -126,7 +126,8 @@
 
 # Must be prior to fapolicyd restart
 - name: Generate fapolicyd rules
-  ansible.builtin.shell: fagenrules --load
+  ansible.builtin.command: fagenrules --load
+  changed_when: true
 
 - name: Restart fapolicyd
   ansible.builtin.service:
@@ -142,8 +143,6 @@
   register: auditd_immutable_check
 
 - name: Audit_immutable_fact
-  when:
-    - auditd_immutable_check.stdout >= '1'
   when: auditd_immutable_check.stdout == '1'
   notify: change_requires_reboot
   ansible.builtin.debug:
