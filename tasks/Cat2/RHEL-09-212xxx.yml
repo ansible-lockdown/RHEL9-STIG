@@ -31,16 +31,16 @@
         - name: "MEDIUM | RHEL-09-212010 | AUDIT | RHEL 9 must require a boot loader superuser password. | Check bootloader password required"
           ansible.builtin.shell: grep "password_pbkdf2 {{ rhel9stig_grub_superuser }} \${GRUB2_PASSWORD}" /etc/grub2.cfg
           changed_when: false
-          failed_when: rhel_09_212010_grub_passwd.rc not in [ 0,1 ]
-          register: rhel_09_212010_grub_passwd
+          failed_when: discovered_grub_passwd_state.rc not in [ 0,1 ]
+          register: discovered_grub_passwd_state
 
         - name: "MEDIUM | RHEL-09-212010 | WARN | RHEL 9 must require a boot loader superuser password. | Absent"
-          when: rhel_09_212010_grub_passwd.rc != 0
+          when: discovered_grub_passwd_state.rc != 0
           ansible.builtin.debug:
             msg: "Warning!! Please check that bootloader superuser and password is set"
 
         - name: "MEDIUM | RHEL-09-212010 | WARN | RHEL 9 must require a boot loader superuser password. | Warning"
-          when: rhel_09_212010_grub_passwd.rc != 0
+          when: discovered_grub_passwd_state.rc != 0
           ansible.builtin.import_tasks: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-212015 | PATCH | RHEL 9 must disable the ability of systemd to spawn an interactive boot process."

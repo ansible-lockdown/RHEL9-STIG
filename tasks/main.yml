@@ -51,13 +51,13 @@
       changed_when: false
       failed_when: false
       check_mode: false
-      register: ansible_user_password_set
+      register: discovered_ansible_user_password_set
 
     - name: Assert that password set for {{ ansible_env.SUDO_USER }} and account not locked  # noqa name[template]
       tags:
         - user_passwd
       ansible.builtin.assert:
-        that: ansible_user_password_set.stdout | length != 0 and ansible_user_password_set.stdout != "!!"
+        that: discovered_ansible_user_password_set.stdout | length != 0 and discovered_ansible_user_password_set.stdout != "!!"
         fail_msg: You have {{ sudo_password_rule }} enabled but the user = {{ ansible_env.SUDO_USER }} has no password set - It can break access
         success_msg: You have a password set for the {{ ansible_env.SUDO_USER }}
       vars:

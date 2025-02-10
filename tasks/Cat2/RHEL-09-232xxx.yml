@@ -806,18 +806,18 @@
     - name: "MEDIUM | RHEL-09-232215 | AUDIT | RHEL 9 library directories must be group-owned by root or a system account."
       ansible.builtin.shell: find /lib /lib64 /usr/lib /usr/lib64 ! -group root -type d -exec stat -c "%n %G" '{}' \;
       changed_when: false
-      failed_when: rhel9stig_lib_dirs_group.rc not in [ 0, 1 ]
-      register: rhel9stig_lib_dirs_group
+      failed_when: discovered_lib_dirs_group.rc not in [ 0, 1 ]
+      register: discovered_lib_dirs_group
 
     - name: "MEDIUM | RHEL-09-232215 | WARN | RHEL 9 library directories must be group-owned by root or a system account."
-      when: rhel9stig_lib_dirs_group.stdout | length > 0
+      when: discovered_lib_dirs_group.stdout | length > 0
       ansible.builtin.debug:
         msg: |
             "Warning!! Please validate group ownership of the following library directories
-             {{ rhel9stig_lib_dirs_group.stdout_lines }}"
+             {{ discovered_lib_dirs_group.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-232215 | WARN | RHEL 9 library directories must be group-owned by root or a system account."
-      when: rhel9stig_lib_dirs_group.stdout | length > 0
+      when: discovered_lib_dirs_group.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
