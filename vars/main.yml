@@ -58,3 +58,9 @@ audit_bins:
   - '/usr/sbin/auditd'
   - '/usr/sbin/rsyslogd'
   - '/usr/sbin/augenrules'
+
+# Aide packages
+aide_packages:
+  - aide
+# Aide initiate command for new DB creation
+aide_initiate_command: /usr/sbin/aide --init
