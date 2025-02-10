@@ -36,7 +36,7 @@
   ansible.builtin.lineinfile:
     path: /etc/security/limits.conf
     regexp: '^\s*\*\s+hard\s+maxlogins\s+\d{1,}'
-    line: "* hard maxlogins 10"
+    line: "* hard maxlogins {{ rhel9stig_sshd_config_maxlogins }}"
 
 - name: "LOW | RHEL-09-412075 | PATCH | RHEL 9 must display the date and time of the last successful account logon upon logon."
   when:

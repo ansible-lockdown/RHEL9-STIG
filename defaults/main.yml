@@ -42,6 +42,13 @@ container_vars_file: is_container.yml
 # system_is_ec2 toggle will disable tasks that fail on Amazon EC2 instances. Set true to skip and false to run tasks
 system_is_ec2: false
 
+# Connecting user, due to the way many users work differently this is to try and assist the use of connecting user if required
+# This is useful when part of kickstart build or running as root and not defining the ansible_user option
+# used @ RHEL-09-411015
+rhel9stig_default_user: root
+rhel9stig_connecting_user: "{{ ansible_env.SUDO_USER | default(rhel9stig_default_user) }}"
+rhel9stig_playbook_user: "{{ ansible_user | default(rhel9stig_connecting_user) }}"
+
 # Whether to skip the reboot
 skip_reboot: true
 
@@ -593,12 +600,16 @@ rhel_09_653120: true
 
 ### CONTROLS
 
-## Graphical/Gnome interface required
+## Graphical/Gnome interface approved to be present
+rhel9stig_gui_approved: false
+
+# If gui not installed
 rhel9stig_gui: "{{ rhel_09_gnome_present.stat.exists | default(false) }}"
 
 ## SSHD
 rhel9stig_sshd_config_file: /etc/ssh/sshd_config
 rhel9stig_ssh_required: true
+rhel9stig_sshd_config_maxlogins: 10
 rhel9stig_sshd_config:
   banner_file: /etc/issue
   ciphers: "{{ rhel9stig_dod_ciphers }}"
@@ -708,6 +719,17 @@ rhel9stig_time_synchronization_servers:
 - '0.us.pool.ntp.mil'
 - '1.us.pool.ntp.mil'
 rhel9stig_chrony_server_options: "iburst maxpoll 16"  # Max Settings is maxpoll 16
+
+## fapolicy
+# Allow adding of fapolicy rules uses whitelist below
+rhel9stig_add_fapolicy_policy: false
+
+# rhel9stig_fapolicy_white_list is the whitelist for fapolicyd
+rhel9stig_fapolicy_white_list:
+- '# Allow Ansible'
+- "allow perm=any trust=1 : dir={{ ansible_env.PWD }}/.ansible/"
+- 'allow perm=any trust=1 : dir=/root/.ansible/'
+- 'allow perm=any trust=1 : dir=/tmp/ansible/'
 
 ## DNS
 # Please adjust accordingly for ipv4 or ipv6

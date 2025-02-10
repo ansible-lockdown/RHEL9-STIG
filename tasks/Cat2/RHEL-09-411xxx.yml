@@ -41,7 +41,7 @@
         - rhel9stig_disruption_high
         - rhel9stig_users_passwd_max is defined
         - rhel9stig_users_passwd_max.stdout | length > 0
-        - "ansible_user not in item"
+        - item != rhel9stig_playbook_user
       ansible.builtin.shell: "chage -M 60 {{ item }}"
       failed_when: rhel9stig_users_passwd_max.rc not in [ 0, 1 ]
       loop: "{{ rhel9stig_users_passwd_max.stdout_lines }}"
@@ -583,6 +583,6 @@
     - name: "MEDIUM | RHEL-09-411115 | AUDIT | Local RHEL 9 initialization files must not execute world-writable programs."
       when: rhel9stig_user_exec_ww_files is defined
       ansible.builtin.file:
-        mode: go-w
+        mode: 'go-wx'
         path: "{{ item }}"
       loop: "{{ rhel9stig_user_exec_ww_files.stdout_lines }}"

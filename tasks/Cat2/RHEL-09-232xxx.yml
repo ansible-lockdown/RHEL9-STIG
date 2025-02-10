@@ -22,7 +22,7 @@
     - name: "MEDIUM | RHEL-09-232010 | PATCH | RHEL 9 system commands must have mode 755 or less permissive."
       when: rhel9stig_system_command_permissions.stdout | length > 0
       ansible.builtin.file:
-        mode: '0755'
+        mode: 'u+x,go-w'
         path: "{{ item }}"
       loop:
         - "{{ rhel9stig_system_command_permissions.stdout_lines }}"
@@ -49,7 +49,7 @@
     - name: "MEDIUM | RHEL-09-232015 | PATCH | RHEL 9 library directories must have mode 755 or less permissive."
       when: rhel9stig_library_directory_perms.stdout | length > 0
       ansible.builtin.file:
-        mode: '0755'
+        mode: 'u+x,go-w'
         path: "{{ item }}"
       loop:
         - "{{ rhel9stig_library_directory_perms.stdout_lines }}"
@@ -76,7 +76,7 @@
     - name: "MEDIUM | RHEL-09-232020 | PATCH | RHEL 9 library files must have mode 755 or less permissive."
       when: rhel9stig_library_directory_perms.stdout | length > 0
       ansible.builtin.file:
-        mode: '0755'
+        mode: 'u+x,go-w'
         path: "{{ item }}"
       loop: "{{ rhel9stig_library_directory_perms.stdout_lines }}"
 
@@ -93,7 +93,7 @@
     - V-257885
     - NIST800-53R4_SI-11
   ansible.builtin.file:
-    mode: u=rwx,g-w,o-w
+    mode: 'u+x,go-w'
     modification_time: preserve
     path: /var/log
     state: directory
@@ -111,7 +111,7 @@
     - V-257886
     - NIST800-53R4_SI-11
   ansible.builtin.file:
-    mode: u=rw,g-wx,o-rwx
+    mode: 'u-x,g-wx,o-rwx'
     modification_time: preserve
     path: /var/log/messages
     state: file
@@ -128,18 +128,11 @@
     - V-257887
     - NIST800-53R4_AU-9
   ansible.builtin.file:
-    mode: u=rwx,g-w,o-w
+    mode: 'u+x,go-w'
     modification_time: preserve
     owner: root
     path: "{{ item }}"
-  loop:
-    - /sbin/auditctl
-    - /sbin/aureport
-    - /sbin/ausearch
-    - /sbin/autrace
-    - /sbin/auditd
-    - /sbin/rsyslogd
-    - /sbin/augenrules
+  loop: "{{ audit_bins }}"
 
 - name: "MEDIUM | RHEL-09-232040 | PATCH | RHEL 9 cron configuration directories must have a mode of 0700 or less permissive."
   when:
@@ -153,7 +146,7 @@
     - V-257888
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: u=rwx,go-rwx
+    mode: 'u+x,go-rwx'
     modification_time: preserve
     owner: root
     path: "/etc/{{ item }}"
@@ -190,7 +183,7 @@
     - name: "MEDIUM | RHEL-09-232045 | AUDIT | All RHEL 9 local initialization files must have mode 0740 or less permissive. | update permissions"
       ansible.builtin.file:
         path: "{{ item.path }}"
-        mode: g-wx,o-rwx
+        mode: 'g-wx,o-rwx'
         follow: false
       loop: "{{ user_dot_files.files }}"
       loop_control:
@@ -218,11 +211,10 @@
     - name: "MEDIUM | RHEL-09-232050 | PATCH | All RHEL 9 local interactive user home directories must have mode 0750 or less permissive. | amend if needed"
       when:
         - item.stat.path is defined
-        - item.stat.mode > '0750'
       ansible.builtin.file:
         path: "{{ item.stat.path }}"
         state: directory
-        mode: u=rwx,g-w,o-rwx
+        mode: 'u+x,g-w,o-rwx'
       loop: "{{ rhel9stig_home_dir_perms.results }}"
       loop_control:
         label: "{{ item }}"
@@ -268,7 +260,7 @@
     - V-257891
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: u=rw,go-wx
+    mode: 'u-x,go-wx'
     path: /etc/group
 
 - name: "MEDIUM | RHEL-09-232060 | PATCH | RHEL 9 /etc/group- file must have mode 0644 or less permissive to prevent unauthorized access."
@@ -283,8 +275,10 @@
     - V-257892
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: u=rw,go-wx
+    mode: 'u-x,go-wx'
     path: /etc/group-
+  failed_when: discovered_group_hyphen_exists.state not in '[ file, absent ]'
+  register: discovered_group_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232065 | PATCH | RHEL 9 /etc/gshadow file must have mode 0000 or less permissive to prevent unauthorized access."
   when:
@@ -298,8 +292,10 @@
     - V-257893
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: '0000'
+    mode: 'ugo-rwx'
     path: /etc/gshadow
+  failed_when: discovered_gshadow_file_exists.state not in '[ file, absent ]'
+  register: discovered_gshadow_file_exists
 
 - name: "MEDIUM | RHEL-09-232070 | PATCH | RHEL 9 /etc/gshadow- file must have mode 0000 or less permissive to prevent unauthorized access."
   when:
@@ -313,8 +309,10 @@
     - V-257894
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: '0000'
+    mode: 'ugo-rwx'
     path: /etc/gshadow-
+  failed_when: discovered_gshadow_hyphen_exists.state not in '[ file, absent ]'
+  register: discovered_gshadow_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232075 | PATCH | RHEL 9 /etc/passwd file must have mode 0644 or less permissive to prevent unauthorized access."
   when:
@@ -328,7 +326,7 @@
     - V-257895
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: u=rw,go-wx
+    mode: 'u-x,go-wx'
     path: /etc/passwd
 
 - name: "MEDIUM | RHEL-09-232080 | PATCH | RHEL 9 /etc/passwd- file must have mode 0644 or less permissive to prevent unauthorized access."
@@ -343,8 +341,10 @@
     - V-257896
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: u=rw,go-wx
+    mode: 'u-x,go-wx'
     path: /etc/passwd-
+  failed_when: discovered_passwd_hyphen_exists.state not in '[ file, absent ]'
+  register: discovered_passwd_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232085 | PATCH | RHEL 9 /etc/shadow- file must have mode 0000 or less permissive to prevent unauthorized access."
   when:
@@ -358,8 +358,10 @@
     - V-257897
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: '0000'
+    mode: 'ugo-rwx'
     path: /etc/shadow-
+  failed_when: discovered_shadow_hyphen_exists.state not in '[ file, absent ]'
+  register: discovered_shadow_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232090 | PATCH | RHEL 9 /etc/group file must be owned by root."
   when:
@@ -405,6 +407,8 @@
   ansible.builtin.file:
     owner: root
     path: /etc/group-
+  failed_when: discovered_group_hyphen_exists.state not in '[ file, absent ]'
+  register: discovered_group_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232105 | PATCH | RHEL 9 /etc/group- file must be group-owned by root."
   when:
@@ -420,6 +424,8 @@
   ansible.builtin.file:
     group: root
     path: /etc/group-
+  failed_when: discovered_group_hyphen_exists.state not in '[ file, absent ]'
+  register: discovered_group_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232110 | PATCH | RHEL 9 /etc/gshadow file must be owned by root."
   when:
@@ -435,6 +441,8 @@
   ansible.builtin.file:
     owner: root
     path: /etc/gshadow
+  failed_when: discovered_gshadow_file_exists.state not in '[ file, absent ]'
+  register: discovered_gshadow_file_exists
 
 - name: "MEDIUM | RHEL-09-232115 | PATCH | RHEL 9 /etc/gshadow file must be group-owned by root."
   when:
@@ -450,6 +458,8 @@
   ansible.builtin.file:
     group: root
     path: /etc/gshadow
+  failed_when: discovered_gshadow_file_exists.state not in '[ file, absent ]'
+  register: discovered_gshadow_file_exists
 
 - name: "MEDIUM | RHEL-09-232120 | PATCH | RHEL 9 /etc/gshadow- file must be owned by root."
   when:
@@ -465,6 +475,8 @@
   ansible.builtin.file:
     owner: root
     path: /etc/gshadow-
+  failed_when: discovered_gshadow_hyphen_exists.state not in '[ file, absent ]'
+  register: discovered_gshadow_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232125 | PATCH | RHEL 9 /etc/gshadow- file must be group-owned by root."
   when:
@@ -480,6 +492,8 @@
   ansible.builtin.file:
     group: root
     path: /etc/gshadow-
+  failed_when: discovered_gshadow_hyphen_exists.state not in '[ file, absent ]'
+  register: discovered_gshadow_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232130 | PATCH | RHEL 9 /etc/passwd file must be owned by root."
   when:
@@ -525,6 +539,8 @@
   ansible.builtin.file:
     owner: root
     path: /etc/passwd-
+  failed_when: discovered_passwd_hyphen_exists.state not in '[ file, absent ]'
+  register: discovered_passwd_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232145 | PATCH | RHEL 9 /etc/passwd- file must be group-owned by root."
   when:
@@ -540,6 +556,8 @@
   ansible.builtin.file:
     group: root
     path: /etc/passwd-
+  failed_when: discovered_passwd_hyphen_exists.state not in '[ file, absent ]'
+  register: discovered_passwd_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232150 | PATCH | RHEL 9 /etc/shadow file must be owned by root."
   when:
@@ -585,6 +603,8 @@
   ansible.builtin.file:
     owner: root
     path: /etc/shadow-
+  failed_when: discovered_shadow_hyphen_exists.state not in '[ file, absent ]'
+  register: discovered_shadow_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232165 | PATCH | RHEL 9 /etc/shadow- file must be group-owned by root."
   when:
@@ -599,7 +619,9 @@
     - NIST800-53R4_CM-6
   ansible.builtin.file:
     group: root
-    path: /etc/shadow
+    path: /etc/shadow-
+  failed_when: discovered_shadow_hyphen_exists.state not in '[ file, absent ]'
+  register: discovered_shadow_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232170 | PATCH | RHEL 9 /var/log directory must be owned by root."
   when:
@@ -845,14 +867,7 @@
   ansible.builtin.file:
     owner: root
     path: "{{ item }}"
-  loop:
-    - '/sbin/auditctl'
-    - '/sbin/aureport'
-    - '/sbin/ausearch'
-    - '/sbin/autrace'
-    - '/sbin/auditd'
-    - '/sbin/rsyslogd'
-    - '/sbin/augenrules'
+  loop: "{{ audit_bins}}"
 
 - name: "MEDIUM | RHEL-09-232225 | PATCH | RHEL 9 audit tools must be group-owned by root."
   when:
@@ -868,14 +883,7 @@
   ansible.builtin.file:
     group: root
     path: "{{ item }}"
-  loop:
-    - '/sbin/auditctl'
-    - '/sbin/aureport'
-    - '/sbin/ausearch'
-    - '/sbin/autrace'
-    - '/sbin/auditd'
-    - '/sbin/rsyslogd'
-    - '/sbin/augenrules'
+  loop: "{{ audit_bins }}"
 
 - name: "MEDIUM | RHEL-09-232230 | PATCH | RHEL 9 cron configuration files directory must be owned by root."
   when:
@@ -1147,7 +1155,7 @@
     - NIST800-53R4_CM-6
   ansible.builtin.file:
     path: /etc/crontab
-    mode: '0600'
+    mode: 'u-x,go-rwx'
 
 - name: "MEDIUM | RHEL-09-232270 | PATCH | RHEL 9 /etc/shadow file must have mode 0000 to prevent unauthorized access."
   when:
@@ -1162,4 +1170,4 @@
     - NIST800-53R4_CM-6
   ansible.builtin.file:
     path: /etc/shadow
-    mode: '0000'
+    mode: 'ugo-rwx'

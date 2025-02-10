@@ -1,6 +1,6 @@
 ---
 
-- name: HIGH | RHEL-09-0411100 | The root account must be the only account having unrestricted access to RHEL 9 system.
+- name: HIGH | RHEL-09-411100 | The root account must be the only account having unrestricted access to RHEL 9 system.
   when:
     - rhel_09_411100
   tags:
@@ -15,13 +15,13 @@
   vars:
     warn_control_id: "HIGH | RHEL-09-411100"
   block:
-    - name: HIGH | RHEL-09-0411100 | AUDIT | The root account must be the only account having unrestricted access to RHEL 9 system.
+    - name: HIGH | RHEL-09-411100 | AUDIT | The root account must be the only account having unrestricted access to RHEL 9 system.
       ansible.builtin.shell: "cat /etc/passwd | awk -F: '($3 == 0 && $1 != \"root\") {i++;print $1 } END {exit i}'"
       changed_when: false
       check_mode: false
       register: rhel9stig_uid_zero_accounts_except_root
 
-    - name: HIGH | RHEL-09-0411100 | WARN | The root account must be the only account having unrestricted access to RHEL 9 system.
+    - name: HIGH | RHEL-09-411100 | WARN | The root account must be the only account having unrestricted access to RHEL 9 system.
       when:
         - rhel9stig_uid_zero_accounts_except_root is defined
         - rhel9stig_uid_zero_accounts_except_root.stdout | length > 0

@@ -348,8 +348,7 @@
         - rhel9stig_24hr_passwd_restrict.stdout | length > 0
         - not rhel9stig_disruption_high
       ansible.builtin.debug:
-        msg: |
-          "Warning!! Accounts have been found to have an incorrect password lifetime"
+        msg: "Warning!! Accounts have been found to have an incorrect password lifetime"
 
     - name: "MEDIUM | RHEL-09-611080 | WARN | RHEL 9 passwords must have a 24 hours minimum password lifetime restriction in /etc/shadow. | Warning"
       when:
@@ -362,7 +361,7 @@
       when:
         - rhel9stig_24hr_passwd_restrict.stdout | length > 0
         - rhel9stig_disruption_high
-        - item in rhel9stig_interactive_users
+        - item in rhel9stig_interactive_users.stdout_lines
       ansible.builtin.shell: "passwd -n 1 {{ item }}"
       loop: "{{ rhel9stig_24hr_passwd_restrict.stdout_lines }}"
 
@@ -384,7 +383,7 @@
     warn_control_id: "MEDIUM | RHEL-09-611085"
   block:
     - name: "MEDIUM | RHEL-09-611085 | AUDIT | RHEL 9 must require users to provide a password for privilege escalation"
-      ansible.builtin.shell: grep -r NOPASSWD /etc/sudoers /etc/sudoers.d/
+      ansible.builtin.shell: grep -Er "^(?\!#).*NOPASSWD" /etc/sudoers /etc/sudoers.d/
       changed_when: false
       failed_when: rhel9stig_sudo_nopasswd.rc not in [ 0, 1 ]
       register: rhel9stig_sudo_nopasswd
@@ -786,7 +785,7 @@
         group: root
         option: certificate_verification
         owner: root
-        mode: '0600'
+        mode: 'u-x,go-rwx'
         path: /etc/sssd/conf.d/certificate_verification.conf
         section: 'sssd'
         value: 'ocsp_dgst=sha512'
