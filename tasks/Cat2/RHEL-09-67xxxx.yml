@@ -28,8 +28,7 @@
         - rhel9stig_non_fips_hashed_accounts.stdout | length > 0
         - rhel9stig_disruption_high
       ansible.builtin.shell: "passwd -l {{ item }}"
-      loop:
-        - "{{ rhel9stig_non_fips_hashed_accounts.stdout_lines }}"
+      loop: "{{ rhel9stig_non_fips_hashed_accounts.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-671015 | AUDIT | RHEL 8 must employ FIPS 140-2 approved cryptographic hashing algorithms for all stored passwords. | Message out user accounts"
       when:
