@@ -226,8 +226,7 @@
       when: rhel9stig_duplicate_gids is defined or rhel9stig_gid_exists is defined
       ansible.builtin.debug:
         msg: "Warning!! Issues with primary user groups have been found Please investigate"
-      loop:
-        - "{{ rhel9stig_duplicate_gids.stdout_lines }}"
+      loop: "{{ rhel9stig_duplicate_gids.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-411045 | WARN | All RHEL 9 interactive users must have a primary group that exists.."
       when:

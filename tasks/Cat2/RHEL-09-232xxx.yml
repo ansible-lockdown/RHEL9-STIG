@@ -24,8 +24,7 @@
       ansible.builtin.file:
         mode: 'u+x,go-w'
         path: "{{ item }}"
-      loop:
-        - "{{ rhel9stig_system_command_permissions.stdout_lines }}"
+      loop: "{{ rhel9stig_system_command_permissions.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232015 | PATCH | RHEL 9 library directories must have mode 755 or less permissive."
   when:
@@ -51,8 +50,7 @@
       ansible.builtin.file:
         mode: 'u+x,go-w'
         path: "{{ item }}"
-      loop:
-        - "{{ rhel9stig_library_directory_perms.stdout_lines }}"
+      loop: "{{ rhel9stig_library_directory_perms.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232020 | PATCH | RHEL 9 library files must have mode 755 or less permissive."
   when:

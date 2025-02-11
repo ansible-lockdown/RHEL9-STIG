@@ -49,7 +49,6 @@
     line: /org/gnome/login-screen/banner-message-enable
     create: true
     mode: 'u-x,go-wx'
-    modification_time: preserve
     state: present
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
