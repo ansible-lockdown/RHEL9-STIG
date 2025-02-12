@@ -1,8 +1,7 @@
 ---
 
 - name: "MEDIUM | RHEL-09-252010 | PATCH | RHEL 9 must have the chrony package installed."
-  when:
-    - rhel_09_252010
+  when: rhel_09_252010
   tags:
     - RHEL-09-252010
     - CAT2
@@ -15,8 +14,7 @@
     name: chrony
 
 - name: "MEDIUM | RHEL-09-252015 | PATCH | RHEL 9 must have the chrony package installed."
-  when:
-    - rhel_09_252015
+  when: rhel_09_252015
   tags:
     - RHEL-09-252015
     - CAT2
@@ -26,8 +24,8 @@
     - V-257944
     - NIST800-53R4_NA
   ansible.builtin.systemd:
-    enabled: true
     name: chronyd
+    enabled: true
     state: started
 
 - name: |
@@ -62,14 +60,13 @@
     - NIST800-53R4_AU-8
     - NIST800-53R4_CM-7
   ansible.builtin.template:
-    dest: /etc/chrony.conf
     src: etc/chrony.conf.j2
-    mode: '0644'
+    dest: /etc/chrony.conf
+    mode: 'go-wx'
 
 # Required before 252035 to set DNS value in NetworkManager
 - name: "MEDIUM | RHEL-09-252040 | PATCH | RHEL 9 must configure a DNS processing mode set be Network Manager."
-  when:
-    - rhel_09_252040
+  when: rhel_09_252040
   tags:
     - RHEL-09-252040
     - CAT2
@@ -79,17 +76,17 @@
     - V-257949
     - NIST800-53R4_CM-6
   community.general.ini_file:
-    option: dns
     path: /etc/NetworkManager/NetworkManager.conf
+    option: dns
     section: main
     state: present
     value: none
     no_extra_spaces: true
-  register: rhel09stig_dns_nm_set
+    mode: 'go-wx'
+  register: discovered_dns_nm_set
 
 - name: "MEDIUM | RHEL-09-252035 | PATCH | RHEL 9 systems using Domain Name Servers (DNS) resolution must have at least two name servers configured."
-  when:
-    - rhel_09_252035
+  when: rhel_09_252035
   tags:
     - RHEL-09-252035
     - CAT2
@@ -101,13 +98,13 @@
   block:
     - name: "MEDIUM | RHEL-09-252035 | PATCH | RHEL 9 systems using Domain Name Servers (DNS) resolution must have at least two name servers configured."
       when:
-        - rhel09stig_dns_nm_set is defined or
+        - discovered_dns_nm_set is defined or
           rhel9stig_network_manager_dns.stdout == 'none' or
           rhel9stig_network_manager_dns.stdout == 'unmanaged'
       ansible.builtin.template:
-        dest: /etc/resolv.conf
-        mode: '0644'
         src: etc/resolv.conf.j2
+        dest: /etc/resolv.conf
+        mode: 'go-wx'
 
     - name: "MEDIUM | RHEL-09-252035 | PATCH | RHEL 9 systems using Domain Name Servers (DNS) resolution must have at least two name servers configured."
       when:
@@ -140,25 +137,23 @@
     - name: "MEDIUM | RHEL-09-252045 | AUDIT | RHEL 9 must not have unauthorized IP tunnels configured. | check ipsec connections"
       ansible.builtin.shell: 'systemctl status ipsec | grep ": active" > /dev/null && grep -rni conn /etc/ipsec.conf /etc/ipsec.d/'
       changed_when: false
-      failed_when: rhel9stig_ipsec_connections.rc not in [ 0, 1, 2]
-      register: rhel9stig_ipsec_connections
+      failed_when: discovered_ipsec_connections.rc not in [ 0, 1, 2]
+      register: discovered_ipsec_connections
 
     - name: "MEDIUM | RHEL-09-252045 | WARN | RHEL 9 must not have unauthorized IP tunnels configured. | Alert Warning"
-      when: rhel9stig_ipsec_connections.stdout | length > 0
+      when: discovered_ipsec_connections.stdout | length > 0
       ansible.builtin.debug:
         msg: |
           "Warning!! The following Ipsec tunnels have been discovered please confirm with ISSO these are accepted and documented
-          {{ rhel9stig_ipsec_connections.stdout_lines }}"
+          {{ discovered_ipsec_connections.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-252045 | WARN | RHEL 9 must not have unauthorized IP tunnels configured. | Warning Count"
-      when: rhel9stig_ipsec_connections.stdout | length > 0
+      when: discovered_ipsec_connections.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-252050 | PATCH | RHEL 9 must be configured to prevent unrestricted mail relaying."
-  when:
-    - rhel_09_252050
-    - "'postfix' in ansible_facts.packages"
+  when: rhel_09_252050
   tags:
     - RHEL-09-252050
     - CAT2
@@ -171,7 +166,7 @@
     warn_control_id: "MEDIUM | RHEL-09-252050"
   block:
     - name: "MEDIUM | RHEL-09-252050 | AUDIT | RHEL 9 must be configured to prevent unrestricted mail relaying."
-      ansible.builtin.shell: postconf -n smtpd_client_restrictions
+      ansible.builtin.command: postconf -n smtpd_client_restrictions
       changed_when: false
       failed_when: postfix_client_restrict.rc not in [ 0, 1 ]
       register: postfix_client_restrict
@@ -180,7 +175,8 @@
       when:
         - rhel9stig_disruption_high
         - "rhel9stig_postfix_client_conf not in postfix_client_restrict"
-      ansible.builtin.shell: "postconf -e 'smtpd_client_restrictions = {{ rhel9stig_postfix_client_conf }}'"
+      ansible.builtin.command: "postconf -e 'smtpd_client_restrictions = {{ rhel9stig_postfix_client_conf }}'"
+      changed_when: true
 
     - name: "MEDIUM | RHEL-09-252050 | PATCH | RHEL 9 must be configured to prevent unrestricted mail relaying. | Alert Warning"
       when: rhel9stig_postfix_client_conf not in postfix_client_restrict
@@ -193,9 +189,7 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-252055 | PATCH | If the Trivial File Transfer Protocol (TFTP) server is required, RHEL 9 TFTP daemon must be configured to operate in secure mode."
-  when:
-    - rhel_09_252055
-    - "'tftp-server' in ansible_facts.packages"
+  when: rhel_09_252055
   tags:
     - RHEL-09-252050
     - CAT2
@@ -206,7 +200,7 @@
     - NIST800-53R4_CM-6
   block:
     - name: "MEDIUM | RHEL-09-252055 | AUDIT | If the Trivial File Transfer Protocol (TFTP) server is required, RHEL 9 TFTP daemon must be configured to operate in secure mode."
-      ansible.builtin.shell: systemctl show tftp | grep FragmentPath= | cut -d = -f 2
+      ansible.builtin.shell: systemctl show tftp | grep FragmentPath= | cut -d = -f 2  # noqa: command-instead-of-module
       changed_when: false
       failed_when: rhel9stig_tftp_systemd_file.rc not in [ 0, 1 ]
       register: rhel9stig_tftp_systemd_file
@@ -235,11 +229,10 @@
     regexp: postmaster:\s*root
     line: 'postmaster: root'
     create: true
+    mode: 'go-wx'
 
 - name: "MEDIUM | RHEL-09-252065 | PATCH | RHEL 9 libreswan package must be installed."
-  when:
-    - rhel_09_252065
-    - "'libreswan' not in ansible_facts.packages"
+  when: rhel_09_252065
   tags:
     - RHEL-09-252065
     - CAT2

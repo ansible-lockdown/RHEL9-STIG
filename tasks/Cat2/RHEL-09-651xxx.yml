@@ -63,8 +63,9 @@
     - NIST800-53R4_CM-6
     - aide
   ansible.builtin.template:
-    dest: /etc/aide.conf
     src: etc/aide.conf.j2
+    dest: /etc/aide.conf
+    mode: 'go-wx'
 
 - name: "MEDIUM | RHEL-09-651025 | PATCH | RHEL 9 must use a file integrity tool that is configured to use FIPS 140-3-approved cryptographic hashes for validating file contents and directories."
   when:
@@ -86,5 +87,6 @@
     - NIST800-53R4_AU-9
     - aide
   ansible.builtin.template:
-    dest: /etc/aide.conf
     src: etc/aide.conf.j2
+    dest: /etc/aide.conf
+    mode: 'go-wx'

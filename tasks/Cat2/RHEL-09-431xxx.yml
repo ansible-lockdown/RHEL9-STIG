@@ -1,8 +1,7 @@
 ---
 
 - name: "MEDIUM | RHEL-09-431015 | PATCH | RHEL 9 must enable the SELinux targeted policy."
-  when:
-    - rhel_09_431015
+  when: rhel_09_431015
   tags:
     - RHEL-09-431015
     - CAT2
@@ -17,8 +16,7 @@
     line: SELINUXTYPE=targeted
 
 - name: "MEDIUM | RHEL-09-431025 | PATCH | RHEL 9 must have policycoreutils package installed."
-  when:
-    - rhel_09_431025
+  when: rhel_09_431025
   tags:
     - RHEL-09-431025
     - CAT2
@@ -34,8 +32,7 @@
     state: present
 
 - name: "MEDIUM | RHEL-09-431030 | PATCH | RHEL 9 policycoreutils-python-utils package must be installed."
-  when:
-    - rhel_09_431030
+  when: rhel_09_431030
   tags:
     - RHEL-09-431030
     - CAT2
@@ -51,8 +48,7 @@
 ## RHEL-09-431025 and 431030 are Pre-reqs for this control
 
 - name: "MEDIUM | RHEL-09-431020 | PATCH | RHEL 9 must enable the SELinux targeted policy."
-  when:
-    - rhel_09_431020
+  when: rhel_09_431020
   tags:
     - RHEL-09-431020
     - CAT2
@@ -73,11 +69,12 @@
 
     - name: "MEDIUM | RHEL-09-431020 | PATCH | RHEL 9 must enable the SELinux targeted policy."
       when: add_faillock_secontext.changed  # noqa no-handler
-      ansible.builtin.shell: "restorecon -irvF {{ rhel9stig_faillock.dir }}"
+      ansible.builtin.command: "restorecon -irvF {{ rhel9stig_faillock.dir }}"
+      changed_when: true
+      check_mode: false
 
 - name: "MEDIUM | RHEL-09-432010 | PATCH | RHEL 9 must have the sudo package installed."
-  when:
-    - rhel_09_432010
+  when: rhel_09_432010
   tags:
     - RHEL-09-432010
     - CAT2
@@ -91,8 +88,7 @@
     state: present
 
 - name: "MEDIUM | RHEL-09-432015 | PATCH | RHEL 9 must require reauthentication when using the 'sudo' command."
-  when:
-    - rhel_09_432015
+  when: rhel_09_432015
   tags:
     - RHEL-09-432015
     - CAT2
@@ -108,8 +104,7 @@
   loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-432020 | PATCH | RHEL 9 must use the invoking user's password for privilege escalation when using 'sudo'."
-  when:
-    - rhel_09_432020
+  when: rhel_09_432020
   tags:
     - RHEL-09-432020
     - CAT2
@@ -141,8 +136,7 @@
       loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-432025 | PATCH |  RHEL 9 must require users to reauthenticate for privilege escalation."
-  when:
-    - rhel_09_432025
+  when: rhel_09_432025
   tags:
     - RHEL-09-432025
     - CAT2
@@ -158,8 +152,7 @@
   loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-432030 | PATCH | RHEL 9 must restrict privilege elevation to authorized personnel."
-  when:
-    - rhel_09_432030
+  when: rhel_09_432030
   tags:
     - RHEL-09-432030
     - CAT2
@@ -176,8 +169,7 @@
   loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-432035 | PATCH | RHEL 9 must restrict the use of the 'su' command."
-  when:
-    - rhel_09_432035
+  when: rhel_09_432035
   tags:
     - RHEL-09-432035
     - CAT2
@@ -194,8 +186,7 @@
     line: auth    required    pam_wheel.so use_uid
 
 - name: "MEDIUM | RHEL-09-433010 | PATCH | RHEL 9 fapolicy module must be installed."
-  when:
-    - rhel_09_433010
+  when: rhel_09_433010
   tags:
     - RHEL-09-433010
     - CAT2
@@ -212,8 +203,7 @@
     state: present
 
 - name: "MEDIUM | RHEL-09-433015 | PATCH | RHEL 9 fapolicy module must be enabled."
-  when:
-    - rhel_09_433015
+  when: rhel_09_433015
   tags:
     - RHEL-09-433015
     - CAT2

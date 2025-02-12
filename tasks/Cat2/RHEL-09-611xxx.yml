@@ -362,7 +362,9 @@
         - rhel9stig_24hr_passwd_restrict.stdout | length > 0
         - rhel9stig_disruption_high
         - item in rhel9stig_interactive_users.stdout_lines
-      ansible.builtin.shell: "passwd -n 1 {{ item }}"
+      ansible.builtin.command: "passwd -n 1 {{ item }}"
+      changed_when: true
+      check_mode: false
       loop: "{{ rhel9stig_24hr_passwd_restrict.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-611085 | PATCH | RHEL 9 must require users to provide a password for privilege escalation"
@@ -415,8 +417,7 @@
       loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-611090 | PATCH | RHEL 9 passwords must be created with a minimum of 15 characters."
-  when:
-    - rhel_09_611090
+  when: rhel_09_611090
   tags:
     - RHEL-09-611090
     - CAT2
@@ -432,8 +433,7 @@
     backrefs: true
 
 - name: "MEDIUM | RHEL-09-611095 | PATCH | RHEL 9 passwords for new users must have a minimum of 15 characters."
-  when:
-    - rhel_09_611095
+  when: rhel_09_611095
   tags:
     - RHEL-09-611095
     - CAT2
@@ -591,10 +591,11 @@
     - V-258116
     - NIST800-53R4_NA
   community.general.ini_file:
-    option: crypt_style
     path: /etc/libuser.conf
+    option: crypt_style
     section: 'default'
     value: 'sha512'
+    mode: 'go-wx'
 
 - name: "MEDIUM | RHEL-09-611140 | PATCH | RHEL 9 must be configured to use the shadow file to store only encrypted representations of passwords."
   when:
@@ -667,20 +668,17 @@
     warn_control_id: "MEDIUM | RHEL-09-611155"
   block:
     - name: "MEDIUM | RHEL-09-611155 | WARN | RHEL 9 must not have accounts configured with blank or null passwords."
-      when:
-        - not rhel9stig_disruption_high
+      when: not rhel9stig_disruption_high
       ansible.builtin.debug:
         msg: "Warning!! You have accounts with blank passwords"
 
     - name: "MEDIUM | RHEL-09-611155 | WARN | RHEL 9 must not have accounts configured with blank or null passwords."
-      when:
-        - not rhel9stig_disruption_high
+      when: not rhel9stig_disruption_high
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
     - name: "MEDIUM | RHEL-09-611155 | PATCH | RHEL 9 must not have accounts configured with blank or null passwords."
-      when:
-        - rhel9stig_disruption_high
+      when: rhel9stig_disruption_high
       ansible.builtin.user:
         name: "{{ item }}"
         password_lock: true
@@ -733,6 +731,7 @@
     line: card_drivers = cac,\3\4;
     create: true
     backrefs: true
+    mode: 'go-wx'
 
 - name: "MEDIUM | RHEL-09-611165 | PATCH | RHEL 9 must enable certificate based smart card authentication."
   when:
@@ -763,7 +762,6 @@
   tags:
     - RHEL-09-611170
     - CAT2
-
     - CCI-001954
     - SRG-OS-000375-GPOS-00160
     - SRG-OS-000377-GPOS-00162
@@ -829,13 +827,12 @@
     - V-258125
     - NIST800-53R4_NA
   ansible.builtin.systemd:
-    enabled: true
     name: pcscd
+    enabled: true
     state: started
 
 - name: "MEDIUM | RHEL-09-611190 | PATCH | RHEL 9, for PKI-based authentication, must enforce authorized access to the corresponding private key."
-  when:
-    - rhel_09_611190
+  when: rhel_09_611190
   tags:
     - RHEL-09-611190
     - CAT2
@@ -856,8 +853,7 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-611195 | PATCH | RHEL 9 must require authentication to access emergency mode."
-  when:
-    - rhel_09_611195
+  when: rhel_09_611195
   tags:
     - RHEL-09-611195
     - CAT2
@@ -873,8 +869,7 @@
     backrefs: true
 
 - name: "MEDIUM | RHEL-09-611200 | PATCH | RHEL 9 must require authentication to access single-user mode"
-  when:
-    - rhel_09_611200
+  when: rhel_09_611200
   tags:
     - RHEL-09-611200
     - CAT2
@@ -909,8 +904,7 @@
       register: rhel9stig_keytab_files
 
     - name: "MEDIUM | RHEL-09-611205 | PATCH | RHEL 9 must require authentication to access single-user mode"
-      when:
-        - rhel9stig_keytab_files.matched > 0
+      when: rhel9stig_keytab_files.matched > 0
       ansible.builtin.file:
         path: "{{ item.path }}"
         state: absent

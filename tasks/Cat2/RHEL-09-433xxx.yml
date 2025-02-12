@@ -1,8 +1,7 @@
 ---
 
 - name: "MEDIUM | RHEL-09-433010 | PATCH | RHEL 9 fapolicy module must be installed."
-  when:
-    - rhel_09_433010
+  when: rhel_09_433010
   tags:
     - RHEL-09-433010
     - CAT2
@@ -19,8 +18,7 @@
     state: present
 
 - name: "MEDIUM | RHEL-09-433015 | PATCH | RHEL 9 fapolicy module must be enabled."
-  when:
-    - rhel_09_433015
+  when: rhel_09_433015
   tags:
     - RHEL-09-433015
     - CAT2
@@ -33,6 +31,6 @@
     - NIST800-53R4_IA-11
     - NIST800-53R4_AC-3
   ansible.builtin.systemd:
-    enabled: true
     name: fapolicyd
+    enabled: true
     state: started
