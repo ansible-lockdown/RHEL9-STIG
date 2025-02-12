@@ -1,8 +1,7 @@
 ---
 
 - name: HIGH | RHEL-09-211010 | AUDIT | RHEL 9 must be a vendor-supported release.
-  when:
-    - rhel_09_211010
+  when: rhel_09_211010
   tags:
     - RHEL-09-211010
     - CAT1
@@ -16,8 +15,7 @@
   changed_when: ansible_facts.distribution_version is not version_compare(rhel9stig_min_supported_os_ver[ansible_facts.distribution], '>=')
 
 - name: HIGH | RHEL-09-211045 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled
-  when:
-    - rhel_09_211045
+  when: rhel_09_211045
   tags:
     - RHEL-09-211045
     - CAT1
@@ -35,10 +33,10 @@
     regexp: ^CtrlAltDelBurstAction=none
     line: CtrlAltDelBurstAction=none
     create: true
+    mode: 'go-wx'
 
 - name: HIGH | RHEL-09-211050 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled
-  when:
-    - rhel_09_211050
+  when: rhel_09_211050
   tags:
     - RHEL-09-211050
     - CAT1
@@ -54,19 +52,18 @@
   block:
     - name: HIGH | RHEL-09-211050 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled | Create symlink to /dev/null
       ansible.builtin.file:
-        dest: /etc/systemd/system/ctrl-alt-del.target
         src: /dev/null
+        dest: /etc/systemd/system/ctrl-alt-del.target
         state: link
 
     - name: HIGH | RHEL-09-211050 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled | systemctl disable
       ansible.builtin.systemd:
-        masked: true
         name: ctrl-alt-del.target
+        masked: true
         state: stopped
 
 - name: HIGH | RHEL-09-212020 | PATCH | RHEL 9 must require a unique superusers name upon booting into single-user and maintenance modes.
-  when:
-    - rhel_09_212020
+  when: rhel_09_212020
   tags:
     - RHEL-09-212020
     - CAT1
@@ -90,8 +87,7 @@
     loop_var: grub_superusers
 
 - name: HIGH | RHEL-09-214015 | PATCH | RHEL 9 must check the GPG signature of software packages originating from external software repositories before installation.
-  when:
-    - rhel_09_214015
+  when: rhel_09_214015
   tags:
     - RHEL-09-214015
     - CAT1
@@ -108,8 +104,7 @@
     line: gpgcheck=1
 
 - name: HIGH | RHEL-09-214020 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation.
-  when:
-    - rhel_09_214020
+  when: rhel_09_214020
   tags:
     - RHEL-09-214020
     - CAT1
@@ -126,8 +121,7 @@
     line: localpkg_gpgcheck=1
 
 - name: HIGH | RHEL-09-214025 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation.
-  when:
-    - rhel_09_214025
+  when: rhel_09_214025
   tags:
     - RHEL-09-214025
     - CAT1
@@ -196,10 +190,8 @@
     name: tftp-server
     state: absent
 
-- name: HIGH | RHEL-09-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
-    of all information that requires at rest protection.
-  when:
-    - rhel_09_231190
+- name: HIGH | RHEL-09-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification of all information that requires at rest protection.
+  when: rhel_09_231190
   tags:
     - RHEL-09-231190
     - CAT1
@@ -217,29 +209,25 @@
   vars:
     warn_control_id: "HIGH | RHEL-09-231190"
   block:
-    - name: HIGH | RHEL-09-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
-        of all information that requires at rest protection. | Get partition layout
-      ansible.builtin.shell: blkid
+    - name: HIGH | RHEL-09-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification of all information that requires at rest protection. | Get partition layout
+      ansible.builtin.command: blkid
       changed_when: false
       failed_when: false
       register: rhel_09_231190_partition_layout
 
-    - name: HIGH | RHEL-09-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
-        of all information that requires at rest protection. | Message out warning
+    - name: HIGH | RHEL-09-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification of all information that requires at rest protection. | Message out warning
       ansible.builtin.debug:
         msg:
           - WARNING!! Below is the partition layout. Please run the "blkid" command to confirm every persistent disk partition has an entry for TYPE=crypto_LUKS.
           - If partitions other than pseudo file systems (such as /proc or /sys or tmpfs) this is a finding
           - "{{ rhel_09_231190_partition_layout.stdout_lines }}"
 
-    - name: HIGH | RHEL-09-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
-        of all information that requires at rest protection. | Message out warning
+    - name: HIGH | RHEL-09-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification of all information that requires at rest protection. | Message out warning
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
 - name: HIGH | RHEL-09-252070 | There must be no shosts.equiv files on RHEL 9.
-  when:
-    - rhel_09_252070
+  when: rhel_09_252070
   tags:
     - RHEL-09-252070
     - CAT1
@@ -275,8 +263,7 @@
         file: warning_facts.yml
 
 - name: HIGH | RHEL-09-252075 | There must be no .shosts files on RHEL 9.
-  when:
-    - rhel_09_252075
+  when: rhel_09_252075
   tags:
     - RHEL-09-252075
     - CAT1
@@ -291,8 +278,8 @@
   block:
     - name: HIGH | RHEL-09-252075 | AUDIT | There must be no .shosts files on RHEL 9. | find files
       ansible.builtin.find:
-        hidden: true
         path: /
+        hidden: true
         pattern: .shosts
       register: rhel9stig_dot_shosts
 
@@ -312,8 +299,7 @@
       ansible.builtin.import_tasks: warning_facts.yml
 
 - name: HIGH | RHEL-09-255040 | PATCH | RHEL 9 SSHD must not allow blank passwords.
-  when:
-    - rhel_09_255040
+  when: rhel_09_255040
   tags:
     - RHEL-09-255040
     - CAT1
@@ -327,16 +313,15 @@
     - NIST800-53R4_CM-6
     - NIST800-53R4_IA-2
     - ssh
+  notify: Sshd_restart
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)PermitEmptyPasswords yes
     line: PermitEmptyPasswords no
     validate: sshd -t -f %s
-  notify: Sshd_restart
 
 - name: HIGH | RHEL-09-255050 | PATCH | RHEL 9 must enable the Pluggable Authentication Module (PAM) interface for SSHD.
-  when:
-    - rhel_09_255050
+  when: rhel_09_255050
   tags:
     - RHEL-09-255050
     - CAT1
@@ -373,6 +358,7 @@
     line: "{{ autologin.line }}"
     insertafter: "{{ autologin.after | default(omit) }}"
     create: true
+    mode: 'go-wx'
   loop:
     - { regexp: "[daemon]", line: "[daemon]" }
     - { regexp: "(?i)^AutomaticLoginEnable=false", line: AutomaticLoginEnable=false, after: "[daemon]" }

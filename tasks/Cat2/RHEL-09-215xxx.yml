@@ -18,9 +18,7 @@
     state: present
 
 - name: "MEDIUM | RHEL-09-215020 | PATCH | RHEL 9 must not have the sendmail package installed."
-  when:
-    - rhel_09_215020
-    - "'sendmail' in ansible_facts.packages"
+  when: rhel_09_215020
   tags:
     - RHEL-09-215020
     - CAT2
@@ -39,7 +37,6 @@
 - name: "MEDIUM | RHEL-09-215025 | PATCH | RHEL 9 must not have the nfs-utils package installed."
   when:
     - rhel_09_215025
-    - "'nfs-utils' in ansible_facts.packages"
     - not rhel9stig_nfs_utils_required
   tags:
     - RHEL-09-215025
@@ -54,9 +51,7 @@
     state: absent
 
 - name: "MEDIUM | RHEL-09-215030 | PATCH | RHEL 9 must not have the ypserv package installed."
-  when:
-    - rhel_09_215030
-    - "'ypserv' in ansible_facts.packages"
+  when: rhel_09_215030
   tags:
     - RHEL-09-215030
     - CAT2
@@ -70,9 +65,7 @@
     state: absent
 
 - name: "MEDIUM | RHEL-09-215035 | PATCH | RHEL 9 must not have the rsh-server package installed."
-  when:
-    - rhel_09_215035
-    - "'rsh-server' in ansible_facts.packages"
+  when: rhel_09_215035
   tags:
     - RHEL-09-215035
     - CAT2
@@ -86,9 +79,7 @@
     state: absent
 
 - name: "MEDIUM | RHEL-09-215040 | PATCH | RHEL 9 must not have the telnet-server package installed."
-  when:
-    - rhel_09_215040
-    - "'telnet-server' in ansible_facts.packages"
+  when: rhel_09_215040
   tags:
     - RHEL-09-215040
     - CAT2
@@ -102,9 +93,7 @@
     state: absent
 
 - name: "MEDIUM | RHEL-09-215045 | PATCH | RHEL 9 must not have the gssproxy package installed."
-  when:
-    - rhel_09_215045
-    - "'gssproxy' in ansible_facts.packages"
+  when: rhel_09_215045
   tags:
     - RHEL-09-215045
     - CAT2
@@ -118,9 +107,7 @@
     state: absent
 
 - name: "MEDIUM | RHEL-09-215050 | PATCH | RHEL 9 must not have the iprutils package installed."
-  when:
-    - rhel_09_215050
-    - "'iprutils' in ansible_facts.packages"
+  when: rhel_09_215050
   tags:
     - RHEL-09-215050
     - CAT2
@@ -134,9 +121,7 @@
     state: absent
 
 - name: "MEDIUM | RHEL-09-215055 | PATCH | RHEL 9 must not have the tuned package installed."
-  when:
-    - rhel_09_215055
-    - "'tuned' in ansible_facts.packages"
+  when: rhel_09_215055
   tags:
     - RHEL-09-215055
     - CAT2
@@ -153,9 +138,7 @@
     state: absent
 
 - name: "MEDIUM | RHEL-09-215065 | PATCH | RHEL 9 must not have the quagga package installed."
-  when:
-    - rhel_09_215065
-    - "'quagga' in ansible_facts.packages"
+  when: rhel_09_215065
   tags:
     - RHEL-09-215065
     - CAT2
@@ -169,8 +152,7 @@
     state: absent
 
 - name: "MEDIUM | RHEL-09-215070 | PATCH | A graphical display manager must not be installed on RHEL 9 unless approved."
-  when:
-    - rhel_09_215070
+  when: rhel_09_215070
   tags:
     - RHEL-09-215070
     - CAT2
@@ -184,9 +166,7 @@
     state: absent
 
 - name: "MEDIUM | RHEL-09-215075 | PATCH | RHEL 9 must have the openssl-pkcs11 package installed."
-  when:
-    - rhel_09_215075
-    - "'openssl-pkcs11' not in ansible_facts.packages"
+  when: rhel_09_215075
   tags:
     - RHEL-09-215075
     - CAT2
@@ -205,9 +185,7 @@
     state: present
 
 - name: "MEDIUM | RHEL-09-215080 | PATCH | RHEL 9 must have the gnutls-utils package installed."
-  when:
-    - rhel_09_215080
-    - "'gnutls-utils' not in ansible_facts.packages"
+  when: rhel_09_215080
   tags:
     - RHEL-09-215080
     - CAT2
@@ -221,9 +199,7 @@
     state: present
 
 - name: "MEDIUM | RHEL-09-215085 | PATCH | RHEL 9 must have the nss-tools package installed."
-  when:
-    - rhel_09_215085
-    - "'nss-tools' not in ansible_facts.packages"
+  when: rhel_09_215085
   tags:
     - RHEL-09-215085
     - CAT2
@@ -237,9 +213,7 @@
     state: present
 
 - name: "MEDIUM | RHEL-09-215090 | PATCH | RHEL 9 must have the rng-tools package installed."
-  when:
-    - rhel_09_215090
-    - "'rng-tools' not in ansible_facts.packages"
+  when: rhel_09_215090
   tags:
     - RHEL-09-215090
     - CAT2
@@ -253,9 +227,7 @@
     state: present
 
 - name: "MEDIUM | RHEL-09-215095 | PATCH | RHEL 9 must have the s-nail package installed."
-  when:
-    - rhel_09_215095
-    - "'s-nail' not in ansible_facts.packages"
+  when: rhel_09_215095
   tags:
     - RHEL-09-215095
     - CAT2

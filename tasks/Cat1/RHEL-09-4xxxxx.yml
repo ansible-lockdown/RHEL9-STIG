@@ -1,8 +1,7 @@
 ---
 
 - name: HIGH | RHEL-09-411100 | The root account must be the only account having unrestricted access to RHEL 9 system.
-  when:
-    - rhel_09_411100
+  when: rhel_09_411100
   tags:
     - RHEL-09-411100
     - CAT1

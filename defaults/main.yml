@@ -805,7 +805,7 @@ rhel9stig_smartcard_reader: false
 ### SSSD
 rhel9stig_sssd_configure: false
 rhel9stig_sssd_config_certmap: |
-  [certmap/{{ rhel9stig_sssd.domain }}/{{ rhel9stig_sssd.rulename}}"]
+  [certmap/{{ rhel9stig_sssd.domain }}/{{ rhel9stig_sssd.rulename }}"]
   matchrule ='.*example@mil'
   maprule = (userCertificate;binary={cert!bin})
   domains = example.com
