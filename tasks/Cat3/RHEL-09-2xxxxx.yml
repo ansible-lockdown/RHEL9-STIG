@@ -46,7 +46,7 @@
         - rhel9stig_grub_pti_enabled.rc == '1'
       ansible.builtin.command: grubby --update-kernel=ALL --args="pti=on"
       changed_when: true
-      check_node: false
+      check_mode: false
 
 - name: "LOW | RHEL-09-212055 | PATCH | RHEL 9 must enable auditing of processes that start prior to the audit daemon."
   when: rhel_09_212055
@@ -89,7 +89,7 @@
         - rhel9stig_grub_audit_enabled.rc == 1
       ansible.builtin.command: grubby --update-kernel=ALL --args="audit=1"
       changed_when: true
-      check_node: false
+      check_mode: false
 
 - name: "LOW | RHEL-09-214035 | PATCH | RHEL 9 must remove all software components after updated versions have been installed."
   when: rhel_09_214035
