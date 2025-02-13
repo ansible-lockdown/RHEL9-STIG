@@ -1,8 +1,7 @@
 ---
 
 - name: "LOW | RHEL-09-412030 | PATCH | RHEL 9 must prevent users from disabling session control mechanisms."
-  when:
-    - rhel_09_412030
+  when: rhel_09_412030
   tags:
     - RHEL-09-412030
     - CAT2
@@ -22,8 +21,7 @@
     state: absent
 
 - name: "LOW | RHEL-09-412040 | PATCH | RHEL 9 must limit the number of concurrent sessions to ten for all accounts and/or account types."
-  when:
-    - rhel_09_412040
+  when: rhel_09_412040
   tags:
     - RHEL-09-412040
     - CAT2
@@ -39,8 +37,7 @@
     line: "* hard maxlogins {{ rhel9stig_sshd_config_maxlogins }}"
 
 - name: "LOW | RHEL-09-412075 | PATCH | RHEL 9 must display the date and time of the last successful account logon upon logon."
-  when:
-    - rhel_09_412075
+  when: rhel_09_412075
   tags:
     - RHEL-09-412075
     - CAT2

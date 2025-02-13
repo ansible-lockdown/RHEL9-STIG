@@ -14,13 +14,12 @@
     - NIST800-53R4_CM-6
     - entropy
   ansible.builtin.systemd:
-    enabled: true
     name: rngd
+    enabled: true
     state: started
 
 - name: "LOW | RHEL-09-212050 | PATCH | RHEL 9 must enable mitigations against processor-based vulnerabilities."
-  when:
-    - rhel_09_212050
+  when: rhel_09_212050
   tags:
     - RHEL-09-212050
     - CAT2
@@ -33,8 +32,7 @@
     - NIST800-53R4_CM-7
     - NIST800-53R4_SI-16
     - grub
-  notify:
-    - Change_requires_reboot
+  notify: Change_requires_reboot
   block:
     - name: "LOW | RHEL-09-212050 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
       ansible.builtin.shell: grep "^GRUB_CMD" /etc/default/grub | grep pti
@@ -45,12 +43,13 @@
     - name: "LOW | RHEL-09-212050 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
       when:
         - rhel9stig_grub_pti_enabled is defined
-        - rhel9stig_grub_pti_enabled.rc == 1
-      ansible.builtin.shell: grubby --update-kernel=ALL --args="pti=on"
+        - rhel9stig_grub_pti_enabled.rc == '1'
+      ansible.builtin.command: grubby --update-kernel=ALL --args="pti=on"
+      changed_when: true
+      check_node: false
 
 - name: "LOW | RHEL-09-212055 | PATCH | RHEL 9 must enable auditing of processes that start prior to the audit daemon."
-  when:
-    - rhel_09_212055
+  when: rhel_09_212055
   tags:
     - RHEL-09-212055
     - CAT2
@@ -76,8 +75,7 @@
     - NIST800-53R4_MA-4
     - grub
     - audit
-  notify:
-    - Change_requires_reboot
+  notify: Change_requires_reboot
   block:
     - name: "LOW | RHEL-09-212055 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
       ansible.builtin.shell: grep "^GRUB_CMD" /etc/default/grub | grep 'audit=1'
@@ -89,11 +87,12 @@
       when:
         - rhel9stig_grub_audit_enabled is defined
         - rhel9stig_grub_audit_enabled.rc == 1
-      ansible.builtin.shell: grubby --update-kernel=ALL --args="audit=1"
+      ansible.builtin.command: grubby --update-kernel=ALL --args="audit=1"
+      changed_when: true
+      check_node: false
 
 - name: "LOW | RHEL-09-214035 | PATCH | RHEL 9 must remove all software components after updated versions have been installed."
-  when:
-    - rhel_09_214035
+  when: rhel_09_214035
   tags:
     - RHEL-09-214035
     - CAT2
@@ -181,8 +180,7 @@
         file: warning_facts.yml
 
 - name: "LOW | RHEL-09-231195 | PATCH | RHEL 9 must disable mounting of cramfs."
-  when:
-    - rhel_09_231195
+  when: rhel_09_231195
   tags:
     - RHEL-09-231195
     - CAT2
@@ -192,17 +190,16 @@
     - V-257880
     - NIST800-53R4_CM-7
     - modprobe
-  notify:
-    - Change_requires_reboot
+  notify: Change_requires_reboot
   vars:
     blacklist: 'cramfs'
   ansible.builtin.template:
-    dest: "/etc/modprobe.d/{{ blacklist }}.conf"
     src: etc/modprobe.d/module.conf.j2
+    dest: "/etc/modprobe.d/{{ blacklist }}.conf"
+    mode: 'go-wx'
 
 - name: "LOW | RHEL-09-252025 | PATCH | RHEL 9 must disable the chrony daemon from acting as a server."
-  when:
-    - rhel_09_252025
+  when: rhel_09_252025
   tags:
     - RHEL-09-252025
     - CAT2
@@ -220,8 +217,7 @@
     line: 'port 0'
 
 - name: "LOW | RHEL-09-252030 | PATCH | RHEL 9 must disable network management of the chrony daemon."
-  when:
-    - rhel_09_252030
+  when: rhel_09_252030
   tags:
     - RHEL-09-252030
     - CAT2
@@ -239,8 +235,7 @@
     line: 'cmdport 0'
 
 - name: "LOW | RHEL-09-291025 | PATCH | RHEL 9 must enable Linux audit logging for the USBGuard daemon."
-  when:
-    - rhel_09_291025
+  when: rhel_09_291025
   tags:
     - RHEL-09-291025
     - CAT2
