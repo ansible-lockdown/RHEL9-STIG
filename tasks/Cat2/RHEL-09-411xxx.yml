@@ -91,7 +91,7 @@
     warn_control_id: "MEDIUM | RHEL-09-411025"
   block:
     - name: "MEDIUM | RHEL-09-411025 | AUDIT | RHEL 9 must set the umask value to 077 for all local interactive user accounts."
-      ansible.builtin.command: grep -ri umask {{ rhel9stig_home_filesystem }}/*/.[^.]*
+      ansible.builtin.shell: grep -ri umask {{ rhel9stig_home_filesystem }}/*/.[^.]*  # noqa: shell-instead-of-command
       changed_when: false
       failed_when: rhel9stig_homedirs_umasks_set.rc not in [ 0, 1 ]
       register: rhel9stig_homedirs_umasks_set
@@ -491,12 +491,12 @@
         state: absent
         remove: "{{ rhel9stig_remove_unnecessary_user_files }}"
       register: rhel9stig_accounts_removed
-      loop: "{{ discovered_unnecessary_accounts_found.stdout_lines }}"
+      loop: "{{ rhel9stig_unnecessary_accounts }}"
 
     - name: "MEDIUM | RHEL-09-411095 | PATCH | RHEL 9 must not have unauthorized accounts. | Re-parse passwd file"
       when: rhel9stig_accounts_removed is changed  # noqa no-handler
       ansible.builtin.include_tasks:
-        file: ../parse_etc_passwd.yml
+        file: ../parse_etc_password.yml
 
 - name: "MEDIUM | RHEL-09-411105 | PATCH | RHEL 9 must ensure account lockouts persist."
   when: rhel_09_411105
