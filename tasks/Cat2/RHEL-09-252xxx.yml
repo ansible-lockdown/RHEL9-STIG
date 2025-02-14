@@ -153,7 +153,9 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-252050 | PATCH | RHEL 9 must be configured to prevent unrestricted mail relaying."
-  when: rhel_09_252050
+  when:
+    - rhel_09_252050
+    - "'postfix' in ansible_facts.packages"
   tags:
     - RHEL-09-252050
     - CAT2
@@ -189,7 +191,9 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-252055 | PATCH | If the Trivial File Transfer Protocol (TFTP) server is required, RHEL 9 TFTP daemon must be configured to operate in secure mode."
-  when: rhel_09_252055
+  when:
+    - rhel_09_252055
+    - "'tftp-server' in ansible_facts.packages"
   tags:
     - RHEL-09-252050
     - CAT2
