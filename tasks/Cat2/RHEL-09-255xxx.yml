@@ -74,8 +74,8 @@
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)banner \/.*\/.*
-    line: "banner {{ rhel9stig_sshd_config.banner_file }}"
+    regexp: (?i)^(#|)banner \/.*\/.*
+    line: "Banner {{ rhel9stig_sshd_config.banner_file }}"
     create: true
     mode: 'go-rwx'
     validate: sshd -t -f %s
@@ -94,7 +94,7 @@
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)LogLevel.*
+    regexp: (?i)^(#|)LogLevel.*
     line: "LogLevel {{ rhel9stig_sshd_config.loglevel }}"
     create: true
     mode: 'go-rwx'
@@ -118,7 +118,7 @@
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)PubkeyAuthentication\s*(yes|no)
+    regexp: (?i)^(#|)PubkeyAuthentication\s*(yes|no)
     line: "PubkeyAuthentication {{ rhel9stig_sshd_config.pubkeyauth }}"
     create: true
     mode: 'go-rwx'
@@ -139,7 +139,7 @@
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)PermitRootLogin\s*(yes|no)
+    regexp: (?i)^(#|)PermitRootLogin\s*(yes|no)
     line: "PermitRootLogin {{ rhel9stig_sshd_config.permitroot }}"
     create: true
     mode: 'go-rwx'
@@ -159,7 +159,7 @@
   notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)Include.*
+    regexp: (?i)^(#|)Include.*
     line: "Include {{ rhel9stig_sshd_config.include_conf }}"
     create: true
     mode: 'go-rwx'
@@ -179,7 +179,7 @@
   notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)Include.*
+    regexp: (?i)^(#|)Include.*
     line: "Include {{ rhel9stig_sshd_config.include_conf }}"
     create: true
     mode: 'go-rwx'
@@ -231,7 +231,7 @@
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)HostbasedAuthentication\s*(yes|no)
+    regexp: (?i)^(#|)HostbasedAuthentication\s*(yes|no)
     line: "HostbasedAuthentication {{ rhel9stig_sshd_config.hostauth }}"
     create: true
     mode: 'go-rwx'
@@ -251,7 +251,7 @@
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)PermitUserEnvironments\s*(yes|no)
+    regexp: (?i)^(#|)PermitUserEnvironments\s*(yes|no)
     line: "PermitUserEnvironment {{ rhel9stig_sshd_config.userenv }}"
     create: true
     mode: 'go-rwx'
@@ -276,7 +276,7 @@
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)RekeyLimit.*
+    regexp: (?i)^(#|)RekeyLimit.*
     line: "RekeyLimit {{ rhel9stig_sshd_config.rekeylimit }}"
     create: true
     mode: 'go-rwx'
@@ -300,7 +300,7 @@
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)ClientAliveCountMax\s\d*
+    regexp: (?i)^(#|)ClientAliveCountMax\s\d*
     line: "ClientAliveCountMax {{ rhel9stig_sshd_config.clientalivecountmax }}"
     create: true
     mode: 'go-rwx'
@@ -327,7 +327,7 @@
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)ClientAliveInterval\s\d*
+    regexp: (?i)^(#|)ClientAliveInterval\s\d*
     line: "ClientAliveInterval {{ rhel9stig_sshd_config.clientaliveinterval }}"
     create: true
     mode: 'go-rwx'
@@ -442,7 +442,7 @@
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)Compression\s*(yes|no)
+    regexp: (?i)^(#|)Compression\s*(yes|no)
     line: "Compression {{ rhel9stig_sshd_config.compress }}"
     create: true
     mode: 'go-wx'
@@ -465,7 +465,7 @@
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)GSSAPIAuthentication\s*(yes|no)
+    regexp: (?i)^(#|)GSSAPIAuthentication\s*(yes|no)
     line: "GSSAPIAuthentication {{ rhel9stig_sshd_config.gssapiauth }}"
     create: true
     mode: 'go-wx'
@@ -488,7 +488,7 @@
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)KerberosAuthentication\s*(yes|no)
+    regexp: (?i)^(#|)KerberosAuthentication\s*(yes|no)
     line: "KerberosAuthentication {{ rhel9stig_sshd_config.kerbauth }}"
     create: true
     mode: 'go-wx'
@@ -508,7 +508,7 @@
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)IgnoreRhosts\s*(yes|no)
+    regexp: (?i)^(#|)IgnoreRhosts\s*(yes|no)
     line: "IgnoreRhosts {{ rhel9stig_sshd_config.ignorerhosts }}"
     create: true
     mode: 'go-wx'
@@ -528,7 +528,7 @@
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config.d/50-redhat.conf
-    regexp: ^(?i)(#|)IgnoreUserKnownHosts\s*(yes|no)
+    regexp: (?i)^(#|)IgnoreUserKnownHosts\s*(yes|no)
     line: "IgnoreUserKnownHosts {{ rhel9stig_sshd_config.ignoreknownhosts }}"
     create: true
     mode: 'go-wx'
@@ -548,7 +548,7 @@
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)X11forwarding\s*(yes|no)
+    regexp: (?i)^(#|)X11forwarding\s*(yes|no)
     line: "X11forwarding {{ rhel9stig_sshd_config.x11forward }}"
     create: true
     mode: 'go-wx'
@@ -568,7 +568,7 @@
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)StrictModes\s*(yes|no)
+    regexp: (?i)^(#|)StrictModes\s*(yes|no)
     line: "StrictModes {{ rhel9stig_sshd_config.strictmodes }}"
     create: true
     mode: 'go-wx'
@@ -588,7 +588,7 @@
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)PrintLastLog\s*(yes|no)
+    regexp: (?i)^(#|)PrintLastLog\s*(yes|no)
     line: "PrintLastLog {{ rhel9stig_sshd_config.lastlog }}"
     create: true
     mode: 'go-wx'
@@ -608,7 +608,7 @@
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)UsePrivilegeSeparation\s*(yes|no)
+    regexp: (?i)^(#|)UsePrivilegeSeparation\s*(yes|no)
     line: "UsePrivilegeSeparation {{ rhel9stig_sshd_config.privsep }}"
     create: true
     mode: 'go-wx'
@@ -628,7 +628,7 @@
   notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: ^(?i)(#|)X11UseLocalhost\s*(yes|no)
+    regexp: (?i)^(#|)X11UseLocalhost\s*(yes|no)
     line: "X11UseLocalhost {{ rhel9stig_sshd_config.x11uselocal }}"
     create: true
     mode: 'go-wx'
