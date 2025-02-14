@@ -811,7 +811,25 @@ rhel9stig_sssd_config_certmap: |
   domains = example.com
 
 ### Aide
+# AIDE is a file integrity checking tool, similar in nature to Tripwire.
+# While it cannot prevent intrusions, it can detect unauthorized changes
+# to configuration files by alerting when the files are changed. Review
+# the AIDE quick start guide and AIDE documentation before proceeding.
+# By setting this variable to `true`, all of the settings related to AIDE will be applied!
 rhel9stig_use_aide: true
+
+# If DB file older than below will automatically rebuild DB
+# e.g. options:1w = 1 week, 1d = 1day 1h = 1 hour
+rhel9stig_aide_db_file_age: 1w
+
+# If aide already setup this forces a new DB to be created despite age
+rhel9stig_aide_db_recreate: false
+
+# New db file
+rhel9stig_aide_db_new_file: /var/lib/aide/aide.db.new.gz
+# Active db file
+rhel9stig_aide_db_file: /var/lib/aide/aide.db.gz
+
 rhel9stig_aide_cron_file: /etc/cron.daily/aide  # NOTE the path may change if not running daily
 rhel9stig_aide_cron:
   day: '*'

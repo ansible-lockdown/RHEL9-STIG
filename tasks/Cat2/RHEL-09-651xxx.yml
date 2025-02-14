@@ -16,11 +16,16 @@
     - NIST800-53R4_CM-3
     - NIST800-53R4_SI-6
     - aide
-  notify: Build_aide_db
-  changed_when: true
-  ansible.builtin.package:
-    name: aide
-    state: present
+  block:
+    - name: "MEDIUM | RHEL-09-651010 | PATCH | RHEL 9 must have the AIDE package installed. | Package"
+      ansible.builtin.package:
+        name: aide
+        state: present
+
+    - name: "MEDIUM | RHEL-09-651010 | PATCH | RHEL 9 must have the AIDE package installed. | Check DB"
+      ansible.builtin.command: echo "Set Aide DB setup for handler"
+      changed_when: true
+      notify: Build_aide_db
 
 - name: "MEDIUM | RHEL-09-651015 | PATCH | RHEL 9 must routinely check the baseline configuration for unauthorized changes and notify the system administrator when anomalies in the operation of any security functions are discovered."
   when:
