@@ -120,6 +120,7 @@
     file: auditd.yml
 
 - name: Flush handlers
+  tags: always
   ansible.builtin.meta: flush_handlers
 
 - name: Reboot system if changes require it and not skipped
