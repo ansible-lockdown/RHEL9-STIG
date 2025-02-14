@@ -340,7 +340,8 @@
   when:
     - rhel_09_231095
     - rhel9stig_legacy_boot
-    - (item.mount == '/boot' and "'nodev' not in item.options")
+    - item.mount == '/boot'
+    - "'nodev' not in item.options"
   tags:
     - RHEL-09-231095
     - CAT2
@@ -364,7 +365,8 @@
   when:
     - rhel_09_231100
     - rhel9stig_legacy_boot
-    - (item.mount == '/boot' and "'nosuid' not in item.options")
+    - item.mount == '/boot'
+    - "'nosuid' not in item.options"
   tags:
     - RHEL-09-231100
     - CAT2
