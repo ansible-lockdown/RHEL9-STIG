@@ -1,0 +1,232 @@
+---
+
+- name: "MEDIUM | RHEL-09-253010 | PATCH | RHEL 9 must be configured to use TCP syncookies."
+  when: rhel_09_253010
+  tags:
+    - RHEL-09-253010
+    - CAT2
+    - CCI-000366
+    - CCI-001095
+    - CCI-002385
+    - SRG-OS-000480-GPOS-00227
+    - SRG-OS-000420-GPOS-00186
+    - SRG-OS-000142-GPOS-00071
+    - SV-257957r991589_rule
+    - V-257957
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_SC-5
+  ansible.posix.sysctl:
+    name: net.ipv4.tcp_syncookies
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '1'
+
+- name: "MEDIUM | RHEL-09-253015 | PATCH | RHEL 9 must ignore Internet Protocol version 4 (IPv4) Internet Control Message Protocol (ICMP) redirect messages."
+  when: rhel_09_253015
+  tags:
+    - RHEL-09-253015
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257958r991589_rule
+    - V-257958
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.all.accept_redirects
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-253020 | PATCH | RHEL 9 must not forward Internet Protocol version 4 (IPv4) source-routed packets."
+  when: rhel_09_253020
+  tags:
+    - RHEL-09-253020
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257959r991589_rule
+    - V-257959
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.all.accept_source_route
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-253025 | PATCH | RHEL 9 must log IPv4 packets with impossible addresses."
+  when: rhel_09_253025
+  tags:
+    - RHEL-09-253025
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257960r991589_rule
+    - V-257960
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.all.log_martians
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '1'
+
+- name: "MEDIUM | RHEL-09-253030 | PATCH | RHEL 9 must log IPv4 packets with impossible addresses by default."
+  when: rhel_09_253030
+  tags:
+    - RHEL-09-253030
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257961r991589_rule
+    - V-257961
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.default.log_martians
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '1'
+
+- name: "MEDIUM | RHEL-09-253035 | PATCH | RHEL 9 must use reverse path filtering on all IPv4 interfaces."
+  when: rhel_09_253035
+  tags:
+    - RHEL-09-253035
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257962r991589_rule
+    - V-257962
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.all.rp_filter
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '1'
+
+- name: "MEDIUM | RHEL-09-253040 | PATCH | RHEL 9 must prevent IPv4 Internet Control Message Protocol (ICMP) redirect messages from being accepted."
+  when: rhel_09_253040
+  tags:
+    - RHEL-09-253040
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257963r991589_rule
+    - V-257963
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.default.accept_redirects
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-253045 | PATCH | RHEL 9 must not forward IPv4 source-routed packets by default."
+  when: rhel_09_253045
+  tags:
+    - RHEL-09-253045
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257964r991589_rule
+    - V-257964
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.default.accept_source_route
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-253050 | PATCH | RHEL 9 must use a reverse-path filter for IPv4 network traffic when possible by default."
+  when: rhel_09_253050
+  tags:
+    - RHEL-09-253050
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257965r991589_rule
+    - V-257965
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.default.rp_filter
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '1'
+
+- name: "MEDIUM | RHEL-09-253055 | PATCH | RHEL 9 must not respond to Internet Control Message Protocol (ICMP) echoes sent to a broadcast address."
+  when: rhel_09_253055
+  tags:
+    - RHEL-09-253055
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257966r991589_rule
+    - V-257966
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.icmp_echo_ignore_broadcasts
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '1'
+
+- name: "MEDIUM | RHEL-09-253060 | PATCH | RHEL 9 must limit the number of bogus Internet Control Message Protocol (ICMP) response errors logs."
+  when: rhel_09_253060
+  tags:
+    - RHEL-09-253060
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257967r991589_rule
+    - V-257967
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.icmp_ignore_bogus_error_responses
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '1'
+
+- name: "MEDIUM | RHEL-09-253065 | PATCH | RHEL 9 must not send Internet Control Message Protocol (ICMP) redirects."
+  when: rhel_09_253065
+  tags:
+    - RHEL-09-253065
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257968r991589_rule
+    - V-257968
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.all.send_redirects
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-253070 | PATCH | RHEL 9 must not allow interfaces to perform Internet Control Message Protocol (ICMP) redirects by default."
+  when: rhel_09_253070
+  tags:
+    - RHEL-09-253070
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257969r991589_rule
+    - V-257969
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.default.send_redirects
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-253075 | PATCH | RHEL 9 must not enable IPv4 packet forwarding unless the system is a router."
+  when:
+    - rhel_09_253075
+    - not rhel9stig_system_is_router
+  tags:
+    - RHEL-09-253075
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257970r991589_rule
+    - V-257970
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.all.forwarding
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'

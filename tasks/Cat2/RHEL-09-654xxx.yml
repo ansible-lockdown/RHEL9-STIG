@@ -1,8 +1,7 @@
 ---
 
 - name: "MEDIUM | RHEL-09-654010 | PATCH | RHEL 9 must audit uses of the 'execve' system call."
-  when:
-    - rhel_09_654010
+  when: rhel_09_654010
   tags:
     - RHEL-09-654010
     - CAT2
@@ -10,7 +9,7 @@
     - CCI-002234
     - SRG-OS-000326-GPOS-00126
     - SRG-OS-000327-GPOS-00127
-    - SV-258176r926515_rule
+    - SV-258176r958730_rule
     - V-258176
     - NIST800-53R4_AC-6
     - auditd
@@ -18,8 +17,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654015 | PATCH | RHEL 9 must audit all uses of the chmod, fchmod, and fchmodat system calls."
-  when:
-    - rhel_09_654015
+  when: rhel_09_654015
   tags:
     - RHEL-09-654015
     - CAT2
@@ -37,8 +35,8 @@
     - SRG-OS-000064-GPOS-00033
     - SRG-OS-000466-GPOS-00210
     - SRG-OS-000458-GPOS-00203
-    - SV-258177r926518_rule
-    - V-25817
+    - SV-258177r958412_rule
+    - V-258177
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
     - NIST800-53R4_MA-4
@@ -47,8 +45,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654020 | PATCH | RHEL 9 must audit all uses of the chown, fchown, fchownat, and lchown system calls."
-  when:
-    - rhel_09_654020
+  when: rhel_09_654020
   tags:
     - RHEL-09-654020
     - CAT2
@@ -67,7 +64,7 @@
     - SRG-OS-000466-GPOS-00210
     - SRG-OS-000458-GPOS-00203
     - SRG-OS-000474-GPOS-00219
-    - SV-258178r926521_rule
+    - SV-258178r958412_rule
     - V-258178
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -77,8 +74,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654025 | PATCH | RHEL 9 must audit all uses of the setxattr, fsetxattr, lsetxattr, removexattr, fremovexattr, and lremovexattr system calls."
-  when:
-    - rhel_09_654025
+  when: rhel_09_654025
   tags:
     - RHEL-09-654025
     - CAT2
@@ -97,7 +93,7 @@
     - SRG-OS-000466-GPOS-00210
     - SRG-OS-000458-GPOS-00203
     - SRG-OS-000474-GPOS-00219
-    - SV-258179r926524_rule
+    - SV-258179r958412_rule
     - V-258179
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -107,8 +103,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654030 | PATCH | RHEL 9 must audit all uses of umount system calls."
-  when:
-    - rhel_09_654030
+  when: rhel_09_654030
   tags:
     - RHEL-09-654030
     - CAT2
@@ -121,7 +116,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
-    - SV-258180r926527_rule
+    - SV-258180r958412_rule
     - V-258180
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -131,8 +126,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654035 | PATCH | RHEL 9 must audit all uses of the chacl command."
-  when:
-    - rhel_09_654035
+  when: rhel_09_654035
   tags:
     - RHEL-09-654035
     - CAT2
@@ -148,7 +142,7 @@
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000466-GPOS-00210
     - SRG-OS-000471-GPOS-00215
-    - SV-258181r926530_rule
+    - SV-258181r958412_rule
     - V-258181
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -158,8 +152,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654040 | PATCH | RHEL 9 must audit all uses of the setfacl command."
-  when:
-    - rhel_09_654040
+  when: rhel_09_654040
   tags:
     - RHEL-09-654040
     - CAT2
@@ -174,7 +167,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
-    - SV-258182r926533_rule
+    - SV-258182r958412_rule
     - V-258182
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -184,8 +177,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654045 | PATCH | RHEL 9 must audit all uses of the chcon command."
-  when:
-    - rhel_09_654045
+  when: rhel_09_654045
   tags:
     - RHEL-09-654045
     - CAT2
@@ -203,7 +195,7 @@
     - SRG-OS-000465-GPOS-00209
     - SRG-OS-000468-GPOS-00212
     - SRG-OS-000471-GPOS-00215
-    - SV-258183r926536_rule
+    - SV-258183r958412_rule
     - V-258183
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -213,8 +205,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654050 | PATCH | RHEL 9 must audit all uses of the semanage command."
-  when:
-    - rhel_09_654050
+  when: rhel_09_654050
   tags:
     - RHEL-09-654050
     - CAT2
@@ -231,7 +222,7 @@
     - SRG-OS-000463-GPOS-00207
     - SRG-OS-000465-GPOS-00209
     - SRG-OS-000471-GPOS-00215
-    - SV-258184r926539_rule
+    - SV-258184r958412_rule
     - V-258184
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -241,8 +232,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654055 | PATCH | RHEL 9 must audit all uses of the setfiles command."
-  when:
-    - rhel_09_654055
+  when: rhel_09_654055
   tags:
     - RHEL-09-654055
     - CAT2
@@ -259,7 +249,7 @@
     - SRG-OS-000463-GPOS-00207
     - SRG-OS-000465-GPOS-00209
     - SRG-OS-000471-GPOS-00215
-    - SV-258185r926542_rule
+    - SV-258185r958412_rule
     - V-258185
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -269,8 +259,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654060 | PATCH | RHEL 9 must audit all uses of the setsebool command."
-  when:
-    - rhel_09_654060
+  when: rhel_09_654060
   tags:
     - RHEL-09-654060
     - CAT2
@@ -287,7 +276,7 @@
     - SRG-OS-000463-GPOS-00207
     - SRG-OS-000465-GPOS-00209
     - SRG-OS-000471-GPOS-00215
-    - SV-258186r926545_rule
+    - SV-258186r958412_rule
     - V-258186
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -297,8 +286,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654065 | PATCH | RHEL 9 must audit all uses of the rename, unlink, rmdir, renameat, and unlinkat system calls."
-  when:
-    - rhel_09_654065
+  when: rhel_09_654065
   tags:
     - RHEL-09-654065
     - CAT2
@@ -316,7 +304,7 @@
     - SRG-OS-000466-GPOS-00210
     - SRG-OS-000467-GPOS-00211
     - SRG-OS-000468-GPOS-00212
-    - SV-258187r926548_rule
+    - SV-258187r958412_rule
     - V-258187
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -326,8 +314,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654070 | PATCH | RHEL 9 must audit all uses of the truncate, ftruncate, creat, open, openat, and open_by_handle_at system calls."
-  when:
-    - rhel_09_654070
+  when: rhel_09_654070
   tags:
     - RHEL-09-654070
     - CAT2
@@ -345,7 +332,7 @@
     - SRG-OS-000064-GPOS-00033
     - SRG-OS-000458-GPOS-00203
     - SRG-OS-000461-GPOS-00205
-    - SV-258188r926551_rule
+    - SV-258188r958412_rule
     - V-258188
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -355,8 +342,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654075 | PATCH | RHEL 9 must audit all uses of the delete_module system call."
-  when:
-    - rhel_09_654075
+  when: rhel_09_654075
   tags:
     - RHEL-09-654075
     - CAT2
@@ -373,7 +359,7 @@
     - SRG-OS-000471-GPOS-00215
     - SRG-OS-000471-GPOS-00216
     - SRG-OS-000477-GPOS-00222
-    - SV-258189r926554_rule
+    - SV-258189r958412_rule
     - V-258189
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -383,8 +369,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654080 | PATCH | RHEL 9 must audit all uses of the init_module and finit_module system calls."
-  when:
-    - rhel_09_654080
+  when: rhel_09_654080
   tags:
     - RHEL-09-654080
     - CAT2
@@ -401,7 +386,7 @@
     - SRG-OS-000471-GPOS-00215
     - SRG-OS-000471-GPOS-00216
     - SRG-OS-000477-GPOS-00222
-    - SV-258190r926557_rule
+    - SV-258190r958412_rule
     - V-258190
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -411,8 +396,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654085 | PATCH | RHEL 9 must audit all uses of the chage command."
-  when:
-    - rhel_09_654085
+  when: rhel_09_654085
   tags:
     - RHEL-09-654085
     - CAT2
@@ -428,7 +412,7 @@
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
     - SRG-OS-000468-GPOS-00212
-    - SV-258191r926560_rule
+    - SV-258191r958412_rule
     - V-258191
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -438,8 +422,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654090 | PATCH | RHEL 9 must audit all uses of the chsh command."
-  when:
-    - rhel_09_654090
+  when: rhel_09_654090
   tags:
     - RHEL-09-654090
     - CAT2
@@ -454,7 +437,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
-    - SV-258192r926563_rule
+    - SV-258192r958412_rule
     - V-258192
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -464,8 +447,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654095 | PATCH | RHEL 9 must audit all uses of the crontab command."
-  when:
-    - rhel_09_654095
+  when: rhel_09_654095
   tags:
     - RHEL-09-654095
     - CAT2
@@ -480,7 +462,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
-    - SV-258193r926566_rule
+    - SV-258193r958412_rule
     - V-258193
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -490,8 +472,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654100 | PATCH | RHEL 9 must audit all uses of the gpasswd command."
-  when:
-    - rhel_09_654100
+  when: rhel_09_654100
   tags:
     - RHEL-09-654100
     - CAT2
@@ -506,7 +487,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
-    - SV-258194r926569_rule
+    - SV-258194r958412_rule
     - V-258194
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -516,8 +497,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654105 | PATCH | RHEL 9 must audit all uses of the kmod command."
-  when:
-    - rhel_09_654105
+  when: rhel_09_654105
   tags:
     - RHEL-09-654105
     - CAT2
@@ -534,7 +514,7 @@
     - SRG-OS-000471-GPOS-00215
     - SRG-OS-000471-GPOS-00216
     - SRG-OS-000477-GPOS-00222
-    - SV-258195r926572_rule
+    - SV-258195r958412_rule
     - V-258195
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -544,8 +524,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654110 | PATCH | RHEL 9 must audit all uses of the newgrp command."
-  when:
-    - rhel_09_654110
+  when: rhel_09_654110
   tags:
     - RHEL-09-654110
     - CAT2
@@ -560,7 +539,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
-    - SV-258196r926575_rule
+    - SV-258196r958412_rule
     - V-258196
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -570,8 +549,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654115 | PATCH | RHEL 9 must audit all uses of the pam_timestamp_check command."
-  when:
-    - rhel_09_654115
+  when: rhel_09_654115
   tags:
     - RHEL-09-654115
     - CAT2
@@ -586,7 +564,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
-    - SV-258197r926578_rule
+    - SV-258197r958412_rule
     - V-258197
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -596,8 +574,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654120 | PATCH | RHEL 9 must audit all uses of the passwd command."
-  when:
-    - rhel_09_654120
+  when: rhel_09_654120
   tags:
     - RHEL-09-654120
     - CAT2
@@ -612,7 +589,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
-    - SV-258198r926581_rule
+    - SV-258198r958412_rule
     - V-258198
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -622,8 +599,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654125 | PATCH | RHEL 9 must audit all uses of the postdrop command."
-  when:
-    - rhel_09_654125
+  when: rhel_09_654125
   tags:
     - RHEL-09-654125
     - CAT2
@@ -638,7 +614,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
-    - SV-258199r926584_rule
+    - SV-258199r958412_rule
     - V-258199
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -648,8 +624,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654130 | PATCH | RHEL 9 must audit all uses of the postqueue command."
-  when:
-    - rhel_09_654130
+  when: rhel_09_654130
   tags:
     - RHEL-09-654130
     - CAT2
@@ -664,7 +639,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
-    - SV-258200r926587_rule
+    - SV-258200r958412_rule
     - V-258200
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -674,8 +649,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654135 | PATCH | RHEL 9 must audit all uses of the ssh-agent command."
-  when:
-    - rhel_09_654135
+  when: rhel_09_654135
   tags:
     - RHEL-09-654135
     - CAT2
@@ -690,7 +664,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
-    - SV-258201r926590_rule
+    - SV-258201r958412_rule
     - V-258201
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -700,8 +674,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654140 | PATCH | RHEL 9 must audit all uses of the ssh-keysign command."
-  when:
-    - rhel_09_654140
+  when: rhel_09_654140
   tags:
     - RHEL-09-654140
     - CAT2
@@ -716,7 +689,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
-    - SV-258202r926593_rule
+    - SV-258202r958412_rule
     - V-258202
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -726,8 +699,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654145 | PATCH | RHEL 9 must audit all uses of the su command."
-  when:
-    - rhel_09_654145
+  when: rhel_09_654145
   tags:
     - RHEL-09-654145
     - CAT2
@@ -744,7 +716,7 @@
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
     - SRG-OS-000466-GPOS-00210
-    - SV-258203r926596_rule
+    - SV-258203r958412_rule
     - V-258203
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -754,8 +726,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654150 | PATCH | RHEL 9 must audit all uses of the sudo command."
-  when:
-    - rhel_09_654150
+  when: rhel_09_654150
   tags:
     - RHEL-09-654150
     - CAT2
@@ -771,34 +742,7 @@
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
     - SRG-OS-000466-GPOS-00210
-    - SV-258204r926599_rule
-    - V-258204
-    - NIST800-53R4_AU-3
-    - NIST800-53R4_AU-12
-    - NIST800-53R4_MA-4
-    - auditd
-  ansible.builtin.set_fact:
-    update_audit_template: true
-
-- name: "MEDIUM | RHEL-09-654150 | PATCH | RHEL 9 must audit all uses of the sudo command."
-  when:
-    - rhel_09_654150
-  tags:
-    - RHEL-09-654150
-    - CAT2
-    - CCI-000130
-    - CCI-000135
-    - CCI-000169
-    - CCI-000172
-    - CCI-002884
-    - SRG-OS-000037-GPOS-00015
-    - SRG-OS-000042-GPOS-00020
-    - SRG-OS-000062-GPOS-00031
-    - SRG-OS-000392-GPOS-00172
-    - SRG-OS-000462-GPOS-00206
-    - SRG-OS-000471-GPOS-00215
-    - SRG-OS-000466-GPOS-00210
-    - SV-258204r926599_rule
+    - SV-258204r958412_rule
     - V-258204
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -808,8 +752,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654155 | PATCH | RHEL 9 must audit all uses of the sudoedit command."
-  when:
-    - rhel_09_654155
+  when: rhel_09_654155
   tags:
     - RHEL-09-654155
     - CAT2
@@ -824,7 +767,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
-    - SV-258205r926602_rule
+    - SV-258205r958412_rule
     - V-258205
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -834,8 +777,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654160 | PATCH | RHEL 9 must audit all uses of the unix_chkpwd command."
-  when:
-    - rhel_09_654160
+  when: rhel_09_654160
   tags:
     - RHEL-09-654160
     - CAT2
@@ -850,7 +792,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
-    - SV-258206r926605_rule
+    - SV-258206r958412_rule
     - V-258206
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -860,8 +802,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654165 | PATCH | RHEL 9 must audit all uses of the unix_update command."
-  when:
-    - rhel_09_654165
+  when: rhel_09_654165
   tags:
     - RHEL-09-654165
     - CAT2
@@ -877,7 +818,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
-    - SV-258207r926608_rule
+    - SV-258207r958412_rule
     - V-258207
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -887,8 +828,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654170 | PATCH | RHEL 9 must audit all uses of the userhelper command."
-  when:
-    - rhel_09_654170
+  when: rhel_09_654170
   tags:
     - RHEL-09-654170
     - CAT2
@@ -903,7 +843,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
-    - SV-258208r926611_rule
+    - SV-258208r958412_rule
     - V-258208
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -913,8 +853,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654175 | PATCH | RHEL 9 must audit all uses of the usermod command."
-  when:
-    - rhel_09_654175
+  when: rhel_09_654175
   tags:
     - RHEL-09-654175
     - CAT2
@@ -930,7 +869,7 @@
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000466-GPOS-00210
     - SRG-OS-000471-GPOS-00215
-    - SV-258209r926614_rule
+    - SV-258209r958412_rule
     - V-258209
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -940,8 +879,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654180 | PATCH | RHEL 9 must audit all uses of the mount command."
-  when:
-    - rhel_09_654180
+  when: rhel_09_654180
   tags:
     - RHEL-09-654180
     - CAT2
@@ -956,7 +894,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
-    - SV-258210r926617_rule
+    - SV-258210r958412_rule
     - V-258210
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -966,14 +904,13 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654185 | PATCH | Successful/unsuccessful uses of the init command in RHEL 9 must generate an audit record."
-  when:
-    - rhel_09_654185
+  when: rhel_09_654185
   tags:
     - RHEL-09-654185
     - CAT2
     - CCI-000172
     - SRG-OS-000477-GPOS-00222
-    - SV-258211r926620_rule
+    - SV-258211r991586_rule
     - V-258211
     - NIST800-53R4_AU-12
     - auditd
@@ -981,14 +918,13 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654190 | PATCH | Successful/unsuccessful uses of the poweroff command in RHEL 9 must generate an audit record."
-  when:
-    - rhel_09_654190
+  when: rhel_09_654190
   tags:
     - RHEL-09-654190
     - CAT2
     - CCI-000172
     - SRG-OS-000477-GPOS-00222
-    - SV-258212r926623_rule
+    - SV-258212r991586_rule
     - V-258212
     - NIST800-53R4_AU-12
     - auditd
@@ -996,14 +932,13 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654195 | PATCH | Successful/unsuccessful uses of the reboot command in RHEL 9 must generate an audit record."
-  when:
-    - rhel_09_654195
+  when: rhel_09_654195
   tags:
     - RHEL-09-654195
     - CAT2
     - CCI-000172
     - SRG-OS-000477-GPOS-00222
-    - SV-258213r926626_rule
+    - SV-258213r991586_rule
     - V-258213
     - NIST800-53R4_AU-12
     - auditd
@@ -1011,14 +946,13 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654200 | PATCH | Successful/unsuccessful uses of the shutdown command in RHEL 9 must generate an audit record."
-  when:
-    - rhel_09_654200
+  when: rhel_09_654200
   tags:
     - RHEL-09-654200
     - CAT2
     - CCI-000172
     - SRG-OS-000477-GPOS-00222
-    - SV-258214r926629_rule
+    - SV-258214r991586_rule
     - V-258214
     - NIST800-53R4_AU-12
     - auditd
@@ -1026,8 +960,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654205 | PATCH | Successful/unsuccessful uses of the umount system call in RHEL 9 must generate an audit record."
-  when:
-    - rhel_09_654205
+  when: rhel_09_654205
   tags:
     - RHEL-09-654205
     - CAT2
@@ -1040,7 +973,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
-    - SV-258215r943018_rule
+    - SV-258215r958412_rule
     - V-258215
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -1050,8 +983,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654210 | PATCH | Successful/unsuccessful uses of the umount2 system call in RHEL 9 must generate an audit record."
-  when:
-    - rhel_09_654210
+  when: rhel_09_654210
   tags:
     - RHEL-09-654210
     - CAT2
@@ -1064,7 +996,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
-    - SV-258216r926635_rule
+    - SV-258216r958412_rule
     - V-258216
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -1074,11 +1006,11 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654215 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/sudoers."
-  when:
-    - rhel_09_654215
+  when: rhel_09_654215
   tags:
     - RHEL-09-654215
     - CAT2
+    - CCI-000015
     - CCI-000018
     - CCI-000130
     - CCI-000135
@@ -1088,7 +1020,6 @@
     - CCI-001404
     - CCI-001405
     - CCI-002130
-    - CCI-002132
     - CCI-002884
     - SRG-OS-000004-GPOS-00004
     - SRG-OS-000037-GPOS-00015
@@ -1105,7 +1036,7 @@
     - SRG-OS-000303-GPOS-00120
     - SRG-OS-000466-GPOS-00210
     - SRG-OS-000476-GPOS-00221
-    - SV-258217r926638_rule
+    - SV-258217r997059_rule
     - V-258217
     - NIST800-53R4_AC-2
     - NIST800-53R4_AU-3
@@ -1116,11 +1047,11 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654220 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/sudoers.d/ directory."
-  when:
-    - rhel_09_654220
+  when: rhel_09_654220
   tags:
     - RHEL-09-654220
     - CAT2
+    - CCI-000015
     - CCI-000018
     - CCI-000130
     - CCI-000135
@@ -1130,7 +1061,6 @@
     - CCI-001404
     - CCI-001405
     - CCI-002130
-    - CCI-002132
     - CCI-002884
     - SRG-OS-000004-GPOS-00004
     - SRG-OS-000037-GPOS-00015
@@ -1147,7 +1077,7 @@
     - SRG-OS-000303-GPOS-00120
     - SRG-OS-000466-GPOS-00210
     - SRG-OS-000476-GPOS-00221
-    - SV-258218r926641_rule
+    - SV-258218r997060_rule
     - V-258218
     - NIST800-53R4_AC-2
     - NIST800-53R4_AU-3
@@ -1158,11 +1088,11 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654225 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/group."
-  when:
-    - rhel_09_654225
+  when: rhel_09_654225
   tags:
     - RHEL-09-654225
     - CAT2
+    - CCI-000015
     - CCI-000018
     - CCI-000130
     - CCI-000135
@@ -1172,7 +1102,6 @@
     - CCI-001404
     - CCI-001405
     - CCI-002130
-    - CCI-002132
     - CCI-002884
     - SRG-OS-000004-GPOS-00004
     - SRG-OS-000037-GPOS-00015
@@ -1189,7 +1118,7 @@
     - SRG-OS-000303-GPOS-00120
     - SRG-OS-000466-GPOS-00210
     - SRG-OS-000476-GPOS-00221
-    - SV-258219r926644_rule
+    - SV-258219r997061_rule
     - V-258219
     - NIST800-53R4_AC-2
     - NIST800-53R4_AU-3
@@ -1200,11 +1129,11 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654230 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/gshadow."
-  when:
-    - rhel_09_654230
+  when: rhel_09_654230
   tags:
     - RHEL-09-654230
     - CAT2
+    - CCI-000015
     - CCI-000018
     - CCI-000130
     - CCI-000135
@@ -1214,7 +1143,6 @@
     - CCI-001404
     - CCI-001405
     - CCI-002130
-    - CCI-002132
     - CCI-002884
     - SRG-OS-000004-GPOS-00004
     - SRG-OS-000037-GPOS-00015
@@ -1231,7 +1159,7 @@
     - SRG-OS-000303-GPOS-00120
     - SRG-OS-000466-GPOS-00210
     - SRG-OS-000476-GPOS-00221
-    - SV-258220r926647_rule
+    - SV-258220r997062_rule
     - V-258220
     - NIST800-53R4_AC-2
     - NIST800-53R4_AU-3
@@ -1242,11 +1170,11 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654235 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/opasswd."
-  when:
-    - rhel_09_654235
+  when: rhel_09_654235
   tags:
     - RHEL-09-654235
     - CAT2
+    - CCI-000015
     - CCI-000018
     - CCI-000130
     - CCI-000135
@@ -1256,7 +1184,6 @@
     - CCI-001404
     - CCI-001405
     - CCI-002130
-    - CCI-002132
     - CCI-002884
     - SRG-OS-000004-GPOS-00004
     - SRG-OS-000037-GPOS-00015
@@ -1273,7 +1200,7 @@
     - SRG-OS-000303-GPOS-00120
     - SRG-OS-000466-GPOS-00210
     - SRG-OS-000476-GPOS-00221
-    - SV-258221r926650_rule
+    - SV-258221r997063_rule
     - V-258221
     - NIST800-53R4_AC-2
     - NIST800-53R4_AU-3
@@ -1284,8 +1211,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654240 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/passwd."
-  when:
-    - rhel_09_654240
+  when: rhel_09_654240
   tags:
     - RHEL-09-654240
     - CAT2
@@ -1323,7 +1249,7 @@
     - SRG-OS-000275-GPOS-00105
     - SRG-OS-000276-GPOS-00106
     - SRG-OS-000277-GPOS-00107
-    - SV-258222r926653_rule
+    - SV-258222r997064_rule
     - V-258222
     - NIST800-53R4_AC-2
     - NIST800-53R4_AU-3
@@ -1334,11 +1260,11 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654245 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/shadow."
-  when:
-    - rhel_09_654240
+  when: rhel_09_654240
   tags:
     - RHEL-09-654240
     - CAT2
+    - CCI-000015
     - CCI-000018
     - CCI-000130
     - CCI-000135
@@ -1348,7 +1274,6 @@
     - CCI-001404
     - CCI-001405
     - CCI-002130
-    - CCI-002132
     - CCI-002884
     - SRG-OS-000004-GPOS-00004
     - SRG-OS-000037-GPOS-00015
@@ -1365,7 +1290,7 @@
     - SRG-OS-000303-GPOS-00120
     - SRG-OS-000466-GPOS-00210
     - SRG-OS-000476-GPOS-00221
-    - SV-258223r926656_rule
+    - SV-258223r997075_rule
     - V-258223
     - NIST800-53R4_AC-2
     - NIST800-53R4_AU-3
@@ -1376,8 +1301,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654250 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /var/log/faillock."
-  when:
-    - rhel_09_654250
+  when: rhel_09_654250
   tags:
     - RHEL-09-654250
     - CAT2
@@ -1386,7 +1310,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000470-GPOS-00214
     - SRG-OS-000473-GPOS-00218
-    - SV-258224r926659_rule
+    - SV-258224r958846_rule
     - V-258224
     - NIST800-53R4_AU-12
     - NIST800-53R4_MA-4
@@ -1395,8 +1319,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654255 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /var/log/lastlog."
-  when:
-    - rhel_09_654255
+  when: rhel_09_654255
   tags:
     - RHEL-09-654255
     - CAT2
@@ -1412,7 +1335,7 @@
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000470-GPOS-00214
     - SRG-OS-000473-GPOS-00218
-    - SV-258225r926662_rule
+    - SV-258225r958412_rule
     - V-258225
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -1422,8 +1345,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654260 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /var/log/tallylog."
-  when:
-    - rhel_09_654260
+  when: rhel_09_654260
   tags:
     - RHEL-09-654260
     - CAT2
@@ -1432,7 +1354,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000470-GPOS-00214
     - SRG-OS-000473-GPOS-00218
-    - SV-258226r926665_rule
+    - SV-258226r958846_rule
     - V-258226
     - NIST800-53R4_AU-12
     - NIST800-53R4_MA-4
@@ -1441,8 +1363,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654265 | PATCH | RHEL 9 must take appropriate action when a critical audit processing failure occurs."
-  when:
-    - rhel_09_654265
+  when: rhel_09_654265
   tags:
     - RHEL-09-654265
     - CAT2
@@ -1450,7 +1371,7 @@
     - CCI-000140
     - SRG-OS-000046-GPOS-00022
     - SRG-OS-000047-GPOS-00023
-    - SV-258227r926668_rule
+    - SV-258227r958424_rule
     - V-258227
     - NIST800-53R4_AU-5
     - auditd
@@ -1458,8 +1379,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654270 | PATCH | RHEL 9 audit system must protect logon UIDs from unauthorized change."
-  when:
-    - rhel_09_654270
+  when: rhel_09_654270
   tags:
     - RHEL-09-654270
     - CAT2
@@ -1472,7 +1392,7 @@
     - SRG-OS-000057-GPOS-00027
     - SRG-OS-000058-GPOS-00028
     - SRG-OS-000059-GPOS-00029
-    - SV-258228r926671_rule
+    - SV-258228r991572_rule
     - V-258228
     - NIST800-53R4_AU-9
     - NIST800-53R4_AU-12
@@ -1481,8 +1401,7 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654275 | PATCH | RHEL 9 audit system must protect auditing rules from unauthorized change."
-  when:
-    - rhel_09_654275
+  when: rhel_09_654275
   tags:
     - RHEL-09-654275
     - CAT2
@@ -1492,8 +1411,8 @@
     - SRG-OS-000057-GPOS-00027
     - SRG-OS-000058-GPOS-00028
     - SRG-OS-000059-GPOS-00029
-    - SV-258228r926671_rule
-    - V-258228
+    - SV-258229r958434_rule
+    - V-258229
     - NIST800-53R4_AU-9
     - auditd
   ansible.builtin.set_fact:

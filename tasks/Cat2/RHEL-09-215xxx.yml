@@ -1,0 +1,241 @@
+---
+
+- name: "MEDIUM | RHEL-09-215010 | PATCH | RHEL 9 subscription-manager package must be installed."
+  when:
+    - rhel_09_215010
+    - ansible_facts.distribution == 'RedHat'
+    - "'subscription-manager' not in ansible_facts.packages"
+  tags:
+    - RHEL-09-215010
+    - CAT2
+    - CCI-000000
+    - SRG-OS-000366-GPOS-00153
+    - SV-257825r997056_rule
+    - V-257825
+    - NIST800-53R4_NA
+  ansible.builtin.package:
+    name: subscription-manager
+    state: present
+
+- name: "MEDIUM | RHEL-09-215020 | PATCH | RHEL 9 must not have the sendmail package installed."
+  when: rhel_09_215020
+  tags:
+    - RHEL-09-215020
+    - CAT2
+    - CCI-000366
+    - CCI-000381
+    - SRG-OS-000480-GPOS-00227
+    - SRG-OS-000095-GPOS-00049
+    - SV-257827r991589_rule
+    - V-257827
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_CM-7
+  ansible.builtin.package:
+    name: sendmail
+    state: absent
+
+- name: "MEDIUM | RHEL-09-215025 | PATCH | RHEL 9 must not have the nfs-utils package installed."
+  when:
+    - rhel_09_215025
+    - not rhel9stig_nfs_utils_required
+  tags:
+    - RHEL-09-215025
+    - CAT2
+    - CCI-000381
+    - SRG-OS-000095-GPOS-00049
+    - SV-257828r958478_rule
+    - V-257828
+    - NIST800-53R4_CM-7
+  ansible.builtin.package:
+    name: nfs-utils
+    state: absent
+
+- name: "MEDIUM | RHEL-09-215030 | PATCH | RHEL 9 must not have the ypserv package installed."
+  when: rhel_09_215030
+  tags:
+    - RHEL-09-215030
+    - CAT2
+    - CCI-000381
+    - SRG-OS-000095-GPOS-00049
+    - SV-257829r958478_rule
+    - V-257829
+    - NIST800-53R4_CM-7
+  ansible.builtin.package:
+    name: ypserv
+    state: absent
+
+- name: "MEDIUM | RHEL-09-215035 | PATCH | RHEL 9 must not have the rsh-server package installed."
+  when: rhel_09_215035
+  tags:
+    - RHEL-09-215035
+    - CAT2
+    - CCI-000381
+    - SRG-OS-000095-GPOS-00049
+    - SV-257830r958478_rule
+    - V-257830
+    - NIST800-53R4_CM-7
+  ansible.builtin.package:
+    name: rsh-server
+    state: absent
+
+- name: "MEDIUM | RHEL-09-215040 | PATCH | RHEL 9 must not have the telnet-server package installed."
+  when: rhel_09_215040
+  tags:
+    - RHEL-09-215040
+    - CAT2
+    - CCI-000381
+    - SRG-OS-000095-GPOS-00049
+    - SV-257831r958478_rule
+    - V-257831
+    - NIST800-53R4_CM-7
+  ansible.builtin.package:
+    name: telnet-server
+    state: absent
+
+- name: "MEDIUM | RHEL-09-215045 | PATCH | RHEL 9 must not have the gssproxy package installed."
+  when: rhel_09_215045
+  tags:
+    - RHEL-09-215045
+    - CAT2
+    - CCI-000381
+    - SRG-OS-000095-GPOS-00049
+    - SV-257832r958478_rule
+    - V-257832
+    - NIST800-53R4_CM-7
+  ansible.builtin.package:
+    name: gssproxy
+    state: absent
+
+- name: "MEDIUM | RHEL-09-215050 | PATCH | RHEL 9 must not have the iprutils package installed."
+  when: rhel_09_215050
+  tags:
+    - RHEL-09-215050
+    - CAT2
+    - CCI-000381
+    - SRG-OS-000095-GPOS-00049
+    - SV-257833r958478_rule
+    - V-257833
+    - NIST800-53R4_CM-7
+  ansible.builtin.package:
+    name: iprutils
+    state: absent
+
+- name: "MEDIUM | RHEL-09-215055 | PATCH | RHEL 9 must not have the tuned package installed."
+  when: rhel_09_215055
+  tags:
+    - RHEL-09-215055
+    - CAT2
+    - CCI-000366
+    - CCI-000381
+    - SRG-OS-000480-GPOS-00227
+    - SRG-OS-000095-GPOS-00049
+    - SV-257834r958478_rule
+    - V-257834
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_CM-7
+  ansible.builtin.package:
+    name: tuned
+    state: absent
+
+- name: "MEDIUM | RHEL-09-215065 | PATCH | RHEL 9 must not have the quagga package installed."
+  when: rhel_09_215065
+  tags:
+    - RHEL-09-215065
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257836r991589_rule
+    - V-257836
+    - NIST800-53R4_CM-6
+  ansible.builtin.package:
+    name: quagga
+    state: absent
+
+- name: "MEDIUM | RHEL-09-215070 | PATCH | A graphical display manager must not be installed on RHEL 9 unless approved."
+  when: rhel_09_215070
+  tags:
+    - RHEL-09-215070
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257837r991589_rule
+    - V-257837
+    - NIST800-53R4_CM-6
+  ansible.builtin.package:
+    name: "xorg*common"
+    state: absent
+
+- name: "MEDIUM | RHEL-09-215075 | PATCH | RHEL 9 must have the openssl-pkcs11 package installed."
+  when: rhel_09_215075
+  tags:
+    - RHEL-09-215075
+    - CAT2
+    - CCI-000765
+    - CCI-001953
+    - CCI-001954
+    - SRG-OS-000105-GPOS-00052
+    - SRG-OS-000375-GPOS-00160
+    - SRG-OS-000376-GPOS-00161
+    - SRG-OS-000377-GPOS-00162
+    - SV-257838r997057_rule
+    - V-257838
+    - NIST800-53R4_IA-2
+  ansible.builtin.package:
+    name: openssl-pkcs11
+    state: present
+
+- name: "MEDIUM | RHEL-09-215080 | PATCH | RHEL 9 must have the gnutls-utils package installed."
+  when: rhel_09_215080
+  tags:
+    - RHEL-09-215080
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257839r991589_rule
+    - V-257839
+    - NIST800-53R4_CM-6
+  ansible.builtin.package:
+    name: gnutls-utils
+    state: present
+
+- name: "MEDIUM | RHEL-09-215085 | PATCH | RHEL 9 must have the nss-tools package installed."
+  when: rhel_09_215085
+  tags:
+    - RHEL-09-215085
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257840r991589_rule
+    - V-257840
+    - NIST800-53R4_CM-6
+  ansible.builtin.package:
+    name: nss-tools
+    state: present
+
+- name: "MEDIUM | RHEL-09-215090 | PATCH | RHEL 9 must have the rng-tools package installed."
+  when: rhel_09_215090
+  tags:
+    - RHEL-09-215090
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257841r991589_rule
+    - V-257841
+    - NIST800-53R4_CM-6
+  ansible.builtin.package:
+    name: rng-tools
+    state: present
+
+- name: "MEDIUM | RHEL-09-215095 | PATCH | RHEL 9 must have the s-nail package installed."
+  when: rhel_09_215095
+  tags:
+    - RHEL-09-215095
+    - CAT2
+    - CCI-001744
+    - SRG-OS-000363-GPOS-00150
+    - SV-257842r958794_rule
+    - V-257842
+    - NIST800-53R4_CM-3
+  ansible.builtin.package:
+    name: s-nail
+    state: present

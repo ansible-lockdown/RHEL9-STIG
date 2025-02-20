@@ -1,10 +1,8 @@
 ---
 
 - name: Check OS version and family
-  when:
-    - not skip_os_check
-  tags:
-    - always
+  when: not skip_os_check
+  tags: always
   ansible.builtin.assert:
     that: (ansible_distribution != 'CentOS' and ansible_os_family == 'RedHat' or ansible_os_family == "Rocky") and ansible_distribution_major_version is version_compare('9',
       '==')
@@ -12,8 +10,7 @@
     success_msg: This role is running against a supported OS {{ ansible_facts.distribution }} {{ ansible_facts.distribution_major_version }}
 
 - name: Check ansible version
-  tags:
-    - always
+  tags: always
   ansible.builtin.assert:
     that: ansible_version.full is version_compare(min_ansible_version, '>=')
     fail_msg: You must use Ansible {{ min_ansible_version }} or greater
@@ -34,9 +31,8 @@
       ansible.builtin.include_vars:
         file: "{{ container_vars_file }}"
 
-    - name: output if discovered is a container
-      when:
-        - system_is_container
+    - name: Output if discovered is a container
+      when: system_is_container
       ansible.builtin.debug:
         msg: system has been discovered as a container
 
@@ -53,9 +49,8 @@
       check_mode: false
       register: ansible_user_password_set
 
-    - name: Assert that password set for {{ ansible_env.SUDO_USER }} and account not locked
-      tags:
-        - user_passwd
+    - name: Assert that password set for {{ ansible_env.SUDO_USER }} and account not locked  # noqa:name[template]
+      tags: user_passwd
       ansible.builtin.assert:
         that: ansible_user_password_set.stdout | length != 0 and ansible_user_password_set.stdout != "!!"
         fail_msg: You have {{ sudo_password_rule }} enabled but the user = {{ ansible_env.SUDO_USER }} has no password set - It can break access
@@ -64,14 +59,12 @@
         sudo_password_rule: RHEL-09-010380  # pragma: allowlist secret
 
 - name: Include OS specific variables
-  tags:
-    - always
+  tags: always
   ansible.builtin.include_vars:
     file: "{{ ansible_distribution }}.yml"
 
 - name: Check rhel9stig_bootloader_password_hash variable has been changed
-  tags:
-    - grub
+  tags: grub
   when:
     - not system_is_ec2
     - not system_is_container
@@ -83,8 +76,7 @@
     msg: This role will not be able to run single user password commands as rhel9stig_bootloader_password_hash variable has not been set  # pragma: allowlist secret
 
 - name: Gather the package facts
-  tags:
-    - always
+  tags: always
   ansible.builtin.package_facts:
     manager: auto
 
@@ -96,8 +88,7 @@
     file: prelim.yml
 
 - name: Include CAT I patches
-  when:
-    - rhel9stig_cat1
+  when: rhel9stig_cat1
   tags:
     - CAT1
     - high
@@ -105,22 +96,20 @@
     file: Cat1/main.yml
 
 - name: Include CAT II patches
-  ansible.builtin.import_tasks:
-    file: Cat2/main.yml
-  when:
-    - rhel9stig_cat2
+  when: rhel9stig_cat2
   tags:
     - CAT2
     - medium
+  ansible.builtin.import_tasks:
+    file: Cat2/main.yml
 
 - name: Include CAT III patches
-  ansible.builtin.import_tasks:
-    file: Cat3/main.yml
-  when:
-    - rhel9stig_cat3
+  when: rhel9stig_cat3
   tags:
     - CAT3
     - low
+  ansible.builtin.import_tasks:
+    file: Cat3/main.yml
 
 - name: Run auditd logic
   when:
@@ -131,9 +120,12 @@
     file: auditd.yml
 
 - name: Flush handlers
+  tags: always
   ansible.builtin.meta: flush_handlers
 
 - name: Reboot system if changes require it and not skipped
+  vars:
+    warn_control_id: Reboot_required
   block:
     - name: POST | Reboot system if changes require it and not skipped
       when:
@@ -155,29 +147,21 @@
         - skip_reboot
       ansible.builtin.import_tasks:
         file: warning_facts.yml
-  vars:
-    warn_control_id: Reboot_required
 
 - name: Run post remediation audit
-  when:
-    - run_audit
-  tags:
-    - run_audit
+  when: run_audit
+  tags: run_audit
   ansible.builtin.import_tasks:
     file: post_remediation_audit.yml
 
 - name: Show Audit Summary
-  when:
-    - run_audit
-  tags:
-    - run_audit
+  when: run_audit
+  tags: run_audit
   ansible.builtin.debug:
     msg: "{{ audit_results.split('\n') }}"
 
 - name: If Warnings found Output count and control IDs affected
-  when:
-    - warn_count != 0
-  tags:
-    - always
+  when: warn_count != 0
+  tags: always
   ansible.builtin.debug:
     msg: You have {{ warn_count }} Warning(s) that require investigating that are related to the following benchmark ID(s) {{ warn_control_list }}

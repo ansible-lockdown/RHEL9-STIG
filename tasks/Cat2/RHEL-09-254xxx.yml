@@ -1,0 +1,115 @@
+---
+
+- name: "MEDIUM | RHEL-09-254010 | PATCH | RHEL 9 must not accept router advertisements on all IPv6 interfaces."
+  when: rhel_09_254010
+  tags:
+    - RHEL-09-254010
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257971r991589_rule
+    - V-257971
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.all.accept_ra
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-254015 | PATCH | RHEL 9 must ignore IPv6 Internet Control Message Protocol (ICMP) redirect messages."
+  when: rhel_09_254015
+  tags:
+    - RHEL-09-254015
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257972r991589_rule
+    - V-257972
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.all.accept_redirects
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-254020 | PATCH | RHEL 9 must not forward IPv6 source-routed packets."
+  when: rhel_09_254020
+  tags:
+    - RHEL-09-254020
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257973r991589_rule
+    - V-257973
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.all.accept_source_route
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-254025 | PATCH | RHEL 9 must not enable IPv6 packet forwarding unless the system is a router."
+  when:
+    - rhel_09_254025
+    - not rhel9stig_system_is_router
+  tags:
+    - RHEL-09-254025
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257974r991589_rule
+    - V-257974
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.all.forwarding
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-254030 | PATCH | RHEL 9 must not accept router advertisements on all IPv6 interfaces by default."
+  when: rhel_09_254030
+  tags:
+    - RHEL-09-254030
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257975r991589_rule
+    - V-257975
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.default.accept_ra
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-254035 | PATCH | RHEL 9 must prevent IPv6 Internet Control Message Protocol (ICMP) redirect messages from being accepted."
+  when: rhel_09_254035
+  tags:
+    - RHEL-09-254035
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257976r991589_rule
+    - V-257976
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.default.accept_redirects
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-254040 | PATCH | RHEL 9 must not forward IPv6 source-routed packets by default"
+  when: rhel_09_254040
+  tags:
+    - RHEL-09-254040
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257977r991589_rule
+    - V-257977
+    - NIST800-53R4_CM-6
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.default.accept_source_route
+    reload: true
+    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
+    value: '0'
