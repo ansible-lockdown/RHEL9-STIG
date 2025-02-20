@@ -44,6 +44,5 @@ benchparse/
 # pre-commit cache
 .ansible/
 
-
 # GitHub Action/Workflow files
 .github/
