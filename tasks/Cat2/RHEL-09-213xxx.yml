@@ -1,0 +1,424 @@
+---
+
+- name: "MEDIUM | RHEL-09-213010 | PATCH | RHEL 9 must restrict access to the kernel message buffer."
+  when: rhel_09_213010
+  tags:
+    - RHEL-09-213010
+    - CAT2
+    - CCI-001082
+    - CCI-001090
+    - SRG-OS-000132-GPOS-00067
+    - SRG-OS-000138-GPOS-00069
+    - SV-257797r958514_rule
+    - V-257797
+    - NIST800-53R4_SC-2
+    - NIST800-53R4_SC-4
+  notify: Reload_sysctl
+  ansible.posix.sysctl:
+    name: kernel.dmesg_restrict
+    state: present
+    sysctl_file: "{{ rhel9stig_sysctl_file.kernel }}"
+    sysctl_set: true
+    value: '1'
+
+- name: "MEDIUM | RHEL-09-213015 | PATCH | RHEL 9 must prevent kernel profiling by nonprivileged users."
+  when: rhel_09_213015
+  tags:
+    - RHEL-09-213015
+    - CAT2
+    - CCI-001082
+    - CCI-001090
+    - SRG-OS-000132-GPOS-00067
+    - SRG-OS-000138-GPOS-00069
+    - SV-257798r958514_rule
+    - V-257798
+    - NIST800-53R4_SC-2
+    - NIST800-53R4_SC-4
+  notify: Reload_sysctl
+  ansible.posix.sysctl:
+    name: kernel.perf_event_paranoid
+    state: present
+    sysctl_file: "{{ rhel9stig_sysctl_file.kernel }}"
+    sysctl_set: true
+    value: '2'
+
+- name: "MEDIUM | RHEL-09-213020 | PATCH | RHEL 9 must prevent the loading of a new kernel for later execution."
+  when: rhel_09_213020
+  tags:
+    - RHEL-09-213020
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SRG-OS-000366-GPOS-00153
+    - SV-257799r997051_rule
+    - V-257799
+    - NIST800-53R4_CM-6
+  notify: Reload_sysctl
+  ansible.posix.sysctl:
+    name: kernel.kexec_load_disabled
+    state: present
+    sysctl_file: "{{ rhel9stig_sysctl_file.kernel }}"
+    sysctl_set: true
+    value: '1'
+
+- name: "MEDIUM | RHEL-09-213025 | PATCH | RHEL 9 must restrict exposed kernel pointer addresses access."
+  when: rhel_09_213025
+  tags:
+    - RHEL-09-213025
+    - CAT2
+    - CCI-000366
+    - CCI-001082
+    - SRG-OS-000132-GPOS-00067
+    - SRG-OS-000433-GPOS-00192
+    - SV-257800r958514_rule
+    - V-257800
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_SC-2
+  notify: Reload_sysctl
+  ansible.posix.sysctl:
+    name: kernel.kptr_restrict
+    state: present
+    sysctl_file: "{{ rhel9stig_sysctl_file.kernel }}"
+    sysctl_set: true
+    value: '1'
+
+- name: "MEDIUM | RHEL-09-213030 | PATCH | RHEL 9 must enable kernel parameters to enforce discretionary access control on hardlinks."
+  when: rhel_09_213030
+  tags:
+    - RHEL-09-213030
+    - CAT2
+    - CCI-002165
+    - CCI-002235
+    - SRG-OS-000312-GPOS-00123
+    - SRG-OS-000324-GPOS-00125
+    - SV-257801r958702_rule
+    - V-257801
+    - NIST800-53R4_AC-3
+    - NIST800-53R4_AC-6
+  notify: Reload_sysctl
+  ansible.posix.sysctl:
+    name: fs.protected_hardlinks
+    state: present
+    sysctl_file: "{{ rhel9stig_sysctl_file.fs }}"
+    sysctl_set: true
+    value: '1'
+
+- name: "MEDIUM | RHEL-09-213035 | PATCH | RHEL 9 must enable kernel parameters to enforce discretionary access control on symlinks."
+  when:
+    - rhel_09_213035
+  tags:
+    - RHEL-09-213035
+    - CAT2
+    - CCI-002165
+    - CCI-002235
+    - SRG-OS-000312-GPOS-00123
+    - SRG-OS-000324-GPOS-00125
+    - SV-257802r958702_rule
+    - V-257802
+    - NIST800-53R4_AC-3
+    - NIST800-53R4_AC-6
+  notify: Reload_sysctl
+  ansible.posix.sysctl:
+    name: fs.protected_symlinks
+    state: present
+    sysctl_file: "{{ rhel9stig_sysctl_file.fs }}"
+    sysctl_set: true
+    value: '1'
+
+- name: "MEDIUM | RHEL-09-213040 | PATCH | RHEL 9 must disable the kernel.core_pattern."
+  when: rhel_09_213040
+  tags:
+    - RHEL-09-213040
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257803r991589_rule
+    - V-257803
+    - NIST800-53R4_CM-6
+  notify: Reload_sysctl
+  ansible.posix.sysctl:
+    name: kernel.core_pattern
+    state: present
+    sysctl_file: "{{ rhel9stig_sysctl_file.kernel }}"
+    sysctl_set: true
+    value: '|/bin/false'
+
+- name: "MEDIUM | RHEL-09-213045 | PATCH | RHEL 9 must be configured to disable the Asynchronous Transfer Mode kernel module."
+  when: rhel_09_213045
+  tags:
+    - RHEL-09-213045
+    - CAT2
+    - CCI-000381
+    - SRG-OS-000095-GPOS-00049
+    - SV-257804r958478_rule
+    - V-257804
+    - NIST800-53R4_CM-7
+  vars:
+    blacklist: 'atm'
+  notify: Change_requires_reboot
+  ansible.builtin.template:
+    dest: "/etc/modprobe.d/{{ blacklist }}.conf"
+    src: etc/modprobe.d/module.conf.j2
+    mode: 'go-wx'
+
+- name: "MEDIUM | RHEL-09-213050 | PATCH | RHEL 9 must be configured to disable the Controller Area Network kernel module."
+  when: rhel_09_213050
+  tags:
+    - RHEL-09-213050
+    - CAT2
+    - CCI-000381
+    - SRG-OS-000095-GPOS-00049
+    - SV-257805r958478_rule
+    - V-257805
+    - NIST800-53R4_CM-7
+  vars:
+    blacklist: 'can'
+  notify: Change_requires_reboot
+  ansible.builtin.template:
+    dest: "/etc/modprobe.d/{{ blacklist }}.conf"
+    src: etc/modprobe.d/module.conf.j2
+    mode: 'go-wx'
+
+- name: "MEDIUM | RHEL-09-213055 | PATCH | RHEL 9 must be configured to disable the FireWire kernel module."
+  when: rhel_09_213055
+  tags:
+    - RHEL-09-213055
+    - CAT2
+    - CCI-000381
+    - SRG-OS-000095-GPOS-00049
+    - SV-257806r958478_rule
+    - V-257806
+    - NIST800-53R4_CM-7
+  vars:
+    blacklist: 'firewire-core'
+    mod_value: 'false'
+  notify: Change_requires_reboot
+  ansible.builtin.template:
+    dest: "/etc/modprobe.d/{{ blacklist }}.conf"
+    src: etc/modprobe.d/module.conf.j2
+    mode: 'go-wx'
+
+- name: "MEDIUM | RHEL-09-213060 | PATCH | RHEL 9 must disable the Stream Control Transmission Protocol (SCTP) kernel module."
+  when: rhel_09_213060
+  tags:
+    - RHEL-09-213060
+    - CAT2
+    - CCI-000381
+    - SRG-OS-000095-GPOS-00049
+    - SV-257807r958478_rule
+    - V-257807
+    - NIST800-53R4_CM-7
+  vars:
+    blacklist: 'sctp'
+  notify: Change_requires_reboot
+  ansible.builtin.template:
+    dest: "/etc/modprobe.d/{{ blacklist }}.conf"
+    src: etc/modprobe.d/module.conf.j2
+    mode: 'go-wx'
+
+- name: "MEDIUM | RHEL-09-213065 | PATCH | RHEL 9 must disable the Transparent Inter Process Communication (TIPC) kernel module."
+  when: rhel_09_213065
+  tags:
+    - RHEL-09-213065
+    - CAT2
+    - CCI-000381
+    - SRG-OS-000095-GPOS-00049
+    - SV-257808r958478_rule
+    - V-257808
+    - NIST800-53R4_CM-7
+  vars:
+    blacklist: 'tipc'
+  notify: Change_requires_reboot
+  ansible.builtin.template:
+    dest: "/etc/modprobe.d/{{ blacklist }}.conf"
+    src: etc/modprobe.d/module.conf.j2
+    mode: 'go-wx'
+
+- name: "MEDIUM | RHEL-09-213070 | PATCH | RHEL 9 must implement address space layout randomization (ASLR) to protect its memory from unauthorized code execution."
+  when: rhel_09_213070
+  tags:
+    - RHEL-09-213070
+    - CAT2
+    - CCI-000366
+    - CCI-002824
+    - SRG-OS-000433-GPOS-00193
+    - SRG-OS-000480-GPOS-00227
+    - SV-257809r958928_rule
+    - V-257809
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_SI-16
+  notify: Reload_sysctl
+  ansible.posix.sysctl:
+    name: kernel.randomize_va_space
+    state: present
+    sysctl_file: "{{ rhel9stig_sysctl_file.kernel }}"
+    sysctl_set: true
+    value: '2'
+
+- name: "MEDIUM | RHEL-09-213075 | PATCH | RHEL 9 must disable access to network bpf system call from nonprivileged processes."
+  when: rhel_09_213075
+  tags:
+    - RHEL-09-213075
+    - CAT2
+    - CCI-000366
+    - CCI-001082
+    - SRG-OS-000132-GPOS-00067
+    - SRG-OS-000480-GPOS-00227
+    - SV-257810r958514_rule
+    - V-257810
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_SC-2
+  notify: Reload_sysctl
+  ansible.posix.sysctl:
+    name: kernel.unprivileged_bpf_disabled
+    state: present
+    sysctl_file: "{{ rhel9stig_sysctl_file.kernel }}"
+    sysctl_set: true
+    value: '1'
+
+- name: "MEDIUM | RHEL-09-213080 | PATCH | RHEL 9 must restrict usage of ptrace to descendant processes."
+  when: rhel_09_213080
+  tags:
+    - RHEL-09-213080
+    - CAT2
+    - CCI-000366
+    - CCI-001082
+    - SRG-OS-000132-GPOS-00067
+    - SRG-OS-000480-GPOS-00227
+    - SV-257811r958514_rule
+    - V-257811
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_SC-2
+  notify: Reload_sysctl
+  ansible.posix.sysctl:
+    name: kernel.yama.ptrace_scope
+    state: present
+    sysctl_file: "{{ rhel9stig_sysctl_file.kernel }}"
+    sysctl_set: true
+    value: '1'
+
+- name: "MEDIUM | RHEL-09-213085 | PATCH | RHEL 9 must disable core dump backtraces."
+  when: rhel_09_213085
+  tags:
+    - RHEL-09-213085
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257812r991589_rule
+    - V-257812
+    - NIST800-53R4_CM-6
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/coredump.conf
+    regexp: ^(#|)ProcessSizeMax\s*=\s*(?!0)\d+
+    line: ProcessSizeMax=0
+    create: true
+    mode: 'go-wx'
+
+- name: "MEDIUM | RHEL-09-213090 | PATCH | RHEL 9 must storage core dumps."
+  when: rhel_09_213090
+  tags:
+    - RHEL-09-213090
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257813r991589_rule
+    - V-257813
+    - NIST800-53R4_CM-6
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/coredump.conf
+    regexp: ^(#|)Storage=.*
+    line: Storage=none
+    create: true
+    mode: 'go-wx'
+
+- name: "MEDIUM | RHEL-09-213095 | PATCH | RHEL 9 must disable core dumps for all users."
+  when: rhel_09_213095
+  tags:
+    - RHEL-09-213095
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257814r991589_rule
+    - V-257814
+    - NIST800-53R4_CM-6
+  ansible.builtin.lineinfile:
+    path: /etc/security/limits.conf
+    regexp: '^\* hard core (?!0)\d*'
+    line: '* hard core 0'
+
+- name: "MEDIUM | RHEL-09-213100 | PATCH | RHEL 9 must disable acquiring, saving, and processing core dumps."
+  when: rhel_09_213100
+  tags:
+    - RHEL-09-213100
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257815r991589_rule
+    - V-257815
+    - NIST800-53R4_CM-6
+  ansible.builtin.systemd:
+    daemon_reload: true
+    enabled: false
+    masked: true
+    name: systemd-coredump.socket
+    state: stopped
+
+- name: "MEDIUM | RHEL-09-213105 | PATCH | RHEL 9 must disable the use of user namespaces."
+  when: rhel_09_213105
+  tags:
+    - RHEL-09-213105
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257816r991589_rule
+    - V-257816
+    - NIST800-53R4_CM-6
+  notify: Reload_sysctl
+  ansible.posix.sysctl:
+    name: user.max_user_namespaces
+    state: present
+    sysctl_file: "{{ rhel9stig_sysctl_file.user }}"
+    sysctl_set: true
+    value: '0'
+
+- name: "MEDIUM | RHEL-09-213110 | PATCH | RHEL 9 must implement nonexecutable data to protect its memory from unauthorized code execution."
+  when: rhel_09_213110
+  tags:
+    - RHEL-09-213110
+    - CAT2
+    - CCI-002824
+    - SRG-OS-000433-GPOS-00192
+    - SV-257817r958928_rule
+    - V-257817
+    - NIST800-53R4_SI-16
+  block:
+    - name: "MEDIUM | RHEL-09-213110 | AUDIT | RHEL 9 must implement nonexecutable data to protect its memory from unauthorized code execution."
+      ansible.builtin.shell: dmesg | grep '[NX|DX]*protection'
+      changed_when: false
+      failed_when: rhel9stig_213110_nxdx.rc not in [ 0, 1 ]
+      register: rhel9stig_213110_nxdx
+
+    - name: "MEDIUM | RHEL-09-213110 | PATCH | RHEL 9 must implement nonexecutable data to protect its memory from unauthorized code execution."
+      when: "'protection: active' not in rhel9stig_213110_nxdx.stdout"
+      ansible.builtin.command: grubby --update-kernel=ALL --remove-args=noexec
+      changed_when: true
+      notify: Change_requires_reboot
+
+- name: "MEDIUM | RHEL-09-213115 | PATCH | The kdump service on RHEL 9 must be disabled."
+  when:
+    - rhel_09_213115
+    - "'kexec-tools' in ansible_facts.packages"
+  tags:
+    - RHEL-09-213115
+    - CAT2
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-257818r991589_rule
+    - V-257818
+    - NIST800-53R4_CM-6
+  ansible.builtin.systemd:
+    daemon_reload: true
+    enabled: false
+    masked: true
+    name: kdump
+    state: stopped

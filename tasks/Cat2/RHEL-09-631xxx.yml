@@ -1,16 +1,14 @@
 ---
 
 - name: "MEDIUM | RHEL-09-631010 | PATCH | RHEL 9, for PKI-based authentication, must validate certificates by constructing a certification path (which includes status information) to an accepted trust anchor."
-  when:
-    - rhel_09_631010
+  when: rhel_09_631010
   tags:
     - RHEL-09-631010
     - CAT2
     - CCI-000185
-    - CCI-001991
     - SRG-OS-000066-GPOS-00034
     - SRG-OS-000384-GPOS-00167
-    - SV-258131r926380_rule
+    - SV-258131r997113_rule
     - V-258131
     - NIST800-53R4_IA-5
   vars:
@@ -41,13 +39,13 @@
     - CAT2
     - CCI-000187
     - SRG-OS-000068-GPOS-00036
-    - SV-258132r926383_rule
+    - SV-258132r958452_rule
     - V-258132
     - NIST800-53R4_IA-5
   ansible.builtin.blockinfile:
+    path: /etc/sssd/sssd.conf
     block: "{{ rhel9stig_sssd_config_certmap }}"
     marker: "<!-- {mark} Ansible-Lockdown RHEL9-STIG -->"
-    path: /etc/sssd/sssd.conf
 
 - name: "MEDIUM | RHEL-09-631020 | PATCH | RHEL 9 must prohibit the use of cached authenticators after one day."
   when:
@@ -58,11 +56,12 @@
     - CAT2
     - CCI-002007
     - SRG-OS-000383-GPOS-00166
-    - SV-258133r926386_rule
+    - SV-258133r958828_rule
     - V-258133
     - NIST800-53R4_IA-5
   community.general.ini_file:
-    option: offline_credentials_expiration
     path: /etc/sssd/sssd.conf
+    option: offline_credentials_expiration
     section: pam
     value: 1
+    mode: 'go-wx'

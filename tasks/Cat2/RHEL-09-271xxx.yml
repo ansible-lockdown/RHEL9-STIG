@@ -15,15 +15,16 @@
     - CCI-001388
     - SRG-OS-000023-GPOS-00006
     - SRG-OS-000228-GPOS-00088
-    - SV-258012r926023_rule
+    - SV-258012r958390_rule
     - V-258012
     - NIST800-53R4_CM-6
   notify: Update_dconf
   community.general.ini_file:
-    option: banner-message-enable
     path: /etc/dconf/db/local.d/01-banner-message
+    option: banner-message-enable
     section: 'org/gnome/login-screen'
     value: 'true'
+    mode: 'go-wx'
 
 - name: "MEDIUM | RHEL-09-271015 | PATCH | RHEL 9 must prevent a user from overriding the banner-message-enable setting for the graphical user interface."
   when:
@@ -40,7 +41,7 @@
     - CCI-001388
     - SRG-OS-000023-GPOS-00006
     - SRG-OS-000228-GPOS-00088
-    - SV-258013r926026_rule
+    - SV-258013r958390_rule
     - V-258013
     - NIST800-53R4_CM-6
   notify: Update_dconf
@@ -48,7 +49,7 @@
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
     line: /org/gnome/login-screen/banner-message-enable
     create: true
-    mode: 'u-x,go-wx'
+    mode: 'go-wx'
     state: present
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
@@ -65,17 +66,17 @@
     - SRG-OS-000114-GPOS-00059
     - SRG-OS-000378-GPOS-00163
     - SRG-OS-000480-GPOS-00227
-    - SV-258014r926029_rule
+    - SV-258014r958498_rule
     - V-258014
     - NIST800-53R4_CM-6
   notify: Update_dconf
   community.general.ini_file:
-    create: true
-    mode: 'u-x,go-wx'
-    option: automount-open
     path: "/etc/dconf/db/{{ item }}.d/00-security-settings"
+    option: automount-open
     section: 'org/gnome/desktop/media-handling'
     value: 'false'
+    create: true
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271025 | PATCH | RHEL 9 must prevent a user from overriding the disabling of the graphical user interface automount function."
@@ -91,7 +92,7 @@
     - SRG-OS-000114-GPOS-00059
     - SRG-OS-000378-GPOS-00163
     - SRG-OS-000480-GPOS-00227
-    - SV-258015r926032_rule
+    - SV-258015r958498_rule
     - V-258015
     - NIST800-53R4_CM-6
     - NIST800-53R4_IA-3
@@ -100,6 +101,7 @@
     path: "/etc/dconf/db/{{ item }}.d/locks/00-security-settings-lock"
     line: /org/gnome/desktop/media-handling/automount-open
     create: true
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271030 | PATCH | RHEL 9 must disable the graphical user interface autorun function unless required."
@@ -111,16 +113,17 @@
     - CAT2
     - CCI-001764
     - SRG-OS-000368-GPOS-00154
-    - SV-258016r926035_rule
+    - SV-258016r958804_rule
     - V-258016
     - NIST800-53R4_CM-6
   notify: Update_dconf
   community.general.ini_file:
-    create: true
-    option: autorun-never
     path: "/etc/dconf/db/{{ item }}.d/00-security-settings"
+    option: autorun-never
     section: 'org/gnome/desktop/media-handling'
     value: 'true'
+    create: true
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271035 | PATCH | RHEL 9 must prevent a user from overriding the disabling of the graphical user interface autorun function."
@@ -136,7 +139,7 @@
     - SRG-OS-000114-GPOS-00059
     - SRG-OS-000378-GPOS-00163
     - SRG-OS-000480-GPOS-00227
-    - SV-258017r926038_rule
+    - SV-258017r958498_rule
     - V-258017
     - NIST800-53R4_CM-6
     - NIST800-53R4_IA-3
@@ -145,6 +148,7 @@
     path: "/etc/dconf/db/{{ item }}.d/locks/00-security-settings-lock"
     line: /org/gnome/desktop/media-handling/autorun-never
     create: true
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271045 | PATCH | RHEL 9 must be able to initiate directly a session lock for all connection types using smart card when the smart card is removed."
@@ -155,20 +159,21 @@
     - RHEL-09-271045
     - CAT2
     - CCI-00056
-    - CCI-00058
+    - CCI-00057
     - SRG-OS-000028-GPOS-00009
     - SRG-OS-000030-GPOS-00011
-    - SV-258019r926044_rule
+    - SV-258019r997071_rule
     - V-258019
     - NIST800-53R4_AC-11
   notify: Update_dconf
   community.general.ini_file:
-    create: true
+    path: "/etc/dconf/db/{{ item }}.d/00-security-settings"
     no_extra_spaces: true
     option: removal-action
-    path: "/etc/dconf/db/{{ item }}.d/00-security-settings"
     section: 'org/gnome/settings-daemon/peripherals/smartcard'
     value: "'lock-screen'"
+    create: true
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271050 | PATCH | RHEL 9 must prevent a user from overriding the disabling of the graphical user smart card removal action."
@@ -179,10 +184,10 @@
     - RHEL-09-271050
     - CAT2
     - CCI-00056
-    - CCI-00058
+    - CCI-00057
     - SRG-OS-000028-GPOS-00009
     - SRG-OS-000030-GPOS-00011
-    - SV-258020r926047_rule
+    - SV-258020r997072_rule
     - V-258020
     - NIST800-53R4_AC-11
   notify: Update_dconf
@@ -190,6 +195,7 @@
     path: "/etc/dconf/db/{{ item }}.d/locks/00-security-settings-lock"
     line: /org/gnome/settings-daemon/peripherals/smartcard/removal-action
     create: true
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271055 | PATCH | RHEL 9 must enable a user session lock until that user re-establishes access using established identification and authentication procedures for graphical user sessions."
@@ -200,19 +206,20 @@
     - RHEL-09-271055
     - CAT2
     - CCI-00056
-    - CCI-00058
+    - CCI-00057
     - SRG-OS-000028-GPOS-00009
     - SRG-OS-000030-GPOS-00011
-    - SV-258021r926050_rule
+    - SV-258021r997073_rule
     - V-258021
     - NIST800-53R4_AC-11
   notify: Update_dconf
   community.general.ini_file:
-    create: true
-    option: lock-enabled
     path: "/etc/dconf/db/{{ item }}.d/00-screensaver"
+    option: lock-enabled
     section: 'org/gnome/desktop/screensaver'
     value: 'true'
+    create: true
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271060 | PATCH | RHEL 9 must prevent a user from overriding the screensaver lock-enabled setting for the graphical user interface."
@@ -223,10 +230,10 @@
     - RHEL-09-271060
     - CAT2
     - CCI-00056
-    - CCI-00058
+    - CCI-00057
     - SRG-OS-000028-GPOS-00009
     - SRG-OS-000030-GPOS-00011
-    - SV-258022r926053_rule
+    - SV-258022r997074_rule
     - V-258022
     - NIST800-53R4_AC-11
   notify: Update_dconf
@@ -234,6 +241,7 @@
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
     line: /org/gnome/desktop/screensaver/lock-enabled
     create: true
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271065 | PATCH | RHEL 9 must automatically lock graphical user sessions after 15 minutes of inactivity."
@@ -247,16 +255,17 @@
     - CCI-00060
     - SRG-OS-000029-GPOS-00010
     - SRG-OS-000031-GPOS-00012
-    - SV-258023r926056_rule
+    - SV-258023r958402_rule
     - V-258023
     - NIST800-53R4_AC-11
   notify: Update_dconf
   community.general.ini_file:
-    create: true
-    option: idle-delay
     path: "/etc/dconf/db/{{ item }}.d/00-screensaver"
+    option: idle-delay
     section: 'org/gnome/desktop/session'
     value: 'uint32 900'
+    create: true
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271070 | PATCH | RHEL 9 must prevent a user from overriding the session idle-delay setting for the graphical user interface"
@@ -270,7 +279,7 @@
     - CCI-00060
     - SRG-OS-000029-GPOS-00010
     - SRG-OS-000031-GPOS-00012
-    - SV-258024r926059_rule
+    - SV-258024r958402_rule
     - V-258024
     - NIST800-53R4_AC-11
   notify: Update_dconf
@@ -278,6 +287,7 @@
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
     line: /org/gnome/desktop/session/idle-delay
     create: true
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271075 | PATCH | RHEL 9 must initiate a session lock for graphical user interfaces when the screensaver is activated."
@@ -289,16 +299,17 @@
     - CAT2
     - CCI-00057
     - SRG-OS-000029-GPOS-00010
-    - SV-258025r926062_rule
+    - SV-258025r958402_rule
     - V-258025
     - NIST800-53R4_AC-11
   notify: Update_dconf
   community.general.ini_file:
-    create: true
-    option: lock-delay
     path: "/etc/dconf/db/{{ item }}.d/00-screensaver"
+    option: lock-delay
     section: 'org/gnome/desktop/screensaver'
     value: 'uint32 5'
+    create: true
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271080 | PATCH | RHEL 9 must prevent a user from overriding the session idle-delay setting for the graphical user interface"
@@ -310,7 +321,7 @@
     - CAT2
     - CCI-00057
     - SRG-OS-000029-GPOS-00010
-    - SV-258026r926065_rule
+    - SV-258026r958402_rule
     - V-258026
     - NIST800-53R4_AC-11
   notify: Update_dconf
@@ -318,6 +329,7 @@
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
     line: /org/gnome/desktop/screensaver/lock-delay
     create: true
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271085 | PATCH | RHEL 9 must conceal, via the session lock, information previously visible on the display with a publicly viewable image."
@@ -329,18 +341,19 @@
     - CAT2
     - CCI-00060
     - SRG-OS-000031-GPOS-00012
-    - SV-258027r926068_rule
+    - SV-258027r958404_rule
     - V-258027
     - NIST800-53R4_AC-11
   notify: Update_dconf
   block:
     - name: "MEDIUM | RHEL-09-271085 | PATCH | RHEL 9 must conceal, via the session lock, information previously visible on the display with a publicly viewable image."
       community.general.ini_file:
-        create: true
-        option: picture-uri
         path: "/etc/dconf/db/{{ item }}.d/00-security-settings"
+        option: picture-uri
         section: 'org/gnome/desktop/screensaver'
         value: "''"
+        create: true
+        mode: 'go-wx'
       loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-271085 | PATCH | RHEL 9 must conceal, via the session lock, information previously visible on the display with a publicly viewable image."
@@ -348,6 +361,7 @@
         path: "/etc/dconf/db/{{ item }}.d/locks/00-security-settings-lock"
         line: /org/gnome/desktop/screensaver/picture-uri
         create: true
+        mode: 'go-wx'
       loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271090 | PATCH | RHEL 9 effective dconf policy must match the policy keyfiles."
@@ -359,11 +373,12 @@
     - CAT2
     - CCI-00366
     - SRG-OS-000480-GPOS-00227
-    - SV-258029r926074_rule
+    - SV-258028r991589_rule
     - V-258029
     - NIST800-53R4_AC-11
   notify: Update_dconf
-  ansible.builtin.shell: echo "Run dconf update"
+  ansible.builtin.command: echo "Run dconf update"
+  changed_when: false
 
 - name: "MEDIUM | RHEL-09-271095 | PATCH | RHEL 9 must disable the ability of a user to restart the system from the login screen."
   when:
@@ -374,17 +389,18 @@
     - CAT2
     - CCI-00366
     - SRG-OS-000480-GPOS-00227
-    - SV-258029r943059_rule
+    - SV-258029r991589_rule
     - V-258029
     - NIST800-53R4_CM-6
   notify: Update_dconf
   community.general.ini_file:
-    create: true
-    option: disable-restart-buttons
     path: "/etc/dconf/db/{{ item }}.d/02-login-screen"
+    option: disable-restart-buttons
     section: 'org/gnome/login-screen'
     value: "true"
     no_extra_spaces: true
+    create: true
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271100 | PATCH | RHEL 9 must prevent a user from overriding the disable-restart-buttons setting for the graphical user interface."
@@ -396,7 +412,7 @@
     - CAT2
     - CCI-00366
     - SRG-OS-000480-GPOS-00227
-    - SV-258030r926077_rule
+    - SV-258030r991589_rule
     - V-258030
     - NIST800-53R4_CM-6
   notify: Update_dconf
@@ -404,6 +420,7 @@
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
     line: /org/gnome/login-screen/disable-restart-buttons
     create: true
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271105 | PATCH | RHEL 9 must disable the ability of a user to accidentally press Ctrl-Alt-Del and cause a system to shut down or reboot."
@@ -415,16 +432,17 @@
     - CAT2
     - CCI-00366
     - SRG-OS-000480-GPOS-00227
-    - SV-258031r926080_rule
+    - SV-258031r991589_rule
     - V-258031
     - NIST800-53R4_CM-6
   notify: Update_dconf
   community.general.ini_file:
-    create: true
-    option: logout
     path: "/etc/dconf/db/{{ item }}.d/00-security-settings"
+    option: logout
     section: 'org/gnome/settings-daemon/plugins/media-keys'
     value: "['']"
+    create: true
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271110 | PATCH | RHEL 9 must prevent a user from overriding the Ctrl-Alt-Del sequence settings for the graphical user interface."
@@ -436,7 +454,7 @@
     - CAT2
     - CCI-00366
     - SRG-OS-000480-GPOS-00227
-    - SV-258032r926083_rule
+    - SV-258032r991589_rule
     - V-258032
     - NIST800-53R4_CM-6
   notify: Update_dconf
@@ -444,6 +462,7 @@
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
     line: /org/gnome/settings-daemon/plugins/media-keys/logout
     create: true
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271115 | PATCH |  RHEL 9 must disable the user list at logon for graphical user interfaces."
@@ -455,14 +474,15 @@
     - CAT2
     - CCI-00366
     - SRG-OS-000480-GPOS-00227
-    - SV-258033r926080_rule
+    - SV-258033r991589_rule
     - V-258033
     - NIST800-53R4_CM-6
   notify: Update_dconf
   community.general.ini_file:
-    create: true
-    option: disable-user-list
     path: "/etc/dconf/db/{{ item }}.d/02-login-screen"
+    option: disable-user-list
     section: 'org/gnome/login-screen'
     value: 'true'
+    create: true
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"

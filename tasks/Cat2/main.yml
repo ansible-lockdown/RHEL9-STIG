@@ -1,51 +1,111 @@
 ---
 
-- name: Run Cat 2 STIG 21xxxx tasks
+- name: Run Cat 2 STIG 211xxx Compliance tasks
   ansible.builtin.import_tasks:
-    file: RHEL-09-21xxxx.yml
+    file: RHEL-09-211xxx.yml
 
-- name: Run Cat 2 STIG 23xxxx tasks
+- name: Run Cat 2 STIG 212xxx Bootloader tasks
   ansible.builtin.import_tasks:
-    file: RHEL-09-23xxxx.yml
+    file: RHEL-09-212xxx.yml
 
-- name: Run Cat 2 STIG 25xxxx tasks
+- name: Run Cat 2 STIG 213xxx kernel tasks
   ansible.builtin.import_tasks:
-    file: RHEL-09-25xxxx.yml
+    file: RHEL-09-213xxx.yml
 
-- name: Run Cat 2 STIG 27xxxx tasks
+- name: Run Cat 2 STIG 214xxx DNF/RPM tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-214xxx.yml
+
+- name: Run Cat 2 STIG 215xxx Package tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-215xxx.yml
+
+- name: Run Cat 2 STIG 231xxx filesystem tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-231xxx.yml
+
+- name: Run Cat 2 STIG 232xxx file/dir permission tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-232xxx.yml
+
+- name: Run Cat 2 STIG 251xxx firewall tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-251xxx.yml
+
+- name: Run Cat 2 STIG 252xxx services tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-252xxx.yml
+
+- name: Run Cat 2 STIG 253xxx ipv4 tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-253xxx.yml
+
+- name: Run Cat 2 STIG 254xxx ipv6 tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-254xxx.yml
+
+- name: Run Cat 2 STIG 255xxx ssh tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-255xxx.yml
+
+- name: Run Cat 2 STIG 271xxx gnome desktop tasks
   when:
     - rhel9stig_gui
   ansible.builtin.import_tasks:
-    file: RHEL-09-27xxxx.yml
+    file: RHEL-09-271xxx.yml
 
-- name: Run Cat 2 STIG 29xxxx tasks
+- name: Run Cat 2 STIG 291xxx hardware tasks
   ansible.builtin.import_tasks:
-    file: RHEL-09-29xxxx.yml
+    file: RHEL-09-291xxx.yml
 
-- name: Run Cat 2 STIG 4xxxxx tasks
+- name: Run Cat 2 STIG 411xxx User - Account tasks
   ansible.builtin.import_tasks:
-    file: RHEL-09-4xxxxx.yml
+    file: RHEL-09-411xxx.yml
 
-- name: Run Cat 2 STIG 61xxxx tasks
+- name: Run Cat 2 STIG 412xxx User - Session tasks
   ansible.builtin.import_tasks:
-    file: RHEL-09-61xxxx.yml
+    file: RHEL-09-412xxx.yml
 
-- name: Run Cat 2 STIG 63xxxx tasks
+- name: Run Cat 2 STIG 431xxx User - SELinux tasks
   ansible.builtin.import_tasks:
-    file: RHEL-09-63xxxx.yml
+    file: RHEL-09-431xxx.yml
 
-- name: Run Cat 2 STIG 65xxxx tasks
+- name: Run Cat 2 STIG 432xxx User - Sudo tasks
   ansible.builtin.import_tasks:
-    file: RHEL-09-65xxxx.yml
+    file: RHEL-09-432xxx.yml
 
-- name: Run Cat 2 STIG 654xxx tasks
+- name: Run Cat 2 STIG 433xxx User - FAPolicy tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-433xxx.yml
+
+- name: Run Cat 2 STIG 611xxx Authentication tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-611xxx.yml
+
+- name: Run Cat 2 STIG 631xxx Authorization tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-631xxx.yml
+
+- name: Run Cat 2 STIG 651xxx Aide tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-651xxx.yml
+
+- name: Run Cat 2 STIG 652xxx rsyslog tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-652xxx.yml
+
+- name: Run Cat 2 STIG 653xxx auditd tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-653xxx.yml
+
+- name: Run Cat 2 STIG 654xxx auditd rules tasks
   ansible.builtin.import_tasks:
     file: RHEL-09-654xxx.yml
-  tags:
-    - test
 
-- name: Run Cat 2 STIG 67xxxx tasks
+- name: Run Cat 2 STIG 671xxx FIPS tasks
   ansible.builtin.import_tasks:
-    file: RHEL-09-67xxxx.yml
-  tags:
-    - test
+    file: RHEL-09-671xxx.yml
+
+- name: Run Cat 2 STIG 672xxx cryptopolicy tasks
+  ansible.builtin.import_tasks:
+    file: RHEL-09-672xxx.yml
