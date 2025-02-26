@@ -86,9 +86,9 @@
       when: rhel9stig_rsyslog_conf.matched > 1
       ansible.builtin.lineinfile:
         path: "{{ item.path }}"
-        backrefs: true
         line: '#\1\2\3'
         regex: (Input|ModLoad)(TCP|UDP|RELP|imtcp|imudp|imrelp)(.*)
+        backrefs: true
       loop: "{{ rhel9stig_rsyslog_conf.files }}"
 
 - name: "MEDIUM | RHEL-09-652030 | PATCH | All RHEL 9 remote access methods must be monitored."
