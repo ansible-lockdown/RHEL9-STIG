@@ -1,854 +1,5 @@
 ---
 
-- name: "MEDIUM | RHEL-09-231010 | PATCH | A separate RHEL 9 file system must be used for user home directories (such as /home or an equivalent)."
-  when:
-    - rhel_09_231010
-    - ansible_facts['mounts']| selectattr('mount', '==', rhel9stig_home_filesystem)
-  tags:
-    - RHEL-09-231010
-    - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257843r925516_rule
-    - V-257843
-    - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-231010"
-  block:
-    - name: "MEDIUM | RHEL-09-231010 | PATCH | A separate RHEL 9 file system must be used for user home directories (such as /home or an equivalent)."
-      ansible.builtin.debug:
-        msg: "Warning!! The designated /home directory is not a separate filesystem"
-
-    - name: "MEDIUM | RHEL-09-231010 | PATCH | A separate RHEL 9 file system must be used for user home directories (such as /home or an equivalent)."
-      ansible.builtin.import_tasks:
-        file: warning_facts.yml
-
-- name: "MEDIUM | RHEL-09-231015 | PATCH | RHEL 9 must use a separate file system for /tmp."
-  when:
-    - rhel_09_231015
-    - ansible_facts['mounts']| selectattr('mount', '==', '/tmp')
-  tags:
-    - RHEL-09-231015
-    - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257844r925519_rule
-    - V-257844
-    - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-231015"
-  block:
-    - name: "MEDIUM | RHEL-09-231015 | PATCH | RHEL 9 must use a separate file system for /tmp."
-      ansible.builtin.debug:
-        msg: "Warning!! /tmp directory is not a seperate filesystem"
-
-    - name: "MEDIUM | RHEL-09-231015 | PATCH | RHEL 9 must use a separate file system for /tmp."
-      ansible.builtin.import_tasks:
-        file: warning_facts.yml
-
-- name: "MEDIUM | RHEL-09-231035 | PATCH | RHEL 9 must use a separate file system for /var/tmp."
-  when:
-    - rhel_09_231035
-    - ansible_facts['mounts']| selectattr('mount', '==', '/var/tmp')
-  tags:
-    - RHEL-09-231035
-    - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257848r925531_rule
-    - V-257848
-    - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-231035"
-  block:
-    - name: "MEDIUM | RHEL-09-231035 | PATCH | RHEL 9 must use a separate file system for /var/tmp."
-      ansible.builtin.debug:
-        msg: "Warning!! /var/tmp directory is not a seperate filesystem"
-
-    - name: "MEDIUM | RHEL-09-231035 | PATCH | RHEL 9 must use a separate file system for /var/tmp."
-      ansible.builtin.import_tasks:
-        file: warning_facts.yml
-
-- name: "MEDIUM | RHEL-09-231040 | PATCH | RHEL 9 file system automount function must be disabled unless required."
-  when:
-    - rhel_09_231040
-  tags:
-    - RHEL-09-231040
-    - CAT2
-    - CCI-000366
-    - CCI-000778
-    - CCI-001958
-    - SRG-OS-000114-GPOS-00059
-    - SRG-OS-000378-GPOS-00163
-    - SRG-OS-000480-GPOS-00227
-    - SV-257849r925534_rule
-    - V-257849
-    - NIST800-53R4_CM-6
-    - NIST800-53R4_IA-3
-  ansible.builtin.systemd:
-    daemon_reload: true
-    masked: true
-    name: autofs.service
-
-- name: "MEDIUM | RHEL-09-231045 | PATCH | RHEL 9 must prevent device files from being interpreted on file systems that contain user home directories."
-  when:
-    - rhel_09_231045
-    - item.mount == rhel9stig_home_filesystem
-    - "'nodev' not in item.options"
-  notify:
-    - Remount_home
-  tags:
-    - RHEL-09-231045
-    - CAT2
-    - CCI-001764
-    - SRG-OS-000368-GPOS-00154
-    - SV-257850r925537_rule
-    - V-257850
-    - NIST800-53R4_CM-7
-  ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }},nodev"
-    path: "{{ rhel9stig_home_filesystem }}"
-    src: "{{ item.device }}"
-    state: present
-  register: rhel9stig_home_nodev
-  loop: "{{ ansible_facts.mounts }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231050 | PATCH | RHEL 9 must prevent files with the setuid and setgid bit set from being executed on file systems that contain user home directories."
-  when:
-    - rhel_09_231050
-    - item.mount == rhel9stig_home_filesystem
-    - "'nosuid' not in item.options"
-  notify:
-    - Remount_home
-  tags:
-    - RHEL-09-231050
-    - CAT2
-    - CCI-000366
-    - CCI-001764
-    - SRG-OS-000368-GPOS-00154
-    - SRG-OS-000480-GPOS-00227
-    - SV-257851r925540_rule
-    - V-257851
-    - NIST800-53R4_CM-6
-    - NIST800-53R4_CM-7
-  ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }}{% if rhel9stig_home_nodev.changed %},nodev{% endif %},nosuid"
-    path: "{{ rhel9stig_home_filesystem }}"
-    src: "{{ item.device }}"
-    state: present
-  register: rhel9stig_home_nosuid
-  loop: "{{ ansible_facts.mounts }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231055 | PATCH | RHEL 9 must prevent code from being executed on file systems that contain user home directories."
-  when:
-    - rhel_09_231055
-    - item.mount == rhel9stig_home_filesystem
-    - "'noexec' not in item.options"
-  notify:
-    - Remount_home
-  tags:
-    - RHEL-09-231055
-    - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257852r925543_rule
-    - V-257852
-    - NIST800-53R4_CM-6
-  ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }}{% if rhel9stig_home_nodev.changed %},nodev{% endif %}{% if rhel9stig_home_nosuid.changed %},nosuid{% endif %},noexec"
-    path: "{{ rhel9stig_home_filesystem }}"
-    src: "{{ item.device }}"
-    state: present
-  loop: "{{ ansible_facts.mounts }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231060 | PATCH | RHEL 9 must be configured so that the Network File System (NFS) is configured to use RPCSEC_GSS."
-  when:
-    - rhel_09_231060
-    - "'nfs-utils' in ansible_facts.packages"
-    - rhel9stig_disruption_high
-  tags:
-    - RHEL-09-231060
-    - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257853r925546_rule
-    - V-257853
-    - NIST800-53R4_CM-6
-  ansible.posix.mount:
-    fstype: "nfs"
-    opts: "sec=krb5p:krb5i:krb5"
-    path: "{{ item.mount }}"
-    src: "{{ item.device }}"
-    state: present
-  loop: "{{ ansible_facts.mounts | selectattr('fstype', 'contains', 'nfs') | rejectattr('fstype', 'equalto', 'autofs') | list }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231065 | PATCH | RHEL 9 must prevent special devices on file systems that are imported via Network File System (NFS)."
-  when:
-    - rhel_09_231065
-    - "'nfs-utils' in ansible_facts.packages"
-    - "'nodev' not in item.options"
-    - rhel9stig_disruption_high
-  tags:
-    - RHEL-09-231065
-    - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257854r925549_rule
-    - V-257854
-    - NIST800-53R4_CM-6
-  ansible.posix.mount:
-    fstype: "nfs"
-    opts: "{{ item.options }},nodev"
-    path: "{{ item.mount }}"
-    src: "{{ item.device }}"
-    state: present
-  loop: "{{ ansible_facts.mounts | selectattr('fstype', 'contains', 'nfs') | rejectattr('fstype', 'equalto', 'autofs') | list }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231070 | PATCH | RHEL 9  must prevent code from being executed on file systems that are imported via Network File System (NFS)."
-  when:
-    - rhel_09_231070
-    - "'nfs-utils' in ansible_facts.packages"
-    - "'noexec' not in item.options"
-    - rhel9stig_disruption_high
-  tags:
-    - RHEL-09-231070
-    - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257855r925552_rule
-    - V-257855
-    - NIST800-53R4_CM-6
-  ansible.posix.mount:
-    fstype: "nfs"
-    opts: "{{ item.options }}{% if rhel_09_231065 %},nodev{% endif%},noexec"
-    path: "{{ item.mount }}"
-    src: "{{ item.device }}"
-    state: present
-  loop: "{{ ansible_facts.mounts | selectattr('fstype', 'contains', 'nfs') | rejectattr('fstype', 'equalto', 'autofs') | list }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231075 | PATCH | RHEL 9 must prevent files with the setuid and setgid bit set from being executed on file systems that are imported via Network File System (NFS)."
-  when:
-    - rhel_09_231075
-    - "'nfs-utils' in ansible_facts.packages"
-    - "'nosuid' not in item.options"
-    - rhel9stig_disruption_high
-  tags:
-    - RHEL-09-231075
-    - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257856r925555_rule
-    - V-257856
-    - NIST800-53R4_CM-6
-  ansible.posix.mount:
-    fstype: "nfs"
-    opts: "{{ item.options }}{% if rhel_09_231065 %},nodev{% endif%}{% if rhel_09_231070 %},noexec{% endif%},nosuid"
-    path: "{{ item.mount }}"
-    src: "{{ item.device }}"
-    state: present
-  loop: "{{ ansible_facts.mounts | selectattr('fstype', 'contains', 'nfs') | rejectattr('fstype', 'equalto', 'autofs') | list }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231080 | WARN | RHEL 9 must prevent code from being executed on file systems that are used with removable media."
-  when:
-    - rhel_09_231080
-    - rhel9stig_discovered_removable_storage is defined
-  tags:
-    - RHEL-09-231080
-    - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257857r925558_rule
-    - V-257857
-    - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-231080"
-  block:
-    - name: "MEDIUM | RHEL-09-231080 | WARN | RHEL 9 must prevent code from being executed on file systems that are used with removable media."
-      when: rhel9stig_discovered_removable_storage | length > 0
-      ansible.builtin.debug:
-        msg: "Warning!! You have removable devices attached manually check noexec is set in mount options :- device IDs:{{ rhel9stig_discovered_removable_storage }}"
-
-    - name: "MEDIUM | RHEL-09-231080 | WARN | RHEL 9 must prevent code from being executed on file systems that are used with removable media."
-      when: rhel9stig_discovered_removable_storage | length > 0
-      ansible.builtin.import_tasks:
-        file: warning_facts.yml
-
-- name: "MEDIUM | RHEL-09-231085 | WARN | RHEL 9 must prevent special devices on file systems that are used with removable media."
-  when:
-    - rhel_09_231080
-    - rhel9stig_discovered_removable_storage is defined
-  tags:
-    - RHEL-09-231085
-    - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257858r925561_rule
-    - V-257858
-    - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-231085"
-  block:
-    - name: "MEDIUM | RHEL-09-231085 | WARN | RHEL 9 must prevent special devices on file systems that are used with removable media."
-      when: rhel9stig_discovered_removable_storage | length > 0
-      ansible.builtin.debug:
-        msg: "Warning!! You have removable devices attached, manually check nodev is set in mount options :- device IDs:{{ rhel9stig_discovered_removable_storage }}"
-
-    - name: "MEDIUM | RHEL-09-231085 | WARN | RHEL 9 must prevent special devices on file systems that are used with removable media."
-      when: rhel9stig_discovered_removable_storage | length > 0
-      ansible.builtin.import_tasks:
-        file: warning_facts.yml
-
-- name: "MEDIUM | RHEL-09-231090 | WARN | RHEL 9 must prevent files with the setuid and setgid bit set from being executed on file systems that are used with removable media."
-  when:
-    - rhel_09_231090
-    - rhel9stig_discovered_removable_storage is defined
-  tags:
-    - RHEL-09-231090
-    - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257859r925564_rule
-    - V-257859
-    - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-231090"
-  block:
-    - name: "MEDIUM | RHEL-09-231090 | WARN | RHEL 9 must prevent files with the setuid and setgid bit set from being executed on file systems that are used with removable media."
-      when: rhel9stig_discovered_removable_storage | length > 0
-      ansible.builtin.debug:
-        msg: "Warning!! You have removable devices attached, manually check nosuid is set in mount options :- device IDs:{{ rhel9stig_discovered_removable_storage }}"
-
-    - name: "MEDIUM | RHEL-09-231090 | WARN | RHEL 9 must prevent files with the setuid and setgid bit set from being executed on file systems that are used with removable media."
-      when: rhel9stig_discovered_removable_storage | length > 0
-      ansible.builtin.import_tasks:
-        file: warning_facts.yml
-
-- name: "MEDIUM | RHEL-09-231095 | PATCH | RHEL 9 must mount /boot with the nodev option. | BIOS based OS"
-  when:
-    - rhel_09_231095
-    - rhel9stig_legacy_boot
-    - (item.mount == '/boot' and "'nodev' not in item.options")
-  notify:
-    - Change_requires_reboot
-  tags:
-    - RHEL-09-231095
-    - CAT2
-    - CCI-001764
-    - SRG-OS-000368-GPOS-00154
-    - SV-257860r925567_rule
-    - V-257860
-    - NIST800-53R4_CM-7
-  ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }},nodev"
-    path: '/boot'
-    src: "UUID={{ item.uuid }}"
-    state: present
-  loop: "{{ ansible_facts.mounts }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231100 | PATCH | RHEL 9 must prevent files with the setuid and setgid bit set from being executed on the /boot directory. | BIOS based OS"
-  when:
-    - rhel_09_231100
-    - rhel9stig_legacy_boot
-    - (item.mount == '/boot' and "'nosuid' not in item.options")
-  notify:
-    - Change_requires_reboot
-  tags:
-    - RHEL-09-231100
-    - CAT2
-    - CCI-001764
-    - SRG-OS-000368-GPOS-00154
-    - SV-257861r925570_rule
-    - V-257861
-    - NIST800-53R4_CM-7
-  ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }}{% if rhel_09_231100 %},nodev{% endif %},nosuid"
-    path: '/boot'
-    src: "UUID={{ item.uuid }}"
-    state: present
-  loop: "{{ ansible_facts.mounts }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231105 | PATCH | RHEL 9 must prevent files with the setuid and setgid bit set from being executed on the /boot/efi directory. | UEFI based OS"
-  when:
-    - rhel_09_231105
-    - not rhel9stig_legacy_boot
-    - (item.mount == '/boot/efi' and "'nosuid' not in item.options")
-  notify:
-    - Change_requires_reboot
-  tags:
-    - RHEL-09-231105
-    - CAT2
-    - CCI-001764
-    - SRG-OS-000368-GPOS-00154
-    - SV-257862r925573_rule
-    - V-257862
-    - NIST800-53R4_CM-7
-  ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }},nosuid"
-    path: '/boot/efi'
-    src: "UUID={{ item.uuid }}"
-    state: present
-  loop: "{{ ansible_facts.mounts }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231110 | PATCH | RHEL 9 must mount /dev/shm with the nodev option."
-  when:
-    - rhel_09_231110 or rhel_09_231115 or rhel_09_231120
-  notify:
-    - Change_requires_reboot
-  tags:
-    - RHEL-09-231110
-    - RHEL-09-231115
-    - RHEL-09-231120
-    - CAT2
-    - CCI-001764
-    - SRG-OS-000368-GPOS-00154
-    - SV-257864r925576_rule
-    - SV-257865r925579_rule
-    - SV-257866r925582_rule
-    - V-257863
-    - V-257864
-    - V-257865
-    - NIST800-53R4_CM-7
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-231110-231120"
-  block:
-    - name: |
-        "MEDIUM | RHEL-09-231110 | AUDIT | RHEL 9 must mount /dev/shm with the nodev option.
-         MEDIUM | RHEL-09-231115 | AUDIT | RHEL 9 must mount /dev/shm with the noexec option.
-         MEDIUM | RHEL-09-231120 | AUDIT | RHEL 9 must mount /dev/shm with the nosuid option."
-      ansible.builtin.shell: mount | grep /dev/shm
-      changed_when: false
-      failed_when: false
-      register: rhel9stig_231110_dev_shm_status
-
-    - name: |
-        "MEDIUM | RHEL-09-231110 | PATCH | RHEL 9 must mount /dev/shm with the nodev option.
-         MEDIUM | RHEL-09-231115 | PATCH | RHEL 9 must mount /dev/shm with the noexec option.
-         MEDIUM | RHEL-09-231120 | PATCH | RHEL 9 must mount /dev/shm with the nosuid option."
-      when: rhel9stig_231110_dev_shm_status.stdout | length > 0
-      ansible.posix.mount:
-        fstype: tmpfs
-        opts: "defaults{{ rhel_09_231110 | ternary (',nodev', '') }}{{ rhel_09_231115 | ternary (',noexec', '') }}{{ rhel_09_231120 | ternary (',nosuid', '') }}"
-        path: /dev/shm
-        state: mounted
-        src: tmpfs
-
-    - name: |
-        "MEDIUM | RHEL-09-231110 | WARN | RHEL 9 must mount /dev/shm with the nodev option.
-         MEDIUM | RHEL-09-231115 | WARN | RHEL 9 must mount /dev/shm with the noexec option.
-         MEDIUM | RHEL-09-231120 | WARN | RHEL 9 must mount /dev/shm with the nosuid option."
-      when: rhel9stig_231110_dev_shm_status.stdout | length == 0
-      ansible.builtin.debug:
-        msg: "Warning!! You have no /dev/shm mount"
-
-    - name: |
-        "MEDIUM | RHEL-09-231110 | WARN | RHEL 9 must mount /dev/shm with the nodev option.
-         MEDIUM | RHEL-09-231115 | WARN | RHEL 9 must mount /dev/shm with the noexec option.
-         MEDIUM | RHEL-09-231120 | WARN | RHEL 9 must mount /dev/shm with the nosuid option."
-      when: rhel9stig_231110_dev_shm_status.stdout | length == 0
-      ansible.builtin.import_tasks:
-        file: warning_facts.yml
-
-- name: MEDIUM | RHEL-09-231125 | PATCH | RHEL 9 must mount /tmp with the nodev option.""
-  when:
-    - rhel_09_231125
-    - item.mount == '/tmp'
-    - "'nodev' not in item.options"
-  notify:
-    - Systemd_daemon_reload
-    - Remount_tmp
-  tags:
-    - RHEL-09-231125
-    - CAT2
-    - CCI-001764
-    - SRG-OS-000368-GPOS-00154
-    - SV-257866r925585_rule
-    - V-257866
-    - NIST800-53R4_CM-7
-  ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }},nodev"
-    path: /tmp
-    state: present
-    src: "{{ item.device }}"
-  register: rhel9stig_tmp_nodev
-  loop: "{{ ansible_facts.mounts }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231130 | PATCH | RHEL 9 must mount /tmp with the noexec option."
-  when:
-    - rhel_09_231130
-    - item.mount == '/tmp'
-    - "'noexec' not in item.options"
-  notify:
-    - Systemd_daemon_reload
-    - Remount_tmp
-  tags:
-    - RHEL-09-231130
-    - CAT2
-    - CCI-001764
-    - SRG-OS-000368-GPOS-00154
-    - SV-257867r925588_rule
-    - V-257867
-    - NIST800-53R4_CM-7
-  ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }}{% if rhel9stig_tmp_nodev.changed and 'nodev' not in item.options %},nodev{% endif %},noexec"
-    path: /tmp
-    state: present
-    src: "{{ item.device }}"
-  register: rhel9stig_tmp_noexec
-  loop: "{{ ansible_facts.mounts }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231135 | PATCH | RHEL 9 must mount /tmp with the nosuid option."
-  when:
-    - rhel_09_231135
-    - item.mount == '/tmp'
-    - "'nosuid' not in item.options"
-  notify:
-    - Systemd_daemon_reload
-    - Remount_tmp
-  tags:
-    - RHEL-09-231135
-    - CAT2
-    - CCI-001764
-    - SRG-OS-000368-GPOS-00154
-    - SV-257868r925591_rule
-    - V-257868
-    - NIST800-53R4_CM-7
-  ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }}{% if rhel9stig_tmp_nodev.changed and 'nodev' not in item.options %},nodev{% endif %}{% if rhel9stig_tmp_noexec.changed and 'noexec' not in item.options %},noexec{% endif %},nosuid"
-    path: /tmp
-    state: present
-    src: "{{ item.device }}"
-  loop: "{{ ansible_facts.mounts }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231140 | PATCH | RHEL 9 must mount /var with the nodev option."
-  when:
-    - rhel_09_231140
-    - item.mount == '/var'
-    - "'nodev' not in item.options"
-  notify:
-    - Remount_var
-  tags:
-    - RHEL-09-231140
-    - CAT2
-    - CCI-001764
-    - SRG-OS-000368-GPOS-00154
-    - SV-257869r925594_rule
-    - V-257869
-    - NIST800-53R4_CM-7
-  ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }},nodev"
-    path: /var
-    state: present
-    src: "{{ item.device }}"
-  loop: "{{ ansible_facts.mounts }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231145 | PATCH | RHEL 9 must mount /var/log with the nodev option."
-  when:
-    - rhel_09_231145
-    - item.mount == '/var/log'
-    - "'nodev' not in item.options"
-  notify:
-    - Systemd_daemon_reload
-    - Change_requires_reboot
-  tags:
-    - RHEL-09-231145
-    - CAT2
-    - CCI-001764
-    - SRG-OS-000368-GPOS-00154
-    - SV-257870r925597_rule
-    - V-257870
-    - NIST800-53R4_CM-7
-  ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }},nodev"
-    path: /var/log
-    state: present
-    src: "{{ item.device }}"
-  register: rhel9stig_var_log_nodev
-  loop: "{{ ansible_facts.mounts }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231150 | PATCH | RHEL 9 must mount /var/log with the noexec option."
-  when:
-    - rhel_09_231150
-    - item.mount == '/var/log'
-    - "'noexec' not in item.options"
-  notify:
-    - Systemd_daemon_reload
-    - Change_requires_reboot
-  tags:
-    - RHEL-09-231150
-    - CAT2
-    - CCI-001764
-    - SRG-OS-000368-GPOS-00154
-    - SV-257871r925600_rule
-    - V-257871
-    - NIST800-53R4_CM-7
-  ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }}{% if rhel9stig_var_log_nodev.changed and 'nodev' not in item.options %},nodev{% endif %},noexec"
-    path: /var/log
-    state: present
-    src: "{{ item.device }}"
-  register: rhel9stig_var_log_noexec
-  loop: "{{ ansible_facts.mounts }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231155 | PATCH | RHEL 9 must mount /var/log with the nosuid option."
-  when:
-    - rhel_09_231155
-    - item.mount == '/var/log'
-    - "'nosuid' not in item.options"
-  notify:
-    - Systemd_daemon_reload
-    - Change_requires_reboot
-  tags:
-    - RHEL-09-231155
-    - CAT2
-    - CCI-001764
-    - SRG-OS-000368-GPOS-00154
-    - SV-257872r925603_rule
-    - V-257872
-    - NIST800-53R4_CM-7
-  ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }}{% if rhel9stig_var_log_nodev.changed and 'nodev' not in item.options %},nodev{% endif %}{% if rhel9stig_var_log_noexec.changed and 'noexec' not in item.options %},noexec{% endif %},nosuid"
-    path: /var/log
-    state: present
-    src: "{{ item.device }}"
-  loop: "{{ ansible_facts.mounts }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231160 | PATCH | RHEL 9 must mount /var/log/audit with the nodev option."
-  when:
-    - rhel_09_231160
-    - item.mount == '/var/log/audit'
-    - "'nodev' not in item.options"
-  notify:
-    - Systemd_daemon_reload
-    - Remount_var_log_audit
-  tags:
-    - RHEL-09-231160
-    - CAT2
-    - CCI-001764
-    - SRG-OS-000368-GPOS-00154
-    - SV-257873r925606_rule
-    - V-257873
-    - NIST800-53R4_CM-7
-  ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }},nodev"
-    path: /var/log/audit
-    state: present
-    src: "{{ item.device }}"
-  register: rhel9stig_var_log_audit_nodev
-  loop: "{{ ansible_facts.mounts }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231165 | PATCH | RHEL 9 must mount /var/log/audit with the noexec option."
-  when:
-    - rhel_09_231165
-    - item.mount == '/var/log/audit'
-    - "'noexec' not in item.options"
-  notify:
-    - Systemd_daemon_reload
-    - Remount_var_log_audit
-  tags:
-    - RHEL-09-231165
-    - CAT2
-    - CCI-001764
-    - SRG-OS-000368-GPOS-00154
-    - SV-257874r925609_rule
-    - V-257874
-    - NIST800-53R4_CM-7
-  ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }}{% if rhel9stig_var_log_audit_nodev.changed and 'nodev' not in item.options %},nodev{% endif %},noexec"
-    path: /var/log/audit
-    state: present
-    src: "{{ item.device }}"
-  register: rhel9stig_var_log_audit_noexec
-  loop: "{{ ansible_facts.mounts }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231170 | PATCH | RHEL 9 must mount /var/log/audit with the noexec option."
-  when:
-    - rhel_09_231170
-    - item.mount == '/var/log/audit'
-    - "'nosuid' not in item.options"
-  notify:
-    - Systemd_daemon_reload
-    - Remount_var_log_audit
-  tags:
-    - RHEL-09-231170
-    - CAT2
-    - CCI-001764
-    - SRG-OS-000368-GPOS-00154
-    - SV-257875r925612_rule
-    - V-257875
-    - NIST800-53R4_CM-7
-  ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }}{% if rhel9stig_var_log_audit_nodev.changed and 'nodev' not in item.options %},nodev{% endif %}{% if rhel9stig_var_log_audit_noexec.changed and 'noexec' not in item.options %},noexec{% endif %},nosuid"
-    path: /var/log/audit
-    state: present
-    src: "{{ item.device }}"
-  loop: "{{ ansible_facts.mounts }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231175 | PATCH | RHEL 9 must mount /var/tmp with the nodev option."
-  when:
-    - rhel_09_231175
-    - item.mount == '/var/tmp'
-    - "'nodev' not in item.options"
-  notify:
-    - Systemd_daemon_reload
-    - Remount_var_tmp
-  tags:
-    - RHEL-09-231175
-    - CAT2
-    - CCI-001764
-    - SRG-OS-000368-GPOS-00154
-    - SV-257876r925615_rule
-    - V-257876
-    - NIST800-53R4_CM-7
-  ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }},nodev"
-    path: /var/tmp
-    state: present
-    src: "{{ item.device }}"
-  register: rhel9stig_var_tmp_nodev
-  loop: "{{ ansible_facts.mounts }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231180 | PATCH | RHEL 9 must mount /var/tmp with the noexec option."
-  when:
-    - rhel_09_231180
-    - item.mount == '/var/tmp'
-    - "'noexec' not in item.options"
-  notify:
-    - Systemd_daemon_reload
-    - Remount_var_tmp
-  tags:
-    - RHEL-09-231180
-    - CAT2
-    - CCI-001764
-    - SRG-OS-000368-GPOS-00154
-    - SV-257877r925618_rule
-    - V-257877
-    - NIST800-53R4_CM-7
-  ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }}{% if rhel9stig_var_tmp_nodev.changed %},nodev{% endif %},noexec"
-    path: /var/tmp
-    state: present
-    src: "{{ item.device }}"
-  register: rhel9stig_var_tmp_noexec
-  loop: "{{ ansible_facts.mounts }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231185 | PATCH | RHEL 9 must mount /var/tmp with the nosuid option."
-  when:
-    - rhel_09_231185
-    - item.mount == '/var/tmp'
-    - "'nosuid' not in item.options"
-  notify:
-    - Systemd_daemon_reload
-    - Remount_var_tmp
-  tags:
-    - RHEL-09-231185
-    - CAT2
-    - CCI-001764
-    - SRG-OS-000368-GPOS-00154
-    - SV-257878r925621_rule
-    - V-257878
-    - NIST800-53R4_CM-7
-  ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }}{% if rhel9stig_var_tmp_nodev.changed %},nodev{% endif %}{% if rhel9stig_var_tmp_noexec.changed %},noexec{% endif %},nosuid"
-    path: /var/tmp
-    state: present
-    src: "{{ item.device }}"
-  loop: "{{ ansible_facts.mounts }}"
-  loop_control:
-    label: "{{ item.device }}"
-
-- name: "MEDIUM | RHEL-09-231200 | PATCH | RHEL 9 must prevent special devices on non-root local partitions."
-  when:
-    - rhel_09_231200
-  tags:
-    - RHEL-09-231200
-    - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257881r925630_rule
-    - V-257881
-    - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-231200"
-  block:
-    - name: "MEDIUM | RHEL-09-231200 | AUDIT | RHEL 9 must prevent special devices on non-root local partitions. | discover partition"
-      ansible.builtin.shell: mount | grep '^/dev\S* on /\S' | grep -v nodev | awk -F" " '{ print $3}'
-      changed_when: false
-      failed_when: rhel9stig_non_root_missing_nodev.rc not in [ 0, 1 ]
-      register: rhel9stig_non_root_missing_nodev
-
-    - name: "MEDIUM | RHEL-09-231200 | WARN | RHEL 9 must prevent special devices on non-root local partitions."
-      when: rhel9stig_non_root_missing_nodev.stdout | length > 0
-      ansible.builtin.debug:
-        msg: "Warning!! The following filesystems are missing the nodev option {{ rhel9stig_non_root_missing_nodev.stdout_lines }}"
-
-    - name: "MEDIUM | RHEL-09-231200 | WARN | RHEL 9 must prevent special devices on non-root local partitions."
-      when: rhel9stig_non_root_missing_nodev.stdout | length > 0
-      ansible.builtin.import_tasks:
-        file: warning_facts.yml
-
 - name: "MEDIUM | RHEL-09-232010 | PATCH | RHEL 9 system commands must have mode 755 or less permissive."
   when:
     - rhel_09_232010
@@ -858,7 +9,7 @@
     - CAT2
     - CCI-001499
     - SRG-OS-000259-GPOS-00100
-    - SV-257882r925633_rule
+    - SV-257882r991560_rule
     - V-257882
     - NIST800-53R4_CM-5
   block:
@@ -884,7 +35,7 @@
     - CAT2
     - CCI-001499
     - SRG-OS-000259-GPOS-00100
-    - SV-257883r925636_rule
+    - SV-257883r991560_rule
     - V-257883
     - NIST800-53R4_CM-5
   block:
@@ -897,8 +48,8 @@
     - name: "MEDIUM | RHEL-09-232015 | PATCH | RHEL 9 library directories must have mode 755 or less permissive."
       when: rhel9stig_library_directory_perms.stdout | length > 0
       ansible.builtin.file:
-        mode: 'u+x,go-w'
         path: "{{ item }}"
+        mode: 'u+x,go-w'
       loop: "{{ rhel9stig_library_directory_perms.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232020 | PATCH | RHEL 9 library files must have mode 755 or less permissive."
@@ -910,7 +61,7 @@
     - CAT2
     - CCI-001499
     - SRG-OS-000259-GPOS-00100
-    - SV-257884r925639_rule
+    - SV-257884r991560_rule
     - V-257884
     - NIST800-53R4_CM-5
   block:
@@ -923,8 +74,8 @@
     - name: "MEDIUM | RHEL-09-232020 | PATCH | RHEL 9 library files must have mode 755 or less permissive."
       when: rhel9stig_library_directory_perms.stdout | length > 0
       ansible.builtin.file:
-        mode: 'u+x,go-w'
         path: "{{ item }}"
+        mode: 'u+x,go-w'
       loop: "{{ rhel9stig_library_directory_perms.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232025 | PATCH | RHEL 9 /var/log directory must have mode 0755 or less permissive."
@@ -936,13 +87,13 @@
     - CAT2
     - CCI-001314
     - SRG-OS-000206-GPOS-00084
-    - SV-257885r925642_rule
+    - SV-257885r958566_rule
     - V-257885
     - NIST800-53R4_SI-11
   ansible.builtin.file:
+    path: /var/log
     mode: 'u+x,go-w'
     modification_time: preserve
-    path: /var/log
     state: directory
 
 - name: "MEDIUM | RHEL-09-232030 | PATCH | RHEL 9 /var/log/messages file must have mode 0640 or less permissive."
@@ -954,49 +105,47 @@
     - CAT2
     - CCI-001314
     - SRG-OS-000206-GPOS-00084
-    - SV-257886r925645_rule
+    - SV-257886r958566_rule
     - V-257886
     - NIST800-53R4_SI-11
   ansible.builtin.file:
+    path: /var/log/messages
     mode: 'u-x,g-wx,o-rwx'
     modification_time: preserve
-    path: /var/log/messages
     state: file
 
 - name: "MEDIUM | RHEL-09-232035 | PATCH | RHEL 9 audit tools must have a mode of 0755 or less permissive."
-  when:
-    - rhel_09_232035
+  when: rhel_09_232035
   tags:
     - RHEL-09-232035
     - CAT2
     - CCI-001493
     - SRG-OS-000256-GPOS-00097
-    - SV-257887r925648_rule
+    - SV-257887r991557_rule
     - V-257887
     - NIST800-53R4_AU-9
   ansible.builtin.file:
+    path: "{{ item }}"
     mode: 'u+x,go-w'
     modification_time: preserve
     owner: root
-    path: "{{ item }}"
   loop: "{{ audit_bins }}"
 
 - name: "MEDIUM | RHEL-09-232040 | PATCH | RHEL 9 cron configuration directories must have a mode of 0700 or less permissive."
-  when:
-    - rhel_09_232040
+  when: rhel_09_232040
   tags:
     - RHEL-09-232040
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257888r925651_rule
+    - SV-257888r991589_rule
     - V-257888
     - NIST800-53R4_CM-6
   ansible.builtin.file:
+    path: "/etc/{{ item }}"
     mode: 'u+x,go-rwx'
     modification_time: preserve
     owner: root
-    path: "/etc/{{ item }}"
   loop:
     - cron.d
     - cron.daily
@@ -1013,16 +162,16 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257889r925654_rule
+    - SV-257889r991589_rule
     - V-257889
     - NIST800-53R4_CM-6
   block:
     - name: "MEDIUM | RHEL-09-232045 | AUDIT | All RHEL 9 local initialization files must have mode 0740 or less permissive. | Check for files"
       ansible.builtin.find:
+        path: ["{{ rhel9stig_home_filesystem }}", /root ]
         depth: 3
         file_type: file
         hidden: true
-        path: ["{{ rhel9stig_home_filesystem}}", /root ]
         patterns: ".*"
         recurse: true
       register: user_dot_files
@@ -1045,7 +194,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257890r925657_rule
+    - SV-257890r991589_rule
     - V-257890
     - NIST800-53R4_CM-6
   block:
@@ -1056,8 +205,7 @@
       loop: "{{ rhel9stig_interactive_users_home.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-232050 | PATCH | All RHEL 9 local interactive user home directories must have mode 0750 or less permissive. | amend if needed"
-      when:
-        - item.stat.path is defined
+      when: item.stat.path is defined
       ansible.builtin.file:
         path: "{{ item.stat.path }}"
         state: directory
@@ -1096,198 +244,186 @@
         label: "{{ item }}"
 
 - name: "MEDIUM | RHEL-09-232055 | PATCH | RHEL 9 /etc/group file must have mode 0644 or less permissive to prevent unauthorized access."
-  when:
-    - rhel_09_232055
+  when: rhel_09_232055
   tags:
     - RHEL-09-232055
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257891r925660_rule
+    - SV-257891r991589_rule
     - V-257891
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: 'u-x,go-wx'
     path: /etc/group
+    mode: 'u-x,go-wx'
 
 - name: "MEDIUM | RHEL-09-232060 | PATCH | RHEL 9 /etc/group- file must have mode 0644 or less permissive to prevent unauthorized access."
-  when:
-    - rhel_09_232060
+  when: rhel_09_232060
   tags:
     - RHEL-09-232060
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257892r925663_rule
+    - SV-257892r991589_rule
     - V-257892
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: 'u-x,go-wx'
     path: /etc/group-
+    mode: 'u-x,go-wx'
   failed_when: discovered_group_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_group_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232065 | PATCH | RHEL 9 /etc/gshadow file must have mode 0000 or less permissive to prevent unauthorized access."
-  when:
-    - rhel_09_232065
+  when: rhel_09_232065
   tags:
     - RHEL-09-232065
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257893r925666_rule
+    - SV-257893r991589_rule
     - V-257893
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: 'ugo-rwx'
     path: /etc/gshadow
+    mode: 'ugo-rwx'
   failed_when: discovered_gshadow_file_exists.state not in '[ file, absent ]'
   register: discovered_gshadow_file_exists
 
 - name: "MEDIUM | RHEL-09-232070 | PATCH | RHEL 9 /etc/gshadow- file must have mode 0000 or less permissive to prevent unauthorized access."
-  when:
-    - rhel_09_232070
+  when: rhel_09_232070
   tags:
     - RHEL-09-232070
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257894r925669_rule
+    - SV-257894r991589_rule
     - V-257894
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: 'ugo-rwx'
     path: /etc/gshadow-
+    mode: 'ugo-rwx'
   failed_when: discovered_gshadow_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_gshadow_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232075 | PATCH | RHEL 9 /etc/passwd file must have mode 0644 or less permissive to prevent unauthorized access."
-  when:
-    - rhel_09_232075
+  when: rhel_09_232075
   tags:
     - RHEL-09-232075
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257895r925672_rule
+    - SV-257895r991589_rule
     - V-257895
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: 'u-x,go-wx'
     path: /etc/passwd
+    mode: 'u-x,go-wx'
 
 - name: "MEDIUM | RHEL-09-232080 | PATCH | RHEL 9 /etc/passwd- file must have mode 0644 or less permissive to prevent unauthorized access."
-  when:
-    - rhel_09_232080
+  when: rhel_09_232080
   tags:
     - RHEL-09-232080
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257896r925675_rule
+    - SV-257896r991589_rule
     - V-257896
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: 'u-x,go-wx'
     path: /etc/passwd-
+    mode: 'u-x,go-wx'
   failed_when: discovered_passwd_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_passwd_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232085 | PATCH | RHEL 9 /etc/shadow- file must have mode 0000 or less permissive to prevent unauthorized access."
-  when:
-    - rhel_09_232085
+  when: rhel_09_232085
   tags:
     - RHEL-09-232085
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257897r925678_rule
+    - SV-257897r991589_rule
     - V-257897
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: 'ugo-rwx'
     path: /etc/shadow-
+    mode: 'ugo-rwx'
   failed_when: discovered_shadow_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_shadow_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232090 | PATCH | RHEL 9 /etc/group file must be owned by root."
-  when:
-    - rhel_09_232090
+  when: rhel_09_232090
   tags:
     - RHEL-09-232090
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257898r925681_rule
+    - SV-257898r991589_rule
     - V-257898
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: /etc/group
+    owner: root
 
 - name: "MEDIUM | RHEL-09-232095 | PATCH | RHEL 9 /etc/group file must be group-owned by root."
-  when:
-    - rhel_09_232095
+  when: rhel_09_232095
   tags:
     - RHEL-09-232095
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257899r925684_rule
+    - SV-257899r991589_rule
     - V-257899
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: /etc/group
+    group: root
 
 - name: "MEDIUM | RHEL-09-232100 | PATCH | RHEL 9 /etc/group- file must be owned by root."
-  when:
-    - rhel_09_232100
+  when: rhel_09_232100
   tags:
     - RHEL-09-232100
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257900r925687_rule
+    - SV-257900r991589_rule
     - V-257900
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: /etc/group-
+    owner: root
   failed_when: discovered_group_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_group_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232105 | PATCH | RHEL 9 /etc/group- file must be group-owned by root."
-  when:
-    - rhel_09_232105
+  when: rhel_09_232105
   tags:
     - RHEL-09-232105
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257901r925690_rule
+    - SV-257901r991589_rule
     - V-257901
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: /etc/group-
+    group: root
   failed_when: discovered_group_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_group_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232110 | PATCH | RHEL 9 /etc/gshadow file must be owned by root."
-  when:
-    - rhel_09_232110
+  when: rhel_09_232110
   tags:
     - RHEL-09-232110
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257902r925693_rule
+    - SV-257902r991589_rule
     - V-257902
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: /etc/gshadow
+    owner: root
   failed_when: discovered_gshadow_file_exists.state not in '[ file, absent ]'
   register: discovered_gshadow_file_exists
 
@@ -1299,174 +435,164 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257903r925696_rule
+    - SV-257903r991589_rule
     - V-257903
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: /etc/gshadow
+    group: root
   failed_when: discovered_gshadow_file_exists.state not in '[ file, absent ]'
   register: discovered_gshadow_file_exists
 
 - name: "MEDIUM | RHEL-09-232120 | PATCH | RHEL 9 /etc/gshadow- file must be owned by root."
-  when:
-    - rhel_09_232120
+  when: rhel_09_232120
   tags:
     - RHEL-09-232120
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257904r925699_rule
+    - SV-257904r991589_rule
     - V-257904
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: /etc/gshadow-
+    owner: root
   failed_when: discovered_gshadow_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_gshadow_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232125 | PATCH | RHEL 9 /etc/gshadow- file must be group-owned by root."
-  when:
-    - rhel_09_232125
+  when: rhel_09_232125
   tags:
     - RHEL-09-232125
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257905r925702_rule
+    - SV-257905r991589_rule
     - V-257905
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: /etc/gshadow-
+    group: root
   failed_when: discovered_gshadow_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_gshadow_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232130 | PATCH | RHEL 9 /etc/passwd file must be owned by root."
-  when:
-    - rhel_09_232130
+  when: rhel_09_232130
   tags:
     - RHEL-09-232130
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257906r925705_rule
+    - SV-257906r991589_rule
     - V-257906
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: /etc/passwd
+    owner: root
 
 - name: "MEDIUM | RHEL-09-232135 | PATCH | RHEL 9 /etc/passwd file must be group-owned by root."
-  when:
-    - rhel_09_232135
+  when: rhel_09_232135
   tags:
     - RHEL-09-232135
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257907r925708_rule
+    - SV-257907r991589_rule
     - V-257907
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: /etc/passwd
+    group: root
 
 - name: "MEDIUM | RHEL-09-232140 | PATCH | RHEL 9 /etc/passwd- file must be owned by root."
-  when:
-    - rhel_09_232140
+  when: rhel_09_232140
   tags:
     - RHEL-09-232140
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257908r925711_rule
+    - SV-257908r991589_rule
     - V-257908
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: /etc/passwd-
+    owner: root
   failed_when: discovered_passwd_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_passwd_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232145 | PATCH | RHEL 9 /etc/passwd- file must be group-owned by root."
-  when:
-    - rhel_09_232145
+  when: rhel_09_232145
   tags:
     - RHEL-09-232145
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257909r925714_rule
+    - SV-257909r991589_rule
     - V-257909
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: /etc/passwd-
+    group: root
   failed_when: discovered_passwd_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_passwd_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232150 | PATCH | RHEL 9 /etc/shadow file must be owned by root."
-  when:
-    - rhel_09_232150
+  when: rhel_09_232150
   tags:
     - RHEL-09-232150
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257910r925717_rule
+    - SV-257910r991589_rule
     - V-257910
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: /etc/shadow
+    owner: root
 
 - name: "MEDIUM | RHEL-09-232155 | PATCH | RHEL 9 /etc/shadow file must be group-owned by root."
-  when:
-    - rhel_09_232155
+  when: rhel_09_232155
   tags:
     - RHEL-09-232155
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257911r925720_rule
+    - SV-257911r991589_rule
     - V-257911
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: /etc/shadow
+    group: root
 
 - name: "MEDIUM | RHEL-09-232160 | PATCH | RHEL 9 /etc/shadow- file must be owned by root."
-  when:
-    - rhel_09_232160
+  when: rhel_09_232160
   tags:
     - RHEL-09-232160
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257912r925723_rule
+    - SV-257912r991589_rule
     - V-257912
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: /etc/shadow-
+    owner: root
   failed_when: discovered_shadow_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_shadow_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232165 | PATCH | RHEL 9 /etc/shadow- file must be group-owned by root."
-  when:
-    - rhel_09_232165
+  when: rhel_09_232165
   tags:
     - RHEL-09-232165
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257913r925726_rule
+    - SV-257913r991589_rule
     - V-257913
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: /etc/shadow-
+    group: root
   failed_when: discovered_shadow_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_shadow_hyphen_exists
 
@@ -1478,69 +604,67 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257914r925729_rule
+    - SV-257914r958566_rule
     - V-257914
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: /var/log
+    owner: root
     state: directory
+    mode: 'o-w'
 
 - name: "MEDIUM | RHEL-09-232175 | PATCH | RHEL 9 /var/log directory must be group-owned by root."
-  when:
-    - rhel_09_232175
+  when: rhel_09_232175
   tags:
     - RHEL-09-232175
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257915r925732_rule
+    - SV-257915r958566_rule
     - V-257915
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: /var/log
+    group: root
     state: directory
+    mode: 'o-w'
 
 - name: "MEDIUM | RHEL-09-232180 | PATCH | RHEL 9 /var/log/messages file must be owned by root."
-  when:
-    - rhel_09_232180
+  when: rhel_09_232180
   tags:
     - RHEL-09-232180
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257916r925735_rule
+    - SV-257916r958566_rule
     - V-257916
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: /var/log/messages
+    owner: root
 
 - name: "MEDIUM | RHEL-09-232185 | PATCH | RHEL 9 /var/log/messages file must be group-owned by root."
-  when:
-    - rhel_09_232185
+  when: rhel_09_232185
   tags:
     - RHEL-09-232185
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257917r925738_rule
+    - SV-257917r958566_rule
     - V-257917
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: /var/log/messages
+    group: root
 
 - name: "MEDIUM | RHEL-09-232190 | PATCH | RHEL 9 system commands must be owned by root."
-  when:
-    - rhel_09_232190
+  when: rhel_09_232190
   tags:
     - RHEL-09-232190
     - CAT2
     - CCI-001499
     - SRG-OS-000259-GPOS-00100
-    - SV-257918r925741_rule
+    - SV-257918r991560_rule
     - V-257918
     - NIST800-53R4_CM-5
   block:
@@ -1553,21 +677,20 @@
     - name: "MEDIUM | RHEL-09-232190 | PATCH | RHEL 9 system commands must be owned by root."
       when: rhel9stig_sys_commands_owner.stdout | length > 0
       ansible.builtin.file:
-        owner: root
         path: "{{ item }}"
+        owner: root
       loop: "{{ rhel9stig_sys_commands_owner.stdout_lines }}"
       loop_control:
         label: "{{ item }}"
 
 - name: "MEDIUM | RHEL-09-232195 | PATCH | RHEL 9 system commands must be group-owned by root or a system account."
-  when:
-    - rhel_09_232195
+  when: rhel_09_232195
   tags:
     - RHEL-09-232195
     - CAT2
     - CCI-001499
     - SRG-OS-000259-GPOS-00100
-    - SV-257919r925744_rule
+    - SV-257919r991560_rule
     - V-257919
     - NIST800-53R4_CM-5
   vars:
@@ -1592,19 +715,18 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-232200 | PATCH | RHEL 9 library files must be owned by root."
-  when:
-    - rhel_09_232200
+  when: rhel_09_232200
   tags:
     - RHEL-09-232200
     - CAT2
     - CCI-001499
     - SRG-OS-000259-GPOS-00100
-    - SV-257920r925747_rule
+    - SV-257920r991560_rule
     - V-257920
     - NIST800-53R4_CM-5
   block:
     - name: "MEDIUM | RHEL-09-232200 | AUDIT | RHEL 9 library files must be owned by root."
-      ansible.builtin.shell: find -L /lib /lib64 /usr/lib /usr/lib64 ! -user root
+      ansible.builtin.command: find -L /lib /lib64 /usr/lib /usr/lib64 ! -user root
       changed_when: false
       failed_when: rhel9stig_lib_files_owner.rc not in [ 0, 1 ]
       register: rhel9stig_lib_files_owner
@@ -1612,19 +734,18 @@
     - name: "MEDIUM | RHEL-09-232200 | PATCH | RHEL 9 library files must be owned by root."
       when: rhel9stig_lib_files_owner.stdout | length > 0
       ansible.builtin.file:
-        owner: root
         path: "{{ item }}"
+        owner: root
       loop: "{{ rhel9stig_lib_files_owner.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232205 | PATCH | RHEL 9 library files must be group-owned by root or a system account."
-  when:
-    - rhel_09_232205
+  when: rhel_09_232205
   tags:
     - RHEL-09-232205
     - CAT2
     - CCI-001499
     - SRG-OS-000259-GPOS-00100
-    - SV-257921r925750_rule
+    - SV-257921r991560_rule
     - V-257921
     - NIST800-53R4_CM-5
   vars:
@@ -1649,19 +770,18 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-232210 | PATCH | RHEL 9 library directories must be owned by root."
-  when:
-    - rhel_09_232210
+  when: rhel_09_232210
   tags:
     - RHEL-09-232210
     - CAT2
     - CCI-001499
     - SRG-OS-000259-GPOS-00100
-    - SV-257922r925753_rule
+    - SV-257922r991560_rule
     - V-257922
     - NIST800-53R4_CM-5
   ansible.builtin.file:
-    owner: root
     path: "{{ item }}"
+    owner: root
   loop:
     - '/lib'
     - '/lib64'
@@ -1669,14 +789,13 @@
     - '/usr/lib64'
 
 - name: "MEDIUM | RHEL-09-232215 | PATCH | RHEL 9 library directories must be group-owned by root or a system account."
-  when:
-    - rhel_09_232215
+  when: rhel_09_232215
   tags:
     - RHEL-09-232215
     - CAT2
     - CCI-001499
     - SRG-OS-000259-GPOS-00100
-    - SV-257923r925756_rule
+    - SV-257923r991560_rule
     - V-257923
     - NIST800-53R4_CM-5
   vars:
@@ -1701,51 +820,48 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-232220 | PATCH | RHEL 9 audit tools must be owned by root."
-  when:
-    - rhel_09_232220
+  when: rhel_09_232220
   tags:
     - RHEL-09-232220
     - CAT2
     - CCI-001493
     - SRG-OS-000256-GPOS-00097
-    - SV-257924r925759_rule
+    - SV-257924r991557_rule
     - V-257924
     - NIST800-53R4_AU-9
   ansible.builtin.file:
-    owner: root
     path: "{{ item }}"
-  loop: "{{ audit_bins}}"
+    owner: root
+  loop: "{{ audit_bins }}"
 
 - name: "MEDIUM | RHEL-09-232225 | PATCH | RHEL 9 audit tools must be group-owned by root."
-  when:
-    - rhel_09_232225
+  when: rhel_09_232225
   tags:
     - RHEL-09-232225
     - CAT2
     - CCI-001493
     - SRG-OS-000256-GPOS-00097
-    - SV-257925r925762_rule
+    - SV-257925r991557_rule
     - V-257925
     - NIST800-53R4_AU-9
   ansible.builtin.file:
-    group: root
     path: "{{ item }}"
+    group: root
   loop: "{{ audit_bins }}"
 
 - name: "MEDIUM | RHEL-09-232230 | PATCH | RHEL 9 cron configuration files directory must be owned by root."
-  when:
-    - rhel_09_232230
+  when: rhel_09_232230
   tags:
     - RHEL-09-232230
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257926r925765_rule
+    - SV-257926r991589_rule
     - V-257926
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: "{{ item }}"
+    owner: root
   loop:
     - '/etc/cron.d'
     - '/etc/cron.daily'
@@ -1756,19 +872,18 @@
     - '/etc/crontab'
 
 - name: "MEDIUM | RHEL-09-232235 | PATCH | RHEL 9 cron configuration files directory must be group-owned by root."
-  when:
-    - rhel_09_232235
+  when: rhel_09_232235
   tags:
     - RHEL-09-232235
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257927r925768_rule
+    - SV-257927r991589_rule
     - V-257927
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: "{{ item }}"
+    group: root
   loop:
     - '/etc/cron.d'
     - '/etc/cron.daily'
@@ -1789,7 +904,7 @@
     - CCI-001090
     - SRG-OS-000480-GPOS-00227
     - SRG-OS-000138-GPOS-00069
-    - SV-257928r925771_rule
+    - SV-257928r991589_rule
     - V-257928
     - NIST800-53R4_CM-6
     - NIST800-53R4_SC-4
@@ -1823,7 +938,7 @@
     - CAT2
     - CCI-001090
     - SRG-OS-000138-GPOS-00069
-    - SV-257929r925774_rule
+    - SV-257929r958524_rule
     - V-257929
     - NIST800-53R4_SC-4
   vars:
@@ -1861,14 +976,13 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-232250 | PATCH | All RHEL 9 local files and directories must have a valid group owner."
-  when:
-    - rhel_09_232250
+  when: rhel_09_232250
   tags:
     - RHEL-09-232250
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257930r925777_rule
+    - SV-257930r991589_rule
     - V-257930
     - NIST800-53R4_CM-6
   vars:
@@ -1878,7 +992,7 @@
       when:
         - item['device'].startswith('/dev')
         - not 'bind' in item['options']
-      ansible.builtin.shell: find "{{ item.mount }}" -xdev -nogroup
+      ansible.builtin.command: find "{{ item.mount }}" -xdev -nogroup
       check_mode: false
       failed_when: false
       changed_when: false
@@ -1888,11 +1002,11 @@
         label: "{{ item.mount }}"
 
     - name: "MEDIUM | RHEL-09-232250 | AUDIT | All RHEL 9 local files and directories must have a valid group owner."
-      ansible.builtin.set_fact:
-        rhel9stig_ungrouped_files_results: "{{ rhel9stig_ungrouped_files_dirs_audit.results.0['stdout_lines'] }}"
       when:
         - rhel9stig_ungrouped_files_dirs_audit.results | length > 0
         - rhel9stig_ungrouped_files_dirs_audit is defined
+      ansible.builtin.set_fact:
+        rhel9stig_ungrouped_files_results: "{{ rhel9stig_ungrouped_files_dirs_audit.results.0['stdout_lines'] }}"
 
     - name: "MEDIUM | RHEL-09-232250 | WARN | All RHEL 9 local files and directories must have a valid group owner."
       when: rhel9stig_ungrouped_files_results | length > 1
@@ -1905,14 +1019,13 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-232255 | PATCH | All RHEL 9 local files and directories must have a valid owner."
-  when:
-    - rhel_09_232255
+  when: rhel_09_232255
   tags:
     - RHEL-09-232255
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257931r925780_rule
+    - SV-257931r991589_rulev
     - V-257931
     - NIST800-53R4_CM-6
   vars:
@@ -1922,7 +1035,7 @@
       when:
         - item['device'].startswith('/dev')
         - not 'bind' in item['options']
-      ansible.builtin.shell: find "{{ item.mount }}" -xdev -nouser
+      ansible.builtin.command: find "{{ item.mount }}" -xdev -nouser
       check_mode: false
       failed_when: false
       changed_when: false
@@ -1932,11 +1045,11 @@
         label: "{{ item.mount }}"
 
     - name: "MEDIUM | RHEL-09-232255 | AUDIT | All RHEL 9 local files and directories must have a valid owner."
-      ansible.builtin.set_fact:
-        rhel9stig_unowned_files_results: "{{ rhel9stig_unowned_files_dirs_audit.results.0['stdout_lines'] }}"
       when:
         - rhel9stig_unowned_files_dirs_audit.results | length > 0
         - rhel9stig_unowned_files_dirs_audit is defined
+      ansible.builtin.set_fact:
+        rhel9stig_unowned_files_results: "{{ rhel9stig_unowned_files_dirs_audit.results.0['stdout_lines'] }}"
 
     - name: "MEDIUM | RHEL-09-232255 | WARN | All RHEL 9 local files and directories must have a valid owner."
       when: rhel9stig_unowned_files_results | length > 1
@@ -1949,14 +1062,13 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-232260 | PATCH | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification."
-  when:
-    - rhel_09_232260
+  when: rhel_09_232260
   tags:
     - RHEL-09-232260
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257932r925783_rule
+    - SV-257932r991589_rule
     - V-257932
     - NIST800-53R4_CM-6
   vars:
@@ -1972,7 +1084,8 @@
       when:
         - rhel9stig_unlabelled_files.stdout | length > 0
         - rhel9stig_disruption_high
-      ansible.builtin.shell: "restorecon -v {{ item }}"
+      ansible.builtin.command: "restorecon -v {{ item }}"
+      changed_when: true
       loop: "{{ rhel9stig_unlabelled_files.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-232260 | WARN | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification."
@@ -1990,14 +1103,13 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-232265 | PATCH | RHEL 9 /etc/crontab file must have mode 0600."
-  when:
-    - rhel_09_232265
+  when: rhel_09_232265
   tags:
     - RHEL-09-232265
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257933r925786_rule
+    - SV-257933r991589_rule
     - V-257933
     - NIST800-53R4_CM-6
   ansible.builtin.file:
@@ -2005,14 +1117,13 @@
     mode: 'u-x,go-rwx'
 
 - name: "MEDIUM | RHEL-09-232270 | PATCH | RHEL 9 /etc/shadow file must have mode 0000 to prevent unauthorized access."
-  when:
-    - rhel_09_232270
+  when: rhel_09_232270
   tags:
     - RHEL-09-232270
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257934r925789_rule
+    - SV-257934r991589_rule
     - V-257934
     - NIST800-53R4_CM-6
   ansible.builtin.file:

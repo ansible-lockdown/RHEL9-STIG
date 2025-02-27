@@ -1,7 +1,7 @@
 ---
 
 ## metadata for Audit benchmark
-benchmark_version: 'v1r3'
+benchmark_version: 'v2r1'
 
 ## Benchmark name used by audting control role
 # The audit variable found at the base
@@ -139,7 +139,6 @@ rhel_09_672030: true
 #### CAT 2
 rhel_09_211015: true
 rhel_09_211020: true
-rhel_09_211025: true
 rhel_09_211030: true
 rhel_09_211040: true
 rhel_09_211055: true
@@ -429,8 +428,6 @@ rhel_09_433015: true
 
 ### CAT2 61xxxx
 rhel_09_611010: true
-rhel_09_611015: true
-rhel_09_611020: true
 rhel_09_611030: true
 rhel_09_611035: true
 rhel_09_611040: true
@@ -675,10 +672,6 @@ rhel9stig_logon_banner_nice: |
     communications and work product are private and confidential. See User
     Agreement for details.
 
-# Threat Protection
-rhel9stig_av_pkg: 'mcafeetp'
-rhel9stig_av_service: 'mfetpd'
-
 # Packages and services
 rhel9stig_is_ftp_server: false
 rhel9stig_is_tftp_server: false
@@ -793,7 +786,6 @@ rhel9stig_logind_conf:
   stopsessionidle: '900'
 
 rhel9stig_pam:
-  remember: '5'
   retry: '3'
   rounds: '5000'
 
@@ -813,13 +805,31 @@ rhel9stig_smartcard_reader: false
 ### SSSD
 rhel9stig_sssd_configure: false
 rhel9stig_sssd_config_certmap: |
-  [certmap/{{ rhel9stig_sssd.domain }}/{{ rhel9stig_sssd.rulename}}"]
+  [certmap/{{ rhel9stig_sssd.domain }}/{{ rhel9stig_sssd.rulename }}"]
   matchrule ='.*example@mil'
   maprule = (userCertificate;binary={cert!bin})
   domains = example.com
 
 ### Aide
+# AIDE is a file integrity checking tool, similar in nature to Tripwire.
+# While it cannot prevent intrusions, it can detect unauthorized changes
+# to configuration files by alerting when the files are changed. Review
+# the AIDE quick start guide and AIDE documentation before proceeding.
+# By setting this variable to `true`, all of the settings related to AIDE will be applied!
 rhel9stig_use_aide: true
+
+# If DB file older than below will automatically rebuild DB
+# e.g. options:1w = 1 week, 1d = 1day 1h = 1 hour
+rhel9stig_aide_db_file_age: 1w
+
+# If aide already setup this forces a new DB to be created despite age
+rhel9stig_aide_db_recreate: false
+
+# New db file
+rhel9stig_aide_db_new_file: /var/lib/aide/aide.db.new.gz
+# Active db file
+rhel9stig_aide_db_file: /var/lib/aide/aide.db.gz
+
 rhel9stig_aide_cron_file: /etc/cron.daily/aide  # NOTE the path may change if not running daily
 rhel9stig_aide_cron:
   day: '*'

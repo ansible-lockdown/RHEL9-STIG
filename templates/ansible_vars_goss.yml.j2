@@ -27,10 +27,10 @@ gpg_key:
     fingerprint: '6A6A A7C9 7C88 90AE C6AE  BFE2 F76F 66C3 D409 2792'
 {% elif ansible_facts.distribution == "Rocky" %}
 # rocky
-rpm_gpg_key: /etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial
+rpm_gpg_key: /etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9
 gpg_key:
   - name: 'Release Engineering'
-    fingerprint: '7051 C470 A929 F454 CEBE  37B7 15AF 5DAC 6D74 5A60'
+    fingerprint: '21CB 256A E16F C54C 6E65  2949 702D 426D 350D 275D'
 {% elif ansible_facts.distribution == "AlmaLinux" %}
 # Alma
 rpm_gpg_key: /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
@@ -83,7 +83,6 @@ rhel_09_672030: {{ rhel_09_672030 }}
 # Cat 2 rules
 rhel_09_211015: {{ rhel_09_211015 }}
 rhel_09_211020: {{ rhel_09_211020 }}
-rhel_09_211025: {{ rhel_09_211025 }}
 rhel_09_211030: {{ rhel_09_211030 }}
 rhel_09_211040: {{ rhel_09_211040 }}
 rhel_09_211055: {{ rhel_09_211055 }}
@@ -370,8 +369,6 @@ rhel_09_433010: {{ rhel_09_433010 }}
 rhel_09_433015: {{ rhel_09_433015 }}
 
 rhel_09_611010: {{ rhel_09_611010 }}
-rhel_09_611015: {{ rhel_09_611015 }}
-rhel_09_611020: {{ rhel_09_611020 }}
 rhel_09_611030: {{ rhel_09_611030 }}
 rhel_09_611035: {{ rhel_09_611035 }}
 rhel_09_611040: {{ rhel_09_611040 }}
@@ -573,10 +570,6 @@ rhel9stig_gssproxy_required: {{ rhel9stig_gssproxy_required }}
 rhel9stig_iprutils_required: {{ rhel9stig_iprutils_required }}
 rhel9stig_tuned_required: {{ rhel9stig_tuned_required }}
 rhel9stig_quagga_required: {{ rhel9stig_quagga_required }}
-
-# Threat Protection
-rhel9stig_av_pkg: {{ rhel9stig_av_pkg }}
-rhel9stig_av_service: {{ rhel9stig_av_service }}
 
 # Sysctl file
 rhel9stig_sysctl_file_default: {{ rhel9stig_sysctl_file_default }}
