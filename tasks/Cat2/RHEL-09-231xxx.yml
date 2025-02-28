@@ -135,7 +135,7 @@
     path: "{{ rhel9stig_home_filesystem }}"
     src: "{{ item.device }}"
     fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }}{% if rhel9stig_home_nodev.changed %},nodev{% endif %},nosuid"
+    opts: "{{ item.options }}{% if discovered_home_nodev.changed %},nodev{% endif %},nosuid"
     state: present
   register: discovered_home_nosuid
   loop: "{{ ansible_facts.mounts }}"
@@ -160,7 +160,7 @@
     path: "{{ rhel9stig_home_filesystem }}"
     src: "{{ item.device }}"
     fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }}{% if rhel9stig_home_nodev.changed %},nodev{% endif %}{% if rhel9stig_home_nosuid.changed %},nosuid{% endif %},noexec"
+    opts: "{{ item.options }}{% if discovered_home_nodev.changed %},nodev{% endif %}{% if discovered_home_nosuid.changed %},nosuid{% endif %},noexec"
     state: present
   loop: "{{ ansible_facts.mounts }}"
   loop_control:
@@ -522,7 +522,7 @@
     path: /tmp
     src: "{{ item.device }}"
     fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }}{% if rhel9stig_tmp_nodev.changed and 'nodev' not in item.options %},nodev{% endif %}{% if rhel9stig_tmp_noexec.changed and 'noexec' not in item.options %},noexec{% endif %},nosuid"
+    opts: "{{ item.options }}{% if discovered_tmp_nodev.changed and 'nodev' not in item.options %},nodev{% endif %}{% if discovered_tmp_noexec.changed and 'noexec' not in item.options %},noexec{% endif %},nosuid"
     state: present
   loop: "{{ ansible_facts.mounts }}"
   loop_control:
@@ -575,7 +575,7 @@
     fstype: "{{ item.fstype }}"
     opts: "{{ item.options }},nodev"
     state: present
-  register: rhel9stig_var_log_nodev
+  register: discovered_var_log_nodev
   loop: "{{ ansible_facts.mounts }}"
   loop_control:
     label: "{{ item.device }}"
@@ -600,9 +600,9 @@
     path: /var/log
     src: "{{ item.device }}"
     fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }}{% if rhel9stig_var_log_nodev.changed and 'nodev' not in item.options %},nodev{% endif %},noexec"
+    opts: "{{ item.options }}{% if discovered_var_log_nodev.changed and 'nodev' not in item.options %},nodev{% endif %},noexec"
     state: present
-  register: rhel9stig_var_log_noexec
+  register: discovered_var_log_noexec
   loop: "{{ ansible_facts.mounts }}"
   loop_control:
     label: "{{ item.device }}"
@@ -627,7 +627,7 @@
     path: /var/log
     src: "{{ item.device }}"
     fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }}{% if rhel9stig_var_log_nodev.changed and 'nodev' not in item.options %},nodev{% endif %}{% if rhel9stig_var_log_noexec.changed and 'noexec' not in item.options %},noexec{% endif %},nosuid"
+    opts: "{{ item.options }}{% if discovered_var_log_nodev.changed and 'nodev' not in item.options %},nodev{% endif %}{% if discovered_var_log_noexec.changed and 'noexec' not in item.options %},noexec{% endif %},nosuid"
     state: present
   loop: "{{ ansible_facts.mounts }}"
   loop_control:

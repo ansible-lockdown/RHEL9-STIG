@@ -20,7 +20,7 @@
       register: discovered_os_installed_pub_keys
 
     - name: "MEDIUM | RHEL-09-214010 | AUDIT | RHEL 9 must ensure cryptographic verification of vendor software packages. | query keys"
-      when: os_installed_pub_keys.rc == 0
+      when: discovered_os_installed_pub_keys.rc == 0
       ansible.builtin.shell: 'rpm -q --queryformat "%{PACKAGER} %{VERSION}\\n" {{ os_gpg_key_pubkey_name }} | grep "{{ os_gpg_key_pubkey_content }}"'  # noqa: command-instead-of-module
       changed_when: false
       failed_when: false
