@@ -313,7 +313,7 @@
     - NIST800-53R4_CM-6
     - NIST800-53R4_IA-2
     - ssh
-  notify: Sshd_restart
+  notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)PermitEmptyPasswords yes
