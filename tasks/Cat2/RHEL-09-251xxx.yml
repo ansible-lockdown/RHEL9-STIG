@@ -76,17 +76,6 @@
         state: enabled
         target: DROP
 
-    - name: "MEDIUM | RHEL-09-251020 | AUDIT | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Get default zone"
-      ansible.builtin.command: "firewall-cmd --get-default-zone"
-      changed_when: false
-      failed_when: discovered_current_firewalld_zone.rc not in [ 0, 1 ]
-      register: discovered_current_firewalld_zone
-
-    - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Set zone if not curent"
-      when: "(discovered_current_firewalld_zone.stdout | default([])) not in rhel9stig_custom_firewall.zone"
-      ansible.builtin.command: "firewall-cmd --set-default-zone={{ rhel9stig_custom_firewall.zone }}"
-      changed_when: true
-
     - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Setup Connections"
       ansible.posix.firewalld:
         zone: "{{ rhel9stig_custom_firewall.zone }}"
@@ -95,6 +84,22 @@
         interface: "{{ item }}"
       loop:
         - "{{ rhel9stig_custom_firewall.interface }}"
+
+    - name: "MEDIUM | RHEL-09-251020 | AUDIT | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Get default zone"
+      ansible.builtin.command: "firewall-cmd --get-default-zone"
+      changed_when: false
+      failed_when: discovered_current_firewalld_zone.rc not in [ 0, 1 ]
+      register: discovered_current_firewalld_zone
+
+    - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Set zone if not current"
+      when: "(discovered_current_firewalld_zone.stdout | default([])) not in rhel9stig_custom_firewall.zone"
+      ansible.builtin.command: "firewall-cmd --set-default-zone={{ rhel9stig_custom_firewall.zone }}"
+      changed_when: true
+
+    - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Reload firewall"
+      when: "(discovered_current_firewalld_zone.stdout | default([])) not in rhel9stig_custom_firewall.zone"
+      ansible.builtin.command: firewall-cmd --reload
+      changed_when: true
 
 - name: "MEDIUM | RHEL-09-251030 | AUDIT |  RHEL 9 must protect against or limit the effects of denial-of-service (DoS) attacks by ensuring rate-limiting measures on impacted network interfaces are implemented."
   when: rhel_09_251030
