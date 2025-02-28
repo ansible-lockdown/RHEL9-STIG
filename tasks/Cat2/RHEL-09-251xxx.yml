@@ -49,7 +49,6 @@
 
 - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems."
   when: rhel_09_251020
-  notify: Firewalld_reload
   tags:
     - RHEL-09-251020
     - CAT2
@@ -58,6 +57,7 @@
     - SV-257937r991589_rule
     - V-257937
     - NIST800-53R4_CM-6
+  notify: Firewalld_reload
   block:
     - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Setup Connections"
       ansible.posix.firewalld:
@@ -156,12 +156,12 @@
         - rhel9stig_disruption_high
       ansible.builtin.lineinfile:
         path: "/etc/sysconfig/network-scripts/ifcfg-{{ item }}"
-        regexp: (?i)^PROMISC=(YES|TRUE|NO|FALSE)
+        regexp: (?i)^PROMISC\s*=\s*(YES|TRUE|NO|FALSE)
         line: PROMISC=NO
         create: true
-        mode: 'u-x,go-wx'
-      notify: Restart_NetworkManager
+        mode: 'go-wx'
       loop: "{{ ansible_facts.interfaces }}"
+      notify: Restart_NetworkManager
 
     - name: "MEDIUM | RHEL-09-251040 | PATCH | RHEL 9 network interfaces must not be in promiscuous mode."
       when:

@@ -83,8 +83,8 @@
     - V-257790
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: /boot/grub2/grub.cfg
+    group: root
     state: file
 
 - name: "MEDIUM | RHEL-09-212030 | PATCH | RHEL 9 /boot/grub2/grub.cfg file must be owned by root."
@@ -98,8 +98,8 @@
     - V-257791
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: /boot/grub2/grub.cfg
+    owner: root
     state: file
 
 - name: "MEDIUM | RHEL-09-212035 | PATCH | RHEL 9 must disable virtual system calls."

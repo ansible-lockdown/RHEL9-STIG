@@ -14,14 +14,14 @@
     warn_control_id: "MEDIUM | RHEL-09-214010"
   block:
     - name: "MEDIUM | RHEL-09-214010 | AUDIT | RHEL 9 must ensure cryptographic verification of vendor software packages. | find keys"
-      ansible.builtin.shell: "rpm -qa | grep {{ os_gpg_key_pubkey_name }}"  # noqa command-instead-of-module
+      ansible.builtin.shell: "rpm -qa | grep {{ os_gpg_key_pubkey_name }}"  # noqa: command-instead-of-module
       changed_when: false
       failed_when: false
       register: discovered_os_installed_pub_keys
 
     - name: "MEDIUM | RHEL-09-214010 | AUDIT | RHEL 9 must ensure cryptographic verification of vendor software packages. | query keys"
-      when: discovered_os_installed_pub_keys.rc == 0
-      ansible.builtin.shell: 'rpm -q --queryformat "%{PACKAGER} %{VERSION}\\n" {{ os_gpg_key_pubkey_name }} | grep "{{ os_gpg_key_pubkey_content }}"'  # noqa command-instead-of-module
+      when: os_installed_pub_keys.rc == 0
+      ansible.builtin.shell: 'rpm -q --queryformat "%{PACKAGER} %{VERSION}\\n" {{ os_gpg_key_pubkey_name }} | grep "{{ os_gpg_key_pubkey_content }}"'  # noqa: command-instead-of-module
       changed_when: false
       failed_when: false
       register: discovered_os_gpg_key_check
@@ -55,7 +55,7 @@
     warn_control_id: "MEDIUM | RHEL-09-214030"
   block:
     - name: "MEDIUM | RHEL-09-214030 | AUDIT | RHEL 9 must be configured so that the cryptographic hashes of system files match vendor values."
-      ansible.builtin.shell: rpm -Va --noconfig | awk '$1 ~ /..5/ && $2 != "c"'  # noqa command-instead-of-module
+      ansible.builtin.shell: rpm -Va --noconfig | awk '$1 ~ /..5/ && $2 != "c"'  # noqa: command-instead-of-module
       changed_when: false
       failed_when: discovered_rpm_file_hash.rc not in [ 0, 1 ]
       register: discovered_rpm_file_hash

@@ -1,5 +1,25 @@
 ---
 
+- name: "LOW | RHEL-09-412030 | PATCH | RHEL 9 must prevent users from disabling session control mechanisms."
+  when: rhel_09_412030
+  tags:
+    - RHEL-09-412030
+    - CAT2
+    - CCI-000056
+    - CCI-002235
+    - SRG-OS-000324-GPOS-00125
+    - SRG-OS-000028-GPOS-00009
+    - SV-258067r958726_rule
+    - V-258067
+    - NIST800-53R4_AC-6
+    - NIST800-53R4_AC-11
+    - shell
+    - tmux
+  ansible.builtin.lineinfile:
+    path: /etc/shells
+    regexp: 'tmux'
+    state: absent
+
 - name: "LOW | RHEL-09-412040 | PATCH | RHEL 9 must limit the number of concurrent sessions to ten for all accounts and/or account types."
   when: rhel_09_412040
   tags:

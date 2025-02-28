@@ -31,6 +31,6 @@
     - NIST800-53R4_IA-11
     - NIST800-53R4_AC-3
   ansible.builtin.systemd:
-    enabled: true
     name: fapolicyd
+    enabled: true
     state: started

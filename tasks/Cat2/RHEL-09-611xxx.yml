@@ -730,7 +730,6 @@
   tags:
     - RHEL-09-611170
     - CAT2
-
     - CCI-001954
     - SRG-OS-000375-GPOS-00160
     - SRG-OS-000377-GPOS-00162
@@ -796,8 +795,8 @@
     - V-258125
     - NIST800-53R4_IA-2
   ansible.builtin.systemd:
-    enabled: true
     name: pcscd
+    enabled: true
     state: started
 
 - name: "MEDIUM | RHEL-09-611190 | PATCH | RHEL 9, for PKI-based authentication, must enforce authorized access to the corresponding private key."

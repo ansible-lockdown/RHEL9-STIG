@@ -63,21 +63,22 @@
 
 - name: PRELIM | Gather accounts with empty password fields
   when: rhel_09_611155
-  tags: always
+  tags: passwords
+
   ansible.builtin.shell: "cat /etc/shadow | awk -F: '($2 == \"\" ) {j++;print $1; } END {exit j}'"
   changed_when: false
   failed_when: rhel9stig_empty_password_accounts.rc not in [ 0, 1 ]
   register: rhel9stig_empty_password_accounts
 
 - name: PRELIM | Gather UID 0 accounts other than root
-  ansible.builtin.shell: "cat /etc/passwd | awk -F: '($3 == 0 && $1 != \"root\") {i++;print $1 } END {exit i}'"
-  changed_when: false
-  check_mode: false
-  register: rhel9stig_uid_zero_accounts_except_root
   tags:
     - level1-server
     - level1-workstation
     - users
+  ansible.builtin.shell: "cat /etc/passwd | awk -F: '($3 == 0 && $1 != \"root\") {i++;print $1 } END {exit i}'"
+  changed_when: false
+  check_mode: false
+  register: rhel9stig_uid_zero_accounts_except_root
 
 - name: PRELIM | Setup crypto-policy
   when: rhel_09_672030
@@ -124,34 +125,7 @@
     state: latest
 
 - name: PRELIM | Configure System Accounting (auditd)
-  when: '"auditd" not in ansible_facts.packages'
-  tags:
-    - cat2
-    - SRG-OS-000062-GPOS-00031
-    - SRG-OS-000037-GPOS-00015
-    - SRG-OS-000038-GPOS-00016
-    - SRG-OS-000039-GPOS-00017
-    - SRG-OS-000040-GPOS-00018
-    - SRG-OS-000041-GPOS-00019
-    - SRG-OS-000042-GPOS-00021
-    - SRG-OS-000051-GPOS-00024
-    - SRG-OS-000054-GPOS-00025
-    - SRG-OS-000122-GPOS-00063
-    - SRG-OS-000254-GPOS-00095
-    - SRG-OS-000255-GPOS-00096
-    - SRG-OS-000337-GPOS-00129
-    - SRG-OS-000348-GPOS-00136
-    - SRG-OS-000349-GPOS-00137
-    - SRG-OS-000350-GPOS-00138
-    - SRG-OS-000351-GPOS-00139
-    - SRG-OS-000352-GPOS-00140
-    - SRG-OS-000353-GPOS-00141
-    - SRG-OS-000354-GPOS-00142
-    - SRG-OS-000358-GPOS-00145
-    - SRG-OS-000365-GPOS-00152
-    - SRG-OS-000392-GPOS-00172
-    - SRG-OS-000475-GPOS-00220
-    - auditd
+  tags: always
   ansible.builtin.package:
     name: audit
     state: present
@@ -167,7 +141,7 @@
   register: discovered_auditd_logfile
 
 # Added to ensure ssh drop in file exists if not default /etc/ssh/sshd_config
-- name: PRELIM | SSH
+- name: PRELIM | SSH | create config file if absent
   when:
     - rhel9stig_sshd_config_file != '/etc/ssh/sshd_config'
     - "'openssh-server' in ansible_facts.packages"
@@ -180,31 +154,14 @@
     state: touch
 
 - name: PRELIM | SSH | find existing ssh config files
-  ansible.builtin.find:
-    paths:
-      - /etc/ssh/
-      - /etc/ssh/sshd_config.d
-    patterns: 'sshd_config,*.conf'
-    recurse: false
-  register: prelim_sshd_config_files
-  tags:
-    - always
-
-- name: PRELIM | SSH | find existing ssh config files
-  ansible.builtin.find:
-    paths:
-      - /etc/ssh/
-      - /etc/ssh/sshd_config.d
-    patterns: 'sshd_config,*.conf'
-    recurse: false
-  register: prelim_sshd_config_files
-  tags:
-    - always
-
-- name: Debug
-  ansible.builtin.debug:
-    msg: "{{ prelim_sshd_config_files }}"
   tags: always
+  ansible.builtin.find:
+    paths:
+      - /etc/ssh/
+      - /etc/ssh/sshd_config.d
+    patterns: 'sshd_config,*.conf'
+    recurse: false
+  register: prelim_sshd_config_files
 
 - name: "PRELIM | Interactive User accounts"
   tags: always
@@ -230,7 +187,6 @@
 
 - name: PRELIM | Discover dconf systemdb
   when: rhel9stig_gui
-  tags: always
   ansible.builtin.shell: grep system-db /etc/dconf/profile/user | cut -d ':' -f2
   changed_when: false
   failed_when: rhel9stig_dconf_db.rc not in [ 0, 1 ]
@@ -238,7 +194,6 @@
 
 - name: PRELIM | Discover dconf db files
   when: rhel9stig_gui
-  tags: always
   ansible.builtin.find:
     path: /etc/dconf/db/local.d
     pattern: '*'
@@ -307,6 +262,7 @@
     - name: "PRELIM | PATCH | Setup authselect if setting allow | Create custom profiles"
       ansible.builtin.command: "authselect select custom/{{ rhel9stig_authselect['custom_profile_name'] }} with-faillock"
       changed_when: true
+      check_mode: false
 
 - name: PRELIM | Discover removable devices
   when: item.value.removable == '1'
@@ -316,7 +272,6 @@
   loop: "{{ ansible_facts['devices'] | dict2items }}"
 
 - name: PRELIM | Gather the package facts after prelim
+  tags: always
   ansible.builtin.package_facts:
     manager: auto
-  tags:
-    - always

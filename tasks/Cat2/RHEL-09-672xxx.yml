@@ -1,9 +1,7 @@
 ---
 
 - name: "MEDIUM | RHEL-09-672010 | PATCH | RHEL 9 must have the crypto-policies package installed."
-  when:
-    - rhel_09_672010
-    - "'crypto-policies' not in ansible_facts.packages"
+  when: rhel_09_672010
   tags:
     - RHEL-09-672010
     - CAT2

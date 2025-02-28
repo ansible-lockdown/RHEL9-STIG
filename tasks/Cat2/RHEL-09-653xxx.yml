@@ -1,5 +1,4 @@
 ---
-
 - name: "MEDIUM | RHEL-09-653010 | PATCH | RHEL 9 audit package must be installed."
   when: rhel_09_653010
   tags:
@@ -388,8 +387,8 @@
     - name: "MEDIUM | RHEL-09-653080 | PATCH | RHEL 9 audit logs must be group-owned by root or by a restricted logging group to prevent unauthorized read access.
         | Set perms"
       ansible.builtin.file:
-        group: "{{ rhel9stig_audit_conf_logfile_group }}"
         path: "{{ rhel9stig_audit_log_filesystem }}"
+        group: "{{ rhel9stig_audit_conf_logfile_group }}"
 
 - name: "MEDIUM | RHEL-09-653085 | PATCH | RHEL 9 audit log directory must be owned by root to prevent unauthorized read access."
   when: rhel_09_653085
@@ -408,8 +407,8 @@
     - NIST800-53R4_SI-11
     - auditd
   ansible.builtin.file:
-    owner: root
     path: "{{ discovered_auditd_logfile.stdout }}"
+    owner: root
 
 - name: "MEDIUM | RHEL-09-653090 | PATCH | RHEL 9 audit logs file must have mode 0600 or less permissive to prevent unauthorized access to the audit log."
   when: rhel_09_653090
@@ -499,14 +498,14 @@
     - name: "MEDIUM | RHEL-09-653110 | PATCH | RHEL 9 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM)
         to select which auditable events are to be audited."
       ansible.builtin.file:
-        mode: 'u-x,g-wx,o-rwx'
         path: /etc/audit/auditd.conf
+        mode: "u-x,g-wx,o-rwx"
 
     - name: "MEDIUM | RHEL-09-653110 | PATCH | RHEL 9 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM)
         to select which auditable events are to be audited."
       ansible.builtin.file:
-        mode: 'u-x,g-wx,o-rwx'
         path: "{{ item }}"
+        mode: 'u-x,g-wx,o-rwx'
       with_fileglob:
         - "etc/audit/rules.d/*.rules"
 

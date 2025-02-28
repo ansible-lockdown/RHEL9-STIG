@@ -15,11 +15,11 @@
     - NIST800-53R4_IA-3
   vars:
     blacklist: 'usb-storage'
-  ansible.builtin.template:
-    dest: "/etc/modprobe.d/{{ blacklist }}.conf"
-    src: etc/modprobe.d/module.conf.j2
-    mode: 'u-x,go-wx'
   notify: Change_requires_reboot
+  ansible.builtin.template:
+    src: etc/modprobe.d/module.conf.j2
+    dest: "/etc/modprobe.d/{{ blacklist }}.conf"
+    mode: 'go-wx'
 
 - name: "MEDIUM | RHEL-09-291015 | PATCH | RHEL 9 must have the USBGuard package installed."
   when: rhel_09_291015
@@ -46,8 +46,8 @@
     - V-258036
     - NIST800-53R4_IA-3
   ansible.builtin.systemd:
-    enabled: true
     name: usbguard
+    enabled: true
     state: started
 
 - name: "MEDIUM | RHEL-09-291030 | PATCH | RHEL 9 must block unauthorized peripherals before establishing a connection."
@@ -87,11 +87,11 @@
     - NIST800-53R4_AC-18
   vars:
     blacklist: 'bluetooth'
+  notify: Change_requires_reboot
   ansible.builtin.template:
     dest: "/etc/modprobe.d/{{ blacklist }}.conf"
     src: etc/modprobe.d/module.conf.j2
-    mode: 'u-x,go-wx'
-  notify: Change_requires_reboot
+    mode: 'go-wx'
 
 - name: "MEDIUM | RHEL-09-291040 | PATCH | RHEL 9 wireless network adapters must be disabled."
   when: rhel_09_291040
