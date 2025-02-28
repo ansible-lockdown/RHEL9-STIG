@@ -482,8 +482,7 @@
     regexp: ^\s*write_logs
     line: write_logs = {{ rhel9stig_audit_conf_write_logs }}
 
-- name: "MEDIUM | RHEL-09-653110 | PATCH | RHEL 9 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM) to
-    select which auditable events are to be audited."
+- name: "MEDIUM | RHEL-09-653110 | PATCH | RHEL 9 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM) to select which auditable events are to be audited."
   when: rhel_09_653110
   tags:
     - RHEL-09-653110
@@ -495,14 +494,12 @@
     - NIST800-53R4_AU-12
     - auditd
   block:
-    - name: "MEDIUM | RHEL-09-653110 | PATCH | RHEL 9 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM)
-        to select which auditable events are to be audited."
+    - name: "MEDIUM | RHEL-09-653110 | PATCH | RHEL 9 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM) to select which auditable events are to be audited."
       ansible.builtin.file:
         path: /etc/audit/auditd.conf
-        mode: "u-x,g-wx,o-rwx"
+        mode: 'u-x,g-wx,o-rwx'
 
-    - name: "MEDIUM | RHEL-09-653110 | PATCH | RHEL 9 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM)
-        to select which auditable events are to be audited."
+    - name: "MEDIUM | RHEL-09-653110 | PATCH | RHEL 9 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM) to select which auditable events are to be audited."
       ansible.builtin.file:
         path: "{{ item }}"
         mode: 'u-x,g-wx,o-rwx'
