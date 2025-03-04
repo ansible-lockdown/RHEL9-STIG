@@ -1,5 +1,13 @@
 # RHEL9STIG
 
+
+## 1.6.0 Based on STIG V2R3 Jan28 2025
+
+- RuleID Updates
+- CCI Updates
+- 672020 - moved to CAT1 and approach changed to remediate inline with documentation
+- 672030 - removed
+
 ## 1.5.0 Based on STIG V2R2 Oct24 2024
 
 - RuleID updates

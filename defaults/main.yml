@@ -133,7 +133,7 @@ rhel_09_411100: true
 rhel_09_431010: true
 rhel_09_611025: true
 rhel_09_671010: true
-rhel_09_672030: true
+rhel_09_672020: true
 
 #### CAT 2
 rhel_09_211015: true
@@ -561,7 +561,6 @@ rhel_09_671015: true
 rhel_09_671020: true
 rhel_09_671025: true
 rhel_09_672010: true
-rhel_09_672020: true
 rhel_09_672025: true
 rhel_09_672035: true
 rhel_09_672040: true

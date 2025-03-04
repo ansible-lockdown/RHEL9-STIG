@@ -5,14 +5,11 @@
   tags:
     - RHEL-09-611025
     - CAT1
-    - CCI-01084
-    - CCI-02696
-    - SRG-OS-000445-GPOS-00199
-    - SRG-OS-000134-GPOS-00068
-    - SV-258094r1014878_rule
-    - V-258078
-    - NIST800-53R4_SC-3
-    - NIST800-53R4_SI-6
+    - CCI-000366
+    - SRG-OS-000480-GPOS-00227
+    - SV-258094r1045187_rule
+    - V-258094
+    - NIST800-53R4_CM-6
     - pam
   ansible.builtin.replace:
     path: "{{ null_pass }}"
@@ -78,48 +75,59 @@
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
-- name: HIGH | RHEL-09-672030 | RHEL 9 must implement DOD-approved TLS encryption in the GnuTLS package.
-  when:
-    - rhel_09_672030
-    - not ansible_facts.fips
+- name: "HIGH | RHEL-09-672020 | PATCH | RHEL 9 crypto policy must not be overridden."
+  when: rhel_09_672020
   tags:
-    - RHEL-09-672030
+    - RHEL-09-672020
     - CAT1
-    - CCI-001453
-    - CCI-002418
-    - SRG-OS-000250-GPOS-00093
-    - SRG-OS-000423-GPOS-00187
-    - SV-258238r991554_rule
-    - V-258238
-    - NIST800-53R4_AC-17
-    - NIST800-53R4_SC-8
+    - CCI-002450
+    - CCI-002890
+    - CCI-003123
+    - SRG-OS-000396-GPOS-00176
+    - SRG-OS-000393-GPOS-00173
+    - SRG-OS-000394-GPOS-00174
+    - SV-258236r987791_rule
+    - V-258236
+    - NIST800-53R4_SC-13
+    - NIST800-53R4_MA-4
     - crypto
-  notify: Change_requires_reboot
   vars:
-    warn_control_id: "HIGH | RHEL-09-672030"
+    warn_control_id: "HIGH | RHEL-09-672020"
   block:
-    - name: HIGH | RHEL-09-672030 | AUDIT | RHEL 9 must implement DOD-approved TLS encryption in the GnuTLS package. | Capture crypto state
-      ansible.builtin.command: update-crypto-policies --show
+    - name: "HIGH | RHEL-09-672020 | AUDIT | RHEL 9 crypto policy must not be overridden."
+      ansible.builtin.shell: update-crypto-policies --check && echo PASS
       changed_when: false
-      register: discovered_crypto_policies_state
+      failed_when: discovered_crypto_policies_fips.rc not in [ 0, 1 ]
+      register: discovered_crypto_policies_fips
 
-    - name: HIGH | RHEL-09-672030 | PATCH | RHEL 9 must implement DOD-approved TLS encryption in the GnuTLS package. | Enable FIPS
+    - name: "HIGH | RHEL-09-672020 | WARN | RHEL 9 crypto policy must not be overridden. | Re-Install Crypto-policies package"
       when:
-        - not "'FIPS' in discovered_crypto_policies_state.stdout"
+        - discovered_crypto_policies_fips is defined
+        - "'PASS' in discovered_crypto_policies_fips.stdout"
         - rhel9stig_disruption_high
-      ansible.builtin.command: fips-mode-setup --enable
+      ansible.builtin.command: dnf -y reinstall crypto-policies
       changed_when: true
 
-    - name: HIGH | RHEL-09-672030 | WARN | RHEL 9 must implement DOD-approved TLS encryption in the GnuTLS package. | Give Warning
+    - name: "HIGH | RHEL-09-672020 | WARN | RHEL 9 crypto policy must not be overridden. | ReEnable FIPS"
       when:
-        - not "'FIPS' in discovered_crypto_policies_state.stdout"
+        - discovered_crypto_policies_fips is defined
+        - "'PASS' in discovered_crypto_policies_fips.stdout"
+        - rhel9stig_disruption_high
+      ansible.builtin.command: update-crypto-policies --set FIPS
+      changed_when: true
+
+    - name: "HIGH | RHEL-09-672020 | WARN | RHEL 9 crypto policy must not be overridden."
+      when:
+        - discovered_crypto_policies_fips is defined
+        - discovered_crypto_policies_fips.stdout | length > 0
         - not rhel9stig_disruption_high
       ansible.builtin.debug:
-        msg: WARNING!! - Crypto-Policies is not set to FIPS
+        msg: "Warning!! Please Investigate 672020 - Crypto files not pointing to FIPS"
 
-    - name: HIGH | RHEL-09-672030 | WARN | RHEL 9 must implement DOD-approved TLS encryption in the GnuTLS package. | Warning Count
+    - name: "HIGH | RHEL-09-672020 | WARN | RHEL 9 crypto policy must not be overridden."
       when:
-        - not "'FIPS' in discovered_crypto_policies_state.stdout"
+        - discovered_crypto_policies_fips is defined
+        - discovered_crypto_policies_fips.stdout | length > 0
         - not rhel9stig_disruption_high
       ansible.builtin.import_tasks:
         file: warning_facts.yml

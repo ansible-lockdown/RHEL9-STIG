@@ -22,45 +22,6 @@
     name: crypto-policies
     state: present
 
-- name: "MEDIUM | RHEL-09-672020 | PATCH | RHEL 9 crypto policy must not be overridden."
-  when: rhel_09_672020
-  tags:
-    - RHEL-09-672020
-    - CAT2
-    - CCI-002450
-    - CCI-002890
-    - CCI-003123
-    - SRG-OS-000396-GPOS-00176
-    - SRG-OS-000393-GPOS-00173
-    - SRG-OS-000394-GPOS-00174
-    - SV-258236r987791_rule
-    - V-258236
-    - NIST800-53R4_SC-12
-    - NIST800-53R4_MA-4
-    - crypto
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-672020"
-  block:
-    - name: "MEDIUM | RHEL-09-672020 | AUDIT | RHEL 9 crypto policy must not be overridden."
-      ansible.builtin.shell: ls -l /etc/crypto-policies/back-ends/ | grep -v FIPS
-      changed_when: false
-      failed_when: discovered_crypto_policies_fips.rc not in [ 0, 1 ]
-      register: discovered_crypto_policies_fips
-
-    - name: "MEDIUM | RHEL-09-672020 | WARN | RHEL 9 crypto policy must not be overridden."
-      when:
-        - discovered_crypto_policies_fips is defined
-        - discovered_crypto_policies_fips.stdout | length > 0
-      ansible.builtin.debug:
-        msg: "Warning!! Please Investigate 672020 - Crypto files not pointing to FIPS"
-
-    - name: "MEDIUM | RHEL-09-672020 | WARN | RHEL 9 crypto policy must not be overridden."
-      when:
-        - discovered_crypto_policies_fips is defined
-        - discovered_crypto_policies_fips.stdout | length > 0
-      ansible.builtin.import_tasks:
-        file: warning_facts.yml
-
 - name: "MEDIUM | RHEL-09-672025 | PATCH | RHEL 9 must use mechanisms meeting the requirements of applicable federal laws, executive orders, directives, policies, regulations, standards, and guidance for authentication to a cryptographic module."
   when: rhel_09_672025
   tags:
