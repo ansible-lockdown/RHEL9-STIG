@@ -3,23 +3,23 @@
 - name: "LOW | RHEL-09-211035 | PATCH | RHEL 9 must enable the hardware random number generator entropy gatherer service."
   when:
     - rhel_09_211035
+    - not rhel_09_672045  # Dont run if FIPs Enabled
   tags:
     - RHEL-09-211035
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257782r942961_rule
+    - SV-257782r991589_rule
     - V-257782
     - NIST800-53R4_CM-6
     - entropy
   ansible.builtin.systemd:
-    enabled: true
     name: rngd
+    enabled: true
     state: started
 
 - name: "LOW | RHEL-09-212050 | PATCH | RHEL 9 must enable mitigations against processor-based vulnerabilities."
-  when:
-    - rhel_09_212050
+  when: rhel_09_212050
   tags:
     - RHEL-09-212050
     - CAT2
@@ -27,13 +27,12 @@
     - CCI-002824
     - SRG-OS-000433-GPOS-00193
     - SRG-OS-000095-GPOS-00049
-    - SV-257795r925372_rule
+    - SV-257795r958928_rule
     - V-257795
     - NIST800-53R4_CM-7
     - NIST800-53R4_SI-16
     - grub
-  notify:
-    - Change_requires_reboot
+  notify: Change_requires_reboot
   block:
     - name: "LOW | RHEL-09-212050 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
       ansible.builtin.shell: grep "^GRUB_CMD" /etc/default/grub | grep pti
@@ -44,12 +43,13 @@
     - name: "LOW | RHEL-09-212050 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
       when:
         - rhel9stig_grub_pti_enabled is defined
-        - rhel9stig_grub_pti_enabled.rc == 1
-      ansible.builtin.shell: grubby --update-kernel=ALL --args="pti=on"
+        - rhel9stig_grub_pti_enabled.rc == '1'
+      ansible.builtin.command: grubby --update-kernel=ALL --args="pti=on"
+      changed_when: true
+      check_mode: false
 
 - name: "LOW | RHEL-09-212055 | PATCH | RHEL 9 must enable auditing of processes that start prior to the audit daemon."
-  when:
-    - rhel_09_212055
+  when: rhel_09_212055
   tags:
     - RHEL-09-212055
     - CAT2
@@ -67,7 +67,7 @@
     - SRG-OS-000471-GPOS-00215
     - SRG-OS-000473-GPOS-00218
     - SRG-OS-000254-GPOS-00095
-    - SV-257796r925375_rule
+    - SV-257796r958412_rule
     - V-257796
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -75,8 +75,7 @@
     - NIST800-53R4_MA-4
     - grub
     - audit
-  notify:
-    - Change_requires_reboot
+  notify: Change_requires_reboot
   block:
     - name: "LOW | RHEL-09-212055 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
       ansible.builtin.shell: grep "^GRUB_CMD" /etc/default/grub | grep 'audit=1'
@@ -88,17 +87,18 @@
       when:
         - rhel9stig_grub_audit_enabled is defined
         - rhel9stig_grub_audit_enabled.rc == 1
-      ansible.builtin.shell: grubby --update-kernel=ALL --args="audit=1"
+      ansible.builtin.command: grubby --update-kernel=ALL --args="audit=1"
+      changed_when: true
+      check_mode: false
 
 - name: "LOW | RHEL-09-214035 | PATCH | RHEL 9 must remove all software components after updated versions have been installed."
-  when:
-    - rhel_09_214035
+  when: rhel_09_214035
   tags:
     - RHEL-09-214035
     - CAT2
     - CCI-0002617
     - SRG-OS-000437-GPOS-00194
-    - SV-257824r925459_rule
+    - SV-257824r958936_rule
     - V-257824
     - NIST800-53R4_SI-2
     - dnf
@@ -116,7 +116,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257845r925522_rule
+    - SV-257845r991589_rule
     - V-257845
     - NIST800-53R4_CM-6
     - filesystem
@@ -140,7 +140,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257846r925525_rule
+    - SV-257846r991589_rule
     - V-257846
     - NIST800-53R4_CM-6
     - filesystem
@@ -164,7 +164,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257847r925528_rule
+    - SV-257847r958752_rule
     - V-257847
     - NIST800-53R4_CM-6
     - filesystem
@@ -180,28 +180,26 @@
         file: warning_facts.yml
 
 - name: "LOW | RHEL-09-231195 | PATCH | RHEL 9 must disable mounting of cramfs."
-  when:
-    - rhel_09_231195
+  when: rhel_09_231195
   tags:
     - RHEL-09-231195
     - CAT2
     - CCI-000381
     - SRG-OS-000095-GPOS-00049
-    - SV-257880r942957_rule
+    - SV-257880r958478_rule
     - V-257880
     - NIST800-53R4_CM-7
     - modprobe
-  notify:
-    - Change_requires_reboot
+  notify: Change_requires_reboot
   vars:
     blacklist: 'cramfs'
   ansible.builtin.template:
-    dest: "/etc/modprobe.d/{{ blacklist }}.conf"
     src: etc/modprobe.d/module.conf.j2
+    dest: "/etc/modprobe.d/{{ blacklist }}.conf"
+    mode: 'go-wx'
 
 - name: "LOW | RHEL-09-252025 | PATCH | RHEL 9 must disable the chrony daemon from acting as a server."
-  when:
-    - rhel_09_252025
+  when: rhel_09_252025
   tags:
     - RHEL-09-252025
     - CAT2
@@ -209,7 +207,7 @@
     - CCI-000382
     - SRG-OS-000095-GPOS-00049
     - SRG-OS-000096-GPOS-00050
-    - SV-257946r925825_rule
+    - SV-257946r958480_rule
     - V-257946
     - NIST800-53R4_CM-7
     - chrony
@@ -219,8 +217,7 @@
     line: 'port 0'
 
 - name: "LOW | RHEL-09-252030 | PATCH | RHEL 9 must disable network management of the chrony daemon."
-  when:
-    - rhel_09_252030
+  when: rhel_09_252030
   tags:
     - RHEL-09-252030
     - CAT2
@@ -228,8 +225,8 @@
     - CCI-000382
     - SRG-OS-000095-GPOS-00049
     - SRG-OS-000096-GPOS-00050
-    - SV-257946r925825_rule
-    - V-257946
+    - SV-257947r958480_rule
+    - V-257947
     - NIST800-53R4_CM-7
     - chrony
   ansible.builtin.lineinfile:
@@ -238,14 +235,13 @@
     line: 'cmdport 0'
 
 - name: "LOW | RHEL-09-291025 | PATCH | RHEL 9 must enable Linux audit logging for the USBGuard daemon."
-  when:
-    - rhel_09_291025
+  when: rhel_09_291025
   tags:
     - RHEL-09-291025
     - CAT2
     - CCI-000169
     - SRG-OS-000062-GPOS-00031
-    - SV-258037r926098_rule
+    - SV-258037r958442_rule
     - V-258037
     - NIST800-53R4_AU-12
     - usb
