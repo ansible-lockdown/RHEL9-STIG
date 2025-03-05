@@ -188,6 +188,8 @@ rhel_09_215080: true
 rhel_09_215085: true
 rhel_09_215090: true
 rhel_09_215095: true
+rhel_09_215100: true
+rhel_09_215105: true
 
 rhel_09_231010: true
 rhel_09_231015: true
@@ -241,6 +243,8 @@ rhel_09_232085: true
 rhel_09_232090: true
 rhel_09_232095: true
 rhel_09_232100: true
+rhel_09_232103: true
+rhel_09_232104: true
 rhel_09_232105: true
 rhel_09_232110: true
 rhel_09_232115: true
@@ -560,7 +564,6 @@ rhel_09_654275: true
 rhel_09_671015: true
 rhel_09_671020: true
 rhel_09_671025: true
-rhel_09_672010: true
 rhel_09_672025: true
 rhel_09_672035: true
 rhel_09_672040: true
@@ -671,6 +674,13 @@ rhel9stig_gssproxy_required: false
 rhel9stig_iprutils_required: false
 rhel9stig_tuned_required: false
 rhel9stig_quagga_required: false
+
+## 215xxx
+# Add list of additional crypto subpolicies to be added to FIPS
+rhel9stig_additional_fips_crypto_subpolicies: false
+rhel9stig_additional_fips_crypto_subpolicies_list:
+# - AD-SUPPORT
+# - NO-ENFORCE-EMS
 
 ## 23xxxx
 rhel9stig_home_filesystem: '/home'

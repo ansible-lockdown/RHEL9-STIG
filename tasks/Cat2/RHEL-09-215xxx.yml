@@ -4,13 +4,12 @@
   when:
     - rhel_09_215010
     - ansible_facts.distribution == 'RedHat'
-    - "'subscription-manager' not in ansible_facts.packages"
   tags:
     - RHEL-09-215010
     - CAT2
     - CCI-001749
     - SRG-OS-000366-GPOS-00153
-    - SV-257825r1015079_rule
+    - SV-257825r1044888_rule
     - V-257825
     - NIST800-53R4_CM-5
   ansible.builtin.package:
@@ -18,19 +17,15 @@
     state: present
 
 - name: "MEDIUM | RHEL-09-215020 | PATCH | RHEL 9 must not have the sendmail package installed."
-  when:
-    - rhel_09_215020
-    - "'sendmail' in ansible_facts.packages"
+  when: rhel_09_215020
   tags:
     - RHEL-09-215020
     - CAT2
-    - CCI-000366
     - CCI-000381
     - SRG-OS-000480-GPOS-00227
     - SRG-OS-000095-GPOS-00049
-    - SV-257827r991589_rule
+    - SV-257827r1044892_rule
     - V-257827
-    - NIST800-53R4_CM-6
     - NIST800-53R4_CM-7
   ansible.builtin.package:
     name: sendmail
@@ -39,14 +34,13 @@
 - name: "MEDIUM | RHEL-09-215025 | PATCH | RHEL 9 must not have the nfs-utils package installed."
   when:
     - rhel_09_215025
-    - "'nfs-utils' in ansible_facts.packages"
     - not rhel9stig_nfs_utils_required
   tags:
     - RHEL-09-215025
     - CAT2
     - CCI-000381
     - SRG-OS-000095-GPOS-00049
-    - SV-257828r958478_rule
+    - SV-257828r1044894_rule
     - V-257828
     - NIST800-53R4_CM-7
   ansible.builtin.package:
@@ -54,15 +48,13 @@
     state: absent
 
 - name: "MEDIUM | RHEL-09-215030 | PATCH | RHEL 9 must not have the ypserv package installed."
-  when:
-    - rhel_09_215030
-    - "'ypserv' in ansible_facts.packages"
+  when: rhel_09_215030
   tags:
     - RHEL-09-215030
     - CAT2
     - CCI-000381
     - SRG-OS-000095-GPOS-00049
-    - SV-257829r958478_rule
+    - SV-257829r1044896_rule
     - V-257829
     - NIST800-53R4_CM-7
   ansible.builtin.package:
@@ -70,9 +62,7 @@
     state: absent
 
 - name: "MEDIUM | RHEL-09-215035 | PATCH | RHEL 9 must not have the rsh-server package installed."
-  when:
-    - rhel_09_215035
-    - "'rsh-server' in ansible_facts.packages"
+  when: rhel_09_215035
   tags:
     - RHEL-09-215035
     - CAT2
@@ -86,15 +76,13 @@
     state: absent
 
 - name: "MEDIUM | RHEL-09-215040 | PATCH | RHEL 9 must not have the telnet-server package installed."
-  when:
-    - rhel_09_215040
-    - "'telnet-server' in ansible_facts.packages"
+  when: rhel_09_215040
   tags:
     - RHEL-09-215040
     - CAT2
     - CCI-000381
     - SRG-OS-000095-GPOS-00049
-    - SV-257831r958478_rule
+    - SV-257831r1044898_rule
     - V-257831
     - NIST800-53R4_CM-7
   ansible.builtin.package:
@@ -102,15 +90,14 @@
     state: absent
 
 - name: "MEDIUM | RHEL-09-215045 | PATCH | RHEL 9 must not have the gssproxy package installed."
-  when:
-    - rhel_09_215045
-    - "'gssproxy' in ansible_facts.packages"
+  when: rhel_09_215045
   tags:
     - RHEL-09-215045
     - CAT2
     - CCI-000381
     - SRG-OS-000095-GPOS-00049
-    - SV-257832r958478_rule
+    - SRG-OS-000480-GPOS-00227
+    - SV-257832r1044900_rule
     - V-257832
     - NIST800-53R4_CM-7
   ansible.builtin.package:
@@ -118,15 +105,13 @@
     state: absent
 
 - name: "MEDIUM | RHEL-09-215050 | PATCH | RHEL 9 must not have the iprutils package installed."
-  when:
-    - rhel_09_215050
-    - "'iprutils' in ansible_facts.packages"
+  when: rhel_09_215050
   tags:
     - RHEL-09-215050
     - CAT2
     - CCI-000381
     - SRG-OS-000095-GPOS-00049
-    - SV-257833r958478_rule
+    - SV-257833r1044902_rule
     - V-257833
     - NIST800-53R4_CM-7
   ansible.builtin.package:
@@ -134,34 +119,28 @@
     state: absent
 
 - name: "MEDIUM | RHEL-09-215055 | PATCH | RHEL 9 must not have the tuned package installed."
-  when:
-    - rhel_09_215055
-    - "'tuned' in ansible_facts.packages"
+  when: rhel_09_215055
   tags:
     - RHEL-09-215055
     - CAT2
-    - CCI-000366
     - CCI-000381
     - SRG-OS-000480-GPOS-00227
     - SRG-OS-000095-GPOS-00049
-    - SV-257834r958478_rule
+    - SV-257834r1044904_rule
     - V-257834
-    - NIST800-53R4_CM-6
     - NIST800-53R4_CM-7
   ansible.builtin.package:
     name: tuned
     state: absent
 
 - name: "MEDIUM | RHEL-09-215065 | PATCH | RHEL 9 must not have the quagga package installed."
-  when:
-    - rhel_09_215065
-    - "'quagga' in ansible_facts.packages"
+  when: rhel_09_215065
   tags:
     - RHEL-09-215065
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257836r991589_rule
+    - SV-257836r1044908_rule
     - V-257836
     - NIST800-53R4_CM-6
   ansible.builtin.package:
@@ -175,7 +154,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257837r991589_rule
+    - SV-257837r1044910_rule
     - V-257837
     - NIST800-53R4_CM-6
   ansible.builtin.package:
@@ -183,20 +162,19 @@
     state: absent
 
 - name: "MEDIUM | RHEL-09-215075 | PATCH | RHEL 9 must have the openssl-pkcs11 package installed."
-  when:
-    - rhel_09_215075
-    - "'openssl-pkcs11' not in ansible_facts.packages"
+  when: rhel_09_215075
   tags:
     - RHEL-09-215075
     - CAT2
     - CCI-000765
+    - CCI-001948
     - CCI-001953
     - CCI-001954
     - SRG-OS-000105-GPOS-00052
     - SRG-OS-000375-GPOS-00160
     - SRG-OS-000376-GPOS-00161
     - SRG-OS-000377-GPOS-00162
-    - SV-257838r1015080_rule
+    - SV-257838r1044912_rule
     - V-257838
     - NIST800-53R4_IA-2
   ansible.builtin.package:
@@ -204,9 +182,7 @@
     state: present
 
 - name: "MEDIUM | RHEL-09-215080 | PATCH | RHEL 9 must have the gnutls-utils package installed."
-  when:
-    - rhel_09_215080
-    - "'gnutls-utils' not in ansible_facts.packages"
+  when: rhel_09_215080
   tags:
     - RHEL-09-215080
     - CAT2
@@ -220,9 +196,7 @@
     state: present
 
 - name: "MEDIUM | RHEL-09-215085 | PATCH | RHEL 9 must have the nss-tools package installed."
-  when:
-    - rhel_09_215085
-    - "'nss-tools' not in ansible_facts.packages"
+  when: rhel_09_215085
   tags:
     - RHEL-09-215085
     - CAT2
@@ -236,15 +210,13 @@
     state: present
 
 - name: "MEDIUM | RHEL-09-215090 | PATCH | RHEL 9 must have the rng-tools package installed."
-  when:
-    - rhel_09_215090
-    - "'rng-tools' not in ansible_facts.packages"
+  when: rhel_09_215090
   tags:
     - RHEL-09-215090
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257841r991589_rule
+    - SV-257841r1044914_rule
     - V-257841
     - NIST800-53R4_CM-6
   ansible.builtin.package:
@@ -252,17 +224,104 @@
     state: present
 
 - name: "MEDIUM | RHEL-09-215095 | PATCH | RHEL 9 must have the s-nail package installed."
-  when:
-    - rhel_09_215095
-    - "'s-nail' not in ansible_facts.packages"
+  when: rhel_09_215095
   tags:
     - RHEL-09-215095
     - CAT2
     - CCI-001744
     - SRG-OS-000363-GPOS-00150
-    - SV-257842r958794_rule
+    - SV-257842r1044916_rule
     - V-257842
     - NIST800-53R4_CM-3
   ansible.builtin.package:
     name: s-nail
     state: present
+
+- name: "MEDIUM | RHEL-09-215100 | PATCH | RHEL 9 must have the crypto-policies package installed."
+  when: rhel_09_215100
+  tags:
+    - RHEL-09-215100
+    - CAT2
+    - CCI-002450
+    - CCI-002890
+    - CCI-003123
+    - SRG-OS-000396-GPOS-00176
+    - SRG-OS-000393-GPOS-00173
+    - SRG-OS-000394-GPOS-00174
+    - SV-258234r1051250_rule
+    - V-258234
+    - NIST800-53R4_SC-13
+    - NIST800-53R4_MA-4
+    - crypto
+  ansible.builtin.package:
+    name: crypto-policies
+    state: present
+
+- name: "MEDIUM | RHEL-09-215105 | PATCH | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy"
+  when: rhel_09_215105
+  tags:
+    - RHEL-09-215105
+    - CAT2
+    - CCI-002450
+    - CCI-002890
+    - CCI-003123
+    - SRG-OS-000396-GPOS-00176
+    - SRG-OS-000393-GPOS-00173
+    - SRG-OS-000394-GPOS-00174
+    - SV-258241r1051259_rule
+    - V-258241
+    - NIST800-53R4_SC-13
+    - NIST800-53R4_MA-4
+    - fips
+    - encryption
+  notify: Change_requires_reboot
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-215105"
+  block:
+    - name: "MEDIUM | RHEL-09-215105 | AUDIT | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy | grep current crypto state"
+      ansible.builtin.command: update-crypto-policies --show
+      changed_when: false
+      failed_when: discovered_crypto_policies_check.rc not in [0 , 1]
+      register: discovered_crypto_policies_check
+
+    - name: "MEDIUM | RHEL-09-215105 | AUDIT | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy | Add required pmod files"
+      when: rhel9stig_disruption_high
+      ansible.builtin.template:
+        src: "{{ item }}.j2"
+        dest: "/{{ item }}"
+        owner: root
+        group: root
+        mode: "u-x,go-rwx"
+      loop:
+        - etc/crypto-policies/policies/modules/SCOPES-AND-WILDCARDS.pmod
+        - etc/crypto-policies/policies/modules/OPENSSH-SUBPOLICY.pmod
+        - etc/crypto-policies/policies/modules/REQUIRE.pmod
+
+    - name: "MEDIUM | RHEL-09-215105 | PATCH | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy | set crypto policies fact"
+      when:
+        - rhel9stig_additional_fips_crypto_subpolicies
+        - rhel9stig_disruption_high
+      ansible.builtin.set_fact:
+        combined_crypto_policy_config: "{{ combined_crypto_policy_config }}:{{ rhel9stig_additional_fips_crypto_subpolicies_list | join(':') }}"
+
+    - name: "MEDIUM | RHEL-09-215105 | PATCH | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy | set FIPS"
+      when:
+        - "combined_crypto_policy_config not in discovered_crypto_policies_check.stdout"
+        - rhel9stig_disruption_high
+      ansible.builtin.command: "update-crypto-policies --set {{ combined_crypto_policy_config }}"
+      changed_when: true
+      notify: Change_requires_reboot
+
+    - name: "MEDIUM | RHEL-09-215105 | WARN | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy"
+      when:
+        - "combined_crypto_policy_config != discovered_crypto_policies_check.stdout"
+        - not rhel9stig_disruption_high
+      ansible.builtin.debug:
+        msg: "WARNING!! - Crypto-Policies is not set to {{ combined_crypto_policy_config }} only - Current {{ discovered_crypto_policies_check.stdout }}"
+
+    - name: "MEDIUM | RHEL-09-215105 | WARN | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy"
+      when:
+        - "combined_crypto_policy_config != discovered_crypto_policies_check.stdout"
+        - not rhel9stig_disruption_high
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml

@@ -87,12 +87,11 @@
   tags:
     - RHEL-09-211055
     - CAT2
-    - CCI-001665
+    - CCI-002235
     - SRG-OS-000324-GPOS-00125
     - SRG-OS-000480-GPOS-00227
-    - SV-257786r958726_rule
+    - SV-257786r1044834_rule
     - V-257786
-    - NIST800-53R4_CM-6
     - NIST800-53R4_AC-6
   ansible.builtin.systemd:
     enabled: false

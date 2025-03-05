@@ -89,7 +89,7 @@
     - CAT2
     - CCI-001314
     - SRG-OS-000206-GPOS-00084
-    - SV-257885r958566_rule
+    - SV-257885r1044953_rule
     - V-257885
     - NIST800-53R4_SI-11
   ansible.builtin.file:
@@ -107,7 +107,7 @@
     - CAT2
     - CCI-001314
     - SRG-OS-000206-GPOS-00084
-    - SV-257886r958566_rule
+    - SV-257886r1044955_rule
     - V-257886
     - NIST800-53R4_SI-11
   ansible.builtin.file:
@@ -141,7 +141,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257888r991589_rule
+    - SV-257888r1044957_rule
     - V-257888
     - NIST800-53R4_CM-6
   ansible.builtin.file:
@@ -165,7 +165,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257889r991589_rule
+    - SV-257889r1044959_rule
     - V-257889
     - NIST800-53R4_CM-6
   block:
@@ -197,7 +197,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257890r991589_rule
+    - SV-257890r1044961_rule
     - V-257890
     - NIST800-53R4_CM-6
   block:
@@ -257,8 +257,8 @@
     - V-257891
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: 'u-x,go-wx'
     path: /etc/group
+    mode: 'u-x,go-wx'
 
 - name: "MEDIUM | RHEL-09-232060 | PATCH | RHEL 9 /etc/group- file must have mode 0644 or less permissive to prevent unauthorized access."
   when: rhel_09_232060
@@ -271,8 +271,8 @@
     - V-257892
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: 'go-wx'
     path: /etc/group-
+    mode: 'go-wx'
   failed_when: discovered_group_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_group_hyphen_exists
 
@@ -287,8 +287,8 @@
     - V-257893
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: 'ugo-rwx'
     path: /etc/gshadow
+    mode: 'ugo-rwx'
   failed_when: discovered_gshadow_file_exists.state not in '[ file, absent ]'
   register: discovered_gshadow_file_exists
 
@@ -303,8 +303,8 @@
     - V-257894
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: 'ugo-rwx'
     path: /etc/gshadow-
+    mode: 'ugo-rwx'
   failed_when: discovered_gshadow_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_gshadow_hyphen_exists
 
@@ -319,8 +319,8 @@
     - V-257895
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: 'u-x,go-wx'
     path: /etc/passwd
+    mode: 'u-x,go-wx'
 
 - name: "MEDIUM | RHEL-09-232080 | PATCH | RHEL 9 /etc/passwd- file must have mode 0644 or less permissive to prevent unauthorized access."
   when: rhel_09_232080
@@ -333,8 +333,8 @@
     - V-257896
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: 'u-x,go-wx'
     path: /etc/passwd-
+    mode: 'u-x,go-wx'
   failed_when: discovered_passwd_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_passwd_hyphen_exists
 
@@ -349,8 +349,8 @@
     - V-257897
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    mode: 'ugo-rwx'
     path: /etc/shadow-
+    mode: 'ugo-rwx'
   failed_when: discovered_shadow_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_shadow_hyphen_exists
 
@@ -365,8 +365,8 @@
     - V-257898
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: /etc/group
+    owner: root
 
 - name: "MEDIUM | RHEL-09-232095 | PATCH | RHEL 9 /etc/group file must be group-owned by root."
   when: rhel_09_232095
@@ -379,8 +379,8 @@
     - V-257899
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: /etc/group
+    group: root
 
 - name: "MEDIUM | RHEL-09-232100 | PATCH | RHEL 9 /etc/group- file must be owned by root."
   when: rhel_09_232100
@@ -393,10 +393,38 @@
     - V-257900
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: /etc/group-
+    owner: root
   failed_when: discovered_group_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_group_hyphen_exists
+
+- name: "MEDIUM | RHEL-09-232103 | PATCH | RHEL 9 '/etc/audit/' must be owned by root."
+  when: rhel_09_232103
+  tags:
+    - RHEL-09-232103
+    - CAT2
+    - CCI-000162
+    - SRG-OS-000080-GPOS-00048
+    - SV-270175r1044964_rule
+    - V-270175
+    - NIST800-53R4_AU-9
+  ansible.builtin.file:
+    path: /etc/audit
+    owner: root
+
+- name: "MEDIUM | RHEL-09-232104 | PATCH | RHEL 9 '/etc/audit/' must be group-owned by root."
+  when: rhel_09_232104
+  tags:
+    - RHEL-09-232104
+    - CAT2
+    - CCI-000162
+    - SRG-OS-000080-GPOS-00048
+    - SV-270175r1044964_rule
+    - V-270175
+    - NIST800-53R4_AU-9
+  ansible.builtin.file:
+    path: /etc/audit
+    group: root
 
 - name: "MEDIUM | RHEL-09-232105 | PATCH | RHEL 9 /etc/group- file must be group-owned by root."
   when: rhel_09_232105
@@ -409,8 +437,8 @@
     - V-257901
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: /etc/group-
+    group: root
   failed_when: discovered_group_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_group_hyphen_exists
 
@@ -425,8 +453,8 @@
     - V-257902
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: /etc/gshadow
+    owner: root
   failed_when: discovered_gshadow_file_exists.state not in '[ file, absent ]'
   register: discovered_gshadow_file_exists
 
@@ -441,8 +469,8 @@
     - V-257903
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: /etc/gshadow
+    group: root
   failed_when: discovered_gshadow_file_exists.state not in '[ file, absent ]'
   register: discovered_gshadow_file_exists
 
@@ -457,14 +485,13 @@
     - V-257904
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: /etc/gshadow-
+    owner: root
   failed_when: discovered_gshadow_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_gshadow_hyphen_exists
 
 - name: "MEDIUM | RHEL-09-232125 | PATCH | RHEL 9 /etc/gshadow- file must be group-owned by root."
-  when:
-    - rhel_09_232125
+  when: rhel_09_232125
   tags:
     - RHEL-09-232125
     - CAT2
@@ -474,8 +501,8 @@
     - V-257905
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: /etc/gshadow-
+    group: root
   failed_when: discovered_gshadow_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_gshadow_hyphen_exists
 
@@ -490,8 +517,8 @@
     - V-257906
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: /etc/passwd
+    owner: root
 
 - name: "MEDIUM | RHEL-09-232135 | PATCH | RHEL 9 /etc/passwd file must be group-owned by root."
   when: rhel_09_232135
@@ -504,8 +531,8 @@
     - V-257907
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: /etc/passwd
+    group: root
 
 - name: "MEDIUM | RHEL-09-232140 | PATCH | RHEL 9 /etc/passwd- file must be owned by root."
   when: rhel_09_232140
@@ -518,8 +545,8 @@
     - V-257908
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: /etc/passwd-
+    owner: root
   failed_when: discovered_passwd_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_passwd_hyphen_exists
 
@@ -534,8 +561,8 @@
     - V-257909
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: /etc/passwd-
+    group: root
   failed_when: discovered_passwd_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_passwd_hyphen_exists
 
@@ -550,8 +577,8 @@
     - V-257910
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: /etc/shadow
+    owner: root
 
 - name: "MEDIUM | RHEL-09-232155 | PATCH | RHEL 9 /etc/shadow file must be group-owned by root."
   when: rhel_09_232155
@@ -564,8 +591,8 @@
     - V-257911
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: /etc/shadow
+    group: root
 
 - name: "MEDIUM | RHEL-09-232160 | PATCH | RHEL 9 /etc/shadow- file must be owned by root."
   when: rhel_09_232160
@@ -578,8 +605,8 @@
     - V-257912
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: /etc/shadow-
+    owner: root
   failed_when: discovered_shadow_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_shadow_hyphen_exists
 
@@ -594,8 +621,8 @@
     - V-257913
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: /etc/shadow-
+    group: root
   failed_when: discovered_shadow_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_shadow_hyphen_exists
 
@@ -604,11 +631,11 @@
   tags:
     - RHEL-09-232170
     - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257914r958566_rule
+    - CCI-001314
+    - SRG-OS-000206-GPOS-00084
+    - SV-257914r1044969_rule
     - V-257914
-    - NIST800-53R4_CM-6
+    - NIST800-53R4_SI-11
   ansible.builtin.file:
     path: /var/log
     owner: root
@@ -620,11 +647,11 @@
   tags:
     - RHEL-09-232175
     - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257915r958566_rule
+    - CCI-001314
+    - SRG-OS-000206-GPOS-00084
+    - SV-257915r1044971_rule
     - V-257915
-    - NIST800-53R4_CM-6
+    - NIST800-53R4_SI-11
   ansible.builtin.file:
     path: /var/log
     group: root
@@ -636,11 +663,11 @@
   tags:
     - RHEL-09-232180
     - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257916r958566_rule
+    - CCI-001314
+    - SRG-OS-000206-GPOS-00084
+    - SV-257916r1044973_rule
     - V-257916
-    - NIST800-53R4_CM-6
+    - NIST800-53R4_SI-11
   ansible.builtin.file:
     owner: root
     path: /var/log/messages
@@ -650,11 +677,11 @@
   tags:
     - RHEL-09-232185
     - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257917r958566_rule
+    - CCI-001314
+    - SRG-OS-000206-GPOS-00084
+    - SV-257917r1044975_rule
     - V-257917
-    - NIST800-53R4_CM-6
+    - NIST800-53R4_SI-11
   ansible.builtin.file:
     group: root
     path: /var/log/messages
@@ -666,7 +693,7 @@
     - CAT2
     - CCI-001499
     - SRG-OS-000259-GPOS-00100
-    - SV-257918r991560_rule
+    - SV-257918r1044977_rule
     - V-257918
     - NIST800-53R4_CM-5
   block:
@@ -692,7 +719,7 @@
     - CAT2
     - CCI-001499
     - SRG-OS-000259-GPOS-00100
-    - SV-257919r991560_rule
+    - SV-257919r1044979_rule
     - V-257919
     - NIST800-53R4_CM-5
   vars:
@@ -723,7 +750,7 @@
     - CAT2
     - CCI-001499
     - SRG-OS-000259-GPOS-00100
-    - SV-257920r991560_rule
+    - SV-257920r1044982_rule
     - V-257920
     - NIST800-53R4_CM-5
   block:
@@ -747,7 +774,7 @@
     - CAT2
     - CCI-001499
     - SRG-OS-000259-GPOS-00100
-    - SV-257921r991560_rule
+    - SV-257921r1044985_rule
     - V-257921
     - NIST800-53R4_CM-5
   vars:
@@ -778,7 +805,7 @@
     - CAT2
     - CCI-001499
     - SRG-OS-000259-GPOS-00100
-    - SV-257922r991560_rule
+    - SV-257922r1044988_rule
     - V-257922
     - NIST800-53R4_CM-5
   ansible.builtin.file:
@@ -797,7 +824,7 @@
     - CAT2
     - CCI-001499
     - SRG-OS-000259-GPOS-00100
-    - SV-257923r991560_rule
+    - SV-257923r1044991_rule
     - V-257923
     - NIST800-53R4_CM-5
   vars:
@@ -902,13 +929,11 @@
   tags:
     - RHEL-09-232240
     - CAT2
-    - CCI-000366
     - CCI-001090
     - SRG-OS-000480-GPOS-00227
     - SRG-OS-000138-GPOS-00069
-    - SV-257928r991589_rule
+    - SV-257928r1044992_rule
     - V-257928
-    - NIST800-53R4_CM-6
     - NIST800-53R4_SC-4
   vars:
     warn_control_id: "MEDIUM | RHEL-09-232240"

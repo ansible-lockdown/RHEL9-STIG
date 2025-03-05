@@ -5,7 +5,6 @@
   tags:
     - RHEL-09-251010
     - CAT2
-    - CCI-000366
     - CCI-000382
     - CCI-002314
     - CCI-002322
@@ -14,9 +13,8 @@
     - SRG-OS-000298-GPOS-00116
     - SRG-OS-000480-GPOS-00227
     - SRG-OS-000480-GPOS-00232
-    - SV-257935r958480_rule
+    - SV-257935r1044994_rule
     - V-257935
-    - NIST800-53R4_CM-6
     - NIST800-53R4_CM-7
     - NIST800-53R4_AC-17
   ansible.builtin.package:
@@ -28,18 +26,14 @@
   tags:
     - RHEL-09-251015
     - CAT2
-    - CCI-000366
     - CCI-000382
     - CCI-002314
-    - CCI-002322
     - SRG-OS-000096-GPOS-00050
     - SRG-OS-000297-GPOS-00115
-    - SRG-OS-000298-GPOS-00116
     - SRG-OS-000480-GPOS-00227
     - SRG-OS-000480-GPOS-00232
-    - SV-257936r958480_rule
+    - SV-257936r1044995_rule
     - V-257936
-    - NIST800-53R4_CM-6
     - NIST800-53R4_CM-7
     - NIST800-53R4_AC-17
   ansible.builtin.systemd:
@@ -103,7 +97,7 @@
     - CAT2
     - CCI-002385
     - SRG-OS-000420-GPOS-00186
-    - SV-257939r958902_rule
+    - SV-257939r1044997_rule
     - V-257939
     - NIST800-53R4_SC-5
   ansible.builtin.lineinfile:
@@ -186,9 +180,9 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257942r991589_rule
+    - SV-257942r1044999_rule
     - V-257942
-    - NIST800-53R4_CM-5
+    - NIST800-53R4_CM-6
   ansible.posix.sysctl:
     name: net.core.bpf_jit_harden
     reload: true

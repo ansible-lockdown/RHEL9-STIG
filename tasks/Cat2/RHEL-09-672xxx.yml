@@ -1,27 +1,5 @@
 ---
 
-- name: "MEDIUM | RHEL-09-672010 | PATCH | RHEL 9 must have the crypto-policies package installed."
-  when:
-    - rhel_09_672010
-    - "'crypto-policies' not in ansible_facts.packages"
-  tags:
-    - RHEL-09-672010
-    - CAT2
-    - CCI-002450
-    - CCI-002890
-    - CCI-003123
-    - SRG-OS-000396-GPOS-00176
-    - SRG-OS-000393-GPOS-00173
-    - SRG-OS-000394-GPOS-00174
-    - SV-258234r987791_rule
-    - V-258234
-    - NIST800-53R4_SC-12
-    - NIST800-53R4_MA-4
-    - crypto
-  ansible.builtin.package:
-    name: crypto-policies
-    state: present
-
 - name: "MEDIUM | RHEL-09-672025 | PATCH | RHEL 9 must use mechanisms meeting the requirements of applicable federal laws, executive orders, directives, policies, regulations, standards, and guidance for authentication to a cryptographic module."
   when: rhel_09_672025
   tags:
