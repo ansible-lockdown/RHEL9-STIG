@@ -7,7 +7,7 @@
     - CAT2
     - CCI-001891
     - SRG-OS-000355-GPOS-00143
-    - SV-257943r997065_rule
+    - SV-257943r1045001_rule
     - V-257943
     - NIST800-53R4_AU-8
   ansible.builtin.package:
@@ -20,45 +20,28 @@
     - CAT2
     - CCI-001891
     - SRG-OS-000355-GPOS-00143
-    - SV-257944r1015082_rule
+    - SV-257944r1038944_rule
     - V-257944
     - NIST800-53R4_AU-8
   ansible.builtin.systemd:
-    enabled: true
     name: chronyd
+    enabled: true
     state: started
 
-- name: |
-    "MEDIUM | RHEL-09-252020 | PATCH | RHEL 9 must securely compare internal information system clocks at least every 24 hours.
-     MEDIUM | RHEL-09-252025 | PATCH | RHEL 9 must disable the chrony daemon from acting as a server.
-     MEDIUM | RHEL-09-252030 | PATCH | RHEL 9 must disable network management of the chrony daemon."
-  when:
-    - rhel_09_252020 or
-      rhel_09_252025 or
-      rhel_09_252030
+- name: "MEDIUM | RHEL-09-252020 | PATCH | RHEL 9 must securely compare internal information system clocks at least every 24 hours."
+  when: rhel_09_252020
   tags:
     - RHEL-09-252020
-    - RHEL-09-252025
-    - RHEL-09-252030
     - CAT2
-    - CCI-000381
-    - CCI-000382
     - CCI-001890
     - CCI-001891
     - CCI-002046
-    - SRG-OS-000096-GPOS-00050
-    - SRG-OS-000095-GPOS-00049
     - SRG-OS-000355-GPOS-00143
     - SRG-OS-000356-GPOS-00144
     - SRG-OS-000359-GPOS-00146
-    - SV-257945r997067_rule
-    - SV-257946r925825_rule
-    - SV-257947r925828_rule
+    - SV-257945r1038944_rule
     - V-257945
-    - V-257946
-    - V-257947
     - NIST800-53R4_AU-8
-    - NIST800-53R4_CM-7
   ansible.builtin.template:
     dest: /etc/chrony.conf
     src: etc/chrony.conf.j2
@@ -76,8 +59,8 @@
     - V-257949
     - NIST800-53R4_CM-6
   community.general.ini_file:
-    option: dns
     path: /etc/NetworkManager/NetworkManager.conf
+    option: dns
     section: main
     state: present
     value: none
@@ -92,7 +75,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257948r991589_rule
+    - SV-257948r1045004_rule
     - V-257948
     - NIST800-53R4_CM-6
   block:
@@ -128,7 +111,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257950r991589_rule
+    - SV-257950r1045006_rule
     - V-257950
     - NIST800-53R4_CM-6
   vars:
@@ -211,19 +194,15 @@
     create: true
 
 - name: "MEDIUM | RHEL-09-252065 | PATCH | RHEL 9 libreswan package must be installed."
-  when:
-    - rhel_09_252065
-    - "'libreswan' not in ansible_facts.packages"
+  when: rhel_09_252065
   tags:
     - RHEL-09-252065
     - CAT2
-    - CCI-000366
     - CCI-000803
     - SRG-OS-000480-GPOS-00227
     - SRG-OS-000120-GPOS-00061
-    - SV-257954r991589_rule
+    - SV-257954r1045008_rule
     - V-257954
-    - NIST800-53R4_CM-6
     - NIST800-53R4_IA-7
   ansible.builtin.package:
     name: libreswan

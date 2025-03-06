@@ -61,6 +61,13 @@
   changed_when: false
   register: rhel9stig_interactive_users_home
 
+- name: PRELIM | Set crypto policies and subpolicies fact
+  when:
+    - rhel9stig_additional_fips_crypto_subpolicies
+  tags: always
+  ansible.builtin.set_fact:
+    combined_crypto_policy_config: "{{ combined_crypto_policy_config }}:{{ rhel9stig_additional_fips_crypto_subpolicies_list | join(':') }}"
+
 - name: PRELIM | Gather accounts with empty password fields
   when: rhel_09_611155
   tags: always

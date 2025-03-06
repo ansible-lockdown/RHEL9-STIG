@@ -297,13 +297,6 @@
         - etc/crypto-policies/policies/modules/OPENSSH-SUBPOLICY.pmod
         - etc/crypto-policies/policies/modules/REQUIRE.pmod
 
-    - name: "MEDIUM | RHEL-09-215105 | PATCH | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy | set crypto policies fact"
-      when:
-        - rhel9stig_additional_fips_crypto_subpolicies
-        - rhel9stig_disruption_high
-      ansible.builtin.set_fact:
-        combined_crypto_policy_config: "{{ combined_crypto_policy_config }}:{{ rhel9stig_additional_fips_crypto_subpolicies_list | join(':') }}"
-
     - name: "MEDIUM | RHEL-09-215105 | PATCH | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy | set FIPS"
       when:
         - "combined_crypto_policy_config not in discovered_crypto_policies_check.stdout"
