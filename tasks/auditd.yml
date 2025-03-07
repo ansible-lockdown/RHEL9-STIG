@@ -1,10 +1,7 @@
 ---
 
 - name: POST | AUDITD | Apply auditd template will only required rules will be added
-  notify:
-    - Auditd_immutable_check
-    - Audit_immutable_fact
-    - Restart_auditd
+  notify: auditd_checks
   ansible.builtin.template:
     src: etc/audit/rules.d/audit.rules.j2
     dest: /etc/audit/rules.d/audit.rules

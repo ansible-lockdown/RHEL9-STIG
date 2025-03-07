@@ -167,21 +167,37 @@
 
 ## Auditd tasks note order for handlers to run
 
-- name: Auditd_immutable_check
+- name: Auditd uid immutable check
+  ansible.builtin.command: grep -ci immutable /etc/audit/audit.rules
+  changed_when: false
+  failed_when: discovered_auditd_uid_immutable_check.rc not in [ 0, 1 ]
+  register: discovered_auditd_uid_immutable_check
+  listen: auditd_checks
+
+- name: Auditd unauthorized check
   ansible.builtin.command: grep -c "^-e 2" /etc/audit/rules.d/audit.rules
   changed_when: false
-  failed_when: discovered_auditd_immutable_check.rc not in [ 0, 1 ]
-  register: discovered_auditd_immutable_check
+  failed_when: discovered_auditd_unauth_immutable_check.rc not in [ 0, 1 ]
+  register: discovered_auditd_unauth_immutable_check
+  listen: auditd_checks
 
-- name: Audit_immutable_fact
-  when: discovered_auditd_immutable_check.stdout == '1'
-  notify: Change_requires_reboot
+- name: Set auditd restart or reboot required
+  when:
+    - discovered_auditd_uid_immutable_check == '0'
+    - discovered_auditd_unauth_immutable_check.stdout == '0'
+  ansible.builtin.command: augenrules --load
+  changed_when: true
+  listen: auditd_checks
+
+- name: Set auditd restart or reboot required
+  when: discovered_auditd_uid_immutable_check == '1' or
+        discovered_auditd_unauth_immutable_check.stdout == '1'
+  notify:
+    - Restart_auditd
+    - Change_requires_reboot
   ansible.builtin.debug:
     msg: "Reboot required for auditd to apply new rules as immutable set"
-
-- name: Change_requires_reboot
-  ansible.builtin.set_fact:
-    change_requires_reboot: true
+  listen: auditd_checks
 
 - name: Stop auditd process
   ansible.builtin.command: systemctl kill auditd
@@ -193,3 +209,7 @@
     name: auditd
     state: started
   listen: Restart_auditd
+
+- name: Change_requires_reboot
+  ansible.builtin.set_fact:
+    change_requires_reboot: true

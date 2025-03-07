@@ -6,11 +6,13 @@
     - RHEL-09-671015
     - CAT2
     - CCI-000803
+    - CCI-000196
     - SRG-OS-000073-GPOS-00041
     - SRG-OS-000120-GPOS-00061
-    - SV-258231r997114_rule
+    - SV-258231r1015135_rule
     - V-258231
     - NIST800-53R4_IA-7
+    - NIST800-53R4_IA-5
     - fips
     - users
   block:
@@ -47,14 +49,14 @@
     - CAT2
     - CCI-000068
     - SRG-OS-000033-GPOS-00014
-    - SV-258232r958408_rule
+    - SV-258232r1045440_rule
     - V-258232
     - NIST800-53R4_AC-17
     - fips
     - tunnel
   ansible.builtin.lineinfile:
     path: /etc/ipsec.conf
-    regexp: ^(|\s*)include /etc/crypto-policies/back-ends
+    regexp: ^(#|)\s*include /etc/crypto-policies/back-ends
     line: include /etc/crypto-policies/back-ends/libreswan.config
 
 - name: "MEDIUM | RHEL-09-671025 | PATCH |  RHEL 9 pam_unix.so module must be configured in the password-auth file to use a FIPS 140-3 approved cryptographic hashing algorithm for system authentication."
