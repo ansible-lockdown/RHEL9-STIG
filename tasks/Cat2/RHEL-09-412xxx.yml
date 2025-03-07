@@ -13,12 +13,28 @@
     - V-258068
     - NIST800-53R4_AC-11
     - NIST800-53R4_SC-10
-  ansible.builtin.template:
-    src: etc/profile.d/tmout.sh.j2
-    dest: /etc/profile.d/tmout.sh
-    group: root
-    owner: root
-    mode: 'u+x,go-w'
+  block:
+    - name: "MEDIUM | RHEL-09-412035 | AUDIT | RHEL 9 must automatically exit interactive command shell user sessions after 15 minutes of inactivity."
+      ansible.builtin.stat:
+        path: /etc/profile.d/tmout.sh
+      register: discovered_timeout_script
+
+    - name: "MEDIUM | RHEL-09-412035 | AUDIT | RHEL 9 must automatically exit interactive command shell user sessions after 15 minutes of inactivity. | create file if absent"
+      when: not discovered_timeout_script.stat.exists
+      ansible.builtin.template:
+        src: etc/profile.d/tmout.sh.j2
+        dest: /etc/profile.d/tmout.sh
+        group: root
+        owner: root
+        mode: 'u+x,go-w,go+x'
+
+    - name: "MEDIUM | RHEL-09-412035 | AUDIT | RHEL 9 must automatically exit interactive command shell user sessions after 15 minutes of inactivity. | Edit file if present"
+      when: discovered_timeout_script.stat.exists
+      ansible.builtin.lineinfile:
+        path: /etc/profile.d/tmout.sh
+        regexp: ^\s*declare -xr TMOUT=600
+        line: declare -xr TMOUT=600
+        mode: 'u+x,go-w,go+x'
 
 - name: "MEDIUM | RHEL-09-412045 | PATCH | RHEL 9 must log username information when unsuccessful logon attempts occur."
   when: rhel_09_412045
@@ -27,13 +43,14 @@
     - CAT2
     - CCI-000044
     - SRG-OS-000021-GPOS-00005
-    - SV-258070r958388_rule
+    - SV-258070r1045153_rule
     - V-258070
     - NIST800-53R4_AC-7
+  notify: Authselect_enable_faillock
   ansible.builtin.lineinfile:
     path: /etc/security/faillock.conf
-    regexp: '^\s*audit'
-    line: "audit"
+    regexp: ^\s*audit
+    line: audit
 
 - name: "MEDIUM | RHEL-09-412050 | PATCH | RHEL 9 must enforce a delay of at least four seconds between logon prompts following a failed logon attempt."
   when: rhel_09_412050
@@ -48,7 +65,7 @@
   ansible.builtin.lineinfile:
     path: /etc/login.defs
     regexp: \s*FAIL_DELAY
-    line: "FAIL_DELAY {{ rhel9stig_login_defs.fail_delay }}"
+    line: "FAIL_DELAY {{ rhel9stig_login_defs_fail_delay }}"
 
 - name: "MEDIUM | RHEL-09-412055 | PATCH | RHEL 9 must define default permissions for the bash shell."
   when: rhel_09_412055
@@ -56,8 +73,9 @@
     - RHEL-09-412055
     - CAT2
     - CCI-000366
-    - SRG-OS-000480-GPOS-00226
-    - SV-258072r991590_rule
+    - SRG-OS-000480-GPOS-00228
+    - SRG-OS-000480-GPOS-00227
+    - SV-258072r1045155_rule
     - V-258072
     - NIST800-53R4_CM-6
   block:
@@ -79,8 +97,9 @@
     - RHEL-09-412060
     - CAT2
     - CCI-000366
-    - SRG-OS-000480-GPOS-00226
-    - SV-258073r991590_rule
+    - SRG-OS-000480-GPOS-00228
+    - SRG-OS-000480-GPOS-00227
+    - SV-258073r1045157_rule
     - V-258073
     - NIST800-53R4_CM-6
   block:
@@ -102,7 +121,7 @@
     - RHEL-09-412065
     - CAT2
     - CCI-000366
-    - SRG-OS-000480-GPOS-00226
+    - SRG-OS-000480-GPOS-00228
     - SV-258074r991590_rule
     - V-258074
     - NIST800-53R4_CM-6
@@ -126,6 +145,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00228
+    - SRG-OS-000480-GPOS-00227
     - SV-258075r991590_rule
     - V-258075
     - NIST800-53R4_CM-6
@@ -147,12 +167,12 @@
   tags:
     - RHEL-09-412080
     - CAT2
-    - CCI-000366
+    - CCI-001133
     - SRG-OS-000163-GPOS-00072
     - SV-258077r1014874_rule
     - V-258077
-    - NIST800-53R4_CM-6
+    - NIST800-53R4_SC-10
   ansible.builtin.lineinfile:
     path: /etc/systemd/logind.conf
     regexp: ^(#|)StopIdleSessionSec\s*=\s*\d*
-    line: "StopIdleSessionSec={{ rhel9stig_logind_conf.stopsessionidle }}"
+    line: "StopIdleSessionSec={{ rhel9stig_logind_conf_stopsessionidle }}"

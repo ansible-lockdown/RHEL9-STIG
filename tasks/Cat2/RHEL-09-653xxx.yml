@@ -541,3 +541,19 @@
     path: /etc/aliases
     regexp: "^root:\\s.*"
     line: "root: ISSO"
+
+- name: "MEDIUM | RHEL-09-653130 | PATCH | RHEL 9 audispd-plugins package must be installed"
+  when: rhel_09_653130
+  tags:
+    - RHEL-09-653130
+    - CAT2
+    - CCI-001851
+    - SRG-OS-000342-GPOS-00133
+    - SV-258175r1045310_rule
+    - V-258175
+    - NIST800-53R4_AU-4
+    - rsyslog
+    - auditd
+  ansible.builtin.package:
+    name: audispd-plugins
+    state: present

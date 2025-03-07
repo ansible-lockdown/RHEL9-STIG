@@ -327,7 +327,9 @@ rhel_09_255035: true
 rhel_09_255045: true
 rhel_09_255055: true
 rhel_09_255060: true
+rhel_09_255064: true
 rhel_09_255065: true
+rhel_09_255070: true
 rhel_09_255075: true
 rhel_09_255080: true
 rhel_09_255085: true
@@ -419,6 +421,7 @@ rhel_09_432030: true
 rhel_09_432035: true
 rhel_09_433010: true
 rhel_09_433015: true
+rhel_09_433016: true
 
 ### CAT2 61xxxx
 rhel_09_611010: true
@@ -718,8 +721,8 @@ rhel9stig_time_synchronization_servers:
 rhel9stig_chrony_server_options: "iburst maxpoll 16"  # Max Settings is maxpoll 16
 
 ## fapolicy
-# Allow adding of fapolicy rules uses whitelist below
-rhel9stig_add_fapolicy_policy: false
+# Allow adding of fapolicy rules to be updated - also needs rhel9stig_disruption_high
+rhel9stig_allow_fapolicy_updates: false
 
 # rhel9stig_fapolicy_white_list is the whitelist for fapolicyd
 rhel9stig_fapolicy_white_list:
@@ -749,12 +752,11 @@ rhel9stig_postfix_client_conf: permit_mynetworks,reject
 
 ### ACCOUNTS and AUTH ###
 ## PAM and password settings
-rhel9stig_pass:
-  max_days: 60
-  min_days: 1
-  minlen: '15'
+rhel9stig_pass_max_days: 60
+rhel9stig_pass_min_days: 1
+rhel9stig_pass_minlen: '15'
 
-rhel9stig_user_inactive_days: '35'
+rhel9stig_user_inactive_days: '35'  # 35 or less is compliant
 
 # Path to set for users initialization files e.g. echo $PATH expected results
 rhel9stig_env_path: '$PATH:$HOME/.local/bin:$HOME/bin'
@@ -765,37 +767,31 @@ rhel9stig_authselect_custom_profile: minimal
 rhel9stig_add_faillock_without_authselect: true
 
 # Faillock settings
-rhel9stig_faillock:
-  deny: '3'  # 3 or less but not 0
-  fail_interval: '900'  # 900 or less is required
-  unlock_time: '0'
-  dir: '/var/log/faillock'
+rhel9stig_faillock_deny: '3'  # 3 or less but not 0
+rhel9stig_faillock_fail_interval: '900'  # 900 or less is required not '0'
+rhel9stig_faillock_dir: '/var/log/faillock'
 
 rhel9stig_unnecessary_accounts:
 - ftp
 - games
 rhel9stig_remove_unnecessary_user_files: false
 
-rhel9stig_login_defs:
-  fail_delay: '4'
+rhel9stig_login_defs_fail_delay: '4'
 
-rhel9stig_logind_conf:
-  stopsessionidle: '900'
+rhel9stig_logind_conf_stopsessionidle: '900'
 
-rhel9stig_pam:
-  retry: '3'  # must be set between 1-3 anytning else ia a failure
-  rounds: '5000'
+rhel9stig_pam_retry: '3'  # must be set between 1-3 anytning else ia a failure
+rhel9stig_pam_rounds: '5000'
 
-rhel9stig_pwquality:
-  dcredit: -1
-  dictcheck: 1
-  difok: 8
-  lcredit: -1
-  maxclassrepeat: 4
-  maxrepeat: 3
-  minclass: 4
-  ocredit: -1
-  ucredit: -1
+rhel9stig_pwquality_dcredit: -1
+rhel9stig_pwquality_dictcheck: 1
+rhel9stig_pwquality_difok: 8
+rhel9stig_pwquality_lcredit: -1
+rhel9stig_pwquality_maxclassrepeat: 4
+rhel9stig_pwquality_maxrepeat: 3
+rhel9stig_pwquality_minclass: 4
+rhel9stig_pwquality_ocredit: -1
+rhel9stig_pwquality_ucredit: -1
 
 rhel9stig_sudoers_exclude_nopasswd_list:
 - ec2-user

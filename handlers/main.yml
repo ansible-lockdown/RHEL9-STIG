@@ -67,9 +67,29 @@
   notify: Change_requires_reboot
   listen: Reinstall_crypto_policies
 
+- name: "Get authselect faillock state"
+  when: not rhel9stig_add_faillock_without_authselect
+  ansible.builtin.command: authselect current | grep failock
+  changed_when: false
+  register: discovered_authselect_faillock_state
+  listen: Authselect_enable_faillock
+
+- name: "Set authselect faillock state"
+  when:
+    - not rhel9stig_add_faillock_without_authselect
+    - "'with-faillock' not in discovered_authselect_faillock_state.stdout"
+  ansible.builtin.command: authselect enable-feature with-faillock
+  changed_when: true
+  listen: Authselect_enable_faillock
+
 - name: Restart_sssd
   ansible.builtin.systemd:
     name: sssd
+    state: restarted
+
+- name: Restart_pcscd
+  ansible.builtin.systemd:
+    name: pcscd
     state: restarted
 
 - name: Update_aliases

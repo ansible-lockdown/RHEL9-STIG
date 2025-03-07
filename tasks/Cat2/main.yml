@@ -49,8 +49,7 @@
     file: RHEL-09-255xxx.yml
 
 - name: Run Cat 2 STIG 271xxx gnome desktop tasks
-  when:
-    - rhel9stig_gui
+  when: rhel9stig_gui
   ansible.builtin.import_tasks:
     file: RHEL-09-271xxx.yml
 

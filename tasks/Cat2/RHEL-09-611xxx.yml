@@ -9,7 +9,7 @@
     - CAT2
     - CCI-000192
     - SRG-OS-000069-GPOS-00037
-    - SV-258091r1015097_rule
+    - SV-258091r1045185_rule
     - V-258091
     - NIST800-53R4_IA-5
   block:
@@ -24,7 +24,7 @@
       ansible.builtin.lineinfile:
         path: /etc/pam.d/system-auth
         regexp: '^(password\s+)(required|requisite)(\s+pam_pwquality.so.*)\sretry=\d(.*)'
-        line: '"\1required\3 retry={{ rhel9stig_pam.retry }}\4"'
+        line: '"\1required\3 retry={{ rhel9stig_pam_retry }}\4"'
         insertafter: '^password'
         backrefs: true
 
@@ -35,7 +35,7 @@
         type: password
         control: requisite
         module_path: pam_pwquality.so
-        module_arguments: 'retry={{ rhel9stig_pam.retry }}'
+        module_arguments: 'retry={{ rhel9stig_pam_retry }}'
         state: args_present
 
 - name: "MEDIUM | RHEL-09-611030 | PATCH | RHEL 9 must configure the use of the pam_faillock.so module in the /etc/pam.d/system-auth file."
@@ -47,10 +47,12 @@
     - CAT2
     - CCI-000044
     - SRG-OS-000021-GPOS-00005
-    - SV-258095r1014881_rule
+    - SV-258095r1045189_rule
     - V-258095
     - NIST800-53R4_AC-7
-  notify: Restart_sssd
+  notify:
+    - Restart_sssd
+    - Authselect_enable_faillock
   block:
     - name: "MEDIUM | RHEL-09-611030 | PATCH | RHEL 9 must configure the use of the pam_faillock.so module in the /etc/pam.d/system-auth file. | Set preauth"
       community.general.pamd:
@@ -96,10 +98,12 @@
     - CAT2
     - CCI-000044
     - SRG-OS-000021-GPOS-00005
-    - SV-258096r1014883_rule
+    - SV-258096r1045191_rule
     - V-258096
     - NIST800-53R4_AC-7
-  notify: Restart_sssd
+  notify:
+    - Restart_sssd
+    - Authselect_enable_faillock
   block:
     - name: "MEDIUM | RHEL-09-611035 | PATCH | RHEL 9 must configure the use of the pam_faillock.so module in the /etc/pam.d/password-auth file. | Set preauth"
       community.general.pamd:
@@ -148,7 +152,7 @@
     - SRG-OS-000069-GPOS-00037
     - SRG-OS-000070-GPOS-00038
     - SRG-OS-000480-GPOS-00227
-    - SV-258097r1015098_rule
+    - SV-258097r1045193_rule
     - V-258097
     - NIST800-53R4_IA-5
   block:
@@ -179,7 +183,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258098r1014887_rule
+    - SV-258098r1045195_rule
     - V-258098
     - NIST800-53R4_CM-6
   block:
@@ -209,17 +213,19 @@
     - RHEL-09-611050
     - CAT2
     - CCI-000803
+    - CCI-000161
     - SRG-OS-000073-GPOS-00041
     - SRG-OS-000120-GPOS-00061
-    - SV-258099r1015099_rule
+    - SV-258099r1045198_rule
     - V-258099
     - NIST800-53R4_IA-7
+    - NIST800-53R4_IA-5
   community.general.pamd:
     name: password-auth
     type: password
     control: sufficient
     module_path: pam_unix.so
-    module_arguments: 'sha512 rounds={{ rhel9stig_pam.rounds }}'
+    module_arguments: 'sha512 rounds={{ rhel9stig_pam_rounds }}'
     state: args_present
 
 - name: "MEDIUM | RHEL-09-611055 | PATCH | RHEL 9 system-auth must be configured to use a sufficient number of hashing rounds."
@@ -230,17 +236,19 @@
     - RHEL-09-611055
     - CAT2
     - CCI-000803
+    - CCI-000196
     - SRG-OS-000073-GPOS-00041
     - SRG-OS-000120-GPOS-00061
-    - SV-258100r1015100_rule
+    - SV-258100r1045201_rule
     - V-258100
     - NIST800-53R4_IA-7
+    - NIST800-53R4_IA-5
   community.general.pamd:
     name: system-auth
     type: password
     control: sufficient
     module_path: pam_unix.so
-    module_arguments: 'sha512 rounds={{ rhel9stig_pam.rounds }}'
+    module_arguments: 'sha512 rounds={{ rhel9stig_pam_rounds }}'
     state: args_present
 
 - name: "MEDIUM | RHEL-09-611060 | PATCH | RHEL 9 must enforce password complexity rules for the root account."
@@ -252,6 +260,7 @@
     - CAT2
     - CCI-000192
     - CCI-000193
+    - CCI-000194
     - CCI-000195
     - CCI-000205
     - CCI-001619
@@ -262,7 +271,7 @@
     - SRG-OS-000078-GPOS-00046
     - SRG-OS-000480-GPOS-00225
     - SRG-OS-000069-GPOS-00037
-    - SV-258101r1015101_rule
+    - SV-258101r1045204_rule
     - V-258101
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
@@ -281,13 +290,13 @@
     - CAT2
     - CCI-000193
     - SRG-OS-000070-GPOS-00038
-    - SV-258102r1015102_rule
+    - SV-258102r1045207_rule
     - V-258102
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: \s*lcredit =
-    line: "lcredit = {{ rhel9stig_pwquality.lcredit }}"
+    line: "lcredit = {{ rhel9stig_pwquality_lcredit }}"
     backrefs: true
   loop: "{{ rhel9stig_pwquality_conf_files.stdout_lines }}"
 
@@ -300,13 +309,13 @@
     - CAT2
     - CCI-000194
     - SRG-OS-000071-GPOS-00039
-    - SV-258103r1015103_rule
+    - SV-258103r1045210_rule
     - V-258103
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: \s*dcredit =
-    line: "dcredit = {{ rhel9stig_pwquality.dcredit }}"
+    line: "dcredit = {{ rhel9stig_pwquality_dcredit }}"
     backrefs: true
   loop: "{{ rhel9stig_pwquality_conf_files.stdout_lines }}"
 
@@ -381,7 +390,7 @@
     - SRG-OS-000373-GPOS-00156
     - SRG-OS-000373-GPOS-00157
     - SRG-OS-000373-GPOS-00158
-    - SV-258106r1015106_rule
+    - SV-258106r1050789_rule
     - V-258106
     - NIST800-53R4_IA-11
   vars:
@@ -425,7 +434,7 @@
     - CAT2
     - CCI-000205
     - SRG-OS-000078-GPOS-00046
-    - SV-258107r1015107_rule
+    - SV-258107r1045218_rule
     - V-258107
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
@@ -443,13 +452,13 @@
     - CAT2
     - CCI-001619
     - SRG-OS-000266-GPOS-00101
-    - SV-258109r1015109_rule
+    - SV-258109r1045220_rule
     - V-258109
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: \s*ocredit =
-    line: "ocredit = {{ rhel9stig_pwquality.ocredit }}"
+    line: "ocredit = {{ rhel9stig_pwquality_ocredit }}"
     backrefs: true
   loop: "{{ rhel9stig_pwquality_conf_files.stdout_lines }}"
 
@@ -462,13 +471,13 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00225
-    - SV-258110r991587_rule
+    - SV-258110r1045223_rule
     - V-258110
     - NIST800-53R4_CM-6
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: \s*dictcheck\s*=\s*
-    line: "dictcheck = {{ rhel9stig_pwquality.dictcheck }}"
+    line: "dictcheck = {{ rhel9stig_pwquality_dictcheck }}"
     backrefs: true
   loop: "{{ rhel9stig_pwquality_conf_files.stdout_lines }}"
 
@@ -481,13 +490,13 @@
     - CAT2
     - CCI-000192
     - SRG-OS-000069-GPOS-00037
-    - SV-258111r1015110_rule
+    - SV-258111r1045226_rule
     - V-258111
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: \s*ucredit\s*=\s*
-    line: "ucredit = {{ rhel9stig_pwquality.ucredit }}"
+    line: "ucredit = {{ rhel9stig_pwquality_ucredit }}"
     backrefs: true
   loop: "{{ rhel9stig_pwquality_conf_files.stdout_lines }}"
 
@@ -500,13 +509,13 @@
     - CAT2
     - CCI-000195
     - SRG-OS-000072-GPOS-00040
-    - SV-258112r1015111_rule
+    - SV-258112r1045229_rule
     - V-258112
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: \s*difok\s*=\s*
-    line: "difok = {{ rhel9stig_pwquality.difok }}"
+    line: "difok = {{ rhel9stig_pwquality_difok }}"
     backrefs: true
   loop: "{{ rhel9stig_pwquality_conf_files.stdout_lines }}"
 
@@ -519,13 +528,13 @@
     - CAT2
     - CCI-000195
     - SRG-OS-000072-GPOS-00040
-    - SV-258113r1015112_rule
+    - SV-258113r1045232_rule
     - V-258113
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: /etc/security/pwquality.conf
     regexp: \s*maxclassrepeat\s*=\s*
-    line: "maxclassrepeat = {{ rhel9stig_pwquality.maxclassrepeat }}"
+    line: "maxclassrepeat = {{ rhel9stig_pwquality_maxclassrepeat }}"
     backrefs: true
 
 - name: "MEDIUM | RHEL-09-611125 | PATCH | RHEL 9 must require the maximum number of repeating characters be limited to three when passwords are changed."
@@ -537,13 +546,13 @@
     - CAT2
     - CCI-000195
     - SRG-OS-000072-GPOS-00040
-    - SV-258114r1015113_rule
+    - SV-258114r1045235_rule
     - V-258114
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: /etc/security/pwquality.conf
     regexp: \s*maxrepeat\s*=\s*
-    line: "maxrepeat = {{ rhel9stig_pwquality.maxrepeat }}"
+    line: "maxrepeat = {{ rhel9stig_pwquality_maxrepeat }}"
     backrefs: true
 
 - name: "MEDIUM | RHEL-09-611130 | PATCH | RHEL 9 must require the change of at least four character classes when passwords are changed."
@@ -555,13 +564,13 @@
     - CAT2
     - CCI-000195
     - SRG-OS-000072-GPOS-00040
-    - SV-258115r1015114_rule
+    - SV-258115r1045238_rule
     - V-258115
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: /etc/security/pwquality.conf
     regexp: \s*minclass\s*=\s*
-    line: "minclass = {{ rhel9stig_pwquality.minclass }}"
+    line: "minclass = {{ rhel9stig_pwquality_minclass }}"
     backrefs: true
 
 - name: "MEDIUM | RHEL-09-611135 | PATCH | RHEL 9 must be configured so that user and group account administration utilities are configured to store only encrypted representations of passwords."
@@ -573,7 +582,7 @@
     - CAT2
     - CCI-000196
     - SRG-OS-000073-GPOS-00041
-    - SV-258116r1015115_rule
+    - SV-258116r1045240_rule
     - V-258116
     - NIST800-53R4_IA-5
   community.general.ini_file:
@@ -610,7 +619,9 @@
     - CAT2
     - CCI-002038
     - SRG-OS-000373-GPOS-00156
-    - SV-258118r1015117_rule
+    - SRG-OS-000373-GPOS-00157
+    - SRG-OS-000373-GPOS-00158
+    - SV-258118r1050789_rule
     - V-258118
     - NIST800-53R4_IA-11
   ansible.builtin.lineinfile:
@@ -652,19 +663,19 @@
         password_lock: true
       loop: "{{ rhel9stig_empty_password_accounts.stdout_lines }}"
 
-# Prerequistire for 611160-611180
+# Prerequistire for 611160-611160
 - name: "MEDIUM | RHEL-09-611185 | PATCH | RHEL 9 must have the opensc package installed."
   when:
     - rhel_09_611185
-    - "'opensc' not in ansible_facts.packages"
     - rhel9stig_smartcard_reader
   tags:
     - RHEL-09-611185
     - CAT2
     - CCI-001953
+    - CCI-001948
     - SRG-OS-000375-GPOS-00160
     - SRG-OS-000376-GPOS-00161
-    - V-258126r997110_rule
+    - SV-258126r1045255_rule
     - V-258126
     - NIST800-53R4_IA-2
   ansible.builtin.package:
@@ -682,7 +693,11 @@
     - CCI-000764
     - CCI-000765
     - CCI-000766
+    - CCI-000767
+    - CCI-000768
+    - CCI-000770
     - CCI-001941
+    - CCI-001942
     - SRG-OS-000104-GPOS-00051
     - SRG-OS-000106-GPOS-00053
     - SRG-OS-000107-GPOS-00054
@@ -690,16 +705,20 @@
     - SRG-OS-000108-GPOS-00055
     - SRG-OS-000112-GPOS-00057
     - SRG-OS-000113-GPOS-00058
-    - SV-258121r997105_rule
+    - SV-258121r1045243_rule
     - V-258121
     - NIST800-53R4_IA-2
-  ansible.builtin.lineinfile:
-    path: /etc/opensc.conf
-    regexp: ^(#|)card_drivers(\s*=\s*)(.*)cac(.*);
-    line: card_drivers = cac,\3\4;
-    mode: 'u-x,go-wx'
-    create: true
-    backrefs: true
+  block:
+    - name: "MEDIUM | RHEL-09-611160 | AUDIT | RHEL 9 must use the CAC smart card driver. | get state"
+      ansible.builtin.command: opensc-tool --get-conf-entry app:default:card_driver cac
+      changed_when: false
+      register: discovered_opensc_loaded_card_driver
+
+    - name: "MEDIUM | RHEL-09-611160 | AUDIT | RHEL 9 must use the CAC smart card driver. | get state"
+      when: "'cac' not in discovered_opensc_loaded_card_driver.stdout"
+      ansible.builtin.command: opensc-tool --set-conf-entry app:default:card_driver cac
+      changed_when: true
+      notify: Restart_pcscd
 
 - name: "MEDIUM | RHEL-09-611165 | PATCH | RHEL 9 must enable certificate based smart card authentication."
   when:
@@ -711,14 +730,15 @@
     - RHEL-09-611165
     - CAT2
     - CCI-000765
+    - CCI-001948
     - SRG-OS-000105-GPOS-00052
     - SRG-OS-000375-GPOS-00160
-    - SV-258122r1015120_rule
+    - SV-258122r1045246_rule
     - V-258122
     - NIST800-53R4_IA-2
   ansible.builtin.lineinfile:
     path: /etc/sssd/sssd.conf
-    regexp: ^(?i)(#|)pam_cert_auth\s*=\s*false
+    regexp: (?i)^(#|)pam_cert_auth\s*=\s*false
     line: pam_cert_auth = True
     backrefs: true
 
@@ -730,11 +750,11 @@
   tags:
     - RHEL-09-611170
     - CAT2
-
     - CCI-001954
+    - CCI-001948
     - SRG-OS-000375-GPOS-00160
     - SRG-OS-000377-GPOS-00162
-    - SV-258123r1015121_rule
+    - SV-258123r1045248_rule
     - V-258123
     - NIST800-53R4_IA-2
   notify: Restart_sssd
@@ -770,13 +790,12 @@
   when:
     - rhel_09_611175
     - rhel9stig_smartcard_reader
-    - "'pcsc-lite' not in ansible_facts.packages"
   tags:
     - RHEL-09-611175
     - CAT2
     - CCI-001948
     - SRG-OS-000375-GPOS-00160
-    - SV-258124r1015122_rule
+    - SV-258124r1045250_rule
     - V-258124
     - NIST800-53R4_IA2
   ansible.builtin.package:
@@ -792,7 +811,7 @@
     - CAT2
     - CCI-001948
     - SRG-OS-000375-GPOS-00160
-    - SV-258125r1015123_rule
+    - SV-258125r1045253_rule
     - V-258125
     - NIST800-53R4_IA-2
   ansible.builtin.systemd:
@@ -853,7 +872,7 @@
     line: ExecStart=-/usr/lib/systemd/systemd-sulogin-shell rescue
     backrefs: true
 
-- name: "MEDIUM | RHEL-09-611205 | PATCH | RHEL 9 must require authentication to access single-user mode"
+- name: "MEDIUM | RHEL-09-611205 | PATCH | RHEL 9 must prevent system daemons from using Kerberos for authentication"
   when:
     - rhel_09_611205
     - rhel9stig_disruption_high
@@ -862,7 +881,7 @@
     - CAT2
     - CCI-000803
     - SRG-OS-000120-GPOS-00061
-    - SV-258130r971535_rule
+    - SV-258130r1045258_rule
     - V-258130
     - NIST800-53R4_IA-7
   block:

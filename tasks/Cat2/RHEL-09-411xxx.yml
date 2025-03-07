@@ -7,13 +7,13 @@
     - CAT2
     - CCI-000199
     - SRG-OS-000076-GPOS-00044
-    - SV-258041r1015090_rule
+    - SV-258041r1038967_rule
     - V-258041
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: /etc/login.defs
     regexp: '^PASS_MAX_DAYS'
-    line: "PASS_MAX_DAYS {{ rhel9stig_pass['max_days'] }}"
+    line: "PASS_MAX_DAYS {{ rhel9stig_pass_max_days }}"
 
 - name: "MEDIUM | RHEL-09-411015 | PATCH | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
   when: rhel_09_411015
@@ -22,7 +22,7 @@
     - CAT2
     - CCI-000199
     - SRG-OS-000076-GPOS-00044
-    - SV-258042r1015091_rule
+    - SV-258042r1045133_rule
     - V-258042
     - NIST800-53R4_IA-5
   vars:
@@ -40,7 +40,7 @@
         - discovered_users_passwd_max is defined
         - discovered_users_passwd_max.stdout | length > 0
         - "ansible_user not in item"
-      ansible.builtin.command: "chage -M 60 {{ item }}"
+      ansible.builtin.command: "passwd -x {{ rhel9stig_pass_max_days }} {{ item }}"
       changed_when: true
       failed_when: discovered_users_passwd_max.rc not in [ 0, 1 ]
       loop: "{{ discovered_users_passwd_max.stdout_lines }}"
@@ -73,7 +73,7 @@
     - NIST800-53R4_IA-5
   ansible.builtin.lineinfile:
     path: /etc/login.defs
-    regexp: ^(?i)(|#)\s*CREATE_HOME (no|yes)
+    regexp: (?i)^(|#)\s*CREATE_HOME (no|yes)
     line: "CREATE_HOME yes"
 
 - name: "MEDIUM | RHEL-09-411025 | PATCH | RHEL 9 must set the umask value to 077 for all local interactive user accounts."
@@ -83,7 +83,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258044r991589_rule
+    - SV-258044r1045135_rule
     - V-258044
     - NIST800-53R4_CM-6
   vars:
@@ -379,8 +379,8 @@
     - NIST800-53R4_CM-6
   ansible.builtin.lineinfile:
     path: /etc/security/faillock.conf
-    regexp: '^\s*deny\s*=\s*([0-2]|[4-9]|{{ rhel9stig_faillock.deny }}[0-9]{1,})\d*'
-    line: "deny = {{ rhel9stig_faillock.deny }}"
+    regexp: '^\s*deny\s*=\s*([0-2]|[4-9]|{{ rhel9stig_faillock_deny }}[0-9]{1,})\d*'
+    line: "deny = {{ rhel9stig_faillock_deny }}"
 
 - name: "MEDIUM | RHEL-09-411080 | PATCH | RHEL 9 must automatically lock the root account until the root account is released by an administrator when three unsuccessful logon attempts occur during a 15-minute time period."
   when: rhel_09_411080
@@ -391,9 +391,10 @@
     - CCI-002238
     - SRG-OS-000329-GPOS-00128
     - SRG-OS-000021-GPOS-00005
-    - SV-258055r958736_rule
+    - SV-258055r1045140_rule
     - V-258055
     - NIST800-53R4_AC-7
+  notify: Authselect_enable_faillock
   ansible.builtin.lineinfile:
     path: /etc/security/faillock.conf
     regexp: ^(#|)even_deny_root
@@ -408,18 +409,18 @@
     - CCI-002238
     - SRG-OS-000329-GPOS-00128
     - SRG-OS-000021-GPOS-00005
-    - SV-258056r958736_rule
+    - SV-258056r1045143_rule
     - V-258056
     - NIST800-53R4_AC-7
+  notify: Authselect_enable_faillock
   ansible.builtin.lineinfile:
     path: /etc/security/faillock.conf
     regexp: '^fail_interval\s*=\s*'
-    line: "fail_interval = {{ rhel9stig_faillock.fail_interval }}"
+    line: "fail_interval = {{ rhel9stig_faillock_fail_interval }}"
 
 - name: "MEDIUM | RHEL-09-411090 | PATCH | RHEL 9 must maintain an account lock until the locked account is released by an administrator."
   when:
     - rhel_09_411090
-    - rhel9stig_add_faillock_without_authselect
     - rhel9stig_disruption_high
   tags:
     - RHEL-09-411090
@@ -428,28 +429,24 @@
     - CCI-002238
     - SRG-OS-000329-GPOS-00128
     - SRG-OS-000021-GPOS-00005
-    - SV-258057r958736_rule
+    - SV-258057r1045146_rule
     - V-258057
     - NIST800-53R4_AC-7
   block:
-    - name: "MEDIUM | RHEL-09-411090 | PATCH | RHEL 9 must maintain an account lock until the locked account is released by an administrator."
-      ansible.builtin.lineinfile:
-        path: /etc/security/faillock.conf
-        regexp: '^unlock_time\s*=\s*[1-9]'
-        line: "unlock_time = 0"
-
-    - name: "MEDIUM | RHEL-09-411090 | AUDIT | RHEL 9 must maintain an account lock until the locked account is released by an administrator. | not auth select profile"
+    - name: "MEDIUM | RHEL-09-411090 | PATCH | RHEL 9 must maintain an account lock until the locked account is released by an administrator. | not auth select profile"
+      when: rhel9stig_add_faillock_without_authselect
       ansible.builtin.lineinfile:
         path: "/etc/pam.d/password-auth"
         regexp: "{{ item.regexp }}"
         line: "{{ item.line }}"
         insertbefore: "{{ item.before }}"
       loop:
-        - { regexp: '^auth\s+required\s+pam_faillock.so preauth silent deny=.*unlock_time=.*', line: 'auth            required       pam_faillock.so preauth silent deny={{ rhel9stig_faillock.deny }} unlock_time={{ rhel9stig_faillock.unlock_time }}', before: '^auth\s+sufficient\s+pam_unix.so try_first_pass'}
-        - { regexp: '^auth\s+required\s+pam_faillock.so authfail deny=.*unlock_time=.*', line: 'auth            required       pam_faillock.so authfail deny={{ rhel9stig_faillock.deny }} unlock_time={{ rhel9stig_faillock.unlock_time }}', before: '^auth\s+required\s+pam_deny.so'}
+        - { regexp: '^auth\s+required\s+pam_faillock.so preauth silent deny=.*unlock_time=.*', line: 'auth            required       pam_faillock.so preauth silent deny={{ rhel9stig_faillock_deny }} unlock_time={{ rhel9stig_faillock_unlock_time }}', before: '^auth\s+sufficient\s+pam_unix.so try_first_pass'}
+        - { regexp: '^auth\s+required\s+pam_faillock.so authfail deny=.*unlock_time=.*', line: 'auth            required       pam_faillock.so authfail deny={{ rhel9stig_faillock_deny }} unlock_time={{ rhel9stig_faillock_unlock_time }}', before: '^auth\s+required\s+pam_deny.so'}
         - { regexp: '^account\s+required\s+pam_faillock.so', line: 'account      required       pam_faillock.so', before: '^account     required      pam_unix.so'}
 
-    - name: "MEDIUM | RHEL-09-411090 | AUDIT | RHEL 9 must maintain an account lock until the locked account is released by an administrator. | not auth select profile"
+    - name: "MEDIUM | RHEL-09-411090 | PATCH | RHEL 9 must maintain an account lock until the locked account is released by an administrator. | not auth select profile"
+      when: rhel9stig_add_faillock_without_authselect
       ansible.builtin.lineinfile:
         path: "/etc/pam.d/system-auth"
         regexp: "{{ item.regexp }}"
@@ -457,9 +454,16 @@
         insertbefore: "{{ item.before | default(omit) }}"
         insertafter: "{{ item.after | default(omit) }}"
       loop:
-        - { regexp: '^auth\s+required\s+pam_faillock.so preauth silent deny=.*unlock_time=.*', line: 'auth        required      pam_faillock.so preauth silent deny={{ rhel9stig_faillock.deny }} unlock_time={{ rhel9stig_faillock.unlock_time }}', before: '^auth\s+sufficient\s+pam_unix.so try_first_pass'}
-        - { regexp: '^auth\s+required\s+pam_faillock.so authfail deny=.*unlock_time=.*', line: 'auth        required      pam_faillock.so authfail deny={{ rhel9stig_faillock.deny }} unlock_time={{ rhel9stig_faillock.unlock_time }}', before: '^auth\s+required\s+pam_deny.so'}
+        - { regexp: '^auth\s+required\s+pam_faillock.so preauth silent deny=.*unlock_time=.*', line: 'auth        required      pam_faillock.so preauth silent deny={{ rhel9stig_faillock_deny }} unlock_time={{ rhel9stig_faillock_unlock_time }}', before: '^auth\s+sufficient\s+pam_unix.so try_first_pass'}
+        - { regexp: '^auth\s+required\s+pam_faillock.so authfail deny=.*unlock_time=.*', line: 'auth        required      pam_faillock.so authfail deny={{ rhel9stig_faillock_deny }} unlock_time={{ rhel9stig_faillock_unlock_time }}', before: '^auth\s+required\s+pam_deny.so'}
         - { regexp: '^account\s+required\s+pam_faillock.so', line: 'account     required      pam_faillock.so', before: '^account     required      pam_unix.so'}
+
+    - name: "MEDIUM | RHEL-09-411090 | PATCH | RHEL 9 must maintain an account lock until the locked account is released by an administrator."
+      ansible.builtin.lineinfile:
+        path: /etc/security/faillock.conf
+        regexp: '^unlock_time\s*=\s*[1-9]'
+        line: "unlock_time = 0"
+      notify: Authselect_enable_faillock
 
 - name: "MEDIUM | RHEL-09-411095 | PATCH | RHEL 9 must not have unauthorized accounts."
   when: rhel_09_411095
@@ -468,7 +472,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258058r991589_rule
+    - SV-258058r1045148_rule
     - V-258058
     - NIST800-53R4_CM-6
   block:
@@ -478,8 +482,7 @@
       failed_when: discovered_unnecessary_accounts_found.rc not in [ 0, 1 ]
       changed_when: false
       register: discovered_unnecessary_accounts_found
-      loop:
-        - "{{ rhel9stig_unnecessary_accounts }}"
+      loop: "{{ rhel9stig_unnecessary_accounts }}"
 
     - name: "MEDIUM | RHEL-09-411095 | PATCH | RHEL 9 must not have unauthorized accounts. | Remove accounts"
       ansible.builtin.user:
@@ -487,8 +490,7 @@
         state: absent
         remove: "{{ rhel9stig_remove_unnecessary_user_files }}"
       register: discovered_accounts_removed
-      loop:
-        - "{{ rhel9stig_unnecessary_accounts }}"
+      loop: "{{ rhel9stig_unnecessary_accounts }}"
 
     - name: "MEDIUM | RHEL-09-411095 | PATCH | RHEL 9 must not have unauthorized accounts. | Re-parse passwd file"
       when: discovered_accounts_removed is changed  # noqa no-handler
@@ -504,13 +506,13 @@
     - CAT2
     - CCI-000044
     - SRG-OS-000021-GPOS-00005
-    - SV-258060r958388_rule
+    - SV-258060r1045150_rule
     - V-258060
     - NIST800-53R4_AC-7
   block:
     - name: "MEDIUM | RHEL-09-411105 | PATCH | RHEL 9 must ensure account lockouts persist."
       ansible.builtin.file:
-        path: "{{ rhel9stig_faillock.dir }}"
+        path: "{{ rhel9stig_faillock_dir }}"
         group: root
         owner: root
         state: directory
@@ -520,7 +522,7 @@
       ansible.builtin.lineinfile:
         path: /etc/security/faillock.conf
         regexp: '^dir\s*=\s*'
-        line: "dir = {{ rhel9stig_faillock.dir }}"
+        line: "dir = {{ rhel9stig_faillock_dir }}"
       notify: Change_requires_reboot
 
 - name: "MEDIUM | RHEL-09-411110 | PATCH | RHEL 9 groups must have unique Group ID (GID)."
