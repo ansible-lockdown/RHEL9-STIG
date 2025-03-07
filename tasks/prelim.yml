@@ -62,8 +62,7 @@
   register: rhel9stig_interactive_users_home
 
 - name: PRELIM | Set crypto policies and subpolicies fact
-  when:
-    - rhel9stig_additional_fips_crypto_subpolicies
+  when: rhel9stig_additional_fips_crypto_subpolicies
   tags: always
   ansible.builtin.set_fact:
     combined_crypto_policy_config: "{{ combined_crypto_policy_config }}:{{ rhel9stig_additional_fips_crypto_subpolicies_list | join(':') }}"
@@ -77,26 +76,14 @@
   register: rhel9stig_empty_password_accounts
 
 - name: PRELIM | Gather UID 0 accounts other than root
-  ansible.builtin.shell: "cat /etc/passwd | awk -F: '($3 == 0 && $1 != \"root\") {i++;print $1 } END {exit i}'"
-  changed_when: false
-  check_mode: false
-  register: rhel9stig_uid_zero_accounts_except_root
   tags:
     - level1-server
     - level1-workstation
     - users
-
-- name: PRELIM | Setup crypto-policy
-  when: rhel_09_672030
-  tags:
-    - cat1
-    - RHEL-09-672030
-    - crypto
-  ansible.builtin.package:
-    name:
-      - crypto-policies
-      - crypto-policies-scripts
-    state: present
+  ansible.builtin.shell: "cat /etc/passwd | awk -F: '($3 == 0 && $1 != \"root\") {i++;print $1 } END {exit i}'"
+  changed_when: false
+  check_mode: false
+  register: rhel9stig_uid_zero_accounts_except_root
 
 - name: PRELIM | Create list of mount points
   tags: always
@@ -187,6 +174,7 @@
     state: touch
 
 - name: PRELIM | SSH | find existing ssh config files
+  tags: always
   ansible.builtin.find:
     paths:
       - /etc/ssh/
@@ -194,10 +182,9 @@
     patterns: 'sshd_config,*.conf'
     recurse: false
   register: prelim_sshd_config_files
-  tags:
-    - always
 
 - name: PRELIM | SSH | find existing ssh config files
+  tags: always
   ansible.builtin.find:
     paths:
       - /etc/ssh/
@@ -205,13 +192,16 @@
     patterns: 'sshd_config,*.conf'
     recurse: false
   register: prelim_sshd_config_files
-  tags:
-    - always
 
-- name: Debug
-  ansible.builtin.debug:
-    msg: "{{ prelim_sshd_config_files }}"
-  tags: always
+- name: "PRELIM | Update crypto-policies"
+  when: rhel_09_672020
+  tags:
+    - RHEL-09-672020
+    - fips
+    - crypto
+  ansible.builtin.package:
+    name: crypto-policies
+    state: latest
 
 - name: "PRELIM | Interactive User accounts"
   tags: always
@@ -323,7 +313,6 @@
   loop: "{{ ansible_facts['devices'] | dict2items }}"
 
 - name: PRELIM | Gather the package facts after prelim
+  tags: always
   ansible.builtin.package_facts:
     manager: auto
-  tags:
-    - always

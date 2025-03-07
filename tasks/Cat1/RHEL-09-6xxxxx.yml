@@ -103,7 +103,7 @@
     - name: "HIGH | RHEL-09-672020 | WARN | RHEL 9 crypto policy must not be overridden. | Re-Install Crypto-policies package"
       when:
         - discovered_crypto_policies_fips is defined
-        - "'PASS' in discovered_crypto_policies_fips.stdout"
+        - "'PASS' not in discovered_crypto_policies_fips.stdout"
         - rhel9stig_disruption_high
       ansible.builtin.command: dnf -y reinstall crypto-policies
       changed_when: true

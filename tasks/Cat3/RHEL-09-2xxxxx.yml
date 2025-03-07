@@ -27,7 +27,7 @@
     - CCI-002824
     - SRG-OS-000433-GPOS-00193
     - SRG-OS-000095-GPOS-00049
-    - SV-257795r958928_rule
+    - SV-257795r1044845_rule
     - V-257795
     - NIST800-53R4_CM-7
     - NIST800-53R4_SI-16
@@ -67,7 +67,7 @@
     - SRG-OS-000471-GPOS-00215
     - SRG-OS-000473-GPOS-00218
     - SRG-OS-000254-GPOS-00095
-    - SV-257796r958412_rule
+    - SV-257796r1044847_rule
     - V-257796
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -98,13 +98,13 @@
     - CAT2
     - CCI-0002617
     - SRG-OS-000437-GPOS-00194
-    - SV-257824r958936_rule
+    - SV-257824r1044886_rule
     - V-257824
     - NIST800-53R4_SI-2
     - dnf
   ansible.builtin.lineinfile:
     path: /etc/dnf/dnf.conf
-    regexp: ^(#|\s*)clean_requirements_on_remove
+    regexp: ^(#|)\s*clean_requirements_on_remove.*
     line: clean_requirements_on_remove=1
 
 - name: "LOW | RHEL-09-231020 | AUDIT | RHEL 9 must use a separate file system for /var."
@@ -116,7 +116,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257845r991589_rule
+    - SV-257845r1044920_rule
     - V-257845
     - NIST800-53R4_CM-6
     - filesystem
@@ -140,7 +140,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257846r991589_rule
+    - SV-257846r1044922_rule
     - V-257846
     - NIST800-53R4_CM-6
     - filesystem
@@ -164,7 +164,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257847r958752_rule
+    - SV-257847r1044924_rule
     - V-257847
     - NIST800-53R4_CM-6
     - filesystem
@@ -186,7 +186,7 @@
     - CAT2
     - CCI-000381
     - SRG-OS-000095-GPOS-00049
-    - SV-257880r958478_rule
+    - SV-257880r1044951_rule
     - V-257880
     - NIST800-53R4_CM-7
     - modprobe
@@ -214,7 +214,7 @@
     - chrony
   ansible.builtin.lineinfile:
     path: /etc/chrony.conf
-    regexp: ^(#|\s*)port \d*
+    regexp: ^(#|)\s*port \d*
     line: 'port 0'
 
 - name: "LOW | RHEL-09-252030 | PATCH | RHEL 9 must disable network management of the chrony daemon."
@@ -232,7 +232,7 @@
     - chrony
   ansible.builtin.lineinfile:
     path: /etc/chrony.conf
-    regexp: ^(#|\s*)cmdport \d*
+    regexp: ^(#|)\s*cmdport \d*
     line: 'cmdport 0'
 
 - name: "LOW | RHEL-09-291025 | PATCH | RHEL 9 must enable Linux audit logging for the USBGuard daemon."

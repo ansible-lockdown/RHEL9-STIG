@@ -150,7 +150,6 @@
   when:
     - not rhel9stig_is_ftp_server
     - rhel_09_215015
-    - ftp
   tags:
     - RHEL-09-215015
     - CAT1
@@ -347,14 +346,11 @@
     - gui
   ansible.builtin.lineinfile:
     path: /etc/gdm/custom.conf
-    regexp: "{{ autologin.regexp }}"
-    line: "{{ autologin.line }}"
-    insertafter: "{{ autologin.after | default(omit) }}"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    insertafter: "{{ item.after | default(omit) }}"
     create: true
     mode: 'u-x,go-wx'
   loop:
-    - { regexp: "[daemon]", line: "[daemon]" }
-    - { regexp: "(?i)^AutomaticLoginEnable=false", line: AutomaticLoginEnable=false, after: "[daemon]" }
-  loop_control:
-    label: "{{ autologin.line }}"
-    loop_var: autologin
+    - { regexp: "\\[daemon\\]", line: '[daemon]' }
+    - { regexp: "(?i)^AutomaticLoginEnable=false", line: AutomaticLoginEnable=false, after: '[daemon]' }

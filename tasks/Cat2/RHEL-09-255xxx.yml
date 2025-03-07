@@ -196,7 +196,7 @@
     - name: "MEDIUM | RHEL-09-255064 | PATCH | The RHEL 9 SSH client must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | Correct if wrong"
       when:
         - rhel9stig_disruption_high
-        - "discovered_openssh_ciphers.stdout != 'Ciphers (rhel9stig_dod_ciphers | join (',')"
+        - "(rhel9stig_dod_ciphers | join (',')) not in discovered_openssh_ciphers.stdout"
       ansible.builtin.debug:
         msg: "Crypto policies being reinstalled as handler"
       notify: Reinstall_crypto_policies
@@ -204,14 +204,14 @@
     - name: "MEDIUM | RHEL-09-255064 | WARN | The RHEL 9 SSH client must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
       when:
         - not rhel9stig_disruption_high
-        - "discovered_openssh_ciphers.stdout != 'Ciphers (rhel9stig_dod_ciphers | join (',')"
+        - "(rhel9stig_dod_ciphers | join (',')) not in discovered_openssh_ciphers.stdout"
       ansible.builtin.debug:
         msg: "Warning!! Investigate /etc/crypto-policies/back-ends/openssh.config for correct IPS 140-3 ciphers and order"
 
     - name: "MEDIUM | RHEL-09-255064 | WARN | The RHEL 9 SSH client must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
       when:
         - not rhel9stig_disruption_high
-        - "discovered_openssh_ciphers.stdout != 'Ciphers (rhel9stig_dod_ciphers | join (',')"
+        - "(rhel9stig_dod_ciphers | join (',')) not in discovered_openssh_ciphers.stdout"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -236,7 +236,7 @@
     - name: "MEDIUM | RHEL-09-255065 | PATCH | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | Correct if wrong"
       when:
         - rhel9stig_disruption_high
-        - "discovered_openssh_server_ciphers.stdout != 'Ciphers (rhel9stig_dod_ciphers | join (',')"
+        - "(rhel9stig_dod_ciphers | join (',')) not in discovered_openssh_server_ciphers.stdout"
       ansible.builtin.debug:
         msg: "Crypto policies being reinstalled as handler"
       notify: Reinstall_crypto_policies
@@ -244,14 +244,14 @@
     - name: "MEDIUM | RHEL-09-255065 | WARN | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
       when:
         - not rhel9stig_disruption_high
-        - "discovered_openssh_server_ciphers.stdout != 'Ciphers (rhel9stig_dod_ciphers | join (',')"
+        - "(rhel9stig_dod_ciphers | join (',')) not in discovered_openssh_server_ciphers.stdout"
       ansible.builtin.debug:
         msg: "Warning!! Investigate /etc/crypto-policies/back-ends/openssh.config for correct IPS 140-3 ciphers and order"
 
     - name: "MEDIUM | RHEL-09-255065 | WARN | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
       when:
         - not rhel9stig_disruption_high
-        - "discovered_openssh_server_ciphers.stdout != 'Ciphers (rhel9stig_dod_ciphers | join (',')"
+        - "(rhel9stig_dod_ciphers | join (',')) not in discovered_openssh_server_ciphers.stdout"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -276,7 +276,7 @@
     - name: "MEDIUM | RHEL-09-255070 | PATCH | The RHEL 9 SSH client must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | Correct if wrong"
       when:
         - rhel9stig_disruption_high
-        - "discovered_openssh_macs.stdout != 'MACs (rhel9stig_dod_macs | join (',')"
+        - "(rhel9stig_dod_macs | join (',')) not in discovered_openssh_macs.stdout"
       ansible.builtin.debug:
         msg: "Crypto policies being reinstalled as handler"
       notify: Reinstall_crypto_policies
@@ -284,14 +284,14 @@
     - name: "MEDIUM | RHEL-09-255070 | WARN | The RHEL 9 SSH client must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
       when:
         - not rhel9stig_disruption_high
-        - "discovered_openssh_macs.stdout != 'MACs (rhel9stig_dod_macs | join (',')"
+        - "(rhel9stig_dod_macs | join (',')) not in discovered_openssh_macs.stdout"
       ansible.builtin.debug:
         msg: "Warning!! Investigate /etc/crypto-policies/back-ends/openssh.config for correct IPS 140-3 MACs and order"
 
     - name: "MEDIUM | RHEL-09-255070 | WARN | The RHEL 9 SSH client must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
       when:
         - not rhel9stig_disruption_high
-        - "discovered_openssh_macs.stdout != 'Ciphers (rhel9stig_dod_macs| join (',')"
+        - "(rhel9stig_dod_macs | join (',')) not in discovered_openssh_macs.stdout"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -316,7 +316,7 @@
     - name: "MEDIUM | RHEL-09-255075 | PATCH | The RHEL 9 SSH server must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | Correct if wrong"
       when:
         - rhel9stig_disruption_high
-        - "discovered_openssh_server_macs.stdout != 'MACs (rhel9stig_dod_macs | join (',')"
+        - "(rhel9stig_dod_macs | join (',')) not in discovered_openssh_server_macs.stdout"
       ansible.builtin.debug:
         msg: "Crypto policies being reinstalled as handler"
       notify: Reinstall_crypto_policies
@@ -324,14 +324,14 @@
     - name: "MEDIUM | RHEL-09-255075 | WARN | The RHEL 9 SSH server must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
       when:
         - not rhel9stig_disruption_high
-        - "discovered_openssh_server_macs.stdout != 'MACs (rhel9stig_dod_macs | join (',')"
+        - "(rhel9stig_dod_macs | join (',')) not in discovered_openssh_server_macs.stdout"
       ansible.builtin.debug:
         msg: "Warning!! Investigate /etc/crypto-policies/back-ends/openssh.config for correct IPS 140-3 MACs and order"
 
     - name: "MEDIUM | RHEL-09-255075 | WARN | The RHEL 9 SSH server must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
       when:
         - not rhel9stig_disruption_high
-        - "discovered_openssh_server_macs.stdout != 'Ciphers (rhel9stig_dod_macs| join (',')"
+        - "(rhel9stig_dod_macs | join (',')) not in discovered_openssh_server_macs.stdout"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -494,11 +494,11 @@
         mode: 'u-x,go-rwx'
 
     - name: "MEDIUM | RHEL-09-255115 | AUDIT | RHEL 9 SSH server configuration file must have mode 0600 or less permissive | adjust files"
+      when: discovered_sshd_configs.matched > 0
       ansible.builtin.file:
         path: "{{ item.path }}"
         mode: 'u-x,go-rwx'
-      loop:
-        - "{{ discovered_sshd_configs.files }}"
+      loop: "{{ discovered_sshd_configs.files }}"
 
 - name: "MEDIUM | RHEL-09-255120 | PATCH | RHEL 9 SSH private host key files must have mode 0640 or less permissive."
   when: rhel_09_255120

@@ -29,7 +29,7 @@
     warn_control_id: "MEDIUM | RHEL-09-411015"
   block:
     - name: "MEDIUM | RHEL-09-411015 | AUDIT | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
-      ansible.builtin.shell: "awk -F: '$1 !~ /^root$/ && $2 !~ /^[!*]/ && $5 > {{ rhel9stig_pass['max_days'] }} {print $1}' /etc/shadow"
+      ansible.builtin.shell: "awk -F: '$1 !~ /^root$/ && $2 !~ /^[!*]/ && $5 > {{ rhel9stig_pass_max_days }} {print $1}' /etc/shadow"
       changed_when: false
       failed_when: discovered_users_passwd_max.rc not in [ 0, 1 ]
       register: discovered_users_passwd_max
