@@ -766,6 +766,7 @@ rhel9stig_add_faillock_without_authselect: true
 # Faillock settings
 rhel9stig_faillock_deny: '3'  # 3 or less but not 0
 rhel9stig_faillock_fail_interval: '900'  # 900 or less is required not '0'
+rhel9stig_faillock_unlock_time: 0  # should be set to 0 unless documented
 rhel9stig_faillock_dir: '/var/log/faillock'
 
 rhel9stig_unnecessary_accounts:

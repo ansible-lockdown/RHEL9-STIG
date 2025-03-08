@@ -334,7 +334,7 @@
   ansible.builtin.lineinfile:
     path: /etc/login.defs
     regexp: \s*PASS_MIN_DAYS\s*
-    line: "PASS_MIN_DAYS {{ rhel9stig_pass.min_days }}"
+    line: "PASS_MIN_DAYS {{ rhel9stig_pass_min_days }}"
     backrefs: true
 
 - name: "MEDIUM | RHEL-09-611080 | PATCH | RHEL 9 passwords must have a 24 hours minimum password lifetime restriction in /etc/shadow."
@@ -440,7 +440,7 @@
   ansible.builtin.lineinfile:
     path: /etc/security/pwquality.conf
     regexp: \s*minlen\s*=\s*
-    line: "minlen = {{ rhel9stig_pass.minlen }}"
+    line: "minlen = {{ rhel9stig_pass_minlen }}"
     backrefs: true
 
 - name: "MEDIUM | RHEL-09-611100 | PATCH | RHEL 9 must enforce password complexity by requiring that at least one special character be used."

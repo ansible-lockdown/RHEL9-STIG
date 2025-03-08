@@ -59,7 +59,7 @@
   block:
     - name: "MEDIUM | RHEL-09-431020 | PATCH | RHEL 9 must enable the SELinux targeted policy."
       community.general.sefcontext:
-        target: "{{ rhel9stig_faillock.dir }}(/.*)?"
+        target: "{{ rhel9stig_faillock_dir }}(/.*)?"
         ftype: a
         setype: faillog_t
         seuser: system_u
@@ -68,5 +68,5 @@
 
     - name: "MEDIUM | RHEL-09-431020 | PATCH | RHEL 9 must enable the SELinux targeted policy."
       when: discovered_faillock_secontext.changed  # noqa no-handler
-      ansible.builtin.command: "restorecon -irvF {{ rhel9stig_faillock.dir }}"
+      ansible.builtin.command: "restorecon -irvF {{ rhel9stig_faillock_dir }}"
       changed_when: true

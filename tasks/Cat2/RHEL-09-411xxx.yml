@@ -495,7 +495,7 @@
     - name: "MEDIUM | RHEL-09-411095 | PATCH | RHEL 9 must not have unauthorized accounts. | Re-parse passwd file"
       when: discovered_accounts_removed is changed  # noqa no-handler
       ansible.builtin.include_tasks:
-        file: ../parse_etc_passwd.yml
+        file: ../parse_etc_password.yml
       vars:
         rhel9stig_passwd_tasks: "RHEL-09-411095"  # pragma: allowlist secret
 
