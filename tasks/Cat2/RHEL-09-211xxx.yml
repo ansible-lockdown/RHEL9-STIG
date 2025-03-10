@@ -62,8 +62,8 @@
     - V-257781
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    dest: /etc/systemd/system/default.target
     src: /usr/lib/systemd/system/multi-user.target
+    dest: /etc/systemd/system/default.target
     state: link
 
 - name: "MEDIUM | RHEL-09-211040 | PATCH | RHEL 9 systemd-journald service must be enabled."
