@@ -299,7 +299,7 @@
 
     - name: "MEDIUM | RHEL-09-215105 | PATCH | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy | set FIPS"
       when:
-        - "combined_crypto_policy_config not in discovered_crypto_policies_check.stdout"
+        - "combined_crypto_policy_config != discovered_crypto_policies_check.stdout"
         - rhel9stig_disruption_high
       ansible.builtin.command: "update-crypto-policies --set {{ combined_crypto_policy_config }}"
       changed_when: true
