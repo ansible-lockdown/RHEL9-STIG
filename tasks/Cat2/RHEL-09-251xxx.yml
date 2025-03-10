@@ -70,6 +70,12 @@
         state: enabled
         target: DROP
 
+    - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Reload zones"
+      ansible.builtin.command: firewall-cmd --reload
+      changed_when: discovered_firewalld_reload.rc == 0
+      failed_when: discovered_firewalld_reload.rc >= 2
+      register: discovered_firewalld_reload
+
     - name: "MEDIUM | RHEL-09-251020 | AUDIT | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Get default zone"
       ansible.builtin.command: "firewall-cmd --get-default-zone"
       changed_when: false
