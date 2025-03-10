@@ -75,7 +75,7 @@
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)banner \/.*\/.*
-    line: "banner {{ rhel9stig_sshd_config.banner_file }}"
+    line: "Banner {{ rhel9stig_sshd_config.banner_file }}"
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255030 | PATCH | RHEL 9 must log SSH connection attempts and failures to the server."

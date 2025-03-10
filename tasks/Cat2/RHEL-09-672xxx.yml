@@ -29,7 +29,7 @@
         state: absent
       register: discovered_krb5_config_removed
 
-    - name: "MEDIUM | RHEL-09-672025 | AUDIT | RHEL 9 must use mechanisms meeting the requirements of applicable federal laws, executive orders, directives, policies, regulations, standards, and guidance for authentication to a cryptographic module. | Create link"
+    - name: "MEDIUM | RHEL-09-672025 | PATCH | RHEL 9 must use mechanisms meeting the requirements of applicable federal laws, executive orders, directives, policies, regulations, standards, and guidance for authentication to a cryptographic module. | Create link"
       when:
         - rhel9stig_disruption_high
         - not discovered_crypto_krb5_fips.stat.exists or discovered_krb5_config_removed.changed  # noqa no-handler
@@ -40,15 +40,17 @@
 
     - name: "MEDIUM | RHEL-09-672025 | WARN | RHEL 9 must use mechanisms meeting the requirements of applicable federal laws, executive orders, directives, policies, regulations, standards, and guidance for authentication to a cryptographic module."
       when:
+        - not rhel9stig_disruption_high
         - discovered_crypto_krb5_fips is defined
-        - "'FIPS/krb5.txt' not in discovered_crypto_krb5_fips.stdout"
+        - "'/usr/share/crypto-policies/DEFAULT/krb5.txt' not in discovered_crypto_krb5_fips.stat.lnk_source"
       ansible.builtin.debug:
         msg: "Warning!! Please Investigate 672025 - kerberos is not FIPS compliant"
 
     - name: "MEDIUM | RHEL-09-672025 | WARN | RHEL 9 must use mechanisms meeting the requirements of applicable federal laws, executive orders, directives, policies, regulations, standards, and guidance for authentication to a cryptographic module."
       when:
+        - not rhel9stig_disruption_high
         - discovered_crypto_krb5_fips is defined
-        - "'FIPS/krb5.txt' not in discovered_crypto_krb5_fips.stdout"
+        - "'/usr/share/crypto-policies/DEFAULT/krb5.txt' not in discovered_crypto_krb5_fips.stat.lnk_source"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 

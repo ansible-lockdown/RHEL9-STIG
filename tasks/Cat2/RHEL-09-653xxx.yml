@@ -505,7 +505,7 @@
         mode: 'u-x,g-wx,o-rwx'
         path: "{{ item }}"
       loop:
-        - /etc/audit/auditd.rules
+        - /etc/audit/audit.rules
         - /etc/audit/auditd.conf
 
     - name: "MEDIUM | RHEL-09-653110 | PATCH | RHEL 9 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM)

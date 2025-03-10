@@ -278,7 +278,7 @@
   vars:
     warn_control_id: "MEDIUM | RHEL-09-215105"
   block:
-    - name: "MEDIUM | RHEL-09-215105 | AUDIT | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy | grep current crypto state"
+    - name: "MEDIUM | RHEL-09-215105 | AUDIT | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy | Get crypto state"
       ansible.builtin.command: update-crypto-policies --show
       changed_when: false
       failed_when: discovered_crypto_policies_check.rc not in [0 , 1]
