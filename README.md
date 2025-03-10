@@ -2,7 +2,7 @@
 
 ## Configure a RHEL9 based system to be complaint with Disa STIG
 
-This role is based on RHEL 9 DISA STIG: [Version 1, Rel 3 released on Apr 24, 2024](https://dl.dod.cyber.mil/wp-content/uploads/stigs/U_RHEL_9_V1R3_STIG.zip).
+This role is based on RHEL 9 DISA STIG: [Version 2, Rel 3 released on Jan, 2025](https://dl.dod.cyber.mil/wp-content/uploads/stigs/U_RHEL_9_V2R3_STIG.zip).
 
 ## Initial Release from STIG, still many items that not quite aligned in the documentation
 
@@ -29,6 +29,7 @@ This role is based on RHEL 9 DISA STIG: [Version 1, Rel 3 released on Apr 24, 20
 ![Issues Open](https://img.shields.io/github/issues-raw/ansible-lockdown/RHEL9-STIG?label=Open%20Issues)
 ![Issues Closed](https://img.shields.io/github/issues-closed-raw/ansible-lockdown/RHEL9-STIG?label=Closed%20Issues&&color=success)
 ![Pull Requests](https://img.shields.io/github/issues-pr/ansible-lockdown/RHEL9-STIG?label=Pull%20Requests)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
 
 ![License](https://img.shields.io/github/license/ansible-lockdown/RHEL9-STIG?label=License)
 
@@ -46,7 +47,7 @@ On our [Discord Server](https://www.lockdownenterprise.com/discord) to ask quest
 
 ---
 
-Configure a RHEL/Rocky/Alma 9 system to be DISA STIG compliant.
+Configure a RHEL/Rocky/Almalinux/oraclelinux 9 system to be DISA STIG compliant.
 Non-disruptive CAT I, CAT II, and CAT III findings will be corrected by default.
 Disruptive finding remediation can be enabled by setting `rhel9stig_disruption_high` to `true`.
 
@@ -55,11 +56,11 @@ Disruptive finding remediation can be enabled by setting `rhel9stig_disruption_h
 Coming from a previous release.
 
 As with all releases and updates, It is suggested to test and align controls.
-This contains rewrites and ID reference changes as per STIG documentation.
+This contains rewrites and ID reference changes as per STIG documentation. With some controls changing ID number.
 
 ## Auditing
 
-This can be turned on or off within the defaults/main.yml file with the variable rhel7stig_run_audit. The value is false by default, please refer to the wiki for more details. The defaults file also populates the goss checks to check only the controls that have been enabled in the ansible role.
+This can be turned on or off within the defaults/main.yml file with the variable rhel9stig_run_audit. The value is false by default, please refer to the wiki for more details. The defaults file also populates the goss checks to check only the controls that have been enabled in the ansible role.
 
 This is a much quicker, very lightweight, checking (where possible) config compliance and live/running settings.
 
