@@ -2,7 +2,7 @@
 
 ## Configure a RHEL9 based system to be complaint with Disa STIG
 
-This role is based on RHEL 9 DISA STIG: [Version 1, Rel 3 released on Apr 24, 2024](https://dl.dod.cyber.mil/wp-content/uploads/stigs/U_RHEL_9_V1R3_STIG.zip).
+This role is based on RHEL 9 DISA STIG: [Version 2, Rel 2 released on Jul 24, 2024](https://dl.dod.cyber.mil/wp-content/uploads/stigs/U_RHEL_9_V2R2_STIG.zip).
 
 ## Initial Release from STIG, still many items that not quite aligned in the documentation
 
@@ -46,7 +46,7 @@ On our [Discord Server](https://www.lockdownenterprise.com/discord) to ask quest
 
 ---
 
-Configure a RHEL/Rocky/Alma 9 system to be DISA STIG compliant.
+Configure a RHEL/Rocky/Almalinux/Oraclelinux 9 system to be DISA STIG compliant.
 Non-disruptive CAT I, CAT II, and CAT III findings will be corrected by default.
 Disruptive finding remediation can be enabled by setting `rhel9stig_disruption_high` to `true`.
 
@@ -59,7 +59,7 @@ This contains rewrites and ID reference changes as per STIG documentation.
 
 ## Auditing
 
-This can be turned on or off within the defaults/main.yml file with the variable rhel7stig_run_audit. The value is false by default, please refer to the wiki for more details. The defaults file also populates the goss checks to check only the controls that have been enabled in the ansible role.
+This can be turned on or off within the defaults/main.yml file with the variable rhel9stig_run_audit. The value is false by default, please refer to the wiki for more details. The defaults file also populates the goss checks to check only the controls that have been enabled in the ansible role.
 
 This is a much quicker, very lightweight, checking (where possible) config compliance and live/running settings.
 
