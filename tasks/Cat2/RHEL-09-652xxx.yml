@@ -1,9 +1,7 @@
 ---
 
 - name: "MEDIUM | RHEL-09-652010 | PATCH | RHEL 9 must have the rsyslog package installed."
-  when:
-    - rhel_09_652010
-    - "'rsyslog' not in ansible_facts.packages"
+  when: rhel_09_652010
   tags:
     - RHEL-09-652010
     - CAT2
@@ -79,17 +77,16 @@
 
     - name: "MEDIUM | RHEL-09-652025 | PATCH | RHEL 9 must be configured so that the rsyslog daemon does not accept log messages from other servers unless the server is being used for log aggregation."
       ansible.builtin.lineinfile:
-        backrefs: true
-        line: '#\1\2\3'
         path: /etc/rsyslog.conf
+        line: '#\1\2\3'
         regex: (Input|ModLoad)(TCP|UDP|RELP|imtcp|imudp|imrelp)(.*)
+        backrefs: true
 
     - name: "MEDIUM | RHEL-09-652025 | PATCH | RHEL 9 must be configured so that the rsyslog daemon does not accept log messages from other servers unless the server is being used for log aggregation."
       when: discovered_rsyslog_conf.matched > 1
       ansible.builtin.lineinfile:
-        backrefs: true
-        line: '#\1\2\3'
         path: "{{ item.path }}"
+        line: '#\1\2\3'
         regex: (Input|ModLoad)(TCP|UDP|RELP|imtcp|imudp|imrelp)(.*)
       loop: "{{ discovered_rsyslog_conf.files }}"
 
@@ -108,11 +105,10 @@
   ansible.builtin.lineinfile:
     path: /etc/rsyslog.conf
     line: 'auth.*;authpriv.*;daemon.* /var/log/secure'
+
 ## Required for 652035 to run
 - name: "MEDIUM | RHEL-09-653130 | PATCH | RHEL 9 audispd-plugins package must be installed"
-  when:
-    - rhel_09_653130
-    - "'audispd-plugins' not in ansible_facts.packages"
+  when: rhel_09_653130
   tags:
     - RHEL-09-653130
     - CAT2
@@ -199,7 +195,7 @@
     warn_control_id: "MEDIUM | RHEL-09-652045"
   block:
     - name: "MEDIUM | RHEL-09-652045 | AUDIT | RHEL 9 must encrypt the transfer of audit records offloaded onto a different system or media from the system being audited via rsyslog."
-      ansible.builtin.shell: grep -i "^\$ActionSendStreamDriverMode 1" /etc/rsyslog.conf /etc/rsyslog.d/*.conf
+      ansible.builtin.command: grep -i "^\$ActionSendStreamDriverMode 1" /etc/rsyslog.conf /etc/rsyslog.d/*.conf
       changed_when: false
       failed_when: discovered_rsyslog_remote_stream_driver.rc not in [ 0, 1, 2 ]
       register: discovered_rsyslog_remote_stream_driver

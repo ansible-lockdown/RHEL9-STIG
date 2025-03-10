@@ -1,4 +1,5 @@
 ---
+
 galaxy_info:
   author: "Mark Bolwell"
   description: "Apply the RHEL 9 STIG using ansible"

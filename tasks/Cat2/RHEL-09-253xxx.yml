@@ -1,8 +1,7 @@
 ---
 
 - name: "MEDIUM | RHEL-09-253010 | PATCH | RHEL 9 must be configured to use TCP syncookies."
-  when:
-    - rhel_09_253010
+  when: rhel_09_253010
   tags:
     - RHEL-09-253010
     - CAT2
@@ -23,8 +22,7 @@
     value: '1'
 
 - name: "MEDIUM | RHEL-09-253015 | PATCH | RHEL 9 must ignore Internet Protocol version 4 (IPv4) Internet Control Message Protocol (ICMP) redirect messages."
-  when:
-    - rhel_09_253015
+  when: rhel_09_253015
   tags:
     - RHEL-09-253015
     - CAT2
@@ -40,8 +38,7 @@
     value: '0'
 
 - name: "MEDIUM | RHEL-09-253020 | PATCH | RHEL 9 must not forward Internet Protocol version 4 (IPv4) source-routed packets."
-  when:
-    - rhel_09_253020
+  when: rhel_09_253020
   tags:
     - RHEL-09-253020
     - CAT2
@@ -57,8 +54,7 @@
     value: '0'
 
 - name: "MEDIUM | RHEL-09-253025 | PATCH | RHEL 9 must log IPv4 packets with impossible addresses."
-  when:
-    - rhel_09_253025
+  when: rhel_09_253025
   tags:
     - RHEL-09-253025
     - CAT2
@@ -74,8 +70,7 @@
     value: '1'
 
 - name: "MEDIUM | RHEL-09-253030 | PATCH | RHEL 9 must log IPv4 packets with impossible addresses by default."
-  when:
-    - rhel_09_253030
+  when: rhel_09_253030
   tags:
     - RHEL-09-253030
     - CAT2
@@ -91,8 +86,7 @@
     value: '1'
 
 - name: "MEDIUM | RHEL-09-253035 | PATCH | RHEL 9 must use reverse path filtering on all IPv4 interfaces."
-  when:
-    - rhel_09_253035
+  when: rhel_09_253035
   tags:
     - RHEL-09-253035
     - CAT2
@@ -108,8 +102,7 @@
     value: '1'
 
 - name: "MEDIUM | RHEL-09-253040 | PATCH | RHEL 9 must prevent IPv4 Internet Control Message Protocol (ICMP) redirect messages from being accepted."
-  when:
-    - rhel_09_253040
+  when: rhel_09_253040
   tags:
     - RHEL-09-253040
     - CAT2
@@ -125,8 +118,7 @@
     value: '0'
 
 - name: "MEDIUM | RHEL-09-253045 | PATCH | RHEL 9 must not forward IPv4 source-routed packets by default."
-  when:
-    - rhel_09_253045
+  when: rhel_09_253045
   tags:
     - RHEL-09-253045
     - CAT2
@@ -142,8 +134,7 @@
     value: '0'
 
 - name: "MEDIUM | RHEL-09-253050 | PATCH | RHEL 9 must use a reverse-path filter for IPv4 network traffic when possible by default."
-  when:
-    - rhel_09_253050
+  when: rhel_09_253050
   tags:
     - RHEL-09-253050
     - CAT2
@@ -159,8 +150,7 @@
     value: '1'
 
 - name: "MEDIUM | RHEL-09-253055 | PATCH | RHEL 9 must not respond to Internet Control Message Protocol (ICMP) echoes sent to a broadcast address."
-  when:
-    - rhel_09_253055
+  when: rhel_09_253055
   tags:
     - RHEL-09-253055
     - CAT2
@@ -176,8 +166,7 @@
     value: '1'
 
 - name: "MEDIUM | RHEL-09-253060 | PATCH | RHEL 9 must limit the number of bogus Internet Control Message Protocol (ICMP) response errors logs."
-  when:
-    - rhel_09_253060
+  when: rhel_09_253060
   tags:
     - RHEL-09-253060
     - CAT2
@@ -193,8 +182,7 @@
     value: '1'
 
 - name: "MEDIUM | RHEL-09-253065 | PATCH | RHEL 9 must not send Internet Control Message Protocol (ICMP) redirects."
-  when:
-    - rhel_09_253065
+  when: rhel_09_253065
   tags:
     - RHEL-09-253065
     - CAT2
@@ -210,8 +198,7 @@
     value: '0'
 
 - name: "MEDIUM | RHEL-09-253070 | PATCH | RHEL 9 must not allow interfaces to perform Internet Control Message Protocol (ICMP) redirects by default."
-  when:
-    - rhel_09_253070
+  when: rhel_09_253070
   tags:
     - RHEL-09-253070
     - CAT2
