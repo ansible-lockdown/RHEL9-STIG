@@ -42,6 +42,9 @@ gpg_key:
 # If using the supplied graphical interface
 rhel9stig_gui: {{ rhel9stig_gui }}
 
+# If using sssd on host
+rhel9stig_uses_sssd: {{ rhel9stig_sssd_configure }}
+
 # Some tests may need to scan every filesystem or have an impact on a system
 # these may need be scheduled to minimise impact
 run_heavy_tests: {{ audit_run_heavy_tests }}
