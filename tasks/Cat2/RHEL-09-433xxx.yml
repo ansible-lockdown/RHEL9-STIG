@@ -84,6 +84,7 @@
             path: /etc/fapolicyd/fapolicyd.conf
             regexp: ^permissive\s*=\s*0
             replace: permissive = 1
+          notify: Restart fapolicyd
 
         - name: "MEDIUM | RHEL-09-433016 | PATCH | The RHEL 9 fapolicy module must be configured to employ a deny-all, permit-by-exception policy to allow the execution of authorized software programs. | reload fapolicyd"
           when: "'permissive = 0' in discovered_fapolicy_permissive_state.stdout"
@@ -112,6 +113,7 @@
           when: discovered_deny_rule_added.changed  # noqa no-handler
           ansible.builtin.command: fapolicyd-cli --reload-rules
           changed_when: true
+          notify: Restart fapolicyd
 
         - name: "MEDIUM | RHEL-09-433016 | AUDIT | The RHEL 9 fapolicy module must be configured to employ a deny-all, permit-by-exception policy to allow the execution of authorized software programs. | Check rules ok"
           ansible.builtin.shell: fagenrules --check && fapolicyd-cli --check-config

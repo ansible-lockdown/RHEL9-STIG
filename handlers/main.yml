@@ -156,14 +156,24 @@
     state: restarted
 
 # Must be prior to fapolicyd restart
+
+- name: Fapolicy set to non-permissive
+  ansible.builtin.replace:
+    path: /etc/fapolicyd/fapolicyd.conf
+    regexp: ^permissive\s*=\s*1
+    replace: permissive = 0
+  listen: Restart fapolicyd
+
 - name: Generate fapolicyd rules
   ansible.builtin.command: fagenrules --load
   changed_when: true
+  listen: Restart fapolicyd
 
 - name: Restart fapolicyd
   ansible.builtin.service:
     name: fapolicyd
     state: restarted
+  listen: Restart fapolicyd
 
 ## Auditd tasks note order for handlers to run
 
