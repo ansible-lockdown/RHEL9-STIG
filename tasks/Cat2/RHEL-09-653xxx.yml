@@ -521,8 +521,7 @@
     path: /etc/audit/auditd.conf
     mode: 'u-x,g-wx,o-rwx'
 
-- name: "MEDIUM | RHEL-09-653125 | PATCH | RHEL 9 must have mail aliases to notify the information system security officer (ISSO) and system administrator (SA) (at
-    a minimum) in the event of an audit processing failure."
+- name: "MEDIUM | RHEL-09-653125 | PATCH | RHEL 9 must have mail aliases to notify the information system security officer (ISSO) and system administrator (SA) (at a minimum) in the event of an audit processing failure."
   when: rhel_09_653125
   tags:
     - RHEL-09-653125

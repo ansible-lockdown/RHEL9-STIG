@@ -74,6 +74,7 @@
       when: discovered_library_file_perms.stdout | length > 0
       ansible.builtin.file:
         path: "{{ item }}"
+        mode: 'u+x,go-w'
       loop: "{{ discovered_library_file_perms.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232025 | PATCH | RHEL 9 /var/log directory must have mode 0755 or less permissive."

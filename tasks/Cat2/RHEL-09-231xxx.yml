@@ -351,8 +351,7 @@
     - SV-257861r1014834_rule
     - V-257861
     - NIST800-53R4_CM-7
-  notify:
-    - Change_requires_reboot
+  notify: Change_requires_reboot
   ansible.posix.mount:
     path: '/boot'
     src: "UUID={{ item.uuid }}"
