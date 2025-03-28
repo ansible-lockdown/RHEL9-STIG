@@ -41,11 +41,8 @@ benchparse/
 *xccdf.xml
 *.retry
 
-# pre-commit cache
-.ansible/
-
 # GitHub Action/Workflow files
 .github/
 
-# ansible lint
+# ansible-lint
 .ansible/
