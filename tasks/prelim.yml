@@ -126,6 +126,8 @@
     - ansible_facts.distribution != 'OracleLinux'
 
 - name: PRELIM | Configure System Accounting (auditd)
+  when:
+    - rhel9stig_auditd_required
   tags: always
   ansible.builtin.package:
     name: audit
@@ -136,6 +138,7 @@
     - rhel_09_653085 or
       rhel_09_653085 or
       rhel_09_653090
+    - rhel9stig_auditd_required
   tags: always
   ansible.builtin.shell: grep ^log_file /etc/audit/auditd.conf | awk '{ print $NF }'
   changed_when: false
