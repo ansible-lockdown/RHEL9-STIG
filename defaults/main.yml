@@ -871,5 +871,12 @@ rhel9stig_audit_conf:
   space_left: 25%
   space_left_action: email
   write_logs: 'yes'
-
 rhel9stig_audit_backlog_limit: 8192
+rhel9stig_audit_bins:
+- '/usr/sbin/auditctl'
+- '/usr/sbin/aureport'
+- '/usr/sbin/ausearch'
+- '/usr/sbin/autrace'
+- '/usr/sbin/auditd'
+- '/usr/sbin/rsyslogd'
+- '/usr/sbin/augenrules'
