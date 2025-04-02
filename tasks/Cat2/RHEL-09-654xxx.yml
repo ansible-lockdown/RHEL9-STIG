@@ -1,7 +1,9 @@
 ---
 
 - name: "MEDIUM | RHEL-09-654010 | PATCH | RHEL 9 must audit uses of the 'execve' system call."
-  when: rhel_09_654010
+  when:
+    - rhel_09_654010
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654010
     - CAT2
@@ -17,7 +19,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654015 | PATCH | RHEL 9 must audit all uses of the chmod, fchmod, and fchmodat system calls."
-  when: rhel_09_654015
+  when:
+    - rhel_09_654015
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654015
     - CAT2
@@ -45,7 +49,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654020 | PATCH | RHEL 9 must audit all uses of the chown, fchown, fchownat, and lchown system calls."
-  when: rhel_09_654020
+  when:
+    - rhel_09_654020
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654020
     - CAT2
@@ -74,7 +80,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654025 | PATCH | RHEL 9 must audit all uses of the setxattr, fsetxattr, lsetxattr, removexattr, fremovexattr, and lremovexattr system calls."
-  when: rhel_09_654025
+  when:
+    - rhel_09_654025
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654025
     - CAT2
@@ -103,7 +111,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654030 | PATCH | RHEL 9 must audit all uses of umount system calls."
-  when: rhel_09_654030
+  when:
+    - rhel_09_654030
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654030
     - CAT2
@@ -126,7 +136,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654035 | PATCH | RHEL 9 must audit all uses of the chacl command."
-  when: rhel_09_654035
+  when:
+    - rhel_09_654035
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654035
     - CAT2
@@ -152,7 +164,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654040 | PATCH | RHEL 9 must audit all uses of the setfacl command."
-  when: rhel_09_654040
+  when:
+    - rhel_09_654040
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654040
     - CAT2
@@ -177,7 +191,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654045 | PATCH | RHEL 9 must audit all uses of the chcon command."
-  when: rhel_09_654045
+  when:
+    - rhel_09_654045
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654045
     - CAT2
@@ -205,7 +221,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654050 | PATCH | RHEL 9 must audit all uses of the semanage command."
-  when: rhel_09_654050
+  when:
+    - rhel_09_654050
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654050
     - CAT2
@@ -232,7 +250,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654055 | PATCH | RHEL 9 must audit all uses of the setfiles command."
-  when: rhel_09_654055
+  when:
+    - rhel_09_654055
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654055
     - CAT2
@@ -259,7 +279,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654060 | PATCH | RHEL 9 must audit all uses of the setsebool command."
-  when: rhel_09_654060
+  when:
+    - rhel_09_654060
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654060
     - CAT2
@@ -286,7 +308,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654065 | PATCH | RHEL 9 must audit all uses of the rename, unlink, rmdir, renameat, and unlinkat system calls."
-  when: rhel_09_654065
+  when:
+    - rhel_09_654065
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654065
     - CAT2
@@ -314,7 +338,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654070 | PATCH | RHEL 9 must audit all uses of the truncate, ftruncate, creat, open, openat, and open_by_handle_at system calls."
-  when: rhel_09_654070
+  when:
+    - rhel_09_654070
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654070
     - CAT2
@@ -342,7 +368,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654075 | PATCH | RHEL 9 must audit all uses of the delete_module system call."
-  when: rhel_09_654075
+  when:
+    - rhel_09_654075
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654075
     - CAT2
@@ -369,7 +397,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654080 | PATCH | RHEL 9 must audit all uses of the init_module and finit_module system calls."
-  when: rhel_09_654080
+  when:
+    - rhel_09_654080
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654080
     - CAT2
@@ -396,7 +426,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654085 | PATCH | RHEL 9 must audit all uses of the chage command."
-  when: rhel_09_654085
+  when:
+    - rhel_09_654085
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654085
     - CAT2
@@ -422,7 +454,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654090 | PATCH | RHEL 9 must audit all uses of the chsh command."
-  when: rhel_09_654090
+  when:
+    - rhel_09_654090
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654090
     - CAT2
@@ -447,7 +481,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654095 | PATCH | RHEL 9 must audit all uses of the crontab command."
-  when: rhel_09_654095
+  when:
+    - rhel_09_654095
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654095
     - CAT2
@@ -472,7 +508,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654100 | PATCH | RHEL 9 must audit all uses of the gpasswd command."
-  when: rhel_09_654100
+  when:
+    - rhel_09_654100
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654100
     - CAT2
@@ -497,7 +535,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654105 | PATCH | RHEL 9 must audit all uses of the kmod command."
-  when: rhel_09_654105
+  when:
+    - rhel_09_654105
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654105
     - CAT2
@@ -524,7 +564,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654110 | PATCH | RHEL 9 must audit all uses of the newgrp command."
-  when: rhel_09_654110
+  when:
+    - rhel_09_654110
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654110
     - CAT2
@@ -549,7 +591,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654115 | PATCH | RHEL 9 must audit all uses of the pam_timestamp_check command."
-  when: rhel_09_654115
+  when:
+    - rhel_09_654115
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654115
     - CAT2
@@ -574,7 +618,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654120 | PATCH | RHEL 9 must audit all uses of the passwd command."
-  when: rhel_09_654120
+  when:
+    - rhel_09_654120
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654120
     - CAT2
@@ -599,7 +645,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654125 | PATCH | RHEL 9 must audit all uses of the postdrop command."
-  when: rhel_09_654125
+  when:
+    - rhel_09_654125
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654125
     - CAT2
@@ -624,7 +672,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654130 | PATCH | RHEL 9 must audit all uses of the postqueue command."
-  when: rhel_09_654130
+  when:
+    - rhel_09_654130
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654130
     - CAT2
@@ -649,7 +699,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654135 | PATCH | RHEL 9 must audit all uses of the ssh-agent command."
-  when: rhel_09_654135
+  when:
+    - rhel_09_654135
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654135
     - CAT2
@@ -701,7 +753,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654145 | PATCH | RHEL 9 must audit all uses of the su command."
-  when: rhel_09_654145
+  when:
+    - rhel_09_654145
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654145
     - CAT2
@@ -728,7 +782,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654150 | PATCH | RHEL 9 must audit all uses of the sudo command."
-  when: rhel_09_654150
+  when:
+    - rhel_09_654150
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654150
     - CAT2
@@ -754,7 +810,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654155 | PATCH | RHEL 9 must audit all uses of the sudoedit command."
-  when: rhel_09_654155
+  when:
+    - rhel_09_654155
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654155
     - CAT2
@@ -779,7 +837,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654160 | PATCH | RHEL 9 must audit all uses of the unix_chkpwd command."
-  when: rhel_09_654160
+  when:
+    - rhel_09_654160
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654160
     - CAT2
@@ -804,7 +864,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654165 | PATCH | RHEL 9 must audit all uses of the unix_update command."
-  when: rhel_09_654165
+  when:
+    - rhel_09_654165
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654165
     - CAT2
@@ -830,7 +892,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654170 | PATCH | RHEL 9 must audit all uses of the userhelper command."
-  when: rhel_09_654170
+  when:
+    - rhel_09_654170
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654170
     - CAT2
@@ -855,7 +919,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654175 | PATCH | RHEL 9 must audit all uses of the usermod command."
-  when: rhel_09_654175
+  when:
+    - rhel_09_654175
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654175
     - CAT2
@@ -881,7 +947,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654180 | PATCH | RHEL 9 must audit all uses of the mount command."
-  when: rhel_09_654180
+  when:
+    - rhel_09_654180
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654180
     - CAT2
@@ -906,7 +974,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654185 | PATCH | Successful/unsuccessful uses of the init command in RHEL 9 must generate an audit record."
-  when: rhel_09_654185
+  when:
+    - rhel_09_654185
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654185
     - CAT2
@@ -920,7 +990,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654190 | PATCH | Successful/unsuccessful uses of the poweroff command in RHEL 9 must generate an audit record."
-  when: rhel_09_654190
+  when:
+    - rhel_09_654190
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654190
     - CAT2
@@ -934,7 +1006,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654195 | PATCH | Successful/unsuccessful uses of the reboot command in RHEL 9 must generate an audit record."
-  when: rhel_09_654195
+  when:
+    - rhel_09_654195
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654195
     - CAT2
@@ -948,7 +1022,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654200 | PATCH | Successful/unsuccessful uses of the shutdown command in RHEL 9 must generate an audit record."
-  when: rhel_09_654200
+  when:
+    - rhel_09_654200
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654200
     - CAT2
@@ -962,7 +1038,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654205 | PATCH | Successful/unsuccessful uses of the umount system call in RHEL 9 must generate an audit record."
-  when: rhel_09_654205
+  when:
+    - rhel_09_654205
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654205
     - CAT2
@@ -985,7 +1063,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654210 | PATCH | Successful/unsuccessful uses of the umount2 system call in RHEL 9 must generate an audit record."
-  when: rhel_09_654210
+  when:
+    - rhel_09_654210
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654210
     - CAT2
@@ -1008,7 +1088,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654215 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/sudoers."
-  when: rhel_09_654215
+  when:
+    - rhel_09_654215
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654215
     - CAT2
@@ -1049,7 +1131,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654220 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/sudoers.d/ directory."
-  when: rhel_09_654220
+  when:
+    - rhel_09_654220
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654220
     - CAT2
@@ -1090,7 +1174,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654225 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/group."
-  when: rhel_09_654225
+  when:
+    - rhel_09_654225
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654225
     - CAT2
@@ -1131,7 +1217,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654230 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/gshadow."
-  when: rhel_09_654230
+  when:
+    - rhel_09_654230
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654230
     - CAT2
@@ -1172,7 +1260,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654235 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/opasswd."
-  when: rhel_09_654235
+  when:
+    - rhel_09_654235
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654235
     - CAT2
@@ -1213,7 +1303,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654240 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/passwd."
-  when: rhel_09_654240
+  when:
+    - rhel_09_654240
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654240
     - CAT2
@@ -1262,7 +1354,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654245 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/shadow."
-  when: rhel_09_654240
+  when:
+    - rhel_09_654240
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654240
     - CAT2
@@ -1303,7 +1397,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654250 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /var/log/faillock."
-  when: rhel_09_654250
+  when:
+    - rhel_09_654250
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654250
     - CAT2
@@ -1321,7 +1417,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654255 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /var/log/lastlog."
-  when: rhel_09_654255
+  when:
+    - rhel_09_654255
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654255
     - CAT2
@@ -1347,7 +1445,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654260 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /var/log/tallylog."
-  when: rhel_09_654260
+  when:
+    - rhel_09_654260
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654260
     - CAT2
@@ -1365,7 +1465,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654265 | PATCH | RHEL 9 must take appropriate action when a critical audit processing failure occurs."
-  when: rhel_09_654265
+  when:
+    - rhel_09_654265
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654265
     - CAT2
@@ -1381,7 +1483,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654270 | PATCH | RHEL 9 audit system must protect logon UIDs from unauthorized change."
-  when: rhel_09_654270
+  when:
+    - rhel_09_654270
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654270
     - CAT2
@@ -1403,7 +1507,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654275 | PATCH | RHEL 9 audit system must protect auditing rules from unauthorized change."
-  when: rhel_09_654275
+  when:
+    - rhel_09_654275
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-654275
     - CAT2

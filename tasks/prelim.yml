@@ -125,6 +125,7 @@
     state: latest
 
 - name: PRELIM | Configure System Accounting (auditd)
+  when: rhel9stig_auditd_required
   tags: always
   ansible.builtin.package:
     name: audit
@@ -132,6 +133,7 @@
 
 - name: "PRELIM | Discover auditd_logfile_path"
   when:
+    - rhel9stig_auditd_required
     - rhel_09_653085 or
       rhel_09_653085 or
       rhel_09_653090

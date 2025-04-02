@@ -108,7 +108,9 @@
 
 ## Required for 652035 to run
 - name: "MEDIUM | RHEL-09-653130 | PATCH | RHEL 9 audispd-plugins package must be installed"
-  when: rhel_09_653130
+  when:
+    - rhel_09_653130
+    - rhel9stig_auditd_required
   tags:
     - RHEL-09-653130
     - CAT2
