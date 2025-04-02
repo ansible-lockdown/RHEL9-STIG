@@ -674,7 +674,9 @@
     update_audit_template: true
 
 - name: "MEDIUM | RHEL-09-654140 | PATCH | RHEL 9 must audit all uses of the ssh-keysign command."
-  when: rhel_09_654140
+  when:
+    - rhel_09_654140
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-654140
     - CAT2

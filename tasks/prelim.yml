@@ -143,6 +143,7 @@
 # Added to ensure ssh drop in file exists if not default /etc/ssh/sshd_config
 - name: PRELIM | SSH | create config file if absent
   when:
+    - rhel9stig_sshd_required
     - rhel9stig_sshd_config_file != '/etc/ssh/sshd_config'
     - "'openssh-server' in ansible_facts.packages"
   tags: ssh

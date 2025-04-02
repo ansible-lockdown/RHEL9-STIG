@@ -299,7 +299,9 @@
       ansible.builtin.import_tasks: warning_facts.yml
 
 - name: HIGH | RHEL-09-255040 | PATCH | RHEL 9 SSHD must not allow blank passwords.
-  when: rhel_09_255040
+  when:
+    - rhel_09_255040
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255040
     - CAT1
@@ -313,7 +315,7 @@
     - NIST800-53R4_CM-6
     - NIST800-53R4_IA-2
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)PermitEmptyPasswords yes
@@ -321,7 +323,9 @@
     validate: sshd -t -f %s
 
 - name: HIGH | RHEL-09-255050 | PATCH | RHEL 9 must enable the Pluggable Authentication Module (PAM) interface for SSHD.
-  when: rhel_09_255050
+  when:
+    - rhel_09_255050
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255050
     - CAT1
@@ -332,7 +336,7 @@
     - NIST800-53R4_MA-4
     - ssh
     - pam
-  notify: Restart_ssh
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)usepam

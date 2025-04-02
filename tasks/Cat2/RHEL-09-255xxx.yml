@@ -1,7 +1,9 @@
 ---
 
 - name: "MEDIUM | RHEL-09-255010 | PATCH | All RHEL 9 networked systems must have SSH installed."
-  when: rhel_09_255010
+  when:
+    - rhel_09_255010
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255010
     - CAT2
@@ -21,7 +23,9 @@
     state: present
 
 - name: "MEDIUM | RHEL-09-255015 | PATCH | All RHEL 9 networked systems must have and implement SSH to protect the confidentiality and integrity of transmitted and received information, as well as information during preparation for transmission."
-  when: rhel_09_255015
+  when:
+    - rhel_09_255015
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255015
     - CAT2
@@ -55,7 +59,9 @@
     state: present
 
 - name: "MEDIUM | RHEL-09-255025 | PATCH | RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system via a SSH logon."
-  when: rhel_09_255025
+  when:
+    - rhel_09_255025
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255025
     - CAT2
@@ -71,7 +77,7 @@
     - V-257981
     - NIST800-53R4_AC-8
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)banner \/.*\/.*
@@ -81,7 +87,9 @@
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255030 | PATCH | RHEL 9 must log SSH connection attempts and failures to the server."
-  when: rhel_09_255030
+  when:
+    - rhel_09_255030
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255030
     - CAT2
@@ -91,7 +99,7 @@
     - V-257982
     - NIST800-53R4_AC-17
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)LogLevel.*
@@ -101,7 +109,9 @@
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255035 | PATCH | RHEL 9 SSHD must accept public key authentication"
-  when: rhel_09_255035
+  when:
+    - rhel_09_255035
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255035
     - CAT2
@@ -115,7 +125,7 @@
     - V-257983
     - NIST800-53R4_IA-2
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)PubkeyAuthentication\s*(yes|no)
@@ -125,7 +135,9 @@
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255045 | PATCH | RHEL 9 must not permit direct logons to the root account using remote access via SSH."
-  when: rhel_09_255045
+  when:
+    - rhel_09_255045
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255045
     - CAT2
@@ -136,7 +148,7 @@
     - V-257985
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)PermitRootLogin\s*(yes|no)
@@ -146,7 +158,9 @@
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255055 | PATCH | RHEL 9 SSH daemon must be configured to use system-wide crypto policies."
-  when: rhel_09_255055
+  when:
+    - rhel_09_255055
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255055
     - CAT2
@@ -166,7 +180,9 @@
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255060 | PATCH | RHEL 9 must implement DOD-approved encryption ciphers to protect the confidentiality of SSH client connections."
-  when: rhel_09_255060
+  when:
+    - rhel_09_255060
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255060
     - CAT2
@@ -186,7 +202,9 @@
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255065 | PATCH | RHEL 9 must implement DOD-approved encryption ciphers to protect the confidentiality of SSH server connections."
-  when: rhel_09_255065
+  when:
+    - rhel_09_255065
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255065
     - CAT2
@@ -202,7 +220,9 @@
     line: "Ciphers {{ rhel9stig_sshd_config.ciphers | join(',') }}"
 
 - name: "MEDIUM | RHEL-09-255075 | PATCH | RHEL 9 SSH server must be configured to use only Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms."
-  when: rhel_09_255075
+  when:
+    - rhel_09_255075
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255075
     - CAT2
@@ -218,7 +238,9 @@
     line: "MACs {{ rhel9stig_sshd_config.macs | join(',') }}"
 
 - name: "MEDIUM | RHEL-09-255080 | PATCH | RHEL 9 must not allow a noncertificate trusted host SSH logon to the system."
-  when: rhel_09_255080
+  when:
+    - rhel_09_255080
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255080
     - CAT2
@@ -228,7 +250,7 @@
     - V-257992
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)HostbasedAuthentication\s*(yes|no)
@@ -238,7 +260,9 @@
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255085 | PATCH | RHEL 9 must not allow users to override SSH environment variables."
-  when: rhel_09_255085
+  when:
+    - rhel_09_255085
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255085
     - CAT2
@@ -248,7 +272,7 @@
     - V-257993
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)PermitUserEnvironments\s*(yes|no)
@@ -258,7 +282,9 @@
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255090 | PATCH | RHEL 9 must force a frequent session key renegotiation for SSH connections to the server."
-  when: rhel_09_255090
+  when:
+    - rhel_09_255090
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255090
     - CAT2
@@ -273,7 +299,7 @@
     - NIST800-53R4_AC-17
     - NIST800-53R4_SC-8
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)RekeyLimit.*
@@ -283,7 +309,9 @@
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255095 | PATCH | RHEL 9 must be configured so that all network connections associated with SSH traffic terminate after becoming unresponsive."
-  when: rhel_09_255095
+  when:
+    - rhel_09_255095
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255095
     - CAT2
@@ -297,7 +325,7 @@
     - NIST800-53R4_SC-10
     - NIST800-53R4_AC-12
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)ClientAliveCountMax\s\d*
@@ -307,7 +335,9 @@
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255100 | PATCH | RHEL 9 must be configured so that all network connections associated with SSH traffic are terminated after 10 minutes of becoming unresponsive."
-  when: rhel_09_255100
+  when:
+    - rhel_09_255100
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255100
     - CAT2
@@ -324,7 +354,7 @@
     - NIST800-53R4_SC-10
     - NIST800-53R4_AC-12
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)ClientAliveInterval\s\d*
@@ -334,7 +364,9 @@
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255105 | PATCH | RHEL 9 SSH server configuration file must be group-owned by root."
-  when: rhel_09_255105
+  when:
+    - rhel_09_255105
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255105
     - CAT2
@@ -350,7 +382,9 @@
     mode: 'go-rwx'
 
 - name: "MEDIUM | RHEL-09-255110 | PATCH | RHEL 9 SSH server configuration file must be owned by root."
-  when: rhel_09_255110
+  when:
+    - rhel_09_255110
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255110
     - CAT2
@@ -366,7 +400,9 @@
     mode: 'go-rwx'
 
 - name: "MEDIUM | RHEL-09-255115 | PATCH | RHEL 9 SSH server configuration file must have mode 0600 or less permissive"
-  when: rhel_09_255115
+  when:
+    - rhel_09_255115
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255115
     - CAT2
@@ -381,7 +417,9 @@
     mode: 'go-rwx'
 
 - name: "MEDIUM | RHEL-09-255120 | PATCH | RHEL 9 SSH private host key files must have mode 0640 or less permissive."
-  when: rhel_09_255120
+  when:
+    - rhel_09_255120
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255120
     - CAT2
@@ -404,7 +442,9 @@
       loop: "{{ discovered_private_ssh_keys.files }}"
 
 - name: "MEDIUM | RHEL-09-255125 | PATCH | RHEL 9 SSH public host key files must have mode 0644 or less permissive."
-  when: rhel_09_255125
+  when:
+    - rhel_09_255125
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255125
     - CAT2
@@ -427,7 +467,9 @@
       loop: "{{ discovered_pub_ssh_keys.files }}"
 
 - name: "MEDIUM | RHEL-09-255130 | PATCH | RHEL 9 SSH daemon must not allow compression or must only allow compression after successful authentication."
-  when: rhel_09_255130
+  when:
+    - rhel_09_255130
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255130
     - CAT2
@@ -437,7 +479,7 @@
     - V-258002
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)Compression\s*(yes|no)
@@ -447,7 +489,9 @@
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255135 | PATCH | RHEL 9 SSH daemon must not allow GSSAPI authentication."
-  when: rhel_09_255135
+  when:
+    - rhel_09_255135
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255135
     - CAT2
@@ -460,7 +504,7 @@
     - NIST800-53R4_CM-5
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)GSSAPIAuthentication\s*(yes|no)
@@ -470,7 +514,9 @@
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255140 | PATCH | RHEL 9 SSH daemon must not allow Kerberos authentication."
-  when: rhel_09_255140
+  when:
+    - rhel_09_255140
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255140
     - CAT2
@@ -483,7 +529,7 @@
     - NIST800-53R4_CM-5
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)KerberosAuthentication\s*(yes|no)
@@ -493,7 +539,9 @@
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255145 | PATCH | RHEL 9 SSH daemon must not allow rhosts authentication"
-  when: rhel_09_255145
+  when:
+    - rhel_09_255145
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255145
     - CAT2
@@ -503,7 +551,7 @@
     - V-258005
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)IgnoreRhosts\s*(yes|no)
@@ -513,7 +561,9 @@
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255150 | PATCH | RHEL 9 SSH daemon must not allow known hosts authentication."
-  when: rhel_09_255150
+  when:
+    - rhel_09_255150
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255150
     - CAT2
@@ -523,7 +573,7 @@
     - V-258006
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config.d/50-redhat.conf
     regexp: (?i)^(#|)IgnoreUserKnownHosts\s*(yes|no)
@@ -533,7 +583,9 @@
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255155 | PATCH | RHEL 9 SSH daemon must disable remote X connections for interactive users."
-  when: rhel_09_255155
+  when:
+    - rhel_09_255155
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255155
     - CAT2
@@ -543,7 +595,7 @@
     - V-258007
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)X11forwarding\s*(yes|no)
@@ -553,7 +605,9 @@
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255160 | PATCH | RHEL 9 SSH daemon must perform strict mode checking of home directory configuration files."
-  when: rhel_09_255160
+  when:
+    - rhel_09_255160
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255160
     - CAT2
@@ -563,7 +617,7 @@
     - V-258008
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)StrictModes\s*(yes|no)
@@ -573,7 +627,9 @@
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255165 | PATCH | RHEL 9 SSH daemon must display the date and time of the last successful account logon upon an SSH logon."
-  when: rhel_09_255165
+  when:
+    - rhel_09_255165
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255165
     - CAT2
@@ -583,7 +639,7 @@
     - V-258009
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)PrintLastLog\s*(yes|no)
@@ -593,7 +649,9 @@
     validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255175 | PATCH | RHEL 9 SSH daemon must prevent remote hosts from connecting to the proxy display."
-  when: rhel_09_255175
+  when:
+    - rhel_09_255175
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255175
     - CAT2
@@ -603,7 +661,7 @@
     - V-258011
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)X11UseLocalhost\s*(yes|no)
