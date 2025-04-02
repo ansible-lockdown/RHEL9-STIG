@@ -146,6 +146,7 @@
   when:
     - rhel9stig_sshd_config_file != '/etc/ssh/sshd_config'
     - "'openssh-server' in ansible_facts.packages"
+    - rhel9stig_sshd_required
   tags: ssh
   ansible.builtin.file:
     path: "{{ rhel9stig_sshd_config_file }}"
@@ -155,6 +156,7 @@
     state: touch
 
 - name: PRELIM | SSH | find existing ssh config files
+  when: rhel9stig_sshd_required
   tags: always
   ansible.builtin.find:
     paths:

@@ -33,11 +33,12 @@
     - NIST800-53R4_AC-8
   block:
     - name: "MEDIUM | RHEL-09-211020 | PATCH | RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system via a command line user logon. | Uncomment banner keyword and set banner path"
-      when: rhel9stig_ssh_required
+      when: rhel9stig_sshd_required
       ansible.builtin.lineinfile:
         path: /etc/ssh/sshd_config
         regexp: '(?i)^Banner'
         line: "Banner {{ rhel9stig_sshd_config.banner_file }}"
+      notify: Sshd_restart
 
     - name: "MEDIUM | RHEL-09-211020 | PATCH | RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system via a command line user logon. | Set banner message"
       ansible.builtin.copy:  # noqa: template-instead-of-copy
@@ -46,7 +47,6 @@
         group: root
         mode: '0644'
         owner: root
-      notify: Sshd_restart
       loop:
         - /etc/issue
         - /etc/issue.net
