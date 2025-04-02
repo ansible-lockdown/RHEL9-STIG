@@ -226,4 +226,4 @@ rhel_09_672020: false # Crypto | Kerberos is not required in base container imag
 rhel_09_672025: false # Crypto | Kerberos is not required in base container image builds
 rhel_09_672035: false # Crypto | OpenSSL is not required in base container image builds
 rhel_09_672040: false # Crypto | OpenSSL is not required in base container image builds
-rhel_09_672050: false # Crypto | Bind is not required in base container image builds  
+rhel_09_672050: false # Crypto | Bind is not required in base container image builds
