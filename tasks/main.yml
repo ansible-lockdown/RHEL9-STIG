@@ -120,7 +120,9 @@
     file: Cat3/main.yml
 
 - name: Run auditd logic
-  when: update_audit_template
+  when:
+    - update_audit_template
+    - rhel9stig_auditd_required
   tags:
     - always
   ansible.builtin.import_tasks:

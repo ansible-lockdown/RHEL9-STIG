@@ -118,7 +118,9 @@
     state: latest
 
 - name: PRELIM | Configure System Accounting (auditd)
-  when: '"auditd" not in ansible_facts.packages'
+  when:
+    - rhel9stig_auditd_required
+    - '"auditd" not in ansible_facts.packages'
   tags:
     - cat2
     - SRG-OS-000062-GPOS-00031
@@ -152,6 +154,7 @@
 
 - name: "PRELIM | Discover auditd_logfile_path"
   when:
+    - rhel9stig_auditd_required
     - rhel_09_653085 or
       rhel_09_653085 or
       rhel_09_653090
