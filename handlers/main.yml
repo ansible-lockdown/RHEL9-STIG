@@ -51,7 +51,7 @@
     name: NetworkManager
     state: restarted
 
-- name: Restart_ssh
+- name: Restart_sshd
   ansible.builtin.systemd:
     name: sshd
     state: restarted
