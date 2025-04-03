@@ -19,9 +19,9 @@
   notify: Update_dconf
   community.general.ini_file:
     path: /etc/dconf/db/local.d/01-banner-message
+    option: banner-message-enable
     section: 'org/gnome/login-screen'
     mode: 'u-x,go-wx'
-    option: banner-message-enable
     value: 'true'
 
 - name: "MEDIUM | RHEL-09-271015 | PATCH | RHEL 9 must prevent a user from overriding the banner-message-enable setting for the graphical user interface."
@@ -44,9 +44,9 @@
   ansible.builtin.lineinfile:
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
     line: /org/gnome/login-screen/banner-message-enable
-    state: present
     create: true
-    mode: 'u-x,go-wx'
+    mode: 'go-wx'
+    state: present
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271020 | PATCH | RHEL 9 must disable the graphical user interface automount function unless required."
@@ -68,8 +68,8 @@
     option: automount-open
     section: 'org/gnome/desktop/media-handling'
     value: 'false'
-    mode: 'u-x,go-wx'
     create: true
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271025 | PATCH | RHEL 9 must prevent a user from overriding the disabling of the graphical user interface automount function."
@@ -89,7 +89,7 @@
   ansible.builtin.lineinfile:
     path: "/etc/dconf/db/{{ item }}.d/locks/00-security-settings-lock"
     line: /org/gnome/desktop/media-handling/automount-open
-    mode: 'u-x,go-wx'
+    mode: 'go-wx'
     create: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
@@ -109,8 +109,8 @@
     section: 'org/gnome/desktop/media-handling'
     option: autorun-never
     value: 'true'
-    mode: 'u-x,go-wx'
     create: true
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271035 | PATCH | RHEL 9 must prevent a user from overriding the disabling of the graphical user interface autorun function."
@@ -130,7 +130,7 @@
   ansible.builtin.lineinfile:
     path: "/etc/dconf/db/{{ item }}.d/locks/00-security-settings-lock"
     line: /org/gnome/desktop/media-handling/autorun-never
-    mode: 'u-x,go-wx'
+    mode: 'go-wx'
     create: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
@@ -154,7 +154,7 @@
     option: removal-action
     value: "'lock-screen'"
     no_extra_spaces: true
-    mode: 'u-x,go-wx'
+    mode: 'go-wx'
     create: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
@@ -175,7 +175,7 @@
   ansible.builtin.lineinfile:
     path: "/etc/dconf/db/{{ item }}.d/locks/00-security-settings-lock"
     line: /org/gnome/settings-daemon/peripherals/smartcard/removal-action
-    mode: 'u-x,go-wx'
+    mode: 'go-wx'
     create: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
@@ -195,11 +195,11 @@
   notify: Update_dconf
   community.general.ini_file:
     path: "/etc/dconf/db/{{ item }}.d/00-screensaver"
+    option: lock-enabled
     section: 'org/gnome/desktop/screensaver'
     value: 'true'
-    option: lock-enabled
     create: true
-    mode: 'u-x,go-wx'
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271060 | PATCH | RHEL 9 must prevent a user from overriding the screensaver lock-enabled setting for the graphical user interface."
@@ -220,7 +220,7 @@
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
     line: /org/gnome/desktop/screensaver/lock-enabled
     create: true
-    mode: 'u-x,go-wx'
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271065 | PATCH | RHEL 9 must automatically lock graphical user sessions after 15 minutes of inactivity."
@@ -238,11 +238,11 @@
   notify: Update_dconf
   community.general.ini_file:
     path: "/etc/dconf/db/{{ item }}.d/00-screensaver"
-    section: 'org/gnome/desktop/session'
     option: idle-delay
+    section: 'org/gnome/desktop/session'
     value: 'uint32 900'
     create: true
-    mode: 'u-x,go-wx'
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271070 | PATCH | RHEL 9 must prevent a user from overriding the session idle-delay setting for the graphical user interface"
@@ -262,7 +262,7 @@
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
     line: /org/gnome/desktop/session/idle-delay
     create: true
-    mode: 'u-x,go-wx'
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271075 | PATCH | RHEL 9 must initiate a session lock for graphical user interfaces when the screensaver is activated."
@@ -278,11 +278,11 @@
   notify: Update_dconf
   community.general.ini_file:
     path: "/etc/dconf/db/{{ item }}.d/00-screensaver"
+    option: lock-delay
     section: 'org/gnome/desktop/screensaver'
     value: 'uint32 5'
-    option: lock-delay
     create: true
-    mode: 'u-x,go-wx'
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271080 | PATCH | RHEL 9 must prevent a user from overriding the session idle-delay setting for the graphical user interface"
@@ -299,7 +299,7 @@
   ansible.builtin.lineinfile:
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
     line: /org/gnome/desktop/screensaver/lock-delay
-    mode: 'u-x,go-wx'
+    mode: 'go-wx'
     create: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
@@ -318,8 +318,8 @@
     - name: "MEDIUM | RHEL-09-271085 | PATCH | RHEL 9 must conceal, via the session lock, information previously visible on the display with a publicly viewable image."
       community.general.ini_file:
         path: "/etc/dconf/db/{{ item }}.d/00-security-settings"
-        section: 'org/gnome/desktop/screensaver'
         option: picture-uri
+        section: 'org/gnome/desktop/screensaver'
         value: "''"
         mode: 'u-x,go-wx'
         create: true
@@ -330,7 +330,7 @@
         path: "/etc/dconf/db/{{ item }}.d/locks/00-security-settings-lock"
         line: /org/gnome/desktop/screensaver/picture-uri
         create: true
-        mode: 'u-x,go-wx'
+        mode: 'go-wx'
       loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271090 | PATCH | RHEL 9 effective dconf policy must match the policy keyfiles."
@@ -377,7 +377,7 @@
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
     line: /org/gnome/login-screen/disable-restart-buttons
     create: true
-    mode: 'u-x,go-wx'
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271105 | PATCH | RHEL 9 must disable the ability of a user to accidentally press Ctrl-Alt-Del and cause a system to shut down or reboot."
@@ -410,7 +410,7 @@
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
     line: /org/gnome/settings-daemon/plugins/media-keys/logout
     create: true
-    mode: 'u-x,go-wx'
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271115 | PATCH |  RHEL 9 must disable the user list at logon for graphical user interfaces."
@@ -426,9 +426,9 @@
   notify: Update_dconf
   community.general.ini_file:
     path: "/etc/dconf/db/{{ item }}.d/02-login-screen"
-    section: 'org/gnome/login-screen'
     option: disable-user-list
+    section: 'org/gnome/login-screen'
     value: 'true'
     create: true
-    mode: 'u-x,go-wx'
+    mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"

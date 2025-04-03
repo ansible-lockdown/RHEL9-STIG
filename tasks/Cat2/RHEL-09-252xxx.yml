@@ -43,8 +43,8 @@
     - V-257945
     - NIST800-53R4_AU-8
   ansible.builtin.template:
-    dest: /etc/chrony.conf
     src: etc/chrony.conf.j2
+    dest: /etc/chrony.conf
     mode: 'u-x,go-wx'
 
 # Required before 252035 to set DNS value in NetworkManager
@@ -85,9 +85,9 @@
           rhel9stig_network_manager_dns.stdout == 'none' or
           rhel9stig_network_manager_dns.stdout == 'unmanaged'
       ansible.builtin.template:
+        src: etc/resolv.conf.j2
         dest: /etc/resolv.conf
         mode: 'u-x,go-wx'
-        src: etc/resolv.conf.j2
 
     - name: "MEDIUM | RHEL-09-252035 | PATCH | RHEL 9 systems using Domain Name Servers (DNS) resolution must have at least two name servers configured."
       when:

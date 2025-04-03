@@ -156,7 +156,7 @@
     warn_control_id: "MEDIUM | RHEL-09-652045"
   block:
     - name: "MEDIUM | RHEL-09-652045 | AUDIT | RHEL 9 must encrypt the transfer of audit records offloaded onto a different system or media from the system being audited via rsyslog."
-      ansible.builtin.shell: grep -i 'StreamDriver[\.]*Mode' /etc/rsyslog.conf /etc/rsyslog.d/*.conf
+      ansible.builtin.command: grep -i 'StreamDriver[\.]*Mode' /etc/rsyslog.conf /etc/rsyslog.d/*.conf
       changed_when: false
       failed_when: discovered_rsyslog_remote_stream_driver.rc not in [ 0, 1, 2 ]
       register: discovered_rsyslog_remote_stream_driver

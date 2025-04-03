@@ -29,7 +29,7 @@
     warn_control_id: "MEDIUM | RHEL-09-411015"
   block:
     - name: "MEDIUM | RHEL-09-411015 | AUDIT | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
-      ansible.builtin.shell: "awk -F: '$1 !~ /^root$/ && $2 !~ /^[!*]/ && $5 > {{ rhel9stig_pass_max_days }} {print $1}' /etc/shadow"
+      ansible.builtin.command: "awk -F: '$1 !~ /^root$/ && $2 !~ /^[!*]/ && $5 > {{ rhel9stig_pass_max_days }} {print $1}' /etc/shadow"
       changed_when: false
       failed_when: discovered_users_passwd_max.rc not in [ 0, 1 ]
       register: discovered_users_passwd_max
@@ -90,7 +90,7 @@
     warn_control_id: "MEDIUM | RHEL-09-411025"
   block:
     - name: "MEDIUM | RHEL-09-411025 | AUDIT | RHEL 9 must set the umask value to 077 for all local interactive user accounts."
-      ansible.builtin.shell: grep -ri umask {{ rhel9stig_home_filesystem }}/*/.[^.]*
+      ansible.builtin.shell: grep -ri umask {{ rhel9stig_home_filesystem }}/*/.[^.]*  # noqa: shell-instead-of-command
       changed_when: false
       failed_when: discovered_homedirs_umasks_set.rc not in [ 0, 1 ]
       register: discovered_homedirs_umasks_set
@@ -220,8 +220,7 @@
       when: discovered_duplicate_gids is defined or discovered_gid_exists is defined
       ansible.builtin.debug:
         msg: "Warning!! Issues with primary user groups have been found Please investigate"
-      loop:
-        - "{{ discovered_duplicate_gids.stdout_lines }}"
+      loop: "{{ discovered_duplicate_gids.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-411045 | WARN | All RHEL 9 interactive users must have a primary group that exists.."
       when:
@@ -269,11 +268,11 @@
   block:
     - name: "MEDIUM | RHEL-09-411055 | AUDIT | Executable search paths within the initialization files of all local interactive RHEL 9 users must only contain paths that resolve to the system default or the users home directory."
       ansible.builtin.find:
+        path: "{{ rhel9stig_home_filesystem }}"
         contains: PATH=\".*\"
         depth: 2
         file_type: file
         hidden: true
-        path: "{{ rhel9stig_home_filesystem }}"
         read_whole_file: true
         recurse: true
         use_regex: true
@@ -343,7 +342,7 @@
       loop: "{{ discovered_home_dir.results }}"
       when: not system_is_container
 
-- name: "MEDIUM | RHEL-09-411070 | PATCH | All RHEL 9 local interactive user home directories must be group-owned by the home directory owner's primary group.."
+- name: "MEDIUM | RHEL-09-411070 | PATCH | All RHEL 9 local interactive user home directories must be group-owned by the home directory owner's primary group."
   when:
     - rhel_09_411070
     - item.uid >= min_int_uid | int
@@ -399,6 +398,7 @@
     path: /etc/security/faillock.conf
     regexp: ^(#|)even_deny_root
     line: even_deny_root
+    mode: 'go-wx'
 
 - name: "MEDIUM | RHEL-09-411085 | PATCH | RHEL 9 must automatically lock an account when three unsuccessful logon attempts occur during a 15-minute time period."
   when: rhel_09_411085
@@ -417,6 +417,7 @@
     path: /etc/security/faillock.conf
     regexp: '^fail_interval\s*=\s*'
     line: "fail_interval = {{ rhel9stig_faillock_fail_interval }}"
+    mode: 'go-wx'
 
 - name: "MEDIUM | RHEL-09-411090 | PATCH | RHEL 9 must maintain an account lock until the locked account is released by an administrator."
   when:
@@ -433,8 +434,14 @@
     - V-258057
     - NIST800-53R4_AC-7
   block:
-    - name: "MEDIUM | RHEL-09-411090 | PATCH | RHEL 9 must maintain an account lock until the locked account is released by an administrator. | not auth select profile"
-      when: rhel9stig_add_faillock_without_authselect
+    - name: "MEDIUM | RHEL-09-411090 | PATCH | RHEL 9 must maintain an account lock until the locked account is released by an administrator."
+      ansible.builtin.lineinfile:
+        path: /etc/security/faillock.conf
+        regexp: '^unlock_time\s*=\s*[1-9]'
+        line: "unlock_time = 0"
+        mode: 'go-wx'
+
+    - name: "MEDIUM | RHEL-09-411090 | AUDIT | RHEL 9 must maintain an account lock until the locked account is released by an administrator. | not auth select profile"
       ansible.builtin.lineinfile:
         path: "/etc/pam.d/password-auth"
         regexp: "{{ item.regexp }}"
@@ -475,6 +482,8 @@
     - SV-258058r1045148_rule
     - V-258058
     - NIST800-53R4_CM-6
+  vars:
+    rhel9stig_passwd_tasks: "RHEL-09-411095"  # pragma: allowlist secret
   block:
     - name: "MEDIUM | RHEL-09-411095 | AUDIT | RHEL 9 must not have unauthorized accounts. | Find unnecessary accounts"
       ansible.builtin.command: "grep '^{{ item }}:' /etc/passwd"
@@ -496,8 +505,6 @@
       when: discovered_accounts_removed is changed  # noqa no-handler
       ansible.builtin.include_tasks:
         file: ../parse_etc_password.yml
-      vars:
-        rhel9stig_passwd_tasks: "RHEL-09-411095"  # pragma: allowlist secret
 
 - name: "MEDIUM | RHEL-09-411105 | PATCH | RHEL 9 must ensure account lockouts persist."
   when: rhel_09_411105
@@ -575,6 +582,6 @@
     - name: "MEDIUM | RHEL-09-411115 | AUDIT | Local RHEL 9 initialization files must not execute world-writable programs."
       when: discovered_user_exec_ww_files is defined
       ansible.builtin.file:
-        mode: 'go-wx'
         path: "{{ item }}"
+        mode: 'go-wx'
       loop: "{{ discovered_user_exec_ww_files.stdout_lines }}"

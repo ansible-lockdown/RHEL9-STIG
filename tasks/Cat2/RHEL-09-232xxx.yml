@@ -24,8 +24,7 @@
       ansible.builtin.file:
         mode: 'u+x,go-w'
         path: "{{ item }}"
-      loop:
-        - "{{ discovered_system_command_permissions.stdout_lines }}"
+      loop: "{{ discovered_system_command_permissions.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232015 | PATCH | RHEL 9 library directories must have mode 755 or less permissive."
   when:
@@ -49,10 +48,8 @@
     - name: "MEDIUM | RHEL-09-232015 | PATCH | RHEL 9 library directories must have mode 755 or less permissive."
       when: discovered_library_directory_perms.stdout | length > 0
       ansible.builtin.file:
-        mode: 'u+x,go-w'
         path: "{{ item }}"
-      loop:
-        - "{{ discovered_library_directory_perms.stdout_lines }}"
+      loop: "{{ discovered_library_directory_perms.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232020 | PATCH | RHEL 9 library files must have mode 755 or less permissive."
   when:
@@ -76,8 +73,8 @@
     - name: "MEDIUM | RHEL-09-232020 | PATCH | RHEL 9 library files must have mode 755 or less permissive."
       when: discovered_library_file_perms.stdout | length > 0
       ansible.builtin.file:
-        mode: 'u+x,go-w'
         path: "{{ item }}"
+        mode: 'u+x,go-w'
       loop: "{{ discovered_library_file_perms.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232025 | PATCH | RHEL 9 /var/log directory must have mode 0755 or less permissive."
@@ -93,9 +90,9 @@
     - V-257885
     - NIST800-53R4_SI-11
   ansible.builtin.file:
-    mode: 'u+x,g-w,o-w'
-    modification_time: preserve
     path: /var/log
+    mode: 'u+x,go-w'
+    modification_time: preserve
     state: directory
 
 - name: "MEDIUM | RHEL-09-232030 | PATCH | RHEL 9 /var/log/messages file must have mode 0640 or less permissive."
@@ -111,14 +108,13 @@
     - V-257886
     - NIST800-53R4_SI-11
   ansible.builtin.file:
+    path: /var/log/messages
     mode: 'u-x,g-wx,o-rwx'
     modification_time: preserve
-    path: /var/log/messages
     state: file
 
 - name: "MEDIUM | RHEL-09-232035 | PATCH | RHEL 9 audit tools must have a mode of 0755 or less permissive."
-  when:
-    - rhel_09_232035
+  when: rhel_09_232035
   tags:
     - RHEL-09-232035
     - CAT2
@@ -128,10 +124,10 @@
     - V-257887
     - NIST800-53R4_AU-9
   ansible.builtin.file:
+    path: "{{ item }}"
     mode: 'u+x,go-w'
     modification_time: preserve
     owner: root
-    path: "{{ item }}"
   loop: "{{ audit_bins }}"
 
 - name: "MEDIUM | RHEL-09-232040 | PATCH | RHEL 9 cron configuration directories must have a mode of 0700 or less permissive."
@@ -145,10 +141,10 @@
     - V-257888
     - NIST800-53R4_CM-6
   ansible.builtin.file:
+    path: "/etc/{{ item }}"
     mode: 'u+x,go-rwx'
     modification_time: preserve
     owner: root
-    path: "/etc/{{ item }}"
   loop:
     - cron.d
     - cron.daily
@@ -171,10 +167,10 @@
   block:
     - name: "MEDIUM | RHEL-09-232045 | AUDIT | All RHEL 9 local initialization files must have mode 0740 or less permissive. | Check for files"
       ansible.builtin.find:
+        path: ["{{ rhel9stig_home_filesystem }}", /root ]
         depth: 3
         file_type: file
         hidden: true
-        path: ["{{ rhel9stig_home_filesystem }}", /root ]
         patterns: ".*"
         recurse: true
       register: discovered_user_dot_files
@@ -272,7 +268,7 @@
     - NIST800-53R4_CM-6
   ansible.builtin.file:
     path: /etc/group-
-    mode: 'go-wx'
+    mode: 'u-x,go-wx'
   failed_when: discovered_group_hyphen_exists.state not in '[ file, absent ]'
   register: discovered_group_hyphen_exists
 
@@ -640,7 +636,7 @@
     path: /var/log
     owner: root
     state: directory
-    mode: 'u+x,o-w'
+    mode: 'o-w'
 
 - name: "MEDIUM | RHEL-09-232175 | PATCH | RHEL 9 /var/log directory must be group-owned by root."
   when: rhel_09_232175
@@ -656,7 +652,7 @@
     path: /var/log
     group: root
     state: directory
-    mode: 'u+x,o-w'
+    mode: 'o-w'
 
 - name: "MEDIUM | RHEL-09-232180 | PATCH | RHEL 9 /var/log/messages file must be owned by root."
   when: rhel_09_232180
@@ -669,8 +665,8 @@
     - V-257916
     - NIST800-53R4_SI-11
   ansible.builtin.file:
-    owner: root
     path: /var/log/messages
+    owner: root
 
 - name: "MEDIUM | RHEL-09-232185 | PATCH | RHEL 9 /var/log/messages file must be group-owned by root."
   when: rhel_09_232185
@@ -683,8 +679,8 @@
     - V-257917
     - NIST800-53R4_SI-11
   ansible.builtin.file:
-    group: root
     path: /var/log/messages
+    group: root
 
 - name: "MEDIUM | RHEL-09-232190 | PATCH | RHEL 9 system commands must be owned by root."
   when: rhel_09_232190
@@ -706,9 +702,9 @@
     - name: "MEDIUM | RHEL-09-232190 | PATCH | RHEL 9 system commands must be owned by root."
       when: discovered_sys_commands_owner.stdout | length > 0
       ansible.builtin.file:
-        owner: root
         path: "{{ item }}"
-      loop: "{{ discovered_sys_commands_owner.stdout_lines }}"
+        owner: root
+      loop: "{{ rhel9stig_sys_commands_owner.stdout_lines }}"
       loop_control:
         label: "{{ item }}"
 
@@ -763,9 +759,9 @@
     - name: "MEDIUM | RHEL-09-232200 | PATCH | RHEL 9 library files must be owned by root."
       when: discovered_lib_files_owner.stdout | length > 0
       ansible.builtin.file:
-        owner: root
         path: "{{ item }}"
-      loop: "{{ discovered_lib_files_owner.stdout_lines }}"
+        owner: root
+      loop: "{{ rhel9stig_lib_files_owner.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232205 | PATCH | RHEL 9 library files must be group-owned by root or a system account."
   when: rhel_09_232205
@@ -809,8 +805,8 @@
     - V-257922
     - NIST800-53R4_CM-5
   ansible.builtin.file:
-    owner: root
     path: "{{ item }}"
+    owner: root
   loop:
     - '/lib'
     - '/lib64'
@@ -859,8 +855,8 @@
     - V-257924
     - NIST800-53R4_AU-9
   ansible.builtin.file:
-    owner: root
     path: "{{ item }}"
+    owner: root
   loop: "{{ audit_bins }}"
 
 - name: "MEDIUM | RHEL-09-232225 | PATCH | RHEL 9 audit tools must be group-owned by root."
@@ -874,8 +870,8 @@
     - V-257925
     - NIST800-53R4_AU-9
   ansible.builtin.file:
-    group: root
     path: "{{ item }}"
+    group: root
   loop: "{{ audit_bins }}"
 
 - name: "MEDIUM | RHEL-09-232230 | PATCH | RHEL 9 cron configuration files directory must be owned by root."
@@ -889,8 +885,8 @@
     - V-257926
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    owner: root
     path: "{{ item }}"
+    owner: root
   loop:
     - '/etc/cron.d'
     - '/etc/cron.daily'
@@ -911,8 +907,8 @@
     - V-257927
     - NIST800-53R4_CM-6
   ansible.builtin.file:
-    group: root
     path: "{{ item }}"
+    group: root
   loop:
     - '/etc/cron.d'
     - '/etc/cron.daily'

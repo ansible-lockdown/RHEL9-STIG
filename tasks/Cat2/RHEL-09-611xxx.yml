@@ -815,8 +815,8 @@
     - V-258125
     - NIST800-53R4_IA-2
   ansible.builtin.systemd:
-    enabled: true
     name: pcscd
+    enabled: true
     state: started
 
 - name: "MEDIUM | RHEL-09-611190 | PATCH | RHEL 9, for PKI-based authentication, must enforce authorized access to the corresponding private key."

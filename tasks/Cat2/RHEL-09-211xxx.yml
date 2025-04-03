@@ -76,11 +76,11 @@
     - SV-257783r991562_rule
     - V-257783
     - NIST800-53R4_SC-24
-  ansible.builtin.systemd:
-    enabled: true
-    name: systemd-journald
-    state: started
   notify: Systemd_daemon_reload
+  ansible.builtin.systemd:
+    name: systemd-journald
+    enabled: true
+    state: started
 
 - name: "MEDIUM | RHEL-09-211055 | PATCH | RHEL 9 debug-shell systemd service must be disabled."
   when: rhel_09_211055
@@ -93,9 +93,9 @@
     - SV-257786r1044834_rule
     - V-257786
     - NIST800-53R4_AC-6
+  notify: Systemd_daemon_reload
   ansible.builtin.systemd:
+    name: debug-shell.service
     enabled: false
     masked: true
-    name: debug-shell.service
     state: stopped
-  notify: Systemd_daemon_reload

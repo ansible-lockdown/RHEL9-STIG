@@ -44,9 +44,9 @@
     - NIST800-53R4_SC-8
     - NIST800-53R4_SC-13
     - fips
-  notify: Change_requires_reboot
   vars:
     warn_control_id: "HIGH | RHEL-09-671010"
+  notify: Change_requires_reboot
   block:
     - name: HIGH | RHEL-09-671010 | AUDIT | RHEL 9 must enable FIPS mode | Check current state.
       ansible.builtin.command: fips-mode-setup --check

@@ -72,7 +72,7 @@
     - pam
   block:
     - name: "MEDIUM | RHEL-09-671025 | AUDIT |  RHEL 9 pam_unix.so module must be configured in the password-auth file to use a FIPS 140-3 approved cryptographic hashing algorithm for system authentication."
-      ansible.builtin.shell: grep "password.*pam_unix.so" /etc/pam.d/password-auth
+      ansible.builtin.command: grep "password.*pam_unix.so" /etc/pam.d/password-auth
       changed_when: false
       failed_when: discovered_fips_auth_status.rc not in [ 0, 1 ]
       register: discovered_fips_auth_status

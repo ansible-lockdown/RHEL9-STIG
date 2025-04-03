@@ -100,60 +100,62 @@
   ansible.builtin.command: dconf update
   changed_when: true
 
-#  "Build aide DB"
+- name: Restart_rsyslog
+  ansible.builtin.systemd:
+    name: rsyslog.service
+    state: restarted
 
-- name: "Build aide db | Check current db file"
+- name: AIDE - Check for DB file
   ansible.builtin.stat:
     path: "{{ rhel9stig_aide_db_file }}"
   register: discovered_aide_db_file
-  listen: Build aide db
+  listen: Build_aide_db
 
-- name: "Build aide db | Check current db file age"
+- name: AIDE - Discover age of DB
   when: discovered_aide_db_file.stat.exists
   ansible.builtin.find:
     path: "{{ rhel9stig_aide_db_file | dirname }}"
     pattern: "{{ rhel9stig_aide_db_file | basename }}"
     age: "{{ rhel9stig_aide_db_file_age }}"
   register: discovered_aide_db_age
-  listen: Build aide db
+  listen: Build_aide_db
 
-- name: "Build aide db | Build AIDE DB if older than {{ rhel9stig_aide_db_file_age }}"  # noqa name[title]
-  when:
-    - not ansible_check_mode
-    - not discovered_aide_db_file.stat.exists or
-      (discovered_aide_db_age.files | length > 0) or
-      rhel9stig_aide_db_recreate
-  ansible.builtin.command: "{{ aide_initiate_command }}"
+- name: "AIDE - Create DB if absent, forced or older than {{ rhel9stig_aide_db_file_age }}"
+  when: not discovered_aide_db_file.stat.exists or
+        (discovered_aide_db_age.files | length > 0) or
+        rhel9stig_aide_db_recreate
+  ansible.builtin.command: /usr/sbin/aide --init
   changed_when: true
-  listen: Build aide db
+  register: discovered_new_aide_db_created
+  listen: Build_aide_db
 
-- name: "Build aide db | Build AIDE DB | Wait for file before continuing"
+- name: "AIDE - Rename DB file if DB created"
   when:
-    - not ansible_check_mode
     - not discovered_aide_db_file.stat.exists or
       (discovered_aide_db_age.files | length > 0) or
       rhel9stig_aide_db_recreate
-  ansible.builtin.wait_for:
-    path: /var/lib/aide/aide.db.new.gz
-  listen: Build aide db
+    - discovered_new_aide_db_created.changed  # noqa: no-changed-when
+  ansible.builtin.command: "mv -f {{ rhel9stig_aide_db_new_file }} {{ rhel9stig_aide_db_file }}"
+  changed_when: true
+  listen: Build_aide_db
 
-- name: "Build aide db | Build AIDE DB | copy AIDE DB"
+- name: AIDE - If DB exists run check comparison
   when:
-    - not ansible_check_mode
-    - not discovered_aide_db_file.stat.exists or
-      (discovered_aide_db_age.files | length > 0) or
-      rhel9stig_aide_db_recreate
-  ansible.builtin.copy:
-    src: /var/lib/aide/aide.db.new.gz
-    dest: /var/lib/aide/aide.db.gz
-    remote_src: true
-    mode: 'ug-wx,o-rwx'
-  listen: Build aide db
+    - discovered_aide_db_file.stat.exists
+    - not discovered_new_aide_db_created.changed  # noqa: no-changed-when
+  ansible.builtin.command: /usr/sbin/aide --check
+  changed_when: true
+  failed_when: discovered_aidedb_check.rc not in [ 0, 1, 4, 7 ]
+  register: discovered_aidedb_check
+  listen: Build_aide_db
 
-- name: Restart_rsyslog
-  ansible.builtin.systemd:
-    name: rsyslog.service
-    state: restarted
+- name: AIDE - Warning if checks fail
+  when: discovered_aidedb_check.rc != 0
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-651010-Aide-Check"
+  ansible.builtin.import_tasks:
+    file: warning_facts.yml
+  listen: Build_aide_db
 
 # Must be prior to fapolicyd restart
 
@@ -209,8 +211,8 @@
     msg: "Reboot required for auditd to apply new rules as immutable set"
   listen: auditd_checks
 
-- name: Stop auditd process
-  ansible.builtin.command: systemctl kill auditd
+- name: Restart_auditd
+  ansible.builtin.command: service auditd restart  # noqa: command-instead-of-module  # Note using service as not a systemd object
   changed_when: true
   listen: Restart_auditd
 

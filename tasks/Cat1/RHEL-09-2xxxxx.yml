@@ -31,7 +31,7 @@
     regexp: ^CtrlAltDelBurstAction=none
     line: CtrlAltDelBurstAction=none
     create: true
-    mode: 'u-x,go-wx'
+    mode: 'go-wx'
 
 - name: HIGH | RHEL-09-211050 | PATCH | The x86 Ctrl-Alt-Delete key sequence must be disabled on RHEL 9
   when: rhel_09_211050
@@ -182,8 +182,7 @@
     name: tftp-server
     state: absent
 
-- name: HIGH | RHEL-08-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
-    of all information that requires at rest protection.
+- name: HIGH | RHEL-09-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification of all information that requires at rest protection.
   when: rhel_09_231190
   tags:
     - RHEL-09-231190
@@ -202,23 +201,20 @@
   vars:
     warn_control_id: "HIGH | RHEL-09-231190"
   block:
-    - name: HIGH | RHEL-08-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
-        of all information that requires at rest protection. | Get partition layout
+    - name: HIGH | RHEL-09-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification of all information that requires at rest protection. | Get partition layout
       ansible.builtin.command: blkid
       changed_when: false
       failed_when: false
       register: discovered_partition_layout
 
-    - name: HIGH | RHEL-08-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
-        of all information that requires at rest protection. | Message out warning
+    - name: HIGH | RHEL-09-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification of all information that requires at rest protection. | Message out warning
       ansible.builtin.debug:
         msg:
           - WARNING!! Below is the partition layout. Please run the "blkid" command to confirm every persistent disk partition has an entry for TYPE=crypto_LUKS.
           - If partitions other than pseudo file systems (such as /proc or /sys or tmpfs) this is a finding
           - "{{ discovered_partition_layout.stdout_lines }}"
 
-    - name: HIGH | RHEL-08-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification
-        of all information that requires at rest protection. | Message out warning
+    - name: HIGH | RHEL-09-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification of all information that requires at rest protection. | Message out warning
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -274,8 +270,8 @@
   block:
     - name: HIGH | RHEL-09-252075 | AUDIT | There must be no .shosts files on RHEL 9. | find files
       ansible.builtin.find:
-        hidden: true
         path: /
+        hidden: true
         pattern: .shosts
       register: discovered_dot_shosts
 
@@ -309,12 +305,12 @@
     - V-257984
     - NIST800-53R4_IA-2
     - ssh
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)PermitEmptyPasswords yes
     line: PermitEmptyPasswords no
     validate: sshd -t -f %s
-  notify: Restart_sshd
 
 - name: HIGH | RHEL-09-255050 | PATCH | RHEL 9 must enable the Pluggable Authentication Module (PAM) interface for SSHD.
   when:
@@ -354,7 +350,7 @@
     line: "{{ item.line }}"
     insertafter: "{{ item.after | default(omit) }}"
     create: true
-    mode: 'u-x,go-wx'
+    mode: 'go-wx'
   loop:
     - { regexp: "\\[daemon\\]", line: '[daemon]' }
     - { regexp: "(?i)^AutomaticLoginEnable=false", line: AutomaticLoginEnable=false, after: '[daemon]' }

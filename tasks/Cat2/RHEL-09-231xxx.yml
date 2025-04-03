@@ -70,9 +70,7 @@
         file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-231040 | PATCH | RHEL 9 file system automount function must be disabled unless required."
-  when:
-    - rhel_09_231040
-    - "'autofs' in ansible_facts.packages"
+  when: rhel_09_231040
   tags:
     - RHEL-09-231040
     - CAT2
@@ -85,17 +83,16 @@
     - V-257849
     - NIST800-53R4_IA-3
   ansible.builtin.systemd:
+    name: autofs.service
     daemon_reload: true
     masked: true
-    name: autofs.service
 
 - name: "MEDIUM | RHEL-09-231045 | PATCH | RHEL 9 must prevent device files from being interpreted on file systems that contain user home directories."
   when:
     - rhel_09_231045
     - item.mount == rhel9stig_home_filesystem
     - "'nodev' not in item.options"
-  notify:
-    - Remount_home
+  notify: Remount_home
   tags:
     - RHEL-09-231045
     - CAT2
@@ -105,10 +102,10 @@
     - V-257850
     - NIST800-53R4_CM-7
   ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }},nodev"
     path: "{{ rhel9stig_home_filesystem }}"
     src: "{{ item.device }}"
+    fstype: "{{ item.fstype }}"
+    opts: "{{ item.options }},nodev"
     state: present
   register: discovered_home_nodev
   loop: "{{ ansible_facts.mounts }}"
@@ -120,8 +117,7 @@
     - rhel_09_231050
     - item.mount == rhel9stig_home_filesystem
     - "'nosuid' not in item.options"
-  notify:
-    - Remount_home
+  notify: Remount_home
   tags:
     - RHEL-09-231050
     - CAT2
@@ -132,10 +128,10 @@
     - V-257851
     - NIST800-53R4_CM-7
   ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }}{% if discovered_home_nodev.changed %},nodev{% endif %},nosuid"
     path: "{{ rhel9stig_home_filesystem }}"
     src: "{{ item.device }}"
+    fstype: "{{ item.fstype }}"
+    opts: "{{ item.options }}{% if discovered_home_nodev.changed %},nodev{% endif %},nosuid"
     state: present
   register: discovered_home_nosuid
   loop: "{{ ansible_facts.mounts }}"
@@ -147,8 +143,7 @@
     - rhel_09_231055
     - item.mount == rhel9stig_home_filesystem
     - "'noexec' not in item.options"
-  notify:
-    - Remount_home
+  notify: Remount_home
   tags:
     - RHEL-09-231055
     - CAT2
@@ -158,10 +153,10 @@
     - V-257852
     - NIST800-53R4_CM-6
   ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }}{% if discovered_home_nodev.changed %},nodev{% endif %}{% if discovered_home_nosuid.changed %},nosuid{% endif %},noexec"
     path: "{{ rhel9stig_home_filesystem }}"
     src: "{{ item.device }}"
+    fstype: "{{ item.fstype }}"
+    opts: "{{ item.options }}{% if discovered_home_nodev.changed %},nodev{% endif %}{% if discovered_home_nosuid.changed %},nosuid{% endif %},noexec"
     state: present
   loop: "{{ ansible_facts.mounts }}"
   loop_control:
@@ -182,10 +177,10 @@
     - V-257854
     - NIST800-53R4_CM-6
   ansible.posix.mount:
-    fstype: "nfs"
-    opts: "{{ item.options }},nodev"
     path: "{{ item.mount }}"
     src: "{{ item.device }}"
+    fstype: "nfs"
+    opts: "{{ item.options }},nodev"
     state: present
   loop: "{{ ansible_facts.mounts | selectattr('fstype', 'contains', 'nfs') | rejectattr('fstype', 'equalto', 'autofs') | list }}"
   loop_control:
@@ -206,10 +201,10 @@
     - V-257855
     - NIST800-53R4_CM-6
   ansible.posix.mount:
-    fstype: "nfs"
-    opts: "{{ item.options }}{% if rhel_09_231065 %},nodev{% endif %},noexec"
     path: "{{ item.mount }}"
     src: "{{ item.device }}"
+    fstype: "nfs"
+    opts: "{{ item.options }}{% if rhel_09_231065 %},nodev{% endif %},noexec"
     state: present
   loop: "{{ ansible_facts.mounts | selectattr('fstype', 'contains', 'nfs') | rejectattr('fstype', 'equalto', 'autofs') | list }}"
   loop_control:
@@ -230,10 +225,10 @@
     - V-257856
     - NIST800-53R4_CM-6
   ansible.posix.mount:
-    fstype: "nfs"
-    opts: "{{ item.options }}{% if rhel_09_231065 %},nodev{% endif %}{% if rhel_09_231070 %},noexec{% endif %},nosuid"
     path: "{{ item.mount }}"
     src: "{{ item.device }}"
+    fstype: "nfs"
+    opts: "{{ item.options }}{% if rhel_09_231065 %},nodev{% endif %}{% if rhel_09_231070 %},noexec{% endif %},nosuid"
     state: present
   loop: "{{ ansible_facts.mounts | selectattr('fstype', 'contains', 'nfs') | rejectattr('fstype', 'equalto', 'autofs') | list }}"
   loop_control:
@@ -317,10 +312,9 @@
 - name: "MEDIUM | RHEL-09-231095 | PATCH | RHEL 9 must mount /boot with the nodev option. | BIOS based OS"
   when:
     - rhel_09_231095
+    - rhel9stig_legacy_boot
     - item.mount == '/boot'
     - "'nodev' not in item.options"
-  notify:
-    - Change_requires_reboot
   tags:
     - RHEL-09-231095
     - CAT2
@@ -329,11 +323,12 @@
     - SV-257860r1044940_rule
     - V-257860
     - NIST800-53R4_CM-7
+  notify: Change_requires_reboot
   ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }},nodev"
     path: '/boot'
     src: "UUID={{ item.uuid }}"
+    fstype: "{{ item.fstype }}"
+    opts: "{{ item.options }},nodev"
     state: present
   loop: "{{ ansible_facts.mounts }}"
   loop_control:
@@ -344,8 +339,6 @@
     - rhel_09_231100
     - item.mount == '/boot'
     - "'nosuid' not in item.options"
-  notify:
-    - Change_requires_reboot
   tags:
     - RHEL-09-231100
     - CAT2
@@ -354,11 +347,12 @@
     - SV-257861r1044941_rule
     - V-257861
     - NIST800-53R4_CM-7
+  notify: Change_requires_reboot
   ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }}{% if rhel_09_231100 %},nodev{% endif %},nosuid"
     path: '/boot'
     src: "UUID={{ item.uuid }}"
+    fstype: "{{ item.fstype }}"
+    opts: "{{ item.options }}{% if rhel_09_231100 %},nodev{% endif %},nosuid"
     state: present
   loop: "{{ ansible_facts.mounts }}"
   loop_control:
@@ -369,8 +363,6 @@
     - rhel_09_231105
     - not rhel9stig_legacy_boot
     - (item.mount == '/boot/efi' and "'nosuid' not in item.options")
-  notify:
-    - Change_requires_reboot
   tags:
     - RHEL-09-231105
     - CAT2
@@ -379,11 +371,12 @@
     - SV-257862r1051265_rule
     - V-257862
     - NIST800-53R4_CM-7
+  notify: Change_requires_reboot
   ansible.posix.mount:
-    fstype: "{{ item.fstype }}"
-    opts: "{{ item.options }},nosuid"
     path: '/boot/efi'
     src: "UUID={{ item.uuid }}"
+    fstype: "{{ item.fstype }}"
+    opts: "{{ item.options }},nosuid"
     state: present
   loop: "{{ ansible_facts.mounts }}"
   loop_control:
@@ -394,8 +387,6 @@
     - rhel_09_231110 or
       rhel_09_231115 or
       rhel_09_231120
-  notify:
-    - Change_requires_reboot
   tags:
     - RHEL-09-231110
     - RHEL-09-231115
@@ -410,6 +401,8 @@
     - V-257864
     - V-257865
     - NIST800-53R4_CM-7
+  notify:
+    - Change_requires_reboot
   vars:
     warn_control_id: "MEDIUM | RHEL-09-231110-231120"
   block:
@@ -417,7 +410,7 @@
         "MEDIUM | RHEL-09-231110 | AUDIT | RHEL 9 must mount /dev/shm with the nodev option.
          MEDIUM | RHEL-09-231115 | AUDIT | RHEL 9 must mount /dev/shm with the noexec option.
          MEDIUM | RHEL-09-231120 | AUDIT | RHEL 9 must mount /dev/shm with the nosuid option."
-      ansible.builtin.shell: mount | grep /dev/shm  # noqa command-instead-of-module
+      ansible.builtin.shell: mount | grep /dev/shm  # noqa: command-instead-of-module
       changed_when: false
       failed_when: false
       register: discovered_dev_shm_status
@@ -428,11 +421,11 @@
          MEDIUM | RHEL-09-231120 | PATCH | RHEL 9 must mount /dev/shm with the nosuid option."
       when: discovered_dev_shm_status.stdout | length > 0
       ansible.posix.mount:
+        path: /dev/shm
+        src: mpfs
         fstype: tmpfs
         opts: "defaults{{ rhel_09_231110 | ternary(',nodev', '') }}{{ rhel_09_231115 | ternary(',noexec', '') }}{{ rhel_09_231120 | ternary(',nosuid', '') }}"
-        path: /dev/shm
         state: mounted
-        src: tmpfs
 
     - name: |
         "MEDIUM | RHEL-09-231110 | WARN | RHEL 9 must mount /dev/shm with the nodev option.
@@ -467,11 +460,11 @@
     - V-257866
     - NIST800-53R4_CM-7
   ansible.posix.mount:
+    path: /tmp
+    src: "{{ item.device }}"
     fstype: "{{ item.fstype }}"
     opts: "{{ item.options }},nodev"
-    path: /tmp
     state: present
-    src: "{{ item.device }}"
   register: discovered_tmp_nodev
   loop: "{{ ansible_facts.mounts }}"
   loop_control:
@@ -494,11 +487,11 @@
     - V-257867
     - NIST800-53R4_CM-7
   ansible.posix.mount:
+    path: /tmp
+    src: "{{ item.device }}"
     fstype: "{{ item.fstype }}"
     opts: "{{ item.options }}{% if discovered_tmp_nodev.changed and 'nodev' not in item.options %},nodev{% endif %},noexec"
-    path: /tmp
     state: present
-    src: "{{ item.device }}"
   register: discovered_tmp_noexec
   loop: "{{ ansible_facts.mounts }}"
   loop_control:
@@ -521,11 +514,11 @@
     - V-257868
     - NIST800-53R4_CM-7
   ansible.posix.mount:
+    path: /tmp
+    src: "{{ item.device }}"
     fstype: "{{ item.fstype }}"
     opts: "{{ item.options }}{% if discovered_tmp_nodev.changed and 'nodev' not in item.options %},nodev{% endif %}{% if discovered_tmp_noexec.changed and 'noexec' not in item.options %},noexec{% endif %},nosuid"
-    path: /tmp
     state: present
-    src: "{{ item.device }}"
   loop: "{{ ansible_facts.mounts }}"
   loop_control:
     label: "{{ item.device }}"
@@ -546,11 +539,11 @@
     - V-257869
     - NIST800-53R4_CM-7
   ansible.posix.mount:
+    path: /var
+    src: "{{ item.device }}"
     fstype: "{{ item.fstype }}"
     opts: "{{ item.options }},nodev"
-    path: /var
     state: present
-    src: "{{ item.device }}"
   loop: "{{ ansible_facts.mounts }}"
   loop_control:
     label: "{{ item.device }}"
@@ -572,11 +565,11 @@
     - V-257870
     - NIST800-53R4_CM-7
   ansible.posix.mount:
+    path: /var/log
+    src: "{{ item.device }}"
     fstype: "{{ item.fstype }}"
     opts: "{{ item.options }},nodev"
-    path: /var/log
     state: present
-    src: "{{ item.device }}"
   register: discovered_var_log_nodev
   loop: "{{ ansible_facts.mounts }}"
   loop_control:
@@ -599,11 +592,11 @@
     - V-257871
     - NIST800-53R4_CM-7
   ansible.posix.mount:
+    path: /var/log
+    src: "{{ item.device }}"
     fstype: "{{ item.fstype }}"
     opts: "{{ item.options }}{% if discovered_var_log_nodev.changed and 'nodev' not in item.options %},nodev{% endif %},noexec"
-    path: /var/log
     state: present
-    src: "{{ item.device }}"
   register: discovered_var_log_noexec
   loop: "{{ ansible_facts.mounts }}"
   loop_control:
@@ -626,11 +619,11 @@
     - V-257872
     - NIST800-53R4_CM-7
   ansible.posix.mount:
+    path: /var/log
+    src: "{{ item.device }}"
     fstype: "{{ item.fstype }}"
     opts: "{{ item.options }}{% if discovered_var_log_nodev.changed and 'nodev' not in item.options %},nodev{% endif %}{% if discovered_var_log_noexec.changed and 'noexec' not in item.options %},noexec{% endif %},nosuid"
-    path: /var/log
     state: present
-    src: "{{ item.device }}"
   loop: "{{ ansible_facts.mounts }}"
   loop_control:
     label: "{{ item.device }}"
@@ -652,11 +645,11 @@
     - V-257873
     - NIST800-53R4_CM-7
   ansible.posix.mount:
+    path: /var/log/audit
+    src: "{{ item.device }}"
     fstype: "{{ item.fstype }}"
     opts: "{{ item.options }},nodev"
-    path: /var/log/audit
     state: present
-    src: "{{ item.device }}"
   register: discovered_var_log_audit_nodev
   loop: "{{ ansible_facts.mounts }}"
   loop_control:
@@ -679,11 +672,11 @@
     - V-257874
     - NIST800-53R4_CM-7
   ansible.posix.mount:
+    path: /var/log/audit
+    src: "{{ item.device }}"
     fstype: "{{ item.fstype }}"
     opts: "{{ item.options }}{% if discovered_var_log_audit_nodev.changed and 'nodev' not in item.options %},nodev{% endif %},noexec"
-    path: /var/log/audit
     state: present
-    src: "{{ item.device }}"
   register: discovered_var_log_audit_noexec
   loop: "{{ ansible_facts.mounts }}"
   loop_control:
@@ -706,11 +699,11 @@
     - V-257875
     - NIST800-53R4_CM-7
   ansible.posix.mount:
+    path: /var/log/audit
+    src: "{{ item.device }}"
     fstype: "{{ item.fstype }}"
     opts: "{{ item.options }}{% if discovered_var_log_audit_nodev.changed and 'nodev' not in item.options %},nodev{% endif %}{% if discovered_var_log_audit_noexec.changed and 'noexec' not in item.options %},noexec{% endif %},nosuid"
-    path: /var/log/audit
     state: present
-    src: "{{ item.device }}"
   loop: "{{ ansible_facts.mounts }}"
   loop_control:
     label: "{{ item.device }}"
@@ -732,11 +725,11 @@
     - V-257876
     - NIST800-53R4_CM-7
   ansible.posix.mount:
+    path: /var/tmp
+    src: "{{ item.device }}"
     fstype: "{{ item.fstype }}"
     opts: "{{ item.options }},nodev"
-    path: /var/tmp
     state: present
-    src: "{{ item.device }}"
   register: discovered_var_tmp_nodev
   loop: "{{ ansible_facts.mounts }}"
   loop_control:
@@ -759,11 +752,11 @@
     - V-257877
     - NIST800-53R4_CM-7
   ansible.posix.mount:
+    path: /var/tmp
+    src: "{{ item.device }}"
     fstype: "{{ item.fstype }}"
     opts: "{{ item.options }}{% if discovered_var_tmp_nodev.changed %},nodev{% endif %},noexec"
-    path: /var/tmp
     state: present
-    src: "{{ item.device }}"
   register: discovered_var_tmp_noexec
   loop: "{{ ansible_facts.mounts }}"
   loop_control:
@@ -786,18 +779,17 @@
     - V-257878
     - NIST800-53R4_CM-7
   ansible.posix.mount:
+    path: /var/log/tmp
+    src: "{{ item.device }}"
     fstype: "{{ item.fstype }}"
     opts: "{{ item.options }}{% if discovered_var_tmp_nodev.changed %},nodev{% endif %}{% if discovered_var_tmp_noexec.changed %},noexec{% endif %},nosuid"
-    path: /var/tmp
     state: present
-    src: "{{ item.device }}"
   loop: "{{ ansible_facts.mounts }}"
   loop_control:
     label: "{{ item.device }}"
 
 - name: "MEDIUM | RHEL-09-231200 | PATCH | RHEL 9 must prevent special devices on non-root local partitions."
-  when:
-    - rhel_09_231200
+  when: rhel_09_231200
   tags:
     - RHEL-09-231200
     - CAT2
@@ -810,7 +802,7 @@
     warn_control_id: "MEDIUM | RHEL-09-231200"
   block:
     - name: "MEDIUM | RHEL-09-231200 | AUDIT | RHEL 9 must prevent special devices on non-root local partitions. | discover partition"
-      ansible.builtin.shell: mount | grep '^/dev\S* on /\S' | grep -v nodev | awk -F" " '{ print $3}'  # noqa command-instead-of-module
+      ansible.builtin.shell: mount | grep '^/dev\S* on /\S' | grep -v nodev | awk -F" " '{print $3}'  # noqa: command-instead-of-module
       changed_when: false
       failed_when: discovered_non_root_missing_nodev.rc not in [ 0, 1 ]
       register: discovered_non_root_missing_nodev

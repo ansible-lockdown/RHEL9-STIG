@@ -32,8 +32,8 @@
     - NIST800-53R4_IA-11
     - NIST800-53R4_AC-3
   ansible.builtin.systemd:
-    enabled: true
     name: fapolicyd
+    enabled: true
     state: started
 
 - name: "MEDIUM | RHEL-09-433016 | PATCH | The RHEL 9 fapolicy module must be configured to employ a deny-all, permit-by-exception policy to allow the execution of authorized software programs."

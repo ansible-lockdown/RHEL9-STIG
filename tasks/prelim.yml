@@ -69,7 +69,8 @@
 
 - name: PRELIM | Gather accounts with empty password fields
   when: rhel_09_611155
-  tags: always
+  tags: passwords
+
   ansible.builtin.shell: "cat /etc/shadow | awk -F: '($2 == \"\" ) {j++;print $1; } END {exit j}'"
   changed_when: false
   failed_when: rhel9stig_empty_password_accounts.rc not in [ 0, 1 ]
@@ -165,8 +166,18 @@
   changed_when: false
   register: discovered_auditd_logfile
 
+- name: "PRELIM | Discover auditd rules files"
+  when:
+    - rhel9stig_auditd_required
+    - rhel_09_653110
+  tags: always
+  ansible.builtin.find:
+    path: etc/audit/rules.d
+    patterns: '*.rules'
+  register: discovered_audit_rules
+
 # Added to ensure ssh drop in file exists if not default /etc/ssh/sshd_config
-- name: PRELIM | SSH
+- name: PRELIM | SSH | create config file if absent
   when:
     - rhel9stig_sshd_required
     - rhel9stig_sshd_config_file != '/etc/ssh/sshd_config'
@@ -180,6 +191,7 @@
     state: touch
 
 - name: PRELIM | SSH | find existing ssh config files
+  when: rhel9stig_sshd_required
   tags: always
   ansible.builtin.find:
     paths:
@@ -234,7 +246,6 @@
 
 - name: PRELIM | Discover dconf systemdb
   when: rhel9stig_gui
-  tags: always
   ansible.builtin.shell: grep system-db /etc/dconf/profile/user | cut -d ':' -f2
   changed_when: false
   failed_when: rhel9stig_dconf_db.rc not in [ 0, 1 ]
@@ -242,7 +253,6 @@
 
 - name: PRELIM | Discover dconf db files
   when: rhel9stig_gui
-  tags: always
   ansible.builtin.find:
     path: /etc/dconf/db/local.d
     pattern: '*'
@@ -311,6 +321,7 @@
     - name: "PRELIM | PATCH | Setup authselect if setting allow | Create custom profiles"
       ansible.builtin.command: "authselect select custom/{{ rhel9stig_authselect['custom_profile_name'] }} with-faillock"
       changed_when: true
+      check_mode: false
 
 - name: PRELIM | Discover removable devices
   when: item.value.removable == '1'

@@ -43,7 +43,6 @@
 
 - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems."
   when: rhel_09_251020
-  notify: Firewalld_reload
   tags:
     - RHEL-09-251020
     - CAT2
@@ -52,6 +51,7 @@
     - SV-257937r991589_rule
     - V-257937
     - NIST800-53R4_CM-6
+  notify: Firewalld_reload
   block:
     - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Setup Connections"
       ansible.posix.firewalld:
@@ -78,17 +78,6 @@
       failed_when: discovered_firewalld_reload.rc >= 2
       register: discovered_firewalld_reload
 
-    - name: "MEDIUM | RHEL-09-251020 | AUDIT | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Get default zone"
-      ansible.builtin.command: "firewall-cmd --get-default-zone"
-      changed_when: false
-      failed_when: discovered_current_firewalld_zone.rc not in [ 0, 1 ]
-      register: discovered_current_firewalld_zone
-
-    - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Set zone if not curent"
-      when: "(discovered_current_firewalld_zone.stdout | default([])) not in rhel9stig_custom_firewall.zone"
-      ansible.builtin.command: "firewall-cmd --set-default-zone={{ rhel9stig_custom_firewall.zone }}"
-      changed_when: true
-
     - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Setup Connections"
       ansible.posix.firewalld:
         zone: "{{ rhel9stig_custom_firewall.zone }}"
@@ -97,6 +86,22 @@
         interface: "{{ item }}"
       loop:
         - "{{ rhel9stig_custom_firewall.interface }}"
+
+    - name: "MEDIUM | RHEL-09-251020 | AUDIT | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Get default zone"
+      ansible.builtin.command: "firewall-cmd --get-default-zone"
+      changed_when: false
+      failed_when: discovered_current_firewalld_zone.rc not in [ 0, 1 ]
+      register: discovered_current_firewalld_zone
+
+    - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Set zone if not current"
+      when: "(discovered_current_firewalld_zone.stdout | default([])) not in rhel9stig_custom_firewall.zone"
+      ansible.builtin.command: "firewall-cmd --set-default-zone={{ rhel9stig_custom_firewall.zone }}"
+      changed_when: true
+
+    - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Reload firewall"
+      when: "(discovered_current_firewalld_zone.stdout | default([])) not in rhel9stig_custom_firewall.zone"
+      ansible.builtin.command: firewall-cmd --reload
+      changed_when: true
 
 - name: "MEDIUM | RHEL-09-251030 | AUDIT |  RHEL 9 must protect against or limit the effects of denial-of-service (DoS) attacks by ensuring rate-limiting measures on impacted network interfaces are implemented."
   when: rhel_09_251030
@@ -158,12 +163,12 @@
         - rhel9stig_disruption_high
       ansible.builtin.lineinfile:
         path: "/etc/sysconfig/network-scripts/ifcfg-{{ item }}"
-        regexp: (?i)^PROMISC=(YES|TRUE|NO|FALSE)
+        regexp: (?i)^PROMISC\s*=\s*(YES|TRUE|NO|FALSE)
         line: PROMISC=NO
         create: true
-        mode: 'u-x,go-wx'
-      notify: Restart_NetworkManager
+        mode: 'go-wx'
       loop: "{{ ansible_facts.interfaces }}"
+      notify: Restart_NetworkManager
 
     - name: "MEDIUM | RHEL-09-251040 | PATCH | RHEL 9 network interfaces must not be in promiscuous mode."
       when:

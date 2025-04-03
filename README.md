@@ -21,6 +21,8 @@ This role is based on RHEL 9 DISA STIG: [Version 2, Rel 3 released on Jan, 2025]
 ![Release Tag](https://img.shields.io/github/v/release/ansible-lockdown/RHEL9-STIG)
 ![Release Date](https://img.shields.io/github/release-date/ansible-lockdown/RHEL9-STIG)
 
+
+
 [![Main Pipeline Status](https://github.com/ansible-lockdown/RHEL9-STIG/actions/workflows/main_pipeline_validation.yml/badge.svg?)](https://github.com/ansible-lockdown/RHEL9-STIG/actions/workflows/main_pipeline_validation.yml)
 
 [![Devel Pipeline Status](https://github.com/ansible-lockdown/RHEL9-STIG/actions/workflows/devel_pipeline_validation.yml/badge.svg?)](https://github.com/ansible-lockdown/RHEL9-STIG/actions/workflows/devel_pipeline_validation.yml)
@@ -70,10 +72,6 @@ This audit will not only check the config has the correct setting but aims to ca
 ## Documentation
 
 - [Read The Docs](https://ansible-lockdown.readthedocs.io/en/latest/)
-- [Getting Started](https://www.lockdownenterprise.com/docs/getting-started-with-lockdown#GH_AL_RH9_stig)
-- [Customizing Roles](https://www.lockdownenterprise.com/docs/customizing-lockdown-enterprise#GH_AL_RH9_stig)
-- [Per-Host Configuration](https://www.lockdownenterprise.com/docs/per-host-lockdown-enterprise-configuration#GH_AL_RH9_stig)
-- [Getting the Most Out of the Role](https://www.lockdownenterprise.com/docs/get-the-most-out-of-lockdown-enterprise#GH_AL_RH9_stig)
 
 ## Requirements
 

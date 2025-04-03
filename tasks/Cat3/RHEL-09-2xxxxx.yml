@@ -14,8 +14,8 @@
     - NIST800-53R4_CM-6
     - entropy
   ansible.builtin.systemd:
-    enabled: true
     name: rngd
+    enabled: true
     state: started
 
 - name: "LOW | RHEL-09-212050 | PATCH | RHEL 9 must enable mitigations against processor-based vulnerabilities."
@@ -32,8 +32,7 @@
     - NIST800-53R4_CM-7
     - NIST800-53R4_SI-16
     - grub
-  notify:
-    - Change_requires_reboot
+  notify: Change_requires_reboot
   block:
     - name: "LOW | RHEL-09-212050 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
       ansible.builtin.shell: grep "^GRUB_CMD" /etc/default/grub | grep pti
@@ -43,10 +42,11 @@
 
     - name: "LOW | RHEL-09-212050 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
       when:
-        - discovered_grub_pti_enabled is defined
-        - discovered_grub_pti_enabled.rc == 1
+        - rhel9stig_grub_pti_enabled is defined
+        - rhel9stig_grub_pti_enabled.rc == '1'
       ansible.builtin.command: grubby --update-kernel=ALL --args="pti=on"
       changed_when: true
+      check_mode: false
 
 - name: "LOW | RHEL-09-212055 | PATCH | RHEL 9 must enable auditing of processes that start prior to the audit daemon."
   when: rhel_09_212055
@@ -75,8 +75,7 @@
     - NIST800-53R4_MA-4
     - grub
     - audit
-  notify:
-    - Change_requires_reboot
+  notify: Change_requires_reboot
   block:
     - name: "LOW | RHEL-09-212055 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
       ansible.builtin.shell: grep "^GRUB_CMD" /etc/default/grub | grep 'audit=1'
@@ -86,10 +85,11 @@
 
     - name: "LOW | RHEL-09-212055 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
       when:
-        - discovered_grub_audit_enabled is defined
-        - discovered_grub_audit_enabled.rc == 1
+        - rhel9stig_grub_audit_enabled is defined
+        - rhel9stig_grub_audit_enabled.rc == 1
       ansible.builtin.command: grubby --update-kernel=ALL --args="audit=1"
       changed_when: true
+      check_mode: false
 
 - name: "LOW | RHEL-09-214035 | PATCH | RHEL 9 must remove all software components after updated versions have been installed."
   when: rhel_09_214035
@@ -190,14 +190,13 @@
     - V-257880
     - NIST800-53R4_CM-7
     - modprobe
-  notify:
-    - Change_requires_reboot
+  notify: Change_requires_reboot
   vars:
     blacklist: 'cramfs'
   ansible.builtin.template:
-    dest: "/etc/modprobe.d/{{ blacklist }}.conf"
     src: etc/modprobe.d/module.conf.j2
-    mode: 'u-x,go-wx'
+    dest: "/etc/modprobe.d/{{ blacklist }}.conf"
+    mode: 'go-wx'
 
 - name: "LOW | RHEL-09-252025 | PATCH | RHEL 9 must disable the chrony daemon from acting as a server."
   when: rhel_09_252025

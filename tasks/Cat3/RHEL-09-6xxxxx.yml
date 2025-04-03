@@ -14,7 +14,7 @@
   ansible.builtin.template:
     dest: /etc/aide.conf
     src: etc/aide.conf.j2
-    mode: 'u-x,go-rwx'
+    mode: 'go-wx'
 
 - name: "LOW | RHEL-09-651035 | PATCH | RHEL 9 must be configured so that the file integrity tool verifies extended attributes."
   when: rhel_09_651035
@@ -30,7 +30,7 @@
   ansible.builtin.template:
     dest: /etc/aide.conf
     src: etc/aide.conf.j2
-    mode: 'u-x,go-rwx'
+    mode: 'go-wx'
 
 - name: "LOW | RHEL-09-653120 | PATCH | RHEL 9 must allocate an audit_backlog_limit of sufficient size to capture processes that start prior to the audit daemon."
   when: rhel_09_653120
@@ -46,8 +46,7 @@
     - NIST800-53R4_AU-4
     - NIST800-53R4_AU-14
     - grub
-  notify:
-    - Change_requires_reboot
+  notify: Change_requires_reboot
   block:
     - name: "LOW | RHEL-09-653120 | AUDIT | RHEL 9 must allocate an audit_backlog_limit of sufficient size to capture processes that start prior to the audit daemon."
       ansible.builtin.shell: grep "^GRUB_CMD" /etc/default/grub | grep audit_backlog_limit
@@ -57,7 +56,8 @@
 
     - name: "LOW | RHEL-09-211050 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
       when:
-        - discovered_grub_audit_backlog_limit is defined
-        - discovered_grub_audit_backlog_limit.rc == 1
+        - rhel9stig_grub_audit_backlog_limit is defined
+        - rhel9stig_grub_audit_backlog_limit.rc == 1
       ansible.builtin.command: grubby --update-kernel=ALL --args="audit_backlog_limit={{ rhel9stig_audit_backlog_limit }}"
       changed_when: true
+      check_mode: false
