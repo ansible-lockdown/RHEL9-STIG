@@ -45,7 +45,7 @@
         content: "{{ rhel9stig_logon_banner }}"
         dest: "{{ item }}"
         group: root
-        mode: '0644'
+        mode: 'u-x,go-wx'
         owner: root
       loop:
         - /etc/issue

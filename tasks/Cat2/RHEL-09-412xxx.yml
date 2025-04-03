@@ -1,80 +1,5 @@
 ---
 
-- name: "MEDIUM | RHEL-09-412010 | PATCH | RHEL 9 must have the tmux package installed."
-  when: rhel_09_412010
-  tags:
-    - RHEL-09-412010
-    - CAT2
-    - CCI-000056
-    - CCI-000057
-    - SRG-OS-000030-GPOS-00011
-    - SRG-OS-000028-GPOS-00009
-    - SV-258063r997079_rule
-    - V-258063
-    - NIST800-53R4_AC-11
-  ansible.builtin.package:
-    name: tmux
-    state: present
-
-- name: "MEDIUM | RHEL-09-412015 | PATCH | RHEL 9 must ensure session control is automatically started at shell initialization."
-  when: rhel_09_412015
-  tags:
-    - RHEL-09-412015
-    - CAT2
-    - CCI-000056
-    - CCI-000060
-    - SRG-OS-000031-GPOS-00012
-    - SRG-OS-000028-GPOS-00009
-    - SV-258064r958404_rule
-    - V-258064
-    - NIST800-53R4_AC-11
-  ansible.builtin.template:
-    src: etc/profile.d/tmux.sh.j2
-    dest: /etc/profile.d/tmux.sh
-    group: root
-    owner: root
-    mode: 'go=rx'
-
-- name: "MEDIUM | RHEL-09-412020 | PATCH | RHEL 9 must have the tmux package installed."
-  when: rhel_09_412020
-  tags:
-    - RHEL-09-412020
-    - CAT2
-    - CCI-000056
-    - SRG-OS-000028-GPOS-00009
-    - SV-258065r958400_rule
-    - V-258065
-    - NIST800-53R4_AC-11
-  ansible.builtin.lineinfile:
-    path: /etc/tmux.conf
-    regexp: "{{ item }}"
-    line: "{{ item }}"
-    create: true
-    mode: 'go-wx'
-    state: present
-  loop:
-    - 'set -g lock-command vlock'
-    - 'bind X lock-session'
-
-- name: "MEDIUM | RHEL-09-412025 | PATCH | RHEL 9 must automatically lock command line user sessions after 15 minutes of inactivity."
-  when: rhel_09_412025
-  tags:
-    - RHEL-09-412025
-    - CAT2
-    - CCI-000057
-    - CCI-000060
-    - SRG-OS-000029-GPOS-00010
-    - SRG-OS-000031-GPOS-00012
-    - SV-258066r958402_rule
-    - V-258066
-    - NIST800-53R4_AC-11
-  ansible.builtin.template:
-    dest: /etc/tmux.conf
-    group: root
-    owner: root
-    mode: 'go-wx'
-    src: etc/tmux.conf.j2
-
 - name: "MEDIUM | RHEL-09-412035 | PATCH | RHEL 9 must automatically exit interactive command shell user sessions after 15 minutes of inactivity."
   when: rhel_09_412035
   tags:
@@ -84,16 +9,16 @@
     - CCI-001133
     - SRG-OS-000029-GPOS-00010
     - SRG-OS-000163-GPOS-00072
-    - SV-258068r970703_rule
+    - SV-258068r1014872_rule
     - V-258068
     - NIST800-53R4_AC-11
     - NIST800-53R4_SC-10
   ansible.builtin.template:
+    src: etc/profile.d/tmout.sh.j2
     dest: /etc/profile.d/tmout.sh
     group: root
     owner: root
-    mode: 'go=rx'
-    src: etc/profile.d/tmout.sh.j2
+    mode: 'u+x,go-w'
 
 - name: "MEDIUM | RHEL-09-412045 | PATCH | RHEL 9 must log username information when unsuccessful logon attempts occur."
   when: rhel_09_412045
@@ -224,7 +149,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000163-GPOS-00072
-    - SV-258077r970703_rule
+    - SV-258077r1014874_rule
     - V-258077
     - NIST800-53R4_CM-6
   ansible.builtin.lineinfile:

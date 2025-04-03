@@ -51,8 +51,7 @@
   when:
     - run_audit or audit_only
     - setup_audit
-  tags:
-    - run_audit
+  tags: run_audit
   ansible.builtin.import_tasks:
     file: pre_remediation_audit.yml
 
@@ -121,12 +120,12 @@
         rhel9stig_legacy_boot: true
 
 - name: PRELIM | Update to latest gpg keys
-  ansible.builtin.package:
-    name: "{{ gpg_key_package }}"
-    state: latest
   when:
     - ansible_facts.distribution != 'RedHat'
     - ansible_facts.distribution != 'OracleLinux'
+  ansible.builtin.package:
+    name: "{{ gpg_key_package }}"
+    state: latest
 
 - name: PRELIM | Configure System Accounting (auditd)
   when:

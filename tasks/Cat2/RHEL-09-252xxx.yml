@@ -5,11 +5,11 @@
   tags:
     - RHEL-09-252010
     - CAT2
-    - CCI-000000
+    - CCI-001891
     - SRG-OS-000355-GPOS-00143
     - SV-257943r997065_rule
     - V-257943
-    - NIST800-53R4_NA
+    - NIST800-53R4_AU-8
   ansible.builtin.package:
     name: chrony
 
@@ -18,11 +18,11 @@
   tags:
     - RHEL-09-252015
     - CAT2
-    - CCI-000000
+    - CCI-001891
     - SRG-OS-000355-GPOS-00143
-    - SV-257944r997066_rule
+    - SV-257944r1015082_rule
     - V-257944
-    - NIST800-53R4_NA
+    - NIST800-53R4_AU-8
   ansible.builtin.systemd:
     name: chronyd
     enabled: true
@@ -62,17 +62,17 @@
   ansible.builtin.template:
     src: etc/chrony.conf.j2
     dest: /etc/chrony.conf
-    mode: 'go-wx'
+    mode: 'u-x,go-wx'
 
 # Required before 252035 to set DNS value in NetworkManager
-- name: "MEDIUM | RHEL-09-252040 | PATCH | RHEL 9 must configure a DNS processing mode set be Network Manager."
+- name: "MEDIUM | RHEL-09-252040 | PATCH | RHEL 9 must configure a DNS processing mode in Network Manager."
   when: rhel_09_252040
   tags:
     - RHEL-09-252040
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257949r991589_rule
+    - SV-257949r1014841_rule
     - V-257949
     - NIST800-53R4_CM-6
   community.general.ini_file:
@@ -82,7 +82,7 @@
     state: present
     value: none
     no_extra_spaces: true
-    mode: 'go-wx'
+    mode: 'u-x,go-wx'
   register: discovered_dns_nm_set
 
 - name: "MEDIUM | RHEL-09-252035 | PATCH | RHEL 9 systems using Domain Name Servers (DNS) resolution must have at least two name servers configured."
@@ -104,7 +104,7 @@
       ansible.builtin.template:
         src: etc/resolv.conf.j2
         dest: /etc/resolv.conf
-        mode: 'go-wx'
+        mode: 'u-x,go-wx'
 
     - name: "MEDIUM | RHEL-09-252035 | PATCH | RHEL 9 systems using Domain Name Servers (DNS) resolution must have at least two name servers configured."
       when:
@@ -161,7 +161,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257951r991589_rule
+    - SV-257951r1014843_rule
     - V-257951
     - NIST800-53R4_CM-6
   vars:
@@ -170,50 +170,25 @@
     - name: "MEDIUM | RHEL-09-252050 | AUDIT | RHEL 9 must be configured to prevent unrestricted mail relaying."
       ansible.builtin.command: postconf -n smtpd_client_restrictions
       changed_when: false
-      failed_when: postfix_client_restrict.rc not in [ 0, 1 ]
-      register: postfix_client_restrict
+      failed_when: discovered_postfix_client_restrict.rc not in [ 0, 1 ]
+      register: discovered_postfix_client_restrict
 
     - name: "MEDIUM | RHEL-09-252050 | PATCH | RHEL 9 must be configured to prevent unrestricted mail relaying. | configure postfix"
       when:
         - rhel9stig_disruption_high
-        - "rhel9stig_postfix_client_conf not in postfix_client_restrict"
+        - "rhel9stig_postfix_client_conf not in discovered_postfix_client_restrict"
       ansible.builtin.command: "postconf -e 'smtpd_client_restrictions = {{ rhel9stig_postfix_client_conf }}'"
       changed_when: true
 
     - name: "MEDIUM | RHEL-09-252050 | PATCH | RHEL 9 must be configured to prevent unrestricted mail relaying. | Alert Warning"
-      when: rhel9stig_postfix_client_conf not in postfix_client_restrict
+      when: rhel9stig_postfix_client_conf not in discovered_postfix_client_restrict
       ansible.builtin.debug:
         msg: "Warning!! Please check postfix client restriction configurations"
 
     - name: "MEDIUM | RHEL-09-252050 | PATCH | RHEL 9 must be configured to prevent unrestricted mail relaying. | Warning Count"
-      when: rhel9stig_postfix_client_conf not in postfix_client_restrict
+      when: rhel9stig_postfix_client_conf not in discovered_postfix_client_restrict
       ansible.builtin.import_tasks:
         file: warning_facts.yml
-
-- name: "MEDIUM | RHEL-09-252055 | PATCH | If the Trivial File Transfer Protocol (TFTP) server is required, RHEL 9 TFTP daemon must be configured to operate in secure mode."
-  when:
-    - rhel_09_252055
-    - "'tftp-server' in ansible_facts.packages"
-  tags:
-    - RHEL-09-252050
-    - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257952r991589_rule
-    - V-257952
-    - NIST800-53R4_CM-6
-  block:
-    - name: "MEDIUM | RHEL-09-252055 | AUDIT | If the Trivial File Transfer Protocol (TFTP) server is required, RHEL 9 TFTP daemon must be configured to operate in secure mode."
-      ansible.builtin.shell: systemctl show tftp | grep FragmentPath= | cut -d = -f 2  # noqa: command-instead-of-module
-      changed_when: false
-      failed_when: rhel9stig_tftp_systemd_file.rc not in [ 0, 1 ]
-      register: rhel9stig_tftp_systemd_file
-
-    - name: "MEDIUM | RHEL-09-252055 | PATCH | If the Trivial File Transfer Protocol (TFTP) server is required, RHEL 9 TFTP daemon must be configured to operate in secure mode."
-      ansible.builtin.lineinfile:
-        path: "{{ rhel9stig_tftp_systemd_file.stdout }}"
-        regexp: ^ExecStart
-        line: ExecStart=/usr/sbin/in.tftpd -s /var/lib/tftpboot
 
 - name: "MEDIUM | RHEL-09-252060 | PATCH | RHEL 9 must forward mail from postmaster to the root account using a postfix alias."
   when:
@@ -232,8 +207,8 @@
     path: /etc/aliases
     regexp: postmaster:\s*root
     line: 'postmaster: root'
+    mode: 'u-x,go-wx'
     create: true
-    mode: 'go-wx'
 
 - name: "MEDIUM | RHEL-09-252065 | PATCH | RHEL 9 libreswan package must be installed."
   when: rhel_09_252065

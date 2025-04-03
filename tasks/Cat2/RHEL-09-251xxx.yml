@@ -76,17 +76,6 @@
         state: enabled
         target: DROP
 
-    - name: "MEDIUM | RHEL-09-251020 | AUDIT | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Get default zone"
-      ansible.builtin.command: "firewall-cmd --get-default-zone"
-      changed_when: false
-      failed_when: discovered_current_firewalld_zone.rc not in [ 0, 1 ]
-      register: discovered_current_firewalld_zone
-
-    - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Set zone if not curent"
-      when: "(discovered_current_firewalld_zone.stdout | default([])) not in rhel9stig_custom_firewall.zone"
-      ansible.builtin.command: "firewall-cmd --set-default-zone={{ rhel9stig_custom_firewall.zone }}"
-      changed_when: true
-
     - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Setup Connections"
       ansible.posix.firewalld:
         zone: "{{ rhel9stig_custom_firewall.zone }}"
@@ -96,33 +85,20 @@
       loop:
         - "{{ rhel9stig_custom_firewall.interface }}"
 
-- name: "MEDIUM | RHEL-09-251025 | AUDIT | RHEL 9 must control remote access methods."
-  when: rhel_09_251025
-  tags:
-    - RHEL-09-251025
-    - CAT2
-    - CCI-000382
-    - CCI-002314
-    - SRG-OS-000096-GPOS-00050
-    - SRG-OS-000297-GPOS-00115
-    - SV-257938r958480_rule
-    - V-257938
-    - NIST800-53R4_CM-7
-    - NIST800-53R4_AC-17
-  block:
-    - name: "MEDIUM | RHEL-09-251025 | AUDIT | RHEL 9 must control remote access methods. | Get services using firewalld"
-      ansible.builtin.shell: firewall-cmd --list-all | grep services | cut -d ':' -f 2 | tr " " "\n" | sed '/^$/d' | sort -u
-      register: rhel9stig_ppsm_clsa_check_firewalld
+    - name: "MEDIUM | RHEL-09-251020 | AUDIT | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Get default zone"
+      ansible.builtin.command: "firewall-cmd --get-default-zone"
       changed_when: false
-      failed_when: false
-      check_mode: false
+      failed_when: discovered_current_firewalld_zone.rc not in [ 0, 1 ]
+      register: discovered_current_firewalld_zone
 
-    - name: "MEDIUM | RHEL-09-251025 | AUDIT | RHEL 9 must control remote access methods. | Message out findings"
-      when: rhel9stig_ppsm_clsa_check_firewalld.stdout_lines is defined
-      ansible.builtin.debug:
-        msg:
-          - "The following output is what firewalld is accepting on service ports to {{ ansible_hostname }}."
-          - "{{ rhel9stig_ppsm_clsa_check_firewalld.stdout_lines }}"
+    - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Set zone if not current"
+      when: "(discovered_current_firewalld_zone.stdout | default([])) not in rhel9stig_custom_firewall.zone"
+      ansible.builtin.command: "firewall-cmd --set-default-zone={{ rhel9stig_custom_firewall.zone }}"
+      changed_when: true
+
+    - name: "MEDIUM | RHEL-09-251020 | PATCH | A RHEL 9 firewall must employ a deny-all, allow-by-exception policy for allowing connections to other systems. | Reload firewall"
+      when: "(discovered_current_firewalld_zone.stdout | default([])) not in rhel9stig_custom_firewall.zone"
+      ansible.builtin.command: firewall-cmd --reload
       changed_when: true
 
 - name: "MEDIUM | RHEL-09-251030 | AUDIT |  RHEL 9 must protect against or limit the effects of denial-of-service (DoS) attacks by ensuring rate-limiting measures on impacted network interfaces are implemented."
@@ -153,17 +129,17 @@
   block:
     - name: "MEDIUM | RHEL-09-251035 | AUDIT | To prevent unauthorized connection of devices, unauthorized transfer of information, or unauthorized tunneling (i.e., embedding of data types within data types), organizations must disable or restrict unused or unnecessary physical and logical ports/protocols on information systems.. | Get services using firewalld"
       ansible.builtin.command: firewall-cmd --list-all
-      register: rhel9stig_ppsm_clsa_zone_config
       changed_when: false
       failed_when: false
       check_mode: false
+      register: discovered_ppsm_clsa_zone_config
 
     - name: "MEDIUM | RHEL-09-251035 | AUDIT | To prevent unauthorized connection of devices, unauthorized transfer of information, or unauthorized tunneling (i.e., embedding of data types within data types), organizations must disable or restrict unused or unnecessary physical and logical ports/protocols on information systems. | Message out findings"
-      when: rhel9stig_ppsm_clsa_zone_config.stdout_lines is defined
+      when: discovered_ppsm_clsa_zone_config.stdout_lines is defined
       ansible.builtin.debug:
         msg:
           - "The following output is what firewalld is configured for {{ ansible_hostname }}."
-          - "{{ rhel9stig_ppsm_clsa_zone_config.stdout_lines }}"
+          - "{{ discovered_ppsm_clsa_zone_config.stdout_lines }}"
       changed_when: true
 
 - name: "MEDIUM | RHEL-09-251040 | AUDIT | RHEL 9 network interfaces must not be in promiscuous mode."

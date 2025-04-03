@@ -28,7 +28,7 @@
     - CAT2
     - CCI-001958
     - SRG-OS-000378-GPOS-00163
-    - SV-258035r997117_rule
+    - SV-258035r1014859_rule
     - V-258035
     - NIST800-53R4_IA-3
   ansible.builtin.package:
@@ -42,7 +42,7 @@
     - CAT2
     - CCI-001958
     - SRG-OS-000378-GPOS-00163
-    - SV-258036r997118_rule
+    - SV-258036r1014861_rule
     - V-258036
     - NIST800-53R4_IA-3
   ansible.builtin.systemd:
@@ -57,18 +57,18 @@
     - CAT2
     - CCI-001958
     - SRG-OS-000378-GPOS-00163
-    - SV-258038r958820_rule
+    - SV-258038r1017033_rule
     - V-258038
     - NIST800-53R4_IA-3
   block:
     - name: "MEDIUM | RHEL-09-291030 | AUDIT | RHEL 9 must block unauthorized peripherals before establishing a connection."
       ansible.builtin.command: usbguard list-rules
       changed_when: false
-      failed_when: rhel9stig_usbguard_rules.rc not in [ 0, 1 ]
-      register: rhel9stig_usbguard_rules
+      failed_when: discovered_usbguard_rules.rc not in [ 0, 1 ]
+      register: discovered_usbguard_rules
 
     - name: "MEDIUM | RHEL-09-291030 | PATCH | RHEL 9 must block unauthorized peripherals before establishing a connection."
-      when: rhel9stig_usbguard_rules.stdout | length > 0
+      when: discovered_usbguard_rules.stdout | length > 0
       ansible.builtin.shell: usbguard generate-policy --no-hash > /etc/usbguard/rules.conf
       changed_when: true
 
@@ -114,14 +114,14 @@
     - name: MEDIUM | RHEL-09-291040 | AUDIT | RHEL 9 wireless network adapters must be disabled.
       ansible.builtin.shell: nmcli radio wifi | grep -i enabled
       changed_when: false
-      failed_when: rhel9stig_wifi_enabled.rc not in [ 0, 1 ]
-      register: rhel9stig_wifi_enabled
+      failed_when: discovered_wifi_enabled.rc not in [ 0, 1 ]
+      register: discovered_wifi_enabled
 
     - name: "MEDIUM | RHEL-09-291040 | PATCH | RHEL 9 wireless network adapters must be disabled."
       when:
-        - rhel9stig_wifi_enabled is defined
-        - rhel9stig_wifi_enabled.stdout | length > 0
+        - discovered_wifi_enabled is defined
+        - discovered_wifi_enabled.stdout | length > 0
       ansible.builtin.command: nmcli radio all off
       changed_when: true
-      failed_when: rhel9stig_radio_turned_off.rc not in [ 0, 1 ]
-      register: rhel9stig_radio_turned_off
+      failed_when: discovered_radio_turned_off.rc not in [ 0, 1 ]
+      register: discovered_radio_turned_off

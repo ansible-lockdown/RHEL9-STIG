@@ -1,7 +1,7 @@
 ---
 
 ## metadata for Audit benchmark
-benchmark_version: 'v2r1'
+benchmark_version: 'v2r2'
 
 ## Benchmark name used by audting control role
 # The audit variable found at the base
@@ -100,7 +100,7 @@ audit_content: git
 # If using either archive, copy, get_url:
 ## Note will work with .tar files - zip will require extra configuration
 ### If using get_url this is expecting github url in tar.gz format e.g.
-### https://github.com/ansible-lockdown/UBUNTU22-CIS-Audit/archive/refs/heads/benchmark-v1.0.0.tar.gz
+### https://github.com/ansible-lockdown/RHEL9-STIG-Audit/archive/refs/heads/benchmark-v1.0.0.tar.gz
 audit_conf_source: "some path or url to copy from"
 
 # Destination for the audit content to be placed on managed node
@@ -133,7 +133,6 @@ rhel_09_411100: true
 rhel_09_431010: true
 rhel_09_611025: true
 rhel_09_671010: true
-rhel_09_672015: true
 rhel_09_672030: true
 
 #### CAT 2
@@ -197,7 +196,6 @@ rhel_09_231040: true
 rhel_09_231045: true
 rhel_09_231050: true
 rhel_09_231055: true
-rhel_09_231060: true
 rhel_09_231065: true
 rhel_09_231070: true
 rhel_09_231075: true
@@ -223,7 +221,6 @@ rhel_09_231170: true
 rhel_09_231175: true
 rhel_09_231180: true
 rhel_09_231185: true
-
 rhel_09_231200: true
 rhel_09_232010: true
 rhel_09_232015: true
@@ -282,7 +279,6 @@ rhel_09_232270: true
 rhel_09_251010: true
 rhel_09_251015: true
 rhel_09_251020: true
-rhel_09_251025: true
 rhel_09_251030: true
 rhel_09_251035: true
 rhel_09_251040: true
@@ -295,7 +291,6 @@ rhel_09_252035: true
 rhel_09_252040: true
 rhel_09_252045: true
 rhel_09_252050: true
-rhel_09_252055: true
 rhel_09_252060: true
 rhel_09_252065: true
 rhel_09_253010: true
@@ -348,7 +343,6 @@ rhel_09_255150: true
 rhel_09_255155: true
 rhel_09_255160: true
 rhel_09_255165: true
-rhel_09_255170: true
 rhel_09_255175: true
 rhel_09_271010: true
 rhel_09_271015: true
@@ -401,10 +395,6 @@ rhel_09_411095: true
 rhel_09_411105: true
 rhel_09_411110: true
 rhel_09_411115: true
-rhel_09_412010: true
-rhel_09_412015: true
-rhel_09_412020: true
-rhel_09_412025: true
 rhel_09_412035: true
 rhel_09_412045: true
 rhel_09_412050: true
@@ -441,7 +431,6 @@ rhel_09_611075: true
 rhel_09_611080: true
 rhel_09_611085: true
 rhel_09_611090: true
-rhel_09_611095: true
 rhel_09_611100: true
 rhel_09_611105: true
 rhel_09_611110: true
@@ -452,7 +441,6 @@ rhel_09_611130: true
 rhel_09_611135: true
 rhel_09_611140: true
 rhel_09_611145: true
-rhel_09_611150: true
 rhel_09_611155: true
 rhel_09_611160: true
 rhel_09_611165: true
@@ -755,7 +743,7 @@ rhel9stig_postfix_client_conf: permit_mynetworks,reject
 rhel9stig_pass:
   max_days: 60
   min_days: 1
-  minlen: 15
+  minlen: '15'
 
 rhel9stig_user_inactive_days: '35'
 
@@ -786,7 +774,7 @@ rhel9stig_logind_conf:
   stopsessionidle: '900'
 
 rhel9stig_pam:
-  retry: '3'
+  retry: '3'  # must be set between 1-3 anytning else ia a failure
   rounds: '5000'
 
 rhel9stig_pwquality:
@@ -799,6 +787,10 @@ rhel9stig_pwquality:
   minclass: 4
   ocredit: -1
   ucredit: -1
+
+rhel9stig_sudoers_exclude_nopasswd_list:
+- ec2-user
+- vagrant
 
 rhel9stig_smartcard_reader: false
 
@@ -831,12 +823,18 @@ rhel9stig_aide_db_new_file: /var/lib/aide/aide.db.new.gz
 rhel9stig_aide_db_file: /var/lib/aide/aide.db.gz
 
 rhel9stig_aide_cron_file: /etc/cron.daily/aide  # NOTE the path may change if not running daily
-rhel9stig_aide_cron:
-  day: '*'
-  hour: '4'
-  minute: '30'
-  job: '/usr/sbin/aide --check | /bin/mail -s "$HOSTNAME - Daily aide integrity check run" root@sysname.mil'
-  name: 'Aide Job runs Daily at 0430'
+rhel9stig_aide_cron_day: '*'
+rhel9stig_aide_cron_hour: '4'
+rhel9stig_aide_cron_minute: '30'
+rhel9stig_aide_cron_job: '/usr/sbin/aide --check | /bin/mail -s "$HOSTNAME - Daily aide integrity check run" root@sysname.mil'
+rhel9stig_aide_cron_name: 'Aide Job runs Daily at 0430'
+
+# AIDE is a file integrity checking tool, similar in nature to Tripwire.
+# While it cannot prevent intrusions, it can detect unauthorized changes
+# to configuration files by alerting when the files are changed. Review
+# the AIDE quick start guide and AIDE documentation before proceeding.
+# By setting this variable to `true`, all of the settings related to AIDE will be applied!
+rhel9stig_config_aide: true
 
 ### Rsyslog
 # Set the following to true if the server accepts incoming syslog data using rsyslog
@@ -853,22 +851,21 @@ rhel9stig_remotelog_server:
 # It will affect checks for control RHEL-09-653030
 
 rhel9stig_audit_log_filesystem: '/var/log/audit'
-rhel9stig_audit_conf:
-  action_mail_acct: root
-  admin_space_left: 5%
-  admin_space_left_action: single
-  disk_error_action: HALT  # Can be one of "SYSLOG", "SINGLE", or "HALT"
-  disk_full_action: HALT  # Can be one of "SYSLOG", "SINGLE", or "HALT"
-  freq: '100'
-  local_events: 'yes'
-  log_format: ENRICHED
-  logfile: "{{ rhel9stig_audit_log_filesystem }}/audit.log"
-  logfile_group: root
-  max_log_file_action: ROTATE
-  name_format: hostname
-  overflow_action: syslog
-  space_left: 25%
-  space_left_action: email
-  write_logs: 'yes'
+rhel9stig_audit_conf_action_mail_acct: root
+rhel9stig_audit_conf_admin_space_left: 5%
+rhel9stig_audit_conf_admin_space_left_action: single
+rhel9stig_audit_conf_disk_error_action: HALT  # Can be one of "SYSLOG", "SINGLE", or "HALT"
+rhel9stig_audit_conf_disk_full_action: HALT  # Can be one of "SYSLOG", "SINGLE", or "HALT"
+rhel9stig_audit_conf_freq: '100'
+rhel9stig_audit_conf_local_events: 'yes'
+rhel9stig_audit_conf_log_format: ENRICHED
+rhel9stig_audit_conf_logfile: "{{ rhel9stig_audit_log_filesystem }}/audit.log"
+rhel9stig_audit_conf_logfile_group: root
+rhel9stig_audit_conf_max_log_file_action: ROTATE
+rhel9stig_audit_conf_name_format: hostname
+rhel9stig_audit_conf_overflow_action: syslog
+rhel9stig_audit_conf_space_left: 25%
+rhel9stig_audit_conf_space_left_action: email
+rhel9stig_audit_conf_write_logs: 'yes'
 
 rhel9stig_audit_backlog_limit: 8192
