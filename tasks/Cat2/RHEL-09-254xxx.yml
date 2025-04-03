@@ -14,6 +14,7 @@
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
     name: net.ipv6.conf.all.accept_ra
+    state: present
     reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '0'
@@ -32,6 +33,7 @@
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
     name: net.ipv6.conf.all.accept_redirects
+    state: present
     reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '0'
@@ -50,6 +52,7 @@
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
     name: net.ipv6.conf.all.accept_source_route
+    state: present
     reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '0'
@@ -57,6 +60,7 @@
 - name: "MEDIUM | RHEL-09-254025 | PATCH | RHEL 9 must not enable IPv6 packet forwarding unless the system is a router."
   when:
     - rhel_09_254025
+    - rhel9stig_system_uses_ipv6
     - not rhel9stig_system_is_router
   tags:
     - RHEL-09-254025
@@ -68,6 +72,7 @@
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
     name: net.ipv6.conf.all.forwarding
+    state: present
     reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '0'
@@ -86,6 +91,7 @@
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
     name: net.ipv6.conf.default.accept_ra
+    state: present
     reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '0'
@@ -104,6 +110,7 @@
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
     name: net.ipv6.conf.default.accept_redirects
+    state: present
     reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '0'
@@ -122,6 +129,7 @@
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
     name: net.ipv6.conf.default.accept_source_route
+    state: present
     reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '0'
