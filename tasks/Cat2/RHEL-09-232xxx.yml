@@ -129,7 +129,7 @@
     mode: 'u+x,go-w'
     modification_time: preserve
     owner: root
-  loop: "{{ audit_bins }}"
+  loop: "{{ rhel9stig_audit_bins }}"
 
 - name: "MEDIUM | RHEL-09-232040 | PATCH | RHEL 9 cron configuration directories must have a mode of 0700 or less permissive."
   when: rhel_09_232040
@@ -832,7 +832,7 @@
   ansible.builtin.file:
     path: "{{ item }}"
     owner: root
-  loop: "{{ audit_bins }}"
+  loop: "{{ rhel9stig_audit_bins }}"
 
 - name: "MEDIUM | RHEL-09-232225 | PATCH | RHEL 9 audit tools must be group-owned by root."
   when: rhel_09_232225
@@ -847,7 +847,7 @@
   ansible.builtin.file:
     path: "{{ item }}"
     group: root
-  loop: "{{ audit_bins }}"
+  loop: "{{ rhel9stig_audit_bins }}"
 
 - name: "MEDIUM | RHEL-09-232230 | PATCH | RHEL 9 cron configuration files directory must be owned by root."
   when: rhel_09_232230
