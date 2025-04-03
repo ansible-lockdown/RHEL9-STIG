@@ -57,6 +57,7 @@
 - name: "MEDIUM | RHEL-09-254025 | PATCH | RHEL 9 must not enable IPv6 packet forwarding unless the system is a router."
   when:
     - rhel_09_254025
+    - rhel9stig_system_uses_ipv6
     - not rhel9stig_system_is_router
   tags:
     - RHEL-09-254025
