@@ -170,7 +170,7 @@
     - V-257987
     - NIST800-53R4_AC-17
     - ssh
-  notify: Restart_sshd
+  notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)Include.*
@@ -192,7 +192,7 @@
     - V-257988
     - NIST800-53R4_AC-17
     - ssh
-  notify: Restart_sshd
+  notify: Restart_ssh
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)Include.*
