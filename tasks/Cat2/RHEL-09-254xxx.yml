@@ -1,7 +1,9 @@
 ---
 
 - name: "MEDIUM | RHEL-09-254010 | PATCH | RHEL 9 must not accept router advertisements on all IPv6 interfaces."
-  when: rhel_09_254010
+  when:
+    - rhel_09_254010
+    - rhel9stig_system_uses_ipv6
   tags:
     - RHEL-09-254010
     - CAT2
@@ -17,7 +19,9 @@
     value: '0'
 
 - name: "MEDIUM | RHEL-09-254015 | PATCH | RHEL 9 must ignore IPv6 Internet Control Message Protocol (ICMP) redirect messages."
-  when: rhel_09_254015
+  when:
+    - rhel_09_254015
+    - rhel9stig_system_uses_ipv6
   tags:
     - RHEL-09-254015
     - CAT2
@@ -33,7 +37,9 @@
     value: '0'
 
 - name: "MEDIUM | RHEL-09-254020 | PATCH | RHEL 9 must not forward IPv6 source-routed packets."
-  when: rhel_09_254020
+  when:
+    - rhel_09_254020
+    - rhel9stig_system_uses_ipv6
   tags:
     - RHEL-09-254020
     - CAT2
@@ -67,7 +73,9 @@
     value: '0'
 
 - name: "MEDIUM | RHEL-09-254030 | PATCH | RHEL 9 must not accept router advertisements on all IPv6 interfaces by default."
-  when: rhel_09_254030
+  when:
+    - rhel_09_254030
+    - rhel9stig_system_uses_ipv6
   tags:
     - RHEL-09-254030
     - CAT2
@@ -83,7 +91,9 @@
     value: '0'
 
 - name: "MEDIUM | RHEL-09-254035 | PATCH | RHEL 9 must prevent IPv6 Internet Control Message Protocol (ICMP) redirect messages from being accepted."
-  when: rhel_09_254035
+  when:
+    - rhel_09_254035
+    - rhel9stig_system_uses_ipv6
   tags:
     - RHEL-09-254035
     - CAT2
@@ -99,7 +109,9 @@
     value: '0'
 
 - name: "MEDIUM | RHEL-09-254040 | PATCH | RHEL 9 must not forward IPv6 source-routed packets by default"
-  when: rhel_09_254040
+  when:
+    - rhel_09_254040
+    - rhel9stig_system_uses_ipv6
   tags:
     - RHEL-09-254040
     - CAT2
