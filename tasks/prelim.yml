@@ -86,6 +86,7 @@
     - cat1
     - RHEL-09-672030
     - crypto
+    - not system_is_container
   ansible.builtin.package:
     name:
       - crypto-policies
@@ -98,7 +99,9 @@
     mount_names: "{{ ansible_mounts | map(attribute='mount') | list }}"
 
 - name: PRELIM | Ensure python3-libselinux is installed
-  when: '"python3-libselinux" not in ansible_facts.packages'
+  when:
+    - '"python3-libselinux" not in ansible_facts.packages'
+    - not system_is_container
   ansible.builtin.package:
     name: python3-libselinux
     state: present

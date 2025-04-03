@@ -49,16 +49,6 @@ rhel9stig_dod_kex:
 rhel9stig_ungrouped_files_found: false
 rhel9stig_unowned_files_found: false
 
-# Audit binaries
-audit_bins:
-  - '/usr/sbin/auditctl'
-  - '/usr/sbin/aureport'
-  - '/usr/sbin/ausearch'
-  - '/usr/sbin/autrace'
-  - '/usr/sbin/auditd'
-  - '/usr/sbin/rsyslogd'
-  - '/usr/sbin/augenrules'
-
 # Aide packages
 aide_packages:
   - aide
