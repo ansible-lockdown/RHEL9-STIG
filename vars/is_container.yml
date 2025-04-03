@@ -5,3 +5,225 @@
 # it expected all pkgs required for the container are alreday installed
 
 ## controls
+rhel9stig_sshd_required: false
+rhel_09_211040: false # systemd | Enable systemd-journald
+rhel_09_211045: false # systemd | Set Ctrl-Alt-Delete burst action
+rhel_09_211050: false # systemd | Disable Ctrl-Alt-Delete target
+rhel_09_211055: false # systemd | Enable debug-shell
+rhel_09_212010: false # Grub | Managed by host OS
+rhel_09_212015: false # Grub | Managed by host OS
+rhel_09_212020: false # Grub | Managed by host OS
+rhel_09_212025: false # Grub | Managed by host OS
+rhel_09_212030: false # Grub | Managed by host OS
+rhel_09_212035: false # Grub | Managed by host OS
+rhel_09_212040: false # Grub | Managed by host OS
+rhel_09_212045: false # Grub | Managed by host OS
+rhel_09_212050: false # Grub | Managed by host OS
+rhel_09_212055: false # Grub | Managed by host OS
+rhel_09_213010: false # Sysctl | Managed by Host OS
+rhel_09_213015: false # Sysctl | Managed by Host OS
+rhel_09_213020: false # Sysctl | Managed by Host OS
+rhel_09_213025: false # Sysctl | Managed by Host OS
+rhel_09_213030: false # Sysctl | Managed by Host OS
+rhel_09_213035: false # Sysctl | Managed by Host OS
+rhel_09_213040: false # Sysctl | Managed by Host OS
+rhel_09_213045: false # Modprobe | Managed by Host OS
+rhel_09_213050: false # Modprobe | Managed by Host OS
+rhel_09_213055: false # Modprobe | Managed by Host OS
+rhel_09_213060: false # Modprobe | Managed by Host OS
+rhel_09_213065: false # Modprobe | Managed by Host OS
+rhel_09_213070: false # Sysctl | Managed by Host OS
+rhel_09_213075: false # Sysctl | Managed by Host OS
+rhel_09_213080: false # Sysctl | Managed by Host OS
+rhel_09_213100: false # systemd | Disable systemd-coredump
+rhel_09_213105: false # Sysctl | Managed by Host OS
+rhel_09_213110: false # Grub | Managed by host OS
+rhel_09_213115: false # systemd | Disable kdump
+rhel_09_215075: false # openssl-pkcs11 | Packages should not be installed in a container image unless required for the container or its application to function
+rhel_09_215080: false # gnutls-utils | Packages should not be installed in a container image unless required for the container or its application to function
+rhel_09_215085: false # nss-tools | Packages should not be installed in a container image unless required for the container or its application to function
+rhel_09_215090: false # rng-tools | Packages should not be installed in a container image unless required for the container or its application to function
+rhel_09_215095: false # s-nail | Packages should not be installed in a container image unless required for the container or its application to function
+rhel_09_231040: false # systemd | Disable autofs
+rhel_09_231110: false # /dev/shm Mount Permissions
+rhel_09_231115: false # /dev/shm Mount Permissions
+rhel_09_231120: false # /dev/shm Mount Permissions
+rhel_09_231195: false # Modprobe | Managed by Host OS
+rhel_09_232035: false # Audit Binary Permissions | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_232040: false # Cron | Managed by Host OS
+rhel_09_232180: false # /var/log/messages does not exist in container
+rhel_09_232185: false # /var/log/messages does not exist in container
+rhel_09_232220: false # Audit Binary Permissions | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_232225: false # Audit Binary Permissions | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_232230: false # Cron | Managed by Host OS
+rhel_09_232235: false # Cron | Managed by Host OS
+rhel_09_232250: false # Fails on undefined variable rhel9stig_ungrouped_files_dirs_audit.results.0['stdout_lines']
+rhel_09_232255: false # Fails on undefined variable rrhel9stig_unowned_files_dirs_audit.results.0['stdout_lines']
+rhel_09_232265: false # Cron | Managed by Host OS
+rhel_09_251010: false # Firewalld | Managed by Host OS, Sidecar, daemonset, or Container Network Interface
+rhel_09_251015: false # systemd | Enable firewalld
+rhel_09_251020: false # Firewalld | Managed by Host OS, Sidecar, daemonset, or Container Network Interface
+rhel_09_251025: false # Firewalld | Managed by Host OS, Sidecar, daemonset, or Container Network Interface
+rhel_09_251030: false # Firewalld | Managed by Host OS, Sidecar, daemonset, or Container Network Interface
+rhel_09_251035: false # Firewalld | Managed by Host OS, Sidecar, daemonset, or Container Network Interface
+rhel_09_251040: false # Firewalld | Managed by Host OS, Sidecar, daemonset, or Container Network Interface
+rhel_09_251045: false # Sysctl | Managed by Host OS
+rhel_09_252010: false # Chrony | Managed by Host OS
+rhel_09_252015: false # systemd | Enable chrony
+rhel_09_252020: false # Chrony | Managed by Host OS
+rhel_09_252025: false # Chrony | Managed by Host OS
+rhel_09_252030: false # Chrony | Managed by Host OS
+rhel_09_252035: false # DNS | Managed by Host OS
+rhel_09_252065: false # IPSec | Managed by Host OS, Sidecar, daemonset, or Container Network Interface
+rhel_09_253010: false # Sysctl | Managed by Host OS
+rhel_09_253015: false # Sysctl | Managed by Host OS
+rhel_09_253020: false # Sysctl | Managed by Host OS
+rhel_09_253025: false # Sysctl | Managed by Host OS
+rhel_09_253030: false # Sysctl | Managed by Host OS
+rhel_09_253035: false # Sysctl | Managed by Host OS
+rhel_09_253040: false # Sysctl | Managed by Host OS
+rhel_09_253045: false # Sysctl | Managed by Host OS
+rhel_09_253050: false # Sysctl | Managed by Host OS
+rhel_09_253055: false # Sysctl | Managed by Host OS
+rhel_09_253060: false # Sysctl | Managed by Host OS
+rhel_09_253065: false # Sysctl | Managed by Host OS
+rhel_09_253070: false # Sysctl | Managed by Host OS
+rhel_09_253075: false # Sysctl | Managed by Host OS
+rhel_09_254010: false # Sysctl | Managed by Host OS
+rhel_09_254015: false # Sysctl | Managed by Host OS
+rhel_09_254020: false # Sysctl | Managed by Host OS
+rhel_09_254025: false # Sysctl | Managed by Host OS
+rhel_09_254030: false # Sysctl | Managed by Host OS
+rhel_09_254035: false # Sysctl | Managed by Host OS
+rhel_09_254040: false # Sysctl | Managed by Host OS
+rhel_09_291010: false # Modprobe | Managed by Host OS
+rhel_09_291015: false # USBGuard | USBGuard is unneeded in a container image
+rhel_09_291020: false # USBGuard | USBGuard is unneeded in a container image
+rhel_09_291025: false # USBGuard | USBGuard is unneeded in a container image
+rhel_09_291030: false # USBGuard | USBGuard is unneeded in a container image
+rhel_09_291035: false # Modprobe | Managed by Host OS
+rhel_09_411025: false # Interactive Users should normally not exist in a container image
+rhel_09_411030: false # Interactive Users should normally not exist in a container image
+rhel_09_411035: false # Interactive Users should normally not exist in a container image
+rhel_09_411045: false # Interactive Users should normally not exist in a container image
+rhel_09_412010: false # TMUX removed in V2R2
+rhel_09_412015: false # TMUX removed in V2R2
+rhel_09_412025: false # TMUX removed in V2R2
+rhel_09_412030: false # TMUX removed in V2R2
+rhel_09_412035: false # TMUX removed in V2R2
+rhel_09_431015: false # SELinux | SELinux enforcement comes from host OS
+rhel_09_431020: false # SELinux | SELinux enforcement comes from host OS
+rhel_09_431025: false # SELinux | SELinux enforcement comes from host OS
+rhel_09_431030: false # SELinux | SELinux enforcement comes from host OS
+rhel_09_432010: false # Sudo | Allowing for elevated privilege in a container is never best practice
+rhel_09_432015: false # Sudo | Allowing for elevated privilege in a container is never best practice
+rhel_09_432020: false # Sudo | Allowing for elevated privilege in a container is never best practice
+rhel_09_432025: false # Sudo | Allowing for elevated privilege in a container is never best practice
+rhel_09_432030: false # Sudo | Allowing for elevated privilege in a container is never best practice
+rhel_09_432035: false # Sudo | Allowing for elevated privilege in a container is never best practice
+rhel_09_433010: false # fapolicy | The nature of a container makes this tool irrelevant
+rhel_09_433015: false # fapolicy | The nature of a container makes this tool irrelevant
+rhel_09_651010: false # AIDE | The nature of a container makes this tool irrelevant
+rhel_09_651015: false # AIDE | The nature of a container makes this tool irrelevant
+rhel_09_651020: false # AIDE | The nature of a container makes this tool irrelevant
+rhel_09_651025: false # AIDE | The nature of a container makes this tool irrelevant
+rhel_09_651030: false # AIDE | The nature of a container makes this tool irrelevant
+rhel_09_651035: false # AIDE | The nature of a container makes this tool irrelevant
+rhel_09_652010: false # rsyslog | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_652015: false # rsyslog | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_652020: false # rsyslog | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_652025: false # rsyslog | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_652030: false # rsyslog | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_652035: false # rsyslog | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_652040: false # rsyslog | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_652045: false # rsyslog | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_652050: false # rsyslog | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_652055: false # rsyslog | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_652060: false # rsyslog | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653010: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653015: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653020: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653025: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653030: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653035: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653040: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653045: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653050: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653055: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653060: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653065: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653070: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653075: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653080: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653085: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653090: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653095: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653100: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653105: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653110: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653115: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_653120: false # Grub | Managed by host OS
+rhel_09_653130: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654010: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654015: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654020: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654025: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654030: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654035: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654040: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654045: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654050: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654055: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654060: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654065: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654070: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654075: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654080: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654085: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654090: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654095: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654100: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654105: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654110: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654115: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654120: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654125: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654130: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654135: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654140: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654145: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654150: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654155: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654160: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654165: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654170: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654175: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654180: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654185: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654190: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654195: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654200: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654205: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654210: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654215: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654220: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654225: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654230: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654235: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654240: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654245: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654250: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654255: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654260: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654265: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654270: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_654275: false # Auditd | Auditing is handled through the container host OS, sidecar, daemonset
+rhel_09_671010: false # FIPS | FIPS must also be enabled on the Host to allow FIPS to work inside of a container
+rhel_09_671015: false # FIPS | FIPS must also be enabled on the Host to allow FIPS to work inside of a container
+rhel_09_671020: false # FIPS | FIPS must also be enabled on the Host to allow FIPS to work inside of a container
+rhel_09_671025: false # FIPS | FIPS must also be enabled on the Host to allow FIPS to work inside of a container
+rhel_09_672020: false # Crypto | Kerberos is not required in base container image builds
+rhel_09_672025: false # Crypto | Kerberos is not required in base container image builds
+rhel_09_672035: false # Crypto | OpenSSL is not required in base container image builds
+rhel_09_672040: false # Crypto | OpenSSL is not required in base container image builds
+rhel_09_672050: false # Crypto | Bind is not required in base container image builds
