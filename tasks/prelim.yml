@@ -160,6 +160,7 @@
     state: touch
 
 - name: PRELIM | SSH | find existing ssh config files
+  when: rhel9stig_sshd_required
   tags: always
   ansible.builtin.find:
     paths:
