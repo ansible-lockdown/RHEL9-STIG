@@ -701,6 +701,8 @@ rhel9stig_sysctl_file:
   kernel: "{{ rhel9stig_sysctl_file_default }}"
   network: "{{ rhel9stig_sysctl_file_default }}"
   user: "{{ rhel9stig_sysctl_file_default }}"
+# Systems that run containers must set this value to greater then 0 for example: 65536
+rhel9stig_sysctl_max_user_namespaces: '0'
 
 ## Chrony
 rhel9stig_time_synchronization_servers:
