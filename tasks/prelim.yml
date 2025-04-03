@@ -91,7 +91,9 @@
     mount_names: "{{ ansible_mounts | map(attribute='mount') | list }}"
 
 - name: PRELIM | Ensure python3-libselinux is installed
-  when: '"python3-libselinux" not in ansible_facts.packages'
+  when:
+    - '"python3-libselinux" not in ansible_facts.packages'
+    - not system_is_container
   ansible.builtin.package:
     name: python3-libselinux
     state: present
@@ -203,6 +205,7 @@
     - RHEL-09-672020
     - fips
     - crypto
+    - not system_is_container
   ansible.builtin.package:
     name: crypto-policies
     state: latest
