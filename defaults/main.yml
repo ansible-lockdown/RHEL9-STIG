@@ -873,10 +873,10 @@ rhel9stig_audit_conf_write_logs: 'yes'
 rhel9stig_audit_backlog_limit: 8192
 # Audit binaries
 audit_bins:
-  - '/usr/sbin/auditctl'
-  - '/usr/sbin/aureport'
-  - '/usr/sbin/ausearch'
-  - '/usr/sbin/autrace'
-  - '/usr/sbin/auditd'
-  - '/usr/sbin/{{ rhel9stig_syslog_binary }}'  # Note you may not need this is container
-  - '/usr/sbin/augenrules'
+- '/usr/sbin/auditctl'
+- '/usr/sbin/aureport'
+- '/usr/sbin/ausearch'
+- '/usr/sbin/autrace'
+- '/usr/sbin/auditd'
+- '/usr/sbin/{{ rhel9stig_syslog_binary }}'  # Note you may not need this is container
+- '/usr/sbin/augenrules'
