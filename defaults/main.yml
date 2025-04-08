@@ -718,6 +718,8 @@ rhel9stig_fapolicy_white_list:
 - "allow perm=any trust=1 : dir={{ ansible_env.PWD }}/.ansible/"
 - 'allow perm=any trust=1 : dir=/root/.ansible/'
 - 'allow perm=any trust=1 : dir=/tmp/ansible/'
+# Systems that run containers must set this value to greater then 0 for example: 65536
+rhel9stig_sysctl_max_user_namespaces: '0'
 
 ## DNS
 # Please adjust accordingly for ipv4 or ipv6
