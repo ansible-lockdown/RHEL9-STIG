@@ -51,7 +51,9 @@
     state: started
 
 - name: "MEDIUM | RHEL-09-291030 | PATCH | RHEL 9 must block unauthorized peripherals before establishing a connection."
-  when: rhel_09_291030
+  when:
+    - rhel_09_291030
+    - rhel9stig_disruption_high  # If configuring locally could stop peripherals from working.
   tags:
     - RHEL-09-291030
     - CAT2
@@ -71,6 +73,7 @@
       when: discovered_usbguard_rules.stdout | length > 0
       ansible.builtin.shell: usbguard generate-policy --no-hash > /etc/usbguard/rules.conf
       changed_when: true
+      notify: Restart_usbguard
 
 - name: "MEDIUM | RHEL-09-291035 | PATCH | RHEL 9 Bluetooth must be disabled."
   when: rhel_09_291035

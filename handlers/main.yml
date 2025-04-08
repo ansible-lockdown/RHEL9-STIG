@@ -57,6 +57,11 @@
     name: sssd
     state: restarted
 
+- name: Restart_usbguard
+  ansible.builtin.systemd:
+    name: usbguard
+    state: restarted
+
 - name: Update_aliases
   ansible.builtin.command: newaliases
   changed_when: true
