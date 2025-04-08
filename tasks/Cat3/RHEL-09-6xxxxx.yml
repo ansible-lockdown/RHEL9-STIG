@@ -1,7 +1,9 @@
 ---
 
 - name: "LOW | RHEL-09-651030 | PATCH | RHEL 9 must be configured so that the file integrity tool verifies Access Control Lists (ACLs)."
-  when: rhel_09_651030
+  when:
+    - rhel_09_651030
+    - rhel9stig_use_aide
   tags:
     - RHEL-09-651030
     - CAT2
@@ -17,7 +19,9 @@
     mode: 'go-wx'
 
 - name: "LOW | RHEL-09-651035 | PATCH | RHEL 9 must be configured so that the file integrity tool verifies extended attributes."
-  when: rhel_09_651035
+  when:
+   - rhel_09_651035
+   - rhel9stig_use_aide
   tags:
     - RHEL-09-651035
     - CAT2
@@ -48,16 +52,29 @@
     - grub
   notify: Change_requires_reboot
   block:
-    - name: "LOW | RHEL-09-653120 | AUDIT | RHEL 9 must allocate an audit_backlog_limit of sufficient size to capture processes that start prior to the audit daemon."
-      ansible.builtin.shell: grep "^GRUB_CMD" /etc/default/grub | grep audit_backlog_limit
-      changed_when: false
-      failed_when: discovered_grub_audit_backlog_limit.rc not in [ 0, 1 ]
-      register: discovered_grub_audit_backlog_limit
 
-    - name: "LOW | RHEL-09-211050 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
-      when:
-        - rhel9stig_grub_audit_backlog_limit is defined
-        - rhel9stig_grub_audit_backlog_limit.rc == 1
+    - name: "LOW | RHEL-09-653120 | AUDIT | RHEL 9 must allocate an audit_backlog_limit of sufficient size to capture processes that start prior to the audit daemon. | Capture grubby"
+      ansible.builtin.shell: grubby --info=ALL | grep args | grep 'audit_backlog_limit'
+      changed_when: false
+      failed_when: discovered_grubby_audit_1.rc not in [ 0, 1 ]
+      register: discovered_grubby_audit_1
+
+    - name: "LOW | RHEL-09-653120 | PATCH | RHEL 9 must allocate an audit_backlog_limit of sufficient size to capture processes that start prior to the audit daemon. | Amend grubby"
+      when: discovered_grubby_audit_1.stdout | length == 0
       ansible.builtin.command: grubby --update-kernel=ALL --args="audit_backlog_limit={{ rhel9stig_audit_backlog_limit }}"
       changed_when: true
-      check_mode: false
+
+    - name: "LOW | RHEL-09-653120 | AUDIT | RHEL 9 must allocate an audit_backlog_limit of sufficient size to capture processes that start prior to the audit daemon. | Capture default grub"
+      ansible.builtin.shell: grep "^GRUB_CMDLINE_LINUX=" /etc/default/grub | cut -f2 -d'"' | grep audit_backlog_limit
+      changed_when: false
+      failed_when: discovered_def_grub_audit_1.rc not in [ 0, 1 ]
+      register: discovered_def_grub_audit_1
+
+    - name: "LOW | RHEL-09-653120 | PATCH | RHEL 9 must allocate an audit_backlog_limit of sufficient size to capture processes that start prior to the audit daemon. | Set default"
+      when: discovered_def_grub_audit_1.rc != 0
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: ^(GRUB_CMDLINE_LINUX=")(.*)"
+        line: '\1\2 audit=1"'
+        backrefs: true
+      notify: Rebuild_grub

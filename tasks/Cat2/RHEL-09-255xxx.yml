@@ -215,7 +215,7 @@
     - NIST800-53R4_AC-17
   notify: Change_requires_reboot
   ansible.builtin.lineinfile:
-    path: /etc/crypto-policies/back-ends/openssh.config
+    path: /etc/crypto-policies/back-ends/opensshserver.config
     regexp: ^Ciphers
     line: "Ciphers {{ rhel9stig_sshd_config.ciphers | join(',') }}"
 
@@ -233,7 +233,7 @@
     - NIST800-53R4_AC-17
   notify: Change_requires_reboot
   ansible.builtin.lineinfile:
-    path: /etc/crypto-policies/back-ends/openssh.config
+    path: /etc/crypto-policies/back-ends/opensshserver.config
     regexp: ^MACs
     line: "MACs {{ rhel9stig_sshd_config.macs | join(',') }}"
 
