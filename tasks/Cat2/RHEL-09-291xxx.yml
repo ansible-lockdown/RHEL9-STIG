@@ -71,6 +71,7 @@
       when: rhel9stig_usbguard_rules.stdout | length > 0
       ansible.builtin.shell: usbguard generate-policy --no-hash > /etc/usbguard/rules.conf
       changed_when: true
+      notify: Restart_usbguard
 
 - name: "MEDIUM | RHEL-09-291035 | PATCH | RHEL 9 Bluetooth must be disabled."
   when: rhel_09_291035
