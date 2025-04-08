@@ -13,10 +13,10 @@
     - V-257797
     - NIST800-53R4_SC-2
     - NIST800-53R4_SC-4
-  notify: Reload_sysctl
   ansible.posix.sysctl:
     name: kernel.dmesg_restrict
     state: present
+    reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.kernel }}"
     sysctl_set: true
     value: '1'
@@ -34,10 +34,10 @@
     - V-257798
     - NIST800-53R4_SC-2
     - NIST800-53R4_SC-4
-  notify: Reload_sysctl
   ansible.posix.sysctl:
     name: kernel.perf_event_paranoid
     state: present
+    reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.kernel }}"
     sysctl_set: true
     value: '2'
@@ -53,10 +53,10 @@
     - SV-257799r997051_rule
     - V-257799
     - NIST800-53R4_CM-6
-  notify: Reload_sysctl
   ansible.posix.sysctl:
     name: kernel.kexec_load_disabled
     state: present
+    reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.kernel }}"
     sysctl_set: true
     value: '1'
@@ -74,10 +74,10 @@
     - V-257800
     - NIST800-53R4_CM-6
     - NIST800-53R4_SC-2
-  notify: Reload_sysctl
   ansible.posix.sysctl:
     name: kernel.kptr_restrict
     state: present
+    reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.kernel }}"
     sysctl_set: true
     value: '1'
@@ -95,10 +95,10 @@
     - V-257801
     - NIST800-53R4_AC-3
     - NIST800-53R4_AC-6
-  notify: Reload_sysctl
   ansible.posix.sysctl:
     name: fs.protected_hardlinks
     state: present
+    reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.fs }}"
     sysctl_set: true
     value: '1'
@@ -117,10 +117,10 @@
     - V-257802
     - NIST800-53R4_AC-3
     - NIST800-53R4_AC-6
-  notify: Reload_sysctl
   ansible.posix.sysctl:
     name: fs.protected_symlinks
     state: present
+    reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.fs }}"
     sysctl_set: true
     value: '1'
@@ -135,10 +135,10 @@
     - SV-257803r991589_rule
     - V-257803
     - NIST800-53R4_CM-6
-  notify: Reload_sysctl
   ansible.posix.sysctl:
     name: kernel.core_pattern
     state: present
+    reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.kernel }}"
     sysctl_set: true
     value: '|/bin/false'
@@ -247,10 +247,10 @@
     - V-257809
     - NIST800-53R4_CM-6
     - NIST800-53R4_SI-16
-  notify: Reload_sysctl
   ansible.posix.sysctl:
     name: kernel.randomize_va_space
     state: present
+    reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.kernel }}"
     sysctl_set: true
     value: '2'
@@ -268,10 +268,10 @@
     - V-257810
     - NIST800-53R4_CM-6
     - NIST800-53R4_SC-2
-  notify: Reload_sysctl
   ansible.posix.sysctl:
     name: kernel.unprivileged_bpf_disabled
     state: present
+    reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.kernel }}"
     sysctl_set: true
     value: '1'
@@ -289,10 +289,10 @@
     - V-257811
     - NIST800-53R4_CM-6
     - NIST800-53R4_SC-2
-  notify: Reload_sysctl
   ansible.posix.sysctl:
     name: kernel.yama.ptrace_scope
     state: present
+    reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.kernel }}"
     sysctl_set: true
     value: '1'
@@ -373,10 +373,10 @@
     - SV-257816r991589_rule
     - V-257816
     - NIST800-53R4_CM-6
-  notify: Reload_sysctl
   ansible.posix.sysctl:
     name: user.max_user_namespaces
     state: present
+    reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.user }}"
     sysctl_set: true
     value: '0'
