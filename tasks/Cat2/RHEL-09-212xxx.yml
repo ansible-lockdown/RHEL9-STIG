@@ -218,4 +218,3 @@
         line: '\1\2 slub_debug=P"'
         backrefs: true
       notify: Rebuild_grub
-
