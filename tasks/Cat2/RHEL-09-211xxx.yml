@@ -52,7 +52,9 @@
         - /etc/issue.net
 
 - name: "MEDIUM | RHEL-09-211030 | PATCH | The graphical display manager must not be the default target on RHEL 9 unless approved."
-  when: rhel_09_211030
+  when:
+    - rhel_09_211030
+    - not rhel9stig_gui_approved
   tags:
     - RHEL-09-211030
     - CAT2
