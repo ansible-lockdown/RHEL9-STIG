@@ -40,7 +40,7 @@ container_vars_file: is_container.yml
 
 # rhel9stig is left off the front of this var for consistency in testing pipeline
 # system_is_ec2 toggle will disable tasks that fail on Amazon EC2 instances. Set true to skip and false to run tasks
-system_is_ec2: false
+system_is_ec2: true
 
 # Connecting user, due to the way many users work differently this is to try and assist the use of connecting user if required
 # This is useful when part of kickstart build or running as root and not defining the ansible_user option
@@ -64,7 +64,7 @@ rhel9stig_system_is_router: false
 
 ###########################################
 ### Goss is required on the remote host ###
-### vars/audit.yml for other settings  ###
+### vars/audit.yml for other settings  ###auditd
 
 # Allow audit to setup the requirements including installing git (if option chosen and downloading and adding goss binary to system)
 setup_audit: false
@@ -492,7 +492,7 @@ rhel_09_653010: true
 rhel_09_653015: true
 rhel_09_653020: true
 rhel_09_653025: true
-rhel_09_653030: true
+rhel_09_653030: false
 rhel_09_653035: true
 rhel_09_653040: true
 rhel_09_653045: true
@@ -823,7 +823,7 @@ rhel9stig_use_aide: true
 rhel9stig_aide_db_file_age: 1w
 
 # If aide already setup this forces a new DB to be created despite age
-rhel9stig_aide_db_recreate: false
+rhel9stig_aide_db_recreate: true
 
 # New db file
 rhel9stig_aide_db_new_file: /var/lib/aide/aide.db.new.gz
