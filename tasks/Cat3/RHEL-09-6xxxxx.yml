@@ -20,8 +20,8 @@
 
 - name: "LOW | RHEL-09-651035 | PATCH | RHEL 9 must be configured so that the file integrity tool verifies extended attributes."
   when:
-   - rhel_09_651035
-   - rhel9stig_use_aide
+    - rhel_09_651035
+    - rhel9stig_use_aide
   tags:
     - RHEL-09-651035
     - CAT2
