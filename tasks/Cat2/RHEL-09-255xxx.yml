@@ -245,7 +245,7 @@
   notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
-    regexp: (?i)^(#|)Include.*
+    regexp: (?i)^(#|)\s*Include.*
     line: "Include {{ rhel9stig_sshd_config.include_conf }}"
     create: true
     mode: 'go-rwx'

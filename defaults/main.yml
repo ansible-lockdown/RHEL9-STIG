@@ -715,6 +715,8 @@ rhel9stig_sysctl_file:
   kernel: "{{ rhel9stig_sysctl_file_default }}"
   network: "{{ rhel9stig_sysctl_file_default }}"
   user: "{{ rhel9stig_sysctl_file_default }}"
+# Systems that run containers must set this value to greater then 0 for example: 65536
+rhel9stig_sysctl_max_user_namespaces: '0'
 
 ## Chrony
 rhel9stig_time_synchronization_servers:
@@ -732,8 +734,6 @@ rhel9stig_fapolicy_white_list:
 - "allow perm=any trust=1 : dir={{ ansible_env.PWD }}/.ansible/"
 - 'allow perm=any trust=1 : dir=/root/.ansible/'
 - 'allow perm=any trust=1 : dir=/tmp/ansible/'
-# Systems that run containers must set this value to greater then 0 for example: 65536
-rhel9stig_sysctl_max_user_namespaces: '0'
 
 ## DNS
 # Please adjust accordingly for ipv4 or ipv6
@@ -864,6 +864,9 @@ rhel9stig_remotelog_server:
   server: 10.10.10.10
   port: 9999
   protocol: '@@'
+
+# Syslog Binary
+rhel9stig_syslog_bin: rsyslogd
 
 ### AUDITD
 # Ensure this matches the filesystem where the audit logs are stored.
