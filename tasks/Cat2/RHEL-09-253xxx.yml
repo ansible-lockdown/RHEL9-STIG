@@ -15,6 +15,7 @@
     - NIST800-53R4_SC-5
   ansible.posix.sysctl:
     name: net.ipv4.tcp_syncookies
+    state: present
     reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '1'
@@ -31,6 +32,7 @@
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
     name: net.ipv4.conf.all.accept_redirects
+    state: present
     reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '0'
@@ -47,6 +49,7 @@
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
     name: net.ipv4.conf.all.accept_source_route
+    state: present
     reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '0'
@@ -63,6 +66,7 @@
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
     name: net.ipv4.conf.all.log_martians
+    state: present
     reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '1'
@@ -79,6 +83,7 @@
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
     name: net.ipv4.conf.default.log_martians
+    state: present
     reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '1'
@@ -95,6 +100,7 @@
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
     name: net.ipv4.conf.all.rp_filter
+    state: present
     reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '1'
@@ -111,6 +117,7 @@
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
     name: net.ipv4.conf.default.accept_redirects
+    state: present
     reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '0'
@@ -127,6 +134,7 @@
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
     name: net.ipv4.conf.default.accept_source_route
+    state: present
     reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '0'
@@ -143,6 +151,7 @@
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
     name: net.ipv4.conf.default.rp_filter
+    state: present
     reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '1'
@@ -159,6 +168,7 @@
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
     name: net.ipv4.icmp_echo_ignore_broadcasts
+    state: present
     reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '1'
@@ -175,6 +185,7 @@
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
     name: net.ipv4.icmp_ignore_bogus_error_responses
+    state: present
     reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '1'
@@ -191,6 +202,7 @@
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
     name: net.ipv4.conf.all.send_redirects
+    state: present
     reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '0'
@@ -207,6 +219,7 @@
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
     name: net.ipv4.conf.default.send_redirects
+    state: present
     reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '0'
@@ -225,6 +238,7 @@
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
     name: net.ipv4.conf.all.forwarding
+    state: present
     reload: true
     sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
     value: '0'

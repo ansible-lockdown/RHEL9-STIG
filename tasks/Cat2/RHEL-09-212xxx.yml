@@ -136,18 +136,7 @@
       ansible.builtin.lineinfile:
         path: /etc/default/grub
         regexp: ^(GRUB_CMDLINE_LINUX=")(.*)"
-        line: '\1\2 vsyscall=none'
-        backrefs: true
-      notify: Rebuild_grub
-
-    - name: "MEDIUM | RHEL-09-212035 | PATCH | RHEL 9 must disable virtual system calls. | Change default"
-      when:
-        - discovered_def_grub_vsyscall.rc == 0
-        - "'vsyscall=none' not in discovered_def_grub_vsyscall.stdout"
-      ansible.builtin.lineinfile:
-        path: /etc/default/grub
-        regexp: ^(GRUB_CMDLINE_LINUX=)(".*)vsyscall=\w+(.*")
-        line: '\1\2vsyscall=none\3'
+        line: '\1\2 vsyscall=none"'
         backrefs: true
       notify: Rebuild_grub
 
@@ -189,15 +178,6 @@
         backrefs: true
       notify: Rebuild_grub
 
-    - name: "MEDIUM | RHEL-09-212040 | PATCH | RHEL 9 must clear the page allocator to prevent use-after-free attacks. | Change default"
-      when: discovered_def_grub_poison.rc == 0
-      ansible.builtin.lineinfile:
-        path: /etc/default/grub
-        regexp: ^(GRUB_CMDLINE_LINUX=)(".*)page_poison=\d(.*")
-        line: '\1\2page_poison=1\3'
-        backrefs: true
-      notify: Rebuild_grub
-
 - name: "MEDIUM | RHEL-09-212045 | PATCH | RHEL 9 must clear SLUB/SLAB objects to prevent use-after-free attacks"
   when: rhel_09_212045
   tags:
@@ -235,16 +215,5 @@
         path: /etc/default/grub
         regexp: ^(GRUB_CMDLINE_LINUX=")(.*)"
         line: '\1\2 slub_debug=P"'
-        backrefs: true
-      notify: Rebuild_grub
-
-    - name: "MEDIUM | RHEL-09-212045 | PATCH | RHEL 9 must clear SLUB/SLAB objects to prevent use-after-free attacks | Change default"
-      when:
-        - "'slub_debug=P' not in discovered_def_grub_slub.stdout"
-        - discovered_def_grub_slub.rc == 0
-      ansible.builtin.lineinfile:
-        path: /etc/default/grub
-        regexp: ^(GRUB_CMDLINE_LINUX=)(".*)slub_debug=\w+\b(.*")
-        line: '\1\2slub_debug=P\3'
         backrefs: true
       notify: Rebuild_grub

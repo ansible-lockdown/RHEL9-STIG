@@ -34,10 +34,6 @@
     name: /var/tmp
     state: remounted
 
-- name: Reload_sysctl
-  ansible.builtin.command: sysctl --system
-  changed_when: true
-
 - name: Rebuild_grub
   ansible.builtin.command: grub2-mkconfig -o /boot/grub2/grub.cfg
   changed_when: true
@@ -90,6 +86,11 @@
 - name: Restart_pcscd
   ansible.builtin.systemd:
     name: pcscd
+    state: restarted
+
+- name: Restart_usbguard
+  ansible.builtin.systemd:
+    name: usbguard
     state: restarted
 
 - name: Update_aliases

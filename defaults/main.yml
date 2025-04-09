@@ -42,6 +42,10 @@ container_vars_file: is_container.yml
 # system_is_ec2 toggle will disable tasks that fail on Amazon EC2 instances. Set true to skip and false to run tasks
 system_is_ec2: false
 
+# Create managed not custom local_facts files
+create_benchmark_facts: true
+ansible_facts_path: /etc/ansible/facts.d
+
 # Connecting user, due to the way many users work differently this is to try and assist the use of connecting user if required
 # This is useful when part of kickstart build or running as root and not defining the ansible_user option
 # used @ RHEL-09-411015
@@ -76,11 +80,7 @@ audit_run_heavy_tests: true
 
 ## Only run Audit do not remediate
 audit_only: false
-### As part of audit_only ###
-# This will enable files to be copied back to control node in audit_only mode
-fetch_audit_files: false
-# Path to copy the files to will create dir structure in audit_only mode
-audit_capture_files_dir: /some/location to copy to on control node
+
 #############################
 
 # How to retrieve audit binary
@@ -109,6 +109,20 @@ audit_conf_dest: "/opt"
 
 # Where the audit logs are stored
 audit_log_dir: '/opt'
+
+## Ability to collect and take audit files moving to a centralised location
+# This enables the collection of the files from the host
+fetch_audit_output: false
+
+# Method of getting,uploading the summary files
+## Ensure access and permissions are avaiable for these to occur.
+## options are
+# fetch - fetches from server and moves to location on the ansible controller (could be a mount point available to controller)
+# copy - copies file to a location available to the managed node
+audit_output_collection_method: fetch
+
+# Location to put the audit files
+audit_output_destination: /opt/audit_summaries/
 
 ### Goss Settings ##
 ####### END ########
@@ -710,6 +724,8 @@ rhel9stig_sysctl_file:
   kernel: "{{ rhel9stig_sysctl_file_default }}"
   network: "{{ rhel9stig_sysctl_file_default }}"
   user: "{{ rhel9stig_sysctl_file_default }}"
+# Systems that run containers must set this value to greater then 0 for example: 65536
+rhel9stig_sysctl_max_user_namespaces: '0'
 
 ## Chrony
 rhel9stig_time_synchronization_servers:
@@ -852,6 +868,9 @@ rhel9stig_remotelog_server:
   port: 9999
   protocol: '@@'
 
+# Syslog Binary
+rhel9stig_syslog_bin: rsyslogd
+
 ### AUDITD
 # Ensure this matches the filesystem where the audit logs are stored.
 # It will affect checks for control RHEL-09-653030
@@ -881,5 +900,5 @@ audit_bins:
 - '/usr/sbin/ausearch'
 - '/usr/sbin/autrace'
 - '/usr/sbin/auditd'
-- '/usr/sbin/{{ rhel9stig_syslog_binary }}'  # This may not be reqiured is container
+- '/usr/sbin/{{ rhel9stig_syslog_binary }}'  # Note you may not need this is container
 - '/usr/sbin/augenrules'

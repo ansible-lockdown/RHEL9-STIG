@@ -437,7 +437,7 @@
     - name: "MEDIUM | RHEL-09-411090 | PATCH | RHEL 9 must maintain an account lock until the locked account is released by an administrator."
       ansible.builtin.lineinfile:
         path: /etc/security/faillock.conf
-        regexp: '^unlock_time\s*=\s*[1-9]'
+        regexp: ^(#\s*|)unlock_time\s*=\s*\d*
         line: "unlock_time = 0"
         mode: 'go-wx'
 

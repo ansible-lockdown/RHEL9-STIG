@@ -148,7 +148,9 @@
     state: absent
 
 - name: "MEDIUM | RHEL-09-215070 | PATCH | A graphical display manager must not be installed on RHEL 9 unless approved."
-  when: rhel_09_215070
+  when:
+    - rhel_09_215070
+    - not rhel9stig_gui_approved
   tags:
     - RHEL-09-215070
     - CAT2
