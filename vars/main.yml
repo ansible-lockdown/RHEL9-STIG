@@ -31,19 +31,26 @@ update_audit_template: false
 
 # DOD encryption
 rhel9stig_dod_ciphers:
-- aes256-gcm@openssh.com
-# - chacha20-poly1305@openssh.com  # removed due to terrapin CVE
-- aes256-ctr
-- aes128-gcm@openssh.com
-- aes128-ctr
+  - aes256-gcm@openssh.com
+  # chacha20 removed due to terrapin CVE
+  # - chacha20-poly1305@openssh.com
+  - aes256-ctr
+  - aes128-gcm@openssh.com
+  - aes128-ctr
 rhel9stig_dod_macs:
-- hmac-sha2-256-etm@openssh.com
-- hmac-sha2-512-etm@openssh.com
-- hmac-sha2-256
-- hmac-sha2-512
+  - hmac-sha2-256-etm@openssh.com
+  - hmac-sha2-512-etm@openssh.com
+  - hmac-sha2-256
+  - hmac-sha2-512
 
 rhel9stig_dod_kex:
 
 # Defaults added for searches
 rhel9stig_ungrouped_files_found: false
 rhel9stig_unowned_files_found: false
+
+# Aide packages
+aide_packages:
+  - aide
+# Aide initiate command for new DB creation
+aide_initiate_command: /usr/sbin/aide --init

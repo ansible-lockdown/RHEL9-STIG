@@ -118,9 +118,11 @@
 # RHEL9-STIG rule 654135
 -a always,exit -F path=/usr/bin/ssh-agent -F perm=x -F auid>=1000 -F auid!=unset -k privileged-ssh
 {% endif %}
+{% if rhel9stig_sshd_required %}
 {% if rhel_09_654140 %}
 # RHEL9-STIG rule 654140
 -a always,exit -F path=/usr/libexec/openssh/ssh-keysign -F perm=x -F auid>=1000 -F auid!=unset -k privileged-ssh
+{% endif %}
 {% endif %}
 {% if rhel_09_654145 %}
 # RHEL9-STIG rule 654145

@@ -2,10 +2,11 @@
 
 # File to skip controls if container
 # Based on standard image no changes
-# it expected all pkgs required for the container are alreday installed
+# it expected all pkgs required for the container are already installed
 
 ## controls
 rhel9stig_sshd_required: false
+rhel9stig_auditd_required: false
 rhel_09_211040: false # systemd | Enable systemd-journald
 rhel_09_211045: false # systemd | Set Ctrl-Alt-Delete burst action
 rhel_09_211050: false # systemd | Disable Ctrl-Alt-Delete target

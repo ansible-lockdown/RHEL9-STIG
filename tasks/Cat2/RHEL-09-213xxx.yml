@@ -104,8 +104,7 @@
     value: '1'
 
 - name: "MEDIUM | RHEL-09-213035 | PATCH | RHEL 9 must enable kernel parameters to enforce discretionary access control on symlinks."
-  when:
-    - rhel_09_213035
+  when: rhel_09_213035
   tags:
     - RHEL-09-213035
     - CAT2
@@ -159,7 +158,7 @@
   ansible.builtin.template:
     dest: "/etc/modprobe.d/{{ blacklist }}.conf"
     src: etc/modprobe.d/module.conf.j2
-    mode: 'go-wx'
+    mode: 'u-x,go-wx'
 
 - name: "MEDIUM | RHEL-09-213050 | PATCH | RHEL 9 must be configured to disable the Controller Area Network kernel module."
   when: rhel_09_213050
@@ -177,7 +176,7 @@
   ansible.builtin.template:
     dest: "/etc/modprobe.d/{{ blacklist }}.conf"
     src: etc/modprobe.d/module.conf.j2
-    mode: 'go-wx'
+    mode: 'u-x,go-wx'
 
 - name: "MEDIUM | RHEL-09-213055 | PATCH | RHEL 9 must be configured to disable the FireWire kernel module."
   when: rhel_09_213055
@@ -196,7 +195,7 @@
   ansible.builtin.template:
     dest: "/etc/modprobe.d/{{ blacklist }}.conf"
     src: etc/modprobe.d/module.conf.j2
-    mode: 'go-wx'
+    mode: 'u-x,go-wx'
 
 - name: "MEDIUM | RHEL-09-213060 | PATCH | RHEL 9 must disable the Stream Control Transmission Protocol (SCTP) kernel module."
   when: rhel_09_213060
@@ -214,7 +213,7 @@
   ansible.builtin.template:
     dest: "/etc/modprobe.d/{{ blacklist }}.conf"
     src: etc/modprobe.d/module.conf.j2
-    mode: 'go-wx'
+    mode: 'u-x,go-wx'
 
 - name: "MEDIUM | RHEL-09-213065 | PATCH | RHEL 9 must disable the Transparent Inter Process Communication (TIPC) kernel module."
   when: rhel_09_213065
@@ -232,7 +231,7 @@
   ansible.builtin.template:
     dest: "/etc/modprobe.d/{{ blacklist }}.conf"
     src: etc/modprobe.d/module.conf.j2
-    mode: 'go-wx'
+    mode: 'u-x,go-wx'
 
 - name: "MEDIUM | RHEL-09-213070 | PATCH | RHEL 9 must implement address space layout randomization (ASLR) to protect its memory from unauthorized code execution."
   when: rhel_09_213070
@@ -311,8 +310,8 @@
     path: /etc/systemd/coredump.conf
     regexp: ^(#|)ProcessSizeMax\s*=\s*(?!0)\d+
     line: ProcessSizeMax=0
+    mode: 'u-x,go-wx'
     create: true
-    mode: 'go-wx'
 
 - name: "MEDIUM | RHEL-09-213090 | PATCH | RHEL 9 must storage core dumps."
   when: rhel_09_213090
@@ -328,8 +327,8 @@
     path: /etc/systemd/coredump.conf
     regexp: ^(#|)Storage=.*
     line: Storage=none
+    mode: 'u-x,go-wx'
     create: true
-    mode: 'go-wx'
 
 - name: "MEDIUM | RHEL-09-213095 | PATCH | RHEL 9 must disable core dumps for all users."
   when: rhel_09_213095
@@ -395,14 +394,13 @@
     - name: "MEDIUM | RHEL-09-213110 | AUDIT | RHEL 9 must implement nonexecutable data to protect its memory from unauthorized code execution."
       ansible.builtin.shell: dmesg | grep '[NX|DX]*protection'
       changed_when: false
-      failed_when: rhel9stig_213110_nxdx.rc not in [ 0, 1 ]
-      register: rhel9stig_213110_nxdx
+      failed_when: discovered_nxdx.rc not in [ 0, 1 ]
+      register: discovered_nxdx
 
     - name: "MEDIUM | RHEL-09-213110 | PATCH | RHEL 9 must implement nonexecutable data to protect its memory from unauthorized code execution."
-      when: "'protection: active' not in rhel9stig_213110_nxdx.stdout"
+      when: "'protection: active' not in discovered_nxdx.stdout"
       ansible.builtin.command: grubby --update-kernel=ALL --remove-args=noexec
       changed_when: true
-      notify: Change_requires_reboot
 
 - name: "MEDIUM | RHEL-09-213115 | PATCH | The kdump service on RHEL 9 must be disabled."
   when:

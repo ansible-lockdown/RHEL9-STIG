@@ -1,7 +1,7 @@
 ---
 
 ## metadata for Audit benchmark
-benchmark_version: 'v2r1'
+benchmark_version: 'v2r2'
 
 ## Benchmark name used by audting control role
 # The audit variable found at the base
@@ -42,6 +42,10 @@ container_vars_file: is_container.yml
 # system_is_ec2 toggle will disable tasks that fail on Amazon EC2 instances. Set true to skip and false to run tasks
 system_is_ec2: false
 
+# Create managed not custom local_facts files
+create_benchmark_facts: true
+ansible_facts_path: /etc/ansible/facts.d
+
 # Connecting user, due to the way many users work differently this is to try and assist the use of connecting user if required
 # This is useful when part of kickstart build or running as root and not defining the ansible_user option
 # used @ RHEL-09-411015
@@ -76,11 +80,7 @@ audit_run_heavy_tests: true
 
 ## Only run Audit do not remediate
 audit_only: false
-### As part of audit_only ###
-# This will enable files to be copied back to control node in audit_only mode
-fetch_audit_files: false
-# Path to copy the files to will create dir structure in audit_only mode
-audit_capture_files_dir: /some/location to copy to on control node
+
 #############################
 
 # How to retrieve audit binary
@@ -100,7 +100,7 @@ audit_content: git
 # If using either archive, copy, get_url:
 ## Note will work with .tar files - zip will require extra configuration
 ### If using get_url this is expecting github url in tar.gz format e.g.
-### https://github.com/ansible-lockdown/UBUNTU22-CIS-Audit/archive/refs/heads/benchmark-v1.0.0.tar.gz
+### https://github.com/ansible-lockdown/RHEL9-STIG-Audit/archive/refs/heads/benchmark-v1.0.0.tar.gz
 audit_conf_source: "some path or url to copy from"
 
 # Destination for the audit content to be placed on managed node
@@ -109,6 +109,20 @@ audit_conf_dest: "/opt"
 
 # Where the audit logs are stored
 audit_log_dir: '/opt'
+
+## Ability to collect and take audit files moving to a centralised location
+# This enables the collection of the files from the host
+fetch_audit_output: false
+
+# Method of getting,uploading the summary files
+## Ensure access and permissions are avaiable for these to occur.
+## options are
+# fetch - fetches from server and moves to location on the ansible controller (could be a mount point available to controller)
+# copy - copies file to a location available to the managed node
+audit_output_collection_method: fetch
+
+# Location to put the audit files
+audit_output_destination: /opt/audit_summaries/
 
 ### Goss Settings ##
 ####### END ########
@@ -133,7 +147,6 @@ rhel_09_411100: true
 rhel_09_431010: true
 rhel_09_611025: true
 rhel_09_671010: true
-rhel_09_672015: true
 rhel_09_672030: true
 
 #### CAT 2
@@ -197,7 +210,6 @@ rhel_09_231040: true
 rhel_09_231045: true
 rhel_09_231050: true
 rhel_09_231055: true
-rhel_09_231060: true
 rhel_09_231065: true
 rhel_09_231070: true
 rhel_09_231075: true
@@ -223,7 +235,6 @@ rhel_09_231170: true
 rhel_09_231175: true
 rhel_09_231180: true
 rhel_09_231185: true
-
 rhel_09_231200: true
 rhel_09_232010: true
 rhel_09_232015: true
@@ -282,7 +293,6 @@ rhel_09_232270: true
 rhel_09_251010: true
 rhel_09_251015: true
 rhel_09_251020: true
-rhel_09_251025: true
 rhel_09_251030: true
 rhel_09_251035: true
 rhel_09_251040: true
@@ -295,7 +305,6 @@ rhel_09_252035: true
 rhel_09_252040: true
 rhel_09_252045: true
 rhel_09_252050: true
-rhel_09_252055: true
 rhel_09_252060: true
 rhel_09_252065: true
 rhel_09_253010: true
@@ -348,7 +357,6 @@ rhel_09_255150: true
 rhel_09_255155: true
 rhel_09_255160: true
 rhel_09_255165: true
-rhel_09_255170: true
 rhel_09_255175: true
 rhel_09_271010: true
 rhel_09_271015: true
@@ -401,10 +409,6 @@ rhel_09_411095: true
 rhel_09_411105: true
 rhel_09_411110: true
 rhel_09_411115: true
-rhel_09_412010: true
-rhel_09_412015: true
-rhel_09_412020: true
-rhel_09_412025: true
 rhel_09_412035: true
 rhel_09_412045: true
 rhel_09_412050: true
@@ -441,7 +445,6 @@ rhel_09_611075: true
 rhel_09_611080: true
 rhel_09_611085: true
 rhel_09_611090: true
-rhel_09_611095: true
 rhel_09_611100: true
 rhel_09_611105: true
 rhel_09_611110: true
@@ -452,7 +455,6 @@ rhel_09_611130: true
 rhel_09_611135: true
 rhel_09_611140: true
 rhel_09_611145: true
-rhel_09_611150: true
 rhel_09_611155: true
 rhel_09_611160: true
 rhel_09_611165: true
@@ -757,7 +759,7 @@ rhel9stig_postfix_client_conf: permit_mynetworks,reject
 rhel9stig_pass:
   max_days: 60
   min_days: 1
-  minlen: 15
+  minlen: '15'
 
 rhel9stig_user_inactive_days: '35'
 
@@ -788,7 +790,7 @@ rhel9stig_logind_conf:
   stopsessionidle: '900'
 
 rhel9stig_pam:
-  retry: '3'
+  retry: '3'  # must be set between 1-3 anytning else ia a failure
   rounds: '5000'
 
 rhel9stig_pwquality:
@@ -801,6 +803,10 @@ rhel9stig_pwquality:
   minclass: 4
   ocredit: -1
   ucredit: -1
+
+rhel9stig_sudoers_exclude_nopasswd_list:
+- ec2-user
+- vagrant
 
 rhel9stig_smartcard_reader: false
 
@@ -833,14 +839,23 @@ rhel9stig_aide_db_new_file: /var/lib/aide/aide.db.new.gz
 rhel9stig_aide_db_file: /var/lib/aide/aide.db.gz
 
 rhel9stig_aide_cron_file: /etc/cron.daily/aide  # NOTE the path may change if not running daily
-rhel9stig_aide_cron:
-  day: '*'
-  hour: '4'
-  minute: '30'
-  job: '/usr/sbin/aide --check | /bin/mail -s "$HOSTNAME - Daily aide integrity check run" root@sysname.mil'
-  name: 'Aide Job runs Daily at 0430'
+rhel9stig_aide_cron_day: '*'
+rhel9stig_aide_cron_hour: '4'
+rhel9stig_aide_cron_minute: '30'
+rhel9stig_aide_cron_job: '/usr/sbin/aide --check | /bin/mail -s "$HOSTNAME - Daily aide integrity check run" root@sysname.mil'
+rhel9stig_aide_cron_name: 'Aide Job runs Daily at 0430'
+
+# AIDE is a file integrity checking tool, similar in nature to Tripwire.
+# While it cannot prevent intrusions, it can detect unauthorized changes
+# to configuration files by alerting when the files are changed. Review
+# the AIDE quick start guide and AIDE documentation before proceeding.
+# By setting this variable to `true`, all of the settings related to AIDE will be applied!
+rhel9stig_config_aide: true
 
 ### Rsyslog
+# Set the type either rsyslogd or syslog-ng this sets the audit tools binary as referred to controls
+# RHEL-09-232035, RHEL-09-232220, RHEL-09-232225
+rhel9stig_syslog_binary: rsyslogd
 # Set the following to true if the server accepts incoming syslog data using rsyslog
 rhel9stig_rsyslog_server: false
 
@@ -856,33 +871,31 @@ rhel9stig_syslog_bin: rsyslogd
 ### AUDITD
 # Ensure this matches the filesystem where the audit logs are stored.
 # It will affect checks for control RHEL-09-653030
-
+rhel9stig_auditd_required: true
 rhel9stig_audit_log_filesystem: '/var/log/audit'
-rhel9stig_audit_conf:
-  action_mail_acct: root
-  admin_space_left: 5%
-  admin_space_left_action: single
-  disk_error_action: HALT  # Can be one of "SYSLOG", "SINGLE", or "HALT"
-  disk_full_action: HALT  # Can be one of "SYSLOG", "SINGLE", or "HALT"
-  freq: '100'
-  local_events: 'yes'
-  log_format: ENRICHED
-  logfile: "{{ rhel9stig_audit_log_filesystem }}/audit.log"
-  logfile_group: root
-  max_log_file_action: ROTATE
-  name_format: hostname
-  overflow_action: syslog
-  space_left: 25%
-  space_left_action: email
-  write_logs: 'yes'
+rhel9stig_audit_conf_action_mail_acct: root
+rhel9stig_audit_conf_admin_space_left: 5%
+rhel9stig_audit_conf_admin_space_left_action: single
+rhel9stig_audit_conf_disk_error_action: HALT  # Can be one of "SYSLOG", "SINGLE", or "HALT"
+rhel9stig_audit_conf_disk_full_action: HALT  # Can be one of "SYSLOG", "SINGLE", or "HALT"
+rhel9stig_audit_conf_freq: '100'
+rhel9stig_audit_conf_local_events: 'yes'
+rhel9stig_audit_conf_log_format: ENRICHED
+rhel9stig_audit_conf_logfile: "{{ rhel9stig_audit_log_filesystem }}/audit.log"
+rhel9stig_audit_conf_logfile_group: root
+rhel9stig_audit_conf_max_log_file_action: ROTATE
+rhel9stig_audit_conf_name_format: hostname
+rhel9stig_audit_conf_overflow_action: syslog
+rhel9stig_audit_conf_space_left: 25%
+rhel9stig_audit_conf_space_left_action: email
+rhel9stig_audit_conf_write_logs: 'yes'
 rhel9stig_audit_backlog_limit: 8192
-
-# All Audit Binaries
-rhel9stig_audit_bins:
+# Audit binaries
+audit_bins:
 - '/usr/sbin/auditctl'
 - '/usr/sbin/aureport'
 - '/usr/sbin/ausearch'
 - '/usr/sbin/autrace'
 - '/usr/sbin/auditd'
+- '/usr/sbin/{{ rhel9stig_syslog_binary }}'  # Note you may not need this is container
 - '/usr/sbin/augenrules'
-- '/usr/sbin/{{ rhel9stig_syslog_bin }}'

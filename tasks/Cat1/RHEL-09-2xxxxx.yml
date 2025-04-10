@@ -69,13 +69,13 @@
     - CAT1
     - CCI-000213
     - SRG-OS-000080-GPOS-00048
-    - SV-257785r958726_rule
+    - SV-257789r1014822_rule
     - V-257789
     - NIST800-53R4_AC-3
     - grub
   notify: Rebuild_grub
   ansible.builtin.lineinfile:
-    path: /etc/grub2.cfg
+    path: /etc/grub.d/01_users
     regexp: "{{ grub_superusers.regexp }}"
     line: "{{ grub_superusers.line }}"
     insertafter: "{{ grub_superusers.after }}"
@@ -91,11 +91,11 @@
   tags:
     - RHEL-09-214015
     - CAT1
-    - CCI-000000
+    - CCI-001749
     - SRG-OS-000366-GPOS-00153
-    - SV-257820r997053_rule
+    - SV-257820r1015076_rule
     - V-257820
-    - NIST800-53R4_NA
+    - NIST800-53R4_CM-5
     - dnf
     - packages
   ansible.builtin.lineinfile:
@@ -108,11 +108,11 @@
   tags:
     - RHEL-09-214020
     - CAT1
-    - CCI-000000
+    - CCI-001749
     - SRG-OS-000366-GPOS-00153
-    - SV-257821r997054_rule
+    - SV-257821r1015077_rule
     - V-257821
-    - NIST800-53R4_NA
+    - NIST800-53R4_CM-5
     - dnf
     - packages
   ansible.builtin.lineinfile:
@@ -125,11 +125,11 @@
   tags:
     - RHEL-09-214025
     - CAT1
-    - CCI-000000
+    - CCI-001749
     - SRG-OS-000366-GPOS-00153
     - SV-257822r997055_rule
     - V-257822
-    - NIST800-53R4_NA
+    - NIST800-53R4_CM-5
     - dnf
     - packages
   block:
@@ -140,14 +140,14 @@
         path: /etc/yum.repos.d
         patterns: "*.repo"
         use_regex: true
-      register: repo_list
+      register: discovered_repo_list
 
     - name: HIGH | RHEL-09-214025 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation. | Set gpgcheck
       ansible.builtin.replace:
         path: "{{ item }}"
         regexp: ^gpgcheck
         replace: gpgcheck=1
-      loop: "{{ repo_list.files }}"
+      loop: "{{ discovered_repo_list.files }}"
 
 - name: HIGH | RHEL-09-215015 | PATCH | RHEL 9 must not have a File Transfer Protocol (FTP) server package installed.
   when:
@@ -201,7 +201,7 @@
     - SRG-OS-000405-GPOS-00184
     - SRG-OS-000185-GPOS-00079
     - SRG-OS-000404-GPOS-0018
-    - SV-257879r958872_rule
+    - SV-257879r1014836_rule
     - V-257879
     - NIST800-53R4_SC-28
     - encrypt
@@ -213,14 +213,14 @@
       ansible.builtin.command: blkid
       changed_when: false
       failed_when: false
-      register: rhel_09_231190_partition_layout
+      register: discovered_partition_layout
 
     - name: HIGH | RHEL-09-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification of all information that requires at rest protection. | Message out warning
       ansible.builtin.debug:
         msg:
           - WARNING!! Below is the partition layout. Please run the "blkid" command to confirm every persistent disk partition has an entry for TYPE=crypto_LUKS.
           - If partitions other than pseudo file systems (such as /proc or /sys or tmpfs) this is a finding
-          - "{{ rhel_09_231190_partition_layout.stdout_lines }}"
+          - "{{ discovered_partition_layout.stdout_lines }}"
 
     - name: HIGH | RHEL-09-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification of all information that requires at rest protection. | Message out warning
       ansible.builtin.import_tasks:
@@ -244,20 +244,20 @@
       ansible.builtin.find:
         path: /
         pattern: shosts.equiv
-      register: rhel9stig_shosts_equiv
+      register: discovered_shosts_equiv
 
     - name: HIGH | RHEL-09-252070 | PATCH | There must be no shosts.equiv files on RHEL 9. | Remove files
       when:
-        - rhel9stig_shosts_equiv.files | length > 0
+        - discovered_shosts_equiv.files | length > 0
         - rhel9stig_disruption_high
       ansible.builtin.file:
         path: "{{ item }}"
         state: absent
-      loop: "{{ rhel9stig_shosts_equiv.files }}"
+      loop: "{{ discovered_shosts_equiv.files }}"
 
     - name: HIGH | RHEL-09-252070 | WARN | There must be no shosts.equiv files on RHEL 9. | Warn if not removing files found
       when:
-        - rhel9stig_shosts_equiv.files | length > 0
+        - discovered_shosts_equiv.files | length > 0
         - not rhel9stig_disruption_high
       ansible.builtin.import_tasks:
         file: warning_facts.yml
@@ -281,20 +281,20 @@
         path: /
         hidden: true
         pattern: .shosts
-      register: rhel9stig_dot_shosts
+      register: discovered_dot_shosts
 
     - name: HIGH | RHEL-09-252075 | PATCH | There must be no .shosts files on RHEL 9. | Remove files
       when:
-        - rhel9stig_dot_shosts is defined
+        - discovered_dot_shosts is defined
         - rhel9stig_disruption_high
       ansible.builtin.file:
         path: "{{ item }}"
         state: absent
-      loop: "{{ rhel9stig_dot_shosts.files }}"
+      loop: "{{ discovered_dot_shosts.files }}"
 
     - name: HIGH | RHEL-09-252075 | WARN | There must be no .shosts files on RHEL 9. | Warn if not removing files found
       when:
-        - rhel9stig_dot_shosts is defined
+        - discovered_dot_shosts is defined
         - not rhel9stig_disruption_high
       ansible.builtin.import_tasks: warning_facts.yml
 
@@ -315,7 +315,7 @@
     - NIST800-53R4_CM-6
     - NIST800-53R4_IA-2
     - ssh
-  notify: Sshd_restart
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)PermitEmptyPasswords yes
@@ -336,7 +336,7 @@
     - NIST800-53R4_MA-4
     - ssh
     - pam
-  notify: Sshd_restart
+  notify: Restart_sshd
   ansible.builtin.lineinfile:
     path: "{{ rhel9stig_sshd_config_file }}"
     regexp: (?i)^(#|)usepam

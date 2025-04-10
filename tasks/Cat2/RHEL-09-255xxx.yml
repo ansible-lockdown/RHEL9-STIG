@@ -77,7 +77,7 @@
     - V-257981
     - NIST800-53R4_AC-8
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   block:
     - name: "MEDIUM | RHEL-09-255025 | PATCH | RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system via a SSH logon. | Remove"
       when: "item.path != rhel9stig_sshd_config_file"
@@ -109,7 +109,7 @@
     - V-257982
     - NIST800-53R4_AC-17
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   block:
     - name: "MEDIUM | RHEL-09-255030 | PATCH | RHEL 9 must log SSH connection attempts and failures to the server. | Remove"
       when: "item.path != rhel9stig_sshd_config_file"
@@ -141,11 +141,11 @@
     - SRG-OS-000106-GPOS-00053
     - SRG-OS-000107-GPOS-00054
     - SRG-OS-000108-GPOS-00055
-    - SV-257983r997068_rule
+    - SV-257983r1015084_rule
     - V-257983
     - NIST800-53R4_IA-2
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   block:
     - name: "MEDIUM | RHEL-09-255035 | PATCH | RHEL 9 SSHD must accept public key authentication | Remove"
       when: "item.path != rhel9stig_sshd_config_file"
@@ -178,7 +178,7 @@
     - V-257985
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   block:
     - name: "MEDIUM | RHEL-09-255045 | PATCH | RHEL 9 must not permit direct logons to the root account using remote access via SSH. | Remove existing"
       when: "item.path != rhel9stig_sshd_config_file"
@@ -206,7 +206,7 @@
     - CAT2
     - CCI-001453
     - SRG-OS-000250-GPOS-00093
-    - SV-257987r991554_rule
+    - SV-257987r1014852_rule
     - V-257987
     - NIST800-53R4_AC-17
     - ssh
@@ -227,7 +227,6 @@
         path: "{{ rhel9stig_sshd_config_file }}"
         regexp: (?i)^(#|)\s*Include.*
         line: "Include {{ rhel9stig_sshd_config.include_conf }}"
-
         validate: sshd -t -f %s
 
 - name: "MEDIUM | RHEL-09-255060 | PATCH | RHEL 9 must implement DOD-approved encryption ciphers to protect the confidentiality of SSH client connections."
@@ -301,7 +300,7 @@
     - V-257992
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   block:
     - name: "MEDIUM | RHEL-09-255080 | PATCH | RHEL 9 must not allow a noncertificate trusted host SSH logon to the system. | Remove"
       when: "item.path != rhel9stig_sshd_config_file"
@@ -335,7 +334,7 @@
     - V-257993
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   block:
     - name: "MEDIUM | RHEL-09-255085 | PATCH | RHEL 9 must not allow users to override SSH environment variables. | Remove"
       when: "item.path != rhel9stig_sshd_config_file"
@@ -374,7 +373,7 @@
     - NIST800-53R4_AC-17
     - NIST800-53R4_SC-8
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   block:
     - name: "MEDIUM | RHEL-09-255090 | PATCH | RHEL 9 must force a frequent session key renegotiation for SSH connections to the server. | Remove"
       when: "item.path != rhel9stig_sshd_config_file"
@@ -412,7 +411,7 @@
     - NIST800-53R4_SC-10
     - NIST800-53R4_AC-12
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   block:
     - name: "MEDIUM | RHEL-09-255095 | PATCH | RHEL 9 must be configured so that all network connections associated with SSH traffic terminate after becoming unresponsive. | Remove"
       when: "item.path != rhel9stig_sshd_config_file"
@@ -453,7 +452,7 @@
     - NIST800-53R4_SC-10
     - NIST800-53R4_AC-12
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   block:
     - name: "MEDIUM | RHEL-09-255100 | PATCH | RHEL 9 must be configured so that all network connections associated with SSH traffic are terminated after 10 minutes of becoming unresponsive. | Remove"
       when: "item.path != rhel9stig_sshd_config_file"
@@ -544,14 +543,13 @@
       ansible.builtin.find:
         path: /etc/ssh/
         pattern: '*_key'
-      register: rhel9stig_private_ssh_keys
+      register: discovered_private_ssh_keys
 
     - name: "MEDIUM | RHEL-09-255120 | PATCH | RHEL 9 SSH private host key files must have mode 0640 or less permissive."
-      when: item.mode > '0640'
       ansible.builtin.file:
         path: "{{ item.path }}"
         mode: 'u-x,go-rwx'
-      loop: "{{ rhel9stig_private_ssh_keys.files }}"
+      loop: "{{ discovered_private_ssh_keys.files }}"
 
 - name: "MEDIUM | RHEL-09-255125 | PATCH | RHEL 9 SSH public host key files must have mode 0644 or less permissive."
   when:
@@ -570,14 +568,13 @@
       ansible.builtin.find:
         path: /etc/ssh
         pattern: '*.pub'
-      register: rhel9stig_pub_ssh_keys
+      register: discovered_pub_ssh_keys
 
     - name: "MEDIUM | RHEL-09-255125 | PATCH | RHEL 9 SSH public host key files must have mode 0644 or less permissive."
-      when: item.mode > '0644'
       ansible.builtin.file:
         path: "{{ item.path }}"
         mode: 'u-x,go-wx'
-      loop: "{{ rhel9stig_pub_ssh_keys.files }}"
+      loop: "{{ discovered_pub_ssh_keys.files }}"
 
 - name: "MEDIUM | RHEL-09-255130 | PATCH | RHEL 9 SSH daemon must not allow compression or must only allow compression after successful authentication."
   when:
@@ -592,7 +589,7 @@
     - V-258002
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   block:
     - name: "MEDIUM | RHEL-09-255130 | PATCH | RHEL 9 SSH daemon must not allow compression or must only allow compression after successful authentication. | Remove"
       when: "item.path != rhel9stig_sshd_config_file"
@@ -627,7 +624,7 @@
     - NIST800-53R4_CM-5
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   block:
     - name: "MEDIUM | RHEL-09-255135 | PATCH | RHEL 9 SSH daemon must not allow GSSAPI authentication. | Remove"
       when: "item.path != rhel9stig_sshd_config_file"
@@ -660,7 +657,7 @@
     - NIST800-53R4_CM-5
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   block:
     - name: "MEDIUM | RHEL-09-255140 | PATCH | RHEL 9 SSH daemon must not allow Kerberos authentication. | Remove"
       when: "item.path != rhel9stig_sshd_config_file"
@@ -678,7 +675,6 @@
         regexp: (?i)^(#|)\s*KerberosAuthentication\s*(yes|no|true|false)
         line: "KerberosAuthentication {{ rhel9stig_sshd_config.kerbauth }}"
         validate: sshd -t -f %s
-
 - name: "MEDIUM | RHEL-09-255145 | PATCH | RHEL 9 SSH daemon must not allow rhosts authentication"
   when:
     - rhel_09_255145
@@ -692,7 +688,7 @@
     - V-258005
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   block:
     - name: "MEDIUM | RHEL-09-255145 | PATCH | RHEL 9 SSH daemon must not allow rhosts authentication | Remove"
       when: "item.path != rhel9stig_sshd_config_file"
@@ -724,7 +720,7 @@
     - V-258006
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   block:
     - name: "MEDIUM | RHEL-09-255150 | PATCH | RHEL 9 SSH daemon must not allow known hosts authentication. | Remove"
       when: "item.path != rhel9stig_sshd_config_file"
@@ -758,7 +754,7 @@
     - V-258007
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   block:
     - name: "MEDIUM | RHEL-09-255155 | PATCH | RHEL 9 SSH daemon must disable remote X connections for interactive users. | Remove"
       when: "item.path != rhel9stig_sshd_config_file"
@@ -792,7 +788,7 @@
     - V-258008
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   block:
     - name: "MEDIUM | RHEL-09-255160 | PATCH | RHEL 9 SSH daemon must perform strict mode checking of home directory configuration files. | Remove"
       when: "item.path != rhel9stig_sshd_config_file"
@@ -826,7 +822,7 @@
     - V-258009
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   block:
     - name: "MEDIUM | RHEL-09-255165 | PATCH | RHEL 9 SSH daemon must display the date and time of the last successful account logon upon an SSH logon. | Remove"
       when: "item.path != rhel9stig_sshd_config_file"
@@ -847,40 +843,6 @@
         mode: 'go-rwx'
         validate: sshd -t -f %s
 
-- name: "MEDIUM | RHEL-09-255170 | PATCH | RHEL 9 SSH daemon must display the date and time of the last successful account logon upon an SSH logon."
-  when:
-    - rhel_09_255170
-    - rhel9stig_sshd_required
-  tags:
-    - RHEL-09-255170
-    - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-258010r991589_rule
-    - V-258010
-    - NIST800-53R4_CM-6
-    - ssh
-  notify: Restart_ssh
-  block:
-    - name: "MEDIUM | RHEL-09-255170 | PATCH | RHEL 9 SSH daemon must be configured to use privilege separation. | Remove"
-      when: "item.path != rhel9stig_sshd_config_file"
-      ansible.builtin.replace:
-        path: "{{ item }}"
-        regexp: (?i)^(UsePrivilegeSeparation.*)
-        replace: '#\1'
-      failed_when: discovered_privseperation_exists.rc != 257
-      register: discovered_privseperation_exists
-      loop: "{{ prelim_sshd_config_files.files }}"
-
-    - name: "MEDIUM | RHEL-09-255170 | PATCH | RHEL 9 SSH daemon must be configured to use privilege separation. | Exists"
-      ansible.builtin.lineinfile:
-        path: "{{ rhel9stig_sshd_config_file }}"
-        regexp: (?i)^(#|)\s*UsePrivilegeSeparation\s*(yes|no|sandbox)
-        line: "UsePrivilegeSeparation {{ rhel9stig_sshd_config.privsep }}"
-        create: true
-        mode: 'go-rwx'
-        validate: sshd -t -f %s
-
 - name: "MEDIUM | RHEL-09-255175 | PATCH | RHEL 9 SSH daemon must prevent remote hosts from connecting to the proxy display."
   when:
     - rhel_09_255175
@@ -894,7 +856,7 @@
     - V-258011
     - NIST800-53R4_CM-6
     - ssh
-  notify: Restart_ssh
+  notify: Restart_sshd
   block:
     - name: "MEDIUM | RHEL-09-255175 | PATCH | RHEL 9 SSH daemon must prevent remote hosts from connecting to the proxy display. | Remove"
       when: "item.path != rhel9stig_sshd_config_file"
