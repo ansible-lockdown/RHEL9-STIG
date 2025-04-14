@@ -115,7 +115,7 @@
   #   - not discovered_new_aide_db_created is defined  # noqa: no-changed-when
   ansible.builtin.command: /usr/sbin/aide --check
   changed_when: true
-  failed_when: discovered_aidedb_check.rc not in [ 0, 1, 4, 7 ]
+  failed_when: discovered_aidedb_check.rc not in [ 0, 1, 4 ]
   register: discovered_aidedb_check
   listen: Build_aide_db
 

@@ -865,7 +865,7 @@
   loop:
     - '/etc/cron.d'
     - '/etc/cron.daily'
-#    - '/etc/cron.deny'
+    - '/etc/cron.deny'
     - '/etc/cron.hourly'
     - '/etc/cron.monthly'
     - '/etc/cron.weekly'
@@ -887,7 +887,7 @@
   loop:
     - '/etc/cron.d'
     - '/etc/cron.daily'
-#    - '/etc/cron.deny'
+    - '/etc/cron.deny'
     - '/etc/cron.hourly'
     - '/etc/cron.monthly'
     - '/etc/cron.weekly'
