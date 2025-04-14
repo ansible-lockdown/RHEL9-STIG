@@ -823,7 +823,7 @@ rhel9stig_use_aide: true
 rhel9stig_aide_db_file_age: 1w
 
 # If aide already setup this forces a new DB to be created despite age
-rhel9stig_aide_db_recreate: true
+rhel9stig_aide_db_recreate: false
 
 # New db file
 rhel9stig_aide_db_new_file: /var/lib/aide/aide.db.new.gz
