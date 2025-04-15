@@ -3,7 +3,7 @@
 ## metadata for Audit benchmark
 benchmark_version: 'v2r2'
 
-## Benchmark name used by audting control role
+## Benchmark name used by auditing control role
 # The audit variable found at the base
 benchmark: RHEL9-STIG
 
@@ -85,7 +85,7 @@ audit_only: false
 
 # How to retrieve audit binary
 # Options are copy or download - detailed settings at the bottom of this file
-# you will need to access to either github or the file already dowmloaded
+# you will need to access to either github or the file already downloaded
 get_audit_binary_method: download
 
 ## if get_audit_binary_method - copy the following needs to be updated for your environment
@@ -115,7 +115,7 @@ audit_log_dir: '/opt'
 fetch_audit_output: false
 
 # Method of getting,uploading the summary files
-## Ensure access and permissions are avaiable for these to occur.
+## Ensure access and permissions are available for these to occur.
 ## options are
 # fetch - fetches from server and moves to location on the ansible controller (could be a mount point available to controller)
 # copy - copies file to a location available to the managed node
@@ -790,7 +790,7 @@ rhel9stig_logind_conf:
   stopsessionidle: '900'
 
 rhel9stig_pam:
-  retry: '3'  # must be set between 1-3 anytning else ia a failure
+  retry: '3'  # must be set between 1-3 anything else ia a failure
   rounds: '5000'
 
 rhel9stig_pwquality:
@@ -891,7 +891,7 @@ rhel9stig_audit_conf_space_left_action: email
 rhel9stig_audit_conf_write_logs: 'yes'
 rhel9stig_audit_backlog_limit: 8192
 # Audit binaries
-audit_bins:
+rhel9stig_audit_bins:
 - '/usr/sbin/auditctl'
 - '/usr/sbin/aureport'
 - '/usr/sbin/ausearch'
