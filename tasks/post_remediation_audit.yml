@@ -11,7 +11,7 @@
 - name: Post Audit | Ensure audit files readable by users
   ansible.builtin.file:
     path: "{{ item }}"
-    mode: '0644'
+    mode: 'u-x,go=r'
     state: file
   loop:
     - "{{ post_audit_outfile }}"
