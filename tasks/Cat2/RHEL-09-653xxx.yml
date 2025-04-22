@@ -182,6 +182,7 @@
   when:
     - rhel_09_653030
     - rhel9stig_auditd_required
+    - ansible_facts['mounts']| selectattr('mount', '==', rhel9stig_audit_log_filesystem)
   tags:
     - RHEL-09-653030
     - CAT2
