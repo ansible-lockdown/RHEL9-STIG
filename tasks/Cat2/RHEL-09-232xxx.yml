@@ -761,7 +761,7 @@
       ansible.builtin.file:
         path: "{{ item }}"
         owner: root
-      loop: "{{ rhel9stig_lib_files_owner.stdout_lines }}"
+      loop: "{{ discovered_lib_files_owner.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232205 | PATCH | RHEL 9 library files must be group-owned by root or a system account."
   when: rhel_09_232205
@@ -777,7 +777,7 @@
     warn_control_id: "MEDIUM | RHEL-09-232205"
   block:
     - name: "MEDIUM | RHEL-09-232205 | AUDIT | RHEL 9 library files must be group-owned by root or a system account."
-      ansible.builtin.shell: find -L /lib /lib64 /usr/lib /usr/lib64 ! \( -group root -o -group utmp -o -group ssh_keys -o -group tty \) -exec ls {} \;
+      ansible.builtin.shell: find -L /lib /lib64 /usr/lib /usr/lib64 -uid +1000 -type f -exec ls {} \;
       changed_when: false
       failed_when: discovered_lib_files_group.rc not in [ 0, 1 ]
       register: discovered_lib_files_group
@@ -827,7 +827,7 @@
     warn_control_id: "MEDIUM | RHEL-09-232215"
   block:
     - name: "MEDIUM | RHEL-09-232215 | AUDIT | RHEL 9 library directories must be group-owned by root or a system account."
-      ansible.builtin.shell: find /lib /lib64 /usr/lib /usr/lib64 ! -group root -type d -exec stat -c "%n %G" '{}' \;
+      ansible.builtin.shell: find -L /lib /lib64 /usr/lib /usr/lib64 -uid +1000 -type d -exec ls {} \;
       changed_when: false
       failed_when: discovered_lib_dirs_group.rc not in [ 0, 1 ]
       register: discovered_lib_dirs_group
