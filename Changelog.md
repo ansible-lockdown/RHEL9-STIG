@@ -1,5 +1,32 @@
 # RHEL9STIG
 
+
+## 1.6.0 Based on STIG V2R3 Jan28 2025
+
+- RuleID Updates
+- CCI Updates
+- package removals/additions now dont skip if package present or not but run through giving correct state
+- Upgraded several control to disruption_high
+- authselect updates for faillock related controls
+- var dictionaries renamed to allow easier overridding of variables
+- RHEL-09-672010 - Becomes RHEL-09-215100
+- RHEL-09-672020 - moved to CAT1 and approach changed to remediate inline with documentation
+- RHEL-09-672030 - removed
+- RHEL-09-171011 - Added
+- RHEL-09-232103 - Added
+- RHEL-09-232104 - Added
+- RHEL-09-251025 - Added firewalld reload as issues seen for new connections
+- RHEL-09-255064 - Added
+- RHEL-09-255070 - Added
+- RHEL-09-433016 - Added fapolicyd ading rules and testing - new var rhel9stig_allow_fapolicy_updates
+- RHEL-09-610205 - title update
+- RHEL-09-652035 - removed
+- RHEL-09-653110 - added audit.rules
+- RHEL-09-653130 - moved to 653xxx as 652035 no longer present
+- RHEL-09-672035 - removed
+- RHEL-09-672040 - removed
+- RHEL-09-672045 - moved to 215105
+
 ## 1.5.0 Based on STIG V2R2 Oct24 2024
 
 - RuleID updates

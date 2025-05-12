@@ -7,6 +7,8 @@
         types: [opened, reopened, synchronize]
         branches:
             - devel
+            - benchmark*
+            - stig
         paths:
             - '**.yml'
             - '**.sh'

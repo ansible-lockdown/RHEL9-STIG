@@ -61,6 +61,12 @@
   changed_when: false
   register: rhel9stig_interactive_users_home
 
+- name: PRELIM | Set crypto policies and subpolicies fact
+  when: rhel9stig_additional_fips_crypto_subpolicies
+  tags: always
+  ansible.builtin.set_fact:
+    combined_crypto_policy_config: "{{ combined_crypto_policy_config }}:{{ rhel9stig_additional_fips_crypto_subpolicies_list | join(':') }}"
+
 - name: PRELIM | Gather accounts with empty password fields
   when: rhel_09_611155
   tags: passwords
@@ -80,25 +86,15 @@
   check_mode: false
   register: rhel9stig_uid_zero_accounts_except_root
 
-- name: PRELIM | Setup crypto-policy
-  when: rhel_09_672030
-  tags:
-    - cat1
-    - RHEL-09-672030
-    - crypto
-  ansible.builtin.package:
-    name:
-      - crypto-policies
-      - crypto-policies-scripts
-    state: present
-
 - name: PRELIM | Create list of mount points
   tags: always
   ansible.builtin.set_fact:
     mount_names: "{{ ansible_mounts | map(attribute='mount') | list }}"
 
 - name: PRELIM | Ensure python3-libselinux is installed
-  when: '"python3-libselinux" not in ansible_facts.packages'
+  when:
+    - '"python3-libselinux" not in ansible_facts.packages'
+    - not system_is_container
   ansible.builtin.package:
     name: python3-libselinux
     state: present
@@ -125,13 +121,43 @@
     state: latest
 
 - name: PRELIM | Configure System Accounting (auditd)
-  tags: always
+  when:
+    - rhel9stig_auditd_required
+    - '"auditd" not in ansible_facts.packages'
+  tags:
+    - cat2
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000038-GPOS-00016
+    - SRG-OS-000039-GPOS-00017
+    - SRG-OS-000040-GPOS-00018
+    - SRG-OS-000041-GPOS-00019
+    - SRG-OS-000042-GPOS-00021
+    - SRG-OS-000051-GPOS-00024
+    - SRG-OS-000054-GPOS-00025
+    - SRG-OS-000122-GPOS-00063
+    - SRG-OS-000254-GPOS-00095
+    - SRG-OS-000255-GPOS-00096
+    - SRG-OS-000337-GPOS-00129
+    - SRG-OS-000348-GPOS-00136
+    - SRG-OS-000349-GPOS-00137
+    - SRG-OS-000350-GPOS-00138
+    - SRG-OS-000351-GPOS-00139
+    - SRG-OS-000352-GPOS-00140
+    - SRG-OS-000353-GPOS-00141
+    - SRG-OS-000354-GPOS-00142
+    - SRG-OS-000358-GPOS-00145
+    - SRG-OS-000365-GPOS-00152
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000475-GPOS-00220
+    - auditd
   ansible.builtin.package:
     name: audit
     state: present
 
 - name: "PRELIM | Discover auditd_logfile_path"
   when:
+    - rhel9stig_auditd_required
     - rhel_09_653085 or
       rhel_09_653085 or
       rhel_09_653090
@@ -140,9 +166,20 @@
   changed_when: false
   register: discovered_auditd_logfile
 
+- name: "PRELIM | Discover auditd rules files"
+  when:
+    - rhel9stig_auditd_required
+    - rhel_09_653110
+  tags: always
+  ansible.builtin.find:
+    path: etc/audit/rules.d
+    patterns: '*.rules'
+  register: discovered_audit_rules
+
 # Added to ensure ssh drop in file exists if not default /etc/ssh/sshd_config
 - name: PRELIM | SSH | create config file if absent
   when:
+    - rhel9stig_sshd_required
     - rhel9stig_sshd_config_file != '/etc/ssh/sshd_config'
     - "'openssh-server' in ansible_facts.packages"
   tags: ssh
@@ -154,6 +191,7 @@
     state: touch
 
 - name: PRELIM | SSH | find existing ssh config files
+  when: rhel9stig_sshd_required
   tags: always
   ansible.builtin.find:
     paths:
@@ -162,6 +200,27 @@
     patterns: 'sshd_config,*.conf'
     recurse: false
   register: prelim_sshd_config_files
+
+- name: PRELIM | SSH | find existing ssh config files
+  tags: always
+  ansible.builtin.find:
+    paths:
+      - /etc/ssh/
+      - /etc/ssh/sshd_config.d
+    patterns: 'sshd_config,*.conf'
+    recurse: false
+  register: prelim_sshd_config_files
+
+- name: "PRELIM | Update crypto-policies"
+  when: rhel_09_672020
+  tags:
+    - RHEL-09-672020
+    - fips
+    - crypto
+    - not system_is_container
+  ansible.builtin.package:
+    name: crypto-policies
+    state: latest
 
 - name: "PRELIM | Interactive User accounts"
   tags: always

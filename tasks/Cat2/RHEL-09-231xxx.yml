@@ -32,7 +32,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257844r991589_rule
+    - SV-257844r1044918_rule
     - V-257844
     - NIST800-53R4_CM-6
   vars:
@@ -55,7 +55,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257848r991589_rule
+    - SV-257848r1044926_rule
     - V-257848
     - NIST800-53R4_CM-6
   vars:
@@ -74,15 +74,13 @@
   tags:
     - RHEL-09-231040
     - CAT2
-    - CCI-000366
     - CCI-000778
     - CCI-001958
     - SRG-OS-000114-GPOS-00059
     - SRG-OS-000378-GPOS-00163
     - SRG-OS-000480-GPOS-00227
-    - SV-257849r1014829_rule
+    - SV-257849r1044928_rule
     - V-257849
-    - NIST800-53R4_CM-6
     - NIST800-53R4_IA-3
   ansible.builtin.systemd:
     name: autofs.service
@@ -100,7 +98,7 @@
     - CAT2
     - CCI-001764
     - SRG-OS-000368-GPOS-00154
-    - SV-257850r958804_rule
+    - SV-257850r1044930_rule
     - V-257850
     - NIST800-53R4_CM-7
   ansible.posix.mount:
@@ -123,13 +121,11 @@
   tags:
     - RHEL-09-231050
     - CAT2
-    - CCI-000366
     - CCI-001764
     - SRG-OS-000368-GPOS-00154
     - SRG-OS-000480-GPOS-00227
-    - SV-257851r958804_rule
+    - SV-257851r1044932_rule
     - V-257851
-    - NIST800-53R4_CM-6
     - NIST800-53R4_CM-7
   ansible.posix.mount:
     path: "{{ rhel9stig_home_filesystem }}"
@@ -177,7 +173,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257854r991589_rule
+    - SV-257854r1044934_rule
     - V-257854
     - NIST800-53R4_CM-6
   ansible.posix.mount:
@@ -201,7 +197,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257855r991589_rule
+    - SV-257855r1044936_rule
     - V-257855
     - NIST800-53R4_CM-6
   ansible.posix.mount:
@@ -225,7 +221,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257856r991589_rule
+    - SV-257856r1044938_rule
     - V-257856
     - NIST800-53R4_CM-6
   ansible.posix.mount:
@@ -324,7 +320,7 @@
     - CAT2
     - CCI-001764
     - SRG-OS-000368-GPOS-00154
-    - SV-257860r1014832_rule
+    - SV-257860r1044940_rule
     - V-257860
     - NIST800-53R4_CM-7
   notify: Change_requires_reboot
@@ -348,11 +344,10 @@
     - CAT2
     - CCI-001764
     - SRG-OS-000368-GPOS-00154
-    - SV-257861r1014834_rule
+    - SV-257861r1044941_rule
     - V-257861
     - NIST800-53R4_CM-7
-  notify:
-    - Change_requires_reboot
+  notify: Change_requires_reboot
   ansible.posix.mount:
     path: '/boot'
     src: "UUID={{ item.uuid }}"
@@ -373,7 +368,7 @@
     - CAT2
     - CCI-001764
     - SRG-OS-000368-GPOS-00154
-    - SV-257862r958804_rule
+    - SV-257862r1051265_rule
     - V-257862
     - NIST800-53R4_CM-7
   notify: Change_requires_reboot
@@ -401,7 +396,7 @@
     - SRG-OS-000368-GPOS-00154
     - SV-257863r958804_rule
     - SV-257864r958804_rule
-    - SV-257865r958804_rule
+    - SV-257865r1044946_rule
     - V-257863
     - V-257864
     - V-257865

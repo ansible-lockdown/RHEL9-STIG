@@ -1,9 +1,9 @@
 ---
 
 ## metadata for Audit benchmark
-benchmark_version: 'v2r2'
+benchmark_version: 'v2r3'
 
-## Benchmark name used by audting control role
+## Benchmark name used by auditing control role
 # The audit variable found at the base
 benchmark: RHEL9-STIG
 
@@ -42,6 +42,10 @@ container_vars_file: is_container.yml
 # system_is_ec2 toggle will disable tasks that fail on Amazon EC2 instances. Set true to skip and false to run tasks
 system_is_ec2: false
 
+# Create managed not custom local_facts files
+create_benchmark_facts: true
+ansible_facts_path: /etc/ansible/facts.d
+
 # Connecting user, due to the way many users work differently this is to try and assist the use of connecting user if required
 # This is useful when part of kickstart build or running as root and not defining the ansible_user option
 # used @ RHEL-09-411015
@@ -76,16 +80,12 @@ audit_run_heavy_tests: true
 
 ## Only run Audit do not remediate
 audit_only: false
-### As part of audit_only ###
-# This will enable files to be copied back to control node in audit_only mode
-fetch_audit_files: false
-# Path to copy the files to will create dir structure in audit_only mode
-audit_capture_files_dir: /some/location to copy to on control node
+
 #############################
 
 # How to retrieve audit binary
 # Options are copy or download - detailed settings at the bottom of this file
-# you will need to access to either github or the file already dowmloaded
+# you will need to access to either github or the file already downloaded
 get_audit_binary_method: download
 
 ## if get_audit_binary_method - copy the following needs to be updated for your environment
@@ -110,6 +110,20 @@ audit_conf_dest: "/opt"
 # Where the audit logs are stored
 audit_log_dir: '/opt'
 
+## Ability to collect and take audit files moving to a centralised location
+# This enables the collection of the files from the host
+fetch_audit_output: false
+
+# Method of getting,uploading the summary files
+## Ensure access and permissions are available for these to occur.
+## options are
+# fetch - fetches from server and moves to location on the ansible controller (could be a mount point available to controller)
+# copy - copies file to a location available to the managed node
+audit_output_collection_method: fetch
+
+# Location to put the audit files
+audit_output_destination: /opt/audit_summaries/
+
 ### Goss Settings ##
 ####### END ########
 
@@ -133,7 +147,7 @@ rhel_09_411100: true
 rhel_09_431010: true
 rhel_09_611025: true
 rhel_09_671010: true
-rhel_09_672030: true
+rhel_09_672020: true
 
 #### CAT 2
 rhel_09_211015: true
@@ -188,6 +202,8 @@ rhel_09_215080: true
 rhel_09_215085: true
 rhel_09_215090: true
 rhel_09_215095: true
+rhel_09_215100: true
+rhel_09_215105: true
 
 rhel_09_231010: true
 rhel_09_231015: true
@@ -241,6 +257,8 @@ rhel_09_232085: true
 rhel_09_232090: true
 rhel_09_232095: true
 rhel_09_232100: true
+rhel_09_232103: true
+rhel_09_232104: true
 rhel_09_232105: true
 rhel_09_232110: true
 rhel_09_232115: true
@@ -323,7 +341,9 @@ rhel_09_255035: true
 rhel_09_255045: true
 rhel_09_255055: true
 rhel_09_255060: true
+rhel_09_255064: true
 rhel_09_255065: true
+rhel_09_255070: true
 rhel_09_255075: true
 rhel_09_255080: true
 rhel_09_255085: true
@@ -415,6 +435,7 @@ rhel_09_432030: true
 rhel_09_432035: true
 rhel_09_433010: true
 rhel_09_433015: true
+rhel_09_433016: true
 
 ### CAT2 61xxxx
 rhel_09_611010: true
@@ -560,12 +581,7 @@ rhel_09_654275: true
 rhel_09_671015: true
 rhel_09_671020: true
 rhel_09_671025: true
-rhel_09_672010: true
-rhel_09_672020: true
 rhel_09_672025: true
-rhel_09_672035: true
-rhel_09_672040: true
-rhel_09_672045: true
 rhel_09_672050: true
 
 ### Cat3
@@ -596,7 +612,7 @@ rhel9stig_gui: "{{ rhel_09_gnome_present.stat.exists | default(false) }}"
 
 ## SSHD
 rhel9stig_sshd_config_file: /etc/ssh/sshd_config
-rhel9stig_ssh_required: true
+rhel9stig_sshd_required: true
 rhel9stig_sshd_config_maxlogins: 10
 rhel9stig_sshd_config:
   banner_file: /etc/issue
@@ -673,6 +689,13 @@ rhel9stig_iprutils_required: false
 rhel9stig_tuned_required: false
 rhel9stig_quagga_required: false
 
+## 215xxx
+# Add list of additional crypto subpolicies to be added to FIPS
+rhel9stig_additional_fips_crypto_subpolicies: false
+rhel9stig_additional_fips_crypto_subpolicies_list:
+# - AD-SUPPORT
+# - NO-ENFORCE-EMS
+
 ## 23xxxx
 rhel9stig_home_filesystem: '/home'
 
@@ -701,6 +724,8 @@ rhel9stig_sysctl_file:
   kernel: "{{ rhel9stig_sysctl_file_default }}"
   network: "{{ rhel9stig_sysctl_file_default }}"
   user: "{{ rhel9stig_sysctl_file_default }}"
+# Systems that run containers must set this value to greater then 0 for example: 65536
+rhel9stig_sysctl_max_user_namespaces: '0'
 
 ## Chrony
 rhel9stig_time_synchronization_servers:
@@ -709,8 +734,8 @@ rhel9stig_time_synchronization_servers:
 rhel9stig_chrony_server_options: "iburst maxpoll 16"  # Max Settings is maxpoll 16
 
 ## fapolicy
-# Allow adding of fapolicy rules uses whitelist below
-rhel9stig_add_fapolicy_policy: false
+# Allow adding of fapolicy rules to be updated - also needs rhel9stig_disruption_high
+rhel9stig_allow_fapolicy_updates: false
 
 # rhel9stig_fapolicy_white_list is the whitelist for fapolicyd
 rhel9stig_fapolicy_white_list:
@@ -740,12 +765,11 @@ rhel9stig_postfix_client_conf: permit_mynetworks,reject
 
 ### ACCOUNTS and AUTH ###
 ## PAM and password settings
-rhel9stig_pass:
-  max_days: 60
-  min_days: 1
-  minlen: '15'
+rhel9stig_pass_max_days: 60
+rhel9stig_pass_min_days: 1
+rhel9stig_pass_minlen: '15'
 
-rhel9stig_user_inactive_days: '35'
+rhel9stig_user_inactive_days: '35'  # 35 or less is compliant
 
 # Path to set for users initialization files e.g. echo $PATH expected results
 rhel9stig_env_path: '$PATH:$HOME/.local/bin:$HOME/bin'
@@ -756,37 +780,32 @@ rhel9stig_authselect_custom_profile: minimal
 rhel9stig_add_faillock_without_authselect: true
 
 # Faillock settings
-rhel9stig_faillock:
-  deny: '3'  # 3 or less but not 0
-  fail_interval: '900'  # 900 or less is required
-  unlock_time: '0'
-  dir: '/var/log/faillock'
+rhel9stig_faillock_deny: '3'  # 3 or less but not 0
+rhel9stig_faillock_fail_interval: '900'  # 900 or less is required not '0'
+rhel9stig_faillock_unlock_time: 0  # should be set to 0 unless documented
+rhel9stig_faillock_dir: '/var/log/faillock'
 
 rhel9stig_unnecessary_accounts:
 - ftp
 - games
 rhel9stig_remove_unnecessary_user_files: false
 
-rhel9stig_login_defs:
-  fail_delay: '4'
+rhel9stig_login_defs_fail_delay: '4'
 
-rhel9stig_logind_conf:
-  stopsessionidle: '900'
+rhel9stig_logind_conf_stopsessionidle: '900'
 
-rhel9stig_pam:
-  retry: '3'  # must be set between 1-3 anytning else ia a failure
-  rounds: '5000'
+rhel9stig_pam_retry: '3'  # must be set between 1-3 anytning else ia a failure
+rhel9stig_pam_rounds: '5000'
 
-rhel9stig_pwquality:
-  dcredit: -1
-  dictcheck: 1
-  difok: 8
-  lcredit: -1
-  maxclassrepeat: 4
-  maxrepeat: 3
-  minclass: 4
-  ocredit: -1
-  ucredit: -1
+rhel9stig_pwquality_dcredit: -1
+rhel9stig_pwquality_dictcheck: 1
+rhel9stig_pwquality_difok: 8
+rhel9stig_pwquality_lcredit: -1
+rhel9stig_pwquality_maxclassrepeat: 4
+rhel9stig_pwquality_maxrepeat: 3
+rhel9stig_pwquality_minclass: 4
+rhel9stig_pwquality_ocredit: -1
+rhel9stig_pwquality_ucredit: -1
 
 rhel9stig_sudoers_exclude_nopasswd_list:
 - ec2-user
@@ -837,6 +856,9 @@ rhel9stig_aide_cron_name: 'Aide Job runs Daily at 0430'
 rhel9stig_config_aide: true
 
 ### Rsyslog
+# Set the type either rsyslogd or syslog-ng this sets the audit tools binary as referred to controls
+# RHEL-09-232035, RHEL-09-232220, RHEL-09-232225
+rhel9stig_syslog_binary: rsyslogd
 # Set the following to true if the server accepts incoming syslog data using rsyslog
 rhel9stig_rsyslog_server: false
 
@@ -846,10 +868,13 @@ rhel9stig_remotelog_server:
   port: 9999
   protocol: '@@'
 
+# Syslog Binary
+rhel9stig_syslog_bin: rsyslogd
+
 ### AUDITD
 # Ensure this matches the filesystem where the audit logs are stored.
 # It will affect checks for control RHEL-09-653030
-
+rhel9stig_auditd_required: true
 rhel9stig_audit_log_filesystem: '/var/log/audit'
 rhel9stig_audit_conf_action_mail_acct: root
 rhel9stig_audit_conf_admin_space_left: 5%
@@ -867,5 +892,13 @@ rhel9stig_audit_conf_overflow_action: syslog
 rhel9stig_audit_conf_space_left: 25%
 rhel9stig_audit_conf_space_left_action: email
 rhel9stig_audit_conf_write_logs: 'yes'
-
 rhel9stig_audit_backlog_limit: 8192
+# Audit binaries
+rhel9stig_audit_bins:
+- '/usr/sbin/auditctl'
+- '/usr/sbin/aureport'
+- '/usr/sbin/ausearch'
+- '/usr/sbin/autrace'
+- '/usr/sbin/auditd'
+- '/usr/sbin/{{ rhel9stig_syslog_binary }}'  # Note you may not need this is container
+- '/usr/sbin/augenrules'

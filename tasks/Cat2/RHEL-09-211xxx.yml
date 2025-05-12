@@ -33,11 +33,12 @@
     - NIST800-53R4_AC-8
   block:
     - name: "MEDIUM | RHEL-09-211020 | PATCH | RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system via a command line user logon. | Uncomment banner keyword and set banner path"
-      when: rhel9stig_ssh_required
+      when: rhel9stig_sshd_required
       ansible.builtin.lineinfile:
         path: /etc/ssh/sshd_config
-        regexp: '(?i)^Banner'
-        line: "Banner {{ rhel9stig_sshd_config.banner_file }}"
+        regexp: (?i)^(#|)Banner
+        line: 'Banner /etc/issue'
+      notify: Restart_sshd
 
     - name: "MEDIUM | RHEL-09-211020 | PATCH | RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system via a command line user logon. | Set banner message"
       ansible.builtin.copy:  # noqa: template-instead-of-copy
@@ -46,13 +47,14 @@
         group: root
         mode: 'u-x,go-wx'
         owner: root
-      notify: Restart_ssh
       loop:
         - /etc/issue
         - /etc/issue.net
 
 - name: "MEDIUM | RHEL-09-211030 | PATCH | The graphical display manager must not be the default target on RHEL 9 unless approved."
-  when: rhel_09_211030
+  when:
+    - rhel_09_211030
+    - not rhel9stig_gui_approved
   tags:
     - RHEL-09-211030
     - CAT2
@@ -87,12 +89,11 @@
   tags:
     - RHEL-09-211055
     - CAT2
-    - CCI-001665
+    - CCI-002235
     - SRG-OS-000324-GPOS-00125
     - SRG-OS-000480-GPOS-00227
-    - SV-257786r958726_rule
+    - SV-257786r1044834_rule
     - V-257786
-    - NIST800-53R4_CM-6
     - NIST800-53R4_AC-6
   notify: Systemd_daemon_reload
   ansible.builtin.systemd:

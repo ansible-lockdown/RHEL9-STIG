@@ -1,0 +1,22 @@
+---
+
+- name: "MEDIUM | RHEL-09-171011 | PATCH | RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system via a graphical user logon."
+  when:
+    - rhel_09_171011
+    - rhel9stig_gui
+  tags:
+    - RHEL-09-171011
+    - CAT2
+    - CCI-000048
+    - SRG-OS-000023-GPOS-00006
+    - SRG-OS-000228-GPOS-00088
+    - SV-270174r1044831_rule
+    - V-270174
+    - NIST800-53R4_AC-8
+  notify: Update_dconf
+  community.general.ini_file:
+    path: /etc/dconf/db/local.d/01-banner-message
+    section: 'org/gnome/login-screen'
+    mode: 'u-x,go-wx'
+    option: banner-message-enable
+    value: "{{ rhel9stig_logon_banner }}"

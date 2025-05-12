@@ -42,6 +42,9 @@ gpg_key:
 # If using the supplied graphical interface
 rhel9stig_gui: {{ rhel9stig_gui }}
 
+# If using sssd on host
+rhel9stig_uses_sssd: {{ rhel9stig_sssd_configure }}
+
 # Some tests may need to scan every filesystem or have an impact on a system
 # these may need be scheduled to minimise impact
 run_heavy_tests: {{ audit_run_heavy_tests }}
@@ -49,7 +52,7 @@ run_heavy_tests: {{ audit_run_heavy_tests }}
 # tweak role to run in a non-privileged container (default value)- dynamically discovered in tasks/main.yml
 system_is_container: {{ system_is_container }}
 
-# rhel8cis/stig is left off the front of this var for consistency in testing pipeline
+# rhel9cis/stig is left off the front of this var for consistency in testing pipeline
 # system_is_ec2 toggle will disable tasks that fail on Amazon EC2 instances. Set {{ rhel_09_211010 }} to skip and false to run tasks
 system_is_ec2: {{ system_is_ec2 }}
 
@@ -77,7 +80,7 @@ rhel_09_411100: {{ rhel_09_411100 }}
 rhel_09_431010: {{ rhel_09_431010 }}
 rhel_09_611025: {{ rhel_09_611025 }}
 rhel_09_671010: {{ rhel_09_671010 }}
-rhel_09_672030: {{ rhel_09_672030 }}
+rhel_09_672020: {{ rhel_09_672020 }}
 
 # Cat 2 rules
 rhel_09_211015: {{ rhel_09_211015 }}
@@ -132,6 +135,8 @@ rhel_09_215080: {{ rhel_09_215080 }}
 rhel_09_215085: {{ rhel_09_215085 }}
 rhel_09_215090: {{ rhel_09_215090 }}
 rhel_09_215095: {{ rhel_09_215095 }}
+rhel_09_215100: {{ rhel_09_215100 }}
+rhel_09_215105: {{ rhel_09_215105 }}
 
 rhel_09_231010: {{ rhel_09_231010 }}
 rhel_09_231015: {{ rhel_09_231015 }}
@@ -186,6 +191,8 @@ rhel_09_232085: {{ rhel_09_232085 }}
 rhel_09_232090: {{ rhel_09_232090 }}
 rhel_09_232095: {{ rhel_09_232095 }}
 rhel_09_232100: {{ rhel_09_232100 }}
+rhel_09_232103: {{ rhel_09_232103 }}
+rhel_09_232104: {{ rhel_09_232104 }}
 rhel_09_232105: {{ rhel_09_232105 }}
 rhel_09_232110: {{ rhel_09_232110 }}
 rhel_09_232115: {{ rhel_09_232115 }}
@@ -268,7 +275,9 @@ rhel_09_255035: {{ rhel_09_255035 }}
 rhel_09_255045: {{ rhel_09_255045 }}
 rhel_09_255055: {{ rhel_09_255055 }}
 rhel_09_255060: {{ rhel_09_255060 }}
+rhel_09_255064: {{ rhel_09_255064 }}
 rhel_09_255065: {{ rhel_09_255065 }}
+rhel_09_255070: {{ rhel_09_255070 }}
 rhel_09_255075: {{ rhel_09_255075 }}
 rhel_09_255080: {{ rhel_09_255080 }}
 rhel_09_255085: {{ rhel_09_255085 }}
@@ -358,6 +367,7 @@ rhel_09_432030: {{ rhel_09_432030 }}
 rhel_09_432035: {{ rhel_09_432035 }}
 rhel_09_433010: {{ rhel_09_433010 }}
 rhel_09_433015: {{ rhel_09_433015 }}
+rhel_09_433016: {{ rhel_09_433016 }}
 
 rhel_09_611010: {{ rhel_09_611010 }}
 rhel_09_611030: {{ rhel_09_611030 }}
@@ -500,12 +510,8 @@ rhel_09_654275: {{ rhel_09_654275 }}
 rhel_09_671015: {{ rhel_09_671015 }}
 rhel_09_671020: {{ rhel_09_671020 }}
 rhel_09_671025: {{ rhel_09_671025 }}
-rhel_09_672010: {{ rhel_09_672010 }}
-rhel_09_672020: {{ rhel_09_672020 }}
+
 rhel_09_672025: {{ rhel_09_672025 }}
-rhel_09_672035: {{ rhel_09_672035 }}
-rhel_09_672040: {{ rhel_09_672040 }}
-rhel_09_672045: {{ rhel_09_672045 }}
 rhel_09_672050: {{ rhel_09_672050 }}
 
 # Cat 3 controls
@@ -620,7 +626,7 @@ rhel9stig_postfix_client_conf: {{ rhel9stig_postfix_client_conf }}
 
 ## SSHD
 rhel9stig_sshd_config_file: {{ rhel9stig_sshd_config_file }}
-rhel9stig_ssh_required: {{ rhel9stig_ssh_required }}
+rhel9stig_ssh_required: {{ rhel9stig_sshd_required }}
 rhel9stig_sshd_config:
   banner_file: {{ rhel9stig_sshd_config.banner_file }}
   ciphers:
@@ -668,9 +674,9 @@ rhel9stig_env_path: {{ rhel9stig_env_path }}
 
 ## PAM and password settings
 rhel9stig_pass:
-  max_days: {{ rhel9stig_pass.max_days }}
+  max_days: {{ rhel9stig_pass_max_days }}
 
-rhel9stig_user_inactive_days: {{ rhel9stig_user_inactive_days }}
+rhel9stig_user_inactive_days: {{ rhel9stig_user_inactive_days }}  # must be 35 or less
 
 # Authselect profile settings
 rhel9stig_authselect_custom_profile: {{ rhel9stig_authselect_custom_profile }}
@@ -679,10 +685,9 @@ rhel9stig_add_faillock_without_authselect: {{ rhel9stig_add_faillock_without_aut
 
 # Faillock settings
 rhel9stig_faillock:
-  - deny: {{ rhel9stig_faillock.deny }}  # 3 or less but not 0
-  - fail_interval: {{ rhel9stig_faillock.fail_interval }}  # 900 or less is required
-  - unlock_time: {{ rhel9stig_faillock.unlock_time }}
-  - dir: {{ rhel9stig_faillock.dir }}
+  - deny: {{ rhel9stig_faillock_deny }}  # 3 or less but not 0
+  - fail_interval: {{ rhel9stig_faillock_fail_interval }}  # 900 or less is required
+  - dir: {{ rhel9stig_faillock_dir }}
 
 rhel9stig_unnecessary_accounts:
 {% for acct in rhel9stig_unnecessary_accounts %}
