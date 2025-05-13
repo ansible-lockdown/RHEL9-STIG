@@ -37,7 +37,7 @@
         - discovered_non_fips_hashed_accounts.stdout | length > 0
       ansible.builtin.debug:
         msg:
-          - "WARNING!! The following accounts do not have FIPS 140-2 hashing. Please review the accounts and correct to conform to control 010120 of the RHEL8 STIG"
+          - "WARNING!! The following accounts do not have FIPS 140-2 hashing. Please review the accounts and correct to conform to control 010120 of the RHEL9 STIG"
           - "{{ discovered_non_fips_hashed_accounts.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-671020 | PATCH | RHEL 9 IP tunnels must use FIPS 140-2/140-3 approved cryptographic algorithms."
