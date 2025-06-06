@@ -1,5 +1,9 @@
 # RHEL9STIG
 
+## 1.6.0
+
+Addresses fix for RHEL-09-232200 on issue #115
+
 ## 1.5.0 Based on STIG V2R2 Oct24 2024
 
 - RuleID updates

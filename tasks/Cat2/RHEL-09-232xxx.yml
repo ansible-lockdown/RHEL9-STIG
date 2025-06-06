@@ -733,7 +733,7 @@
       ansible.builtin.file:
         path: "{{ item }}"
         owner: root
-      loop: "{{ rhel9stig_lib_files_owner.stdout_lines }}"
+      loop: "{{ discovered_lib_files_owner.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232205 | PATCH | RHEL 9 library files must be group-owned by root or a system account."
   when: rhel_09_232205
