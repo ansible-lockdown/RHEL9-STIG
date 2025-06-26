@@ -18,21 +18,21 @@
       ansible.builtin.shell: "cat /etc/passwd | awk -F: '($3 == 0 && $1 != \"root\") {i++;print $1 } END {exit i}'"
       changed_when: false
       check_mode: false
-      register: rhel9stig_uid_zero_accounts_except_root
+      register: discovered_uid_zero_accounts_except_root
 
     - name: HIGH | RHEL-09-411100 | WARN | The root account must be the only account having unrestricted access to RHEL 9 system.
       when:
-        - rhel9stig_uid_zero_accounts_except_root is defined
-        - rhel9stig_uid_zero_accounts_except_root.stdout | length > 0
+        - discovered_uid_zero_accounts_except_root is defined
+        - discovered_uid_zero_accounts_except_root.stdout | length > 0
       ansible.builtin.debug:
         msg:
           - WARNING!! - The following account(s) should not have a UID of 0 - Please Resolve
-          - "{{ rhel9stig_uid_zero_accounts_except_root.stdout }}"
+          - "{{ discovered_uid_zero_accounts_except_root.stdout }}"
 
     - name: HIGH | RHEL-09-0411100 | WARN | The root account must be the only account having unrestricted access to RHEL 9 system.
       when:
-        - rhel9stig_uid_zero_accounts_except_root is defined
-        - rhel9stig_uid_zero_accounts_except_root.stdout | length > 0
+        - discovered_uid_zero_accounts_except_root is defined
+        - discovered_uid_zero_accounts_except_root.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 

@@ -77,7 +77,6 @@ rhel_09_411100: {{ rhel_09_411100 }}
 rhel_09_431010: {{ rhel_09_431010 }}
 rhel_09_611025: {{ rhel_09_611025 }}
 rhel_09_671010: {{ rhel_09_671010 }}
-rhel_09_672015: {{ rhel_09_672015 }}
 rhel_09_672030: {{ rhel_09_672030 }}
 
 # Cat 2 rules
@@ -142,7 +141,6 @@ rhel_09_231045: {{ rhel_09_231045 }}
 rhel_09_231050: {{ rhel_09_231050 }}
 rhel_09_231055: {{ rhel_09_231055 }}
 
-rhel_09_231060: {{ rhel_09_231060 }}
 rhel_09_231065: {{ rhel_09_231065 }}
 rhel_09_231070: {{ rhel_09_231070 }}
 rhel_09_231075: {{ rhel_09_231075 }}
@@ -226,7 +224,6 @@ rhel_09_232270: {{ rhel_09_232270 }}
 rhel_09_251010: {{ rhel_09_251010 }}
 rhel_09_251015: {{ rhel_09_251015 }}
 rhel_09_251020: {{ rhel_09_251020 }}
-rhel_09_251025: {{ rhel_09_251025 }}
 rhel_09_251030: {{ rhel_09_251030 }}
 rhel_09_251035: {{ rhel_09_251035 }}
 rhel_09_251040: {{ rhel_09_251040 }}
@@ -239,7 +236,6 @@ rhel_09_252035: {{ rhel_09_252035 }}
 rhel_09_252040: {{ rhel_09_252040 }}
 rhel_09_252045: {{ rhel_09_252045 }}
 rhel_09_252050: {{ rhel_09_252050 }}
-rhel_09_252055: {{ rhel_09_252055 }}
 rhel_09_252060: {{ rhel_09_252060 }}
 rhel_09_252065: {{ rhel_09_252065 }}
 rhel_09_253010: {{ rhel_09_253010 }}
@@ -292,7 +288,6 @@ rhel_09_255150: {{ rhel_09_255150 }}
 rhel_09_255155: {{ rhel_09_255155 }}
 rhel_09_255160: {{ rhel_09_255160 }}
 rhel_09_255165: {{ rhel_09_255165 }}
-rhel_09_255170: {{ rhel_09_255170 }}
 rhel_09_255175: {{ rhel_09_255175 }}
 rhel_09_271010: {{ rhel_09_271010 }}
 rhel_09_271015: {{ rhel_09_271015 }}
@@ -343,10 +338,6 @@ rhel_09_411095: {{ rhel_09_411095 }}
 rhel_09_411105: {{ rhel_09_411105 }}
 rhel_09_411110: {{ rhel_09_411110 }}
 rhel_09_411115: {{ rhel_09_411115 }}
-rhel_09_412010: {{ rhel_09_412010 }}
-rhel_09_412015: {{ rhel_09_412015 }}
-rhel_09_412020: {{ rhel_09_412020 }}
-rhel_09_412025: {{ rhel_09_412025 }}
 rhel_09_412035: {{ rhel_09_412035 }}
 rhel_09_412045: {{ rhel_09_412045 }}
 rhel_09_412050: {{ rhel_09_412050 }}
@@ -382,7 +373,6 @@ rhel_09_611075: {{ rhel_09_611075 }}
 rhel_09_611080: {{ rhel_09_611080 }}
 rhel_09_611085: {{ rhel_09_611085 }}
 rhel_09_611090: {{ rhel_09_611090 }}
-rhel_09_611095: {{ rhel_09_611095 }}
 rhel_09_611100: {{ rhel_09_611100 }}
 rhel_09_611105: {{ rhel_09_611105 }}
 rhel_09_611110: {{ rhel_09_611110 }}
@@ -393,7 +383,6 @@ rhel_09_611130: {{ rhel_09_611130 }}
 rhel_09_611135: {{ rhel_09_611135 }}
 rhel_09_611140: {{ rhel_09_611140 }}
 rhel_09_611145: {{ rhel_09_611145 }}
-rhel_09_611150: {{ rhel_09_611150 }}
 rhel_09_611155: {{ rhel_09_611155 }}
 rhel_09_611160: {{ rhel_09_611160 }}
 rhel_09_611165: {{ rhel_09_611165 }}
@@ -531,7 +520,6 @@ rhel_09_231030: {{ rhel_09_231030 }}
 rhel_09_231195: {{ rhel_09_231195 }}
 rhel_09_252025: {{ rhel_09_252025 }}
 rhel_09_291025: {{ rhel_09_291025 }}
-rhel_09_412030: {{ rhel_09_412030 }}
 rhel_09_412040: {{ rhel_09_412040 }}
 rhel_09_412075: {{ rhel_09_412075 }}
 rhel_09_651030: {{ rhel_09_651030 }}
@@ -632,7 +620,7 @@ rhel9stig_postfix_client_conf: {{ rhel9stig_postfix_client_conf }}
 
 ## SSHD
 rhel9stig_sshd_config_file: {{ rhel9stig_sshd_config_file }}
-rhel9stig_ssh_required: {{ rhel9stig_ssh_required }}
+rhel9stig_sshd_required: {{ rhel9stig_sshd_required }}
 rhel9stig_sshd_config:
   banner_file: {{ rhel9stig_sshd_config.banner_file }}
   ciphers:
@@ -709,11 +697,11 @@ rhel9stig_smartcard_reader: {{ rhel9stig_smartcard_reader }}
 rhel9stig_use_aide: {{ rhel9stig_use_aide }}
 rhel9stig_aide_cron_file: {{ rhel9stig_aide_cron_file }}  # NOTE the path may change if not running daily
 rhel9stig_aide_cron:
-  day: "{{ rhel9stig_aide_cron.day }}"
-  hour: "{{ rhel9stig_aide_cron.hour }}"
-  minute: "{{ rhel9stig_aide_cron.minute }}"
-  job: '{{ rhel9stig_aide_cron.job }}'
-  name: "{{ rhel9stig_aide_cron.name }}"
+  day: "{{ rhel9stig_aide_cron_day }}"
+  hour: "{{ rhel9stig_aide_cron_hour }}"
+  minute: "{{ rhel9stig_aide_cron_minute }}"
+  job: '{{ rhel9stig_aide_cron_job }}'
+  name: "{{ rhel9stig_aide_cron_name }}"
 
 ### Rsyslog
 # Set the following to true if the server accepts incoming syslog data using rsyslog
@@ -728,19 +716,19 @@ rhel9stig_remotelog_server:
 ### AUDITD
 rhel9stig_audit_log_filesystem: /var/log/audit
 rhel9stig_audit_conf:
-  action_mail_acct: {{ rhel9stig_audit_conf.action_mail_acct }}
-  admin_space_left: {{ rhel9stig_audit_conf.admin_space_left }}
-  admin_space_left_action: {{ rhel9stig_audit_conf.admin_space_left_action }}
-  disk_error_action: {{ rhel9stig_audit_conf.disk_error_action }}  # Can be one of "SYSLOG", "SINGLE", or "HALT"
-  disk_full_action: {{ rhel9stig_audit_conf.disk_full_action }}  # Can be one of "SYSLOG", "SINGLE", or "HALT"
-  freq: {{ rhel9stig_audit_conf.freq }}
-  local_events: {{ rhel9stig_audit_conf.local_events }}
-  log_format: {{ rhel9stig_audit_conf.log_format }}
-  logfile: {{ rhel9stig_audit_conf.logfile }}
-  log_group: {{ rhel9stig_audit_conf.logfile_group }}
-  max_log_file_action: {{ rhel9stig_audit_conf.max_log_file_action }}
-  name_format: {{ rhel9stig_audit_conf.name_format }}
-  overflow_action: {{ rhel9stig_audit_conf.overflow_action }}
-  space_left: {{ rhel9stig_audit_conf.space_left }}
-  space_left_action: {{ rhel9stig_audit_conf.space_left_action }}
-  write_logs: {{ rhel9stig_audit_conf.write_logs }}
+  action_mail_acct: {{ rhel9stig_audit_conf_action_mail_acct }}
+  admin_space_left: {{ rhel9stig_audit_conf_admin_space_left }}
+  admin_space_left_action: {{ rhel9stig_audit_conf_admin_space_left_action }}
+  disk_error_action: {{ rhel9stig_audit_conf_disk_error_action }}  # Can be one of "SYSLOG", "SINGLE", or "HALT"
+  disk_full_action: {{ rhel9stig_audit_conf_disk_full_action }}  # Can be one of "SYSLOG", "SINGLE", or "HALT"
+  freq: {{ rhel9stig_audit_conf_freq }}
+  local_events: {{ rhel9stig_audit_conf_local_events }}
+  log_format: {{ rhel9stig_audit_conf_log_format }}
+  logfile: {{ rhel9stig_audit_conf_logfile }}
+  log_group: {{ rhel9stig_audit_conf_logfile_group }}
+  max_log_file_action: {{ rhel9stig_audit_conf_max_log_file_action }}
+  name_format: {{ rhel9stig_audit_conf_name_format }}
+  overflow_action: {{ rhel9stig_audit_conf_overflow_action }}
+  space_left: {{ rhel9stig_audit_conf_space_left }}
+  space_left_action: {{ rhel9stig_audit_conf_space_left_action }}
+  write_logs: {{ rhel9stig_audit_conf_write_logs }}

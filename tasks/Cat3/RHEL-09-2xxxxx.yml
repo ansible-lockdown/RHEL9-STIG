@@ -34,19 +34,31 @@
     - grub
   notify: Change_requires_reboot
   block:
-    - name: "LOW | RHEL-09-212050 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
-      ansible.builtin.shell: grep "^GRUB_CMD" /etc/default/grub | grep pti
+    - name: "LOW | RHEL-09-212050 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities. | Capture grubby"
+      ansible.builtin.shell: grubby --info=ALL | grep args | grep 'pti=on'
       changed_when: false
-      failed_when: rhel9stig_grub_pti_enabled.rc not in [ 0, 1 ]
-      register: rhel9stig_grub_pti_enabled
+      failed_when: discovered_grubby_pti.rc not in [ 0, 1 ]
+      register: discovered_grubby_pti
 
-    - name: "LOW | RHEL-09-212050 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
-      when:
-        - rhel9stig_grub_pti_enabled is defined
-        - rhel9stig_grub_pti_enabled.rc == '1'
+    - name: "LOW | RHEL-09-212050 | PATCH | RHEL 9 must enable mitigations against processor-based vulnerabilities. | Amend grubby"
+      when: discovered_grubby_pti.stdout | length == 0
       ansible.builtin.command: grubby --update-kernel=ALL --args="pti=on"
       changed_when: true
-      check_mode: false
+
+    - name: "LOW | RHEL-09-212050 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities. | Capture default grub"
+      ansible.builtin.shell: grep "^GRUB_CMDLINE_LINUX=" /etc/default/grub | cut -f2 -d'"' | grep pti=
+      changed_when: false
+      failed_when: discovered_def_grub_pti.rc not in [ 0, 1 ]
+      register: discovered_def_grub_pti
+
+    - name: "LOW | RHEL-09-212050 | PATCH | RHEL 9 must enable mitigations against processor-based vulnerabilities. | Set default"
+      when: discovered_def_grub_pti.rc == 1
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: ^(GRUB_CMDLINE_LINUX=")(.*)"
+        line: '\1\2 pti=on"'
+        backrefs: true
+      notify: Rebuild_grub
 
 - name: "LOW | RHEL-09-212055 | PATCH | RHEL 9 must enable auditing of processes that start prior to the audit daemon."
   when: rhel_09_212055
@@ -77,19 +89,31 @@
     - audit
   notify: Change_requires_reboot
   block:
-    - name: "LOW | RHEL-09-212055 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
-      ansible.builtin.shell: grep "^GRUB_CMD" /etc/default/grub | grep 'audit=1'
+    - name: "LOW | RHEL-09-212055 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities. | Capture grubby"
+      ansible.builtin.shell: grubby --info=ALL | grep args | grep 'audit=1'
       changed_when: false
-      failed_when: rhel9stig_grub_audit_enabled.rc not in [ 0, 1 ]
-      register: rhel9stig_grub_audit_enabled
+      failed_when: discovered_grubby_audit_1.rc not in [ 0, 1 ]
+      register: discovered_grubby_audit_1
 
-    - name: "LOW | RHEL-09-212055 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities."
-      when:
-        - rhel9stig_grub_audit_enabled is defined
-        - rhel9stig_grub_audit_enabled.rc == 1
+    - name: "LOW | RHEL-09-212055 | PATCH | RHEL 9 must enable mitigations against processor-based vulnerabilities. | Amend grubby"
+      when: discovered_grubby_audit_1.stdout | length == 0
       ansible.builtin.command: grubby --update-kernel=ALL --args="audit=1"
       changed_when: true
-      check_mode: false
+
+    - name: "LOW | RHEL-09-212055 | AUDIT | RHEL 9 must enable mitigations against processor-based vulnerabilities. | Capture default grub"
+      ansible.builtin.shell: grep "^GRUB_CMDLINE_LINUX=" /etc/default/grub | cut -f2 -d'"' | grep audit=
+      changed_when: false
+      failed_when: discovered_def_grub_audit_1.rc not in [ 0, 1 ]
+      register: discovered_def_grub_audit_1
+
+    - name: "LOW | RHEL-09-212055 | PATCH | RHEL 9 must enable mitigations against processor-based vulnerabilities. | Set default"
+      when: discovered_def_grub_audit_1.rc != 0
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: ^(GRUB_CMDLINE_LINUX=")(.*)"
+        line: '\1\2 audit=1"'
+        backrefs: true
+      notify: Rebuild_grub
 
 - name: "LOW | RHEL-09-214035 | PATCH | RHEL 9 must remove all software components after updated versions have been installed."
   when: rhel_09_214035
@@ -241,7 +265,7 @@
     - CAT2
     - CCI-000169
     - SRG-OS-000062-GPOS-00031
-    - SV-258037r958442_rule
+    - SV-258037r1014863_rule
     - V-258037
     - NIST800-53R4_AU-12
     - usb

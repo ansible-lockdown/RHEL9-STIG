@@ -19,11 +19,11 @@
   tags:
     - RHEL-09-432015
     - CAT2
-    - CCI-000000
+    - CCI-002038
     - SRG-OS-000373-GPOS-00156
     - SV-258084r997080_rule
     - V-258084
-    - NIST800-53R4_NA
+    - NIST800-53R4_IA-11
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: ^Defaults timestamp_timeout\s*=\s*(-|)\d
@@ -67,11 +67,11 @@
   tags:
     - RHEL-09-432025
     - CAT2
-    - CCI-000000
+    - CCI-002038
     - SRG-OS-000373-GPOS-00156
-    - SV-258086r997081_rule
+    - SV-258086r1015095_rule
     - V-258086
-    - NIST800-53R4_NA
+    - NIST800-53R4_IA-11
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     line: '!authenticate'
@@ -110,3 +110,38 @@
     path: /etc/pam.d/su
     regexp: ^(#|)(auth\s*required\s*)pam_wheel.so(.*)
     line: auth    required    pam_wheel.so use_uid
+
+- name: "MEDIUM | RHEL-09-433010 | PATCH | RHEL 9 fapolicy module must be installed."
+  when: rhel_09_433010
+  tags:
+    - RHEL-09-433010
+    - CAT2
+    - CCI-01764
+    - CCI-01774
+    - SRG-OS-000370-GPOS-00155
+    - SRG-OS-000368-GPOS-00154
+    - SV-258089r926254_rule
+    - V-258089
+    - NIST800-53R4_IA-11
+    - NIST800-53R4_AC-3
+  ansible.builtin.package:
+    name: fapolicyd
+    state: present
+
+- name: "MEDIUM | RHEL-09-433015 | PATCH | RHEL 9 fapolicy module must be enabled."
+  when: rhel_09_433015
+  tags:
+    - RHEL-09-433015
+    - CAT2
+    - CCI-01764
+    - CCI-01774
+    - SRG-OS-000370-GPOS-00155
+    - SRG-OS-000368-GPOS-00154
+    - SV-258089r926257_rule
+    - V-258089
+    - NIST800-53R4_IA-11
+    - NIST800-53R4_AC-3
+  ansible.builtin.systemd:
+    enabled: true
+    name: fapolicyd
+    state: started

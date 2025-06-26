@@ -38,9 +38,7 @@
   register: rhel9stig_interactive_users
 
 - name: Include audit specific variables
-  when:
-    - run_audit or audit_only
-    - setup_audit
+  when: run_audit or audit_only or setup_audit
   tags:
     - setup_audit
     - run_audit
@@ -48,11 +46,8 @@
     file: audit.yml
 
 - name: Include pre-remediation audit tasks
-  when:
-    - run_audit or audit_only
-    - setup_audit
-  tags:
-    - run_audit
+  when: run_audit or audit_only or setup_audit
+  tags: run_audit
   ansible.builtin.import_tasks:
     file: pre_remediation_audit.yml
 
@@ -87,6 +82,7 @@
     - cat1
     - RHEL-09-672030
     - crypto
+    - not system_is_container
   ansible.builtin.package:
     name:
       - crypto-policies
@@ -99,7 +95,9 @@
     mount_names: "{{ ansible_mounts | map(attribute='mount') | list }}"
 
 - name: PRELIM | Ensure python3-libselinux is installed
-  when: '"python3-libselinux" not in ansible_facts.packages'
+  when:
+    - '"python3-libselinux" not in ansible_facts.packages'
+    - not system_is_container
   ansible.builtin.package:
     name: python3-libselinux
     state: present
@@ -118,14 +116,15 @@
         rhel9stig_legacy_boot: true
 
 - name: PRELIM | Update to latest gpg keys
-  ansible.builtin.package:
-    name: "{{ gpg_key_package }}"
-    state: latest
   when:
     - ansible_facts.distribution != 'RedHat'
     - ansible_facts.distribution != 'OracleLinux'
+  ansible.builtin.package:
+    name: "{{ gpg_key_package }}"
+    state: latest
 
 - name: PRELIM | Configure System Accounting (auditd)
+  when: rhel9stig_auditd_required
   tags: always
   ansible.builtin.package:
     name: audit
@@ -133,6 +132,7 @@
 
 - name: "PRELIM | Discover auditd_logfile_path"
   when:
+    - rhel9stig_auditd_required
     - rhel_09_653085 or
       rhel_09_653085 or
       rhel_09_653090
@@ -144,6 +144,7 @@
 # Added to ensure ssh drop in file exists if not default /etc/ssh/sshd_config
 - name: PRELIM | SSH | create config file if absent
   when:
+    - rhel9stig_sshd_required
     - rhel9stig_sshd_config_file != '/etc/ssh/sshd_config'
     - "'openssh-server' in ansible_facts.packages"
   tags: ssh
@@ -155,6 +156,7 @@
     state: touch
 
 - name: PRELIM | SSH | find existing ssh config files
+  when: rhel9stig_sshd_required
   tags: always
   ansible.builtin.find:
     paths:

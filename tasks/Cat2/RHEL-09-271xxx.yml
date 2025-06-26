@@ -15,7 +15,7 @@
     - CCI-001388
     - SRG-OS-000023-GPOS-00006
     - SRG-OS-000228-GPOS-00088
-    - SV-258012r958390_rule
+    - SV-258012r1014855_rule
     - V-258012
     - NIST800-53R4_CM-6
   notify: Update_dconf
@@ -23,8 +23,8 @@
     path: /etc/dconf/db/local.d/01-banner-message
     option: banner-message-enable
     section: 'org/gnome/login-screen'
-    value: 'true'
     mode: 'go-wx'
+    value: 'true'
 
 - name: "MEDIUM | RHEL-09-271015 | PATCH | RHEL 9 must prevent a user from overriding the banner-message-enable setting for the graphical user interface."
   when:
@@ -100,8 +100,8 @@
   ansible.builtin.lineinfile:
     path: "/etc/dconf/db/{{ item }}.d/locks/00-security-settings-lock"
     line: /org/gnome/desktop/media-handling/automount-open
-    create: true
     mode: 'go-wx'
+    create: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271030 | PATCH | RHEL 9 must disable the graphical user interface autorun function unless required."
@@ -147,8 +147,8 @@
   ansible.builtin.lineinfile:
     path: "/etc/dconf/db/{{ item }}.d/locks/00-security-settings-lock"
     line: /org/gnome/desktop/media-handling/autorun-never
-    create: true
     mode: 'go-wx'
+    create: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271045 | PATCH | RHEL 9 must be able to initiate directly a session lock for all connection types using smart card when the smart card is removed."
@@ -168,12 +168,12 @@
   notify: Update_dconf
   community.general.ini_file:
     path: "/etc/dconf/db/{{ item }}.d/00-security-settings"
-    no_extra_spaces: true
-    option: removal-action
     section: 'org/gnome/settings-daemon/peripherals/smartcard'
     value: "'lock-screen'"
-    create: true
+    option: removal-action
+    no_extra_spaces: true
     mode: 'go-wx'
+    create: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271050 | PATCH | RHEL 9 must prevent a user from overriding the disabling of the graphical user smart card removal action."
@@ -194,8 +194,8 @@
   ansible.builtin.lineinfile:
     path: "/etc/dconf/db/{{ item }}.d/locks/00-security-settings-lock"
     line: /org/gnome/settings-daemon/peripherals/smartcard/removal-action
-    create: true
     mode: 'go-wx'
+    create: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271055 | PATCH | RHEL 9 must enable a user session lock until that user re-establishes access using established identification and authentication procedures for graphical user sessions."
@@ -328,8 +328,8 @@
   ansible.builtin.lineinfile:
     path: "/etc/dconf/db/{{ item }}.d/locks/session"
     line: /org/gnome/desktop/screensaver/lock-delay
-    create: true
     mode: 'go-wx'
+    create: true
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271085 | PATCH | RHEL 9 must conceal, via the session lock, information previously visible on the display with a publicly viewable image."
@@ -389,7 +389,7 @@
     - CAT2
     - CCI-00366
     - SRG-OS-000480-GPOS-00227
-    - SV-258029r991589_rule
+    - SV-258029r1014857_rule
     - V-258029
     - NIST800-53R4_CM-6
   notify: Update_dconf
@@ -397,7 +397,7 @@
     path: "/etc/dconf/db/{{ item }}.d/02-login-screen"
     option: disable-restart-buttons
     section: 'org/gnome/login-screen'
-    value: "true"
+    value: true
     no_extra_spaces: true
     create: true
     mode: 'go-wx'
