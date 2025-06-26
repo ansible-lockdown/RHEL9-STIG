@@ -1,6 +1,5 @@
 # RHEL9STIG
 
-
 ## 1.6.0 Based on STIG V2R3 Jan28 2025
 
 - RuleID Updates
