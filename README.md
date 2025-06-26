@@ -167,6 +167,7 @@ uses:
 STIG Control
 
 - RHEL-09-211035 rngd service - this is replaced if running FIPS see https://bugzilla.redhat.com/show_bug.cgi?id=2208049
+- Some issues on rocky9.4 AWS images updating - require feedback possible rocky/aws issues
 
 ## Support
 
