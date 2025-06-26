@@ -26,6 +26,8 @@
 - RHEL-09-672035 - removed
 - RHEL-09-672040 - removed
 - RHEL-09-672045 - moved to 215105
+- Addresses fix for RHEL-09-232200 on issue #115
+- pre-commit updates include names
 
 ## 1.5.0 Based on STIG V2R2 Oct24 2024
 
