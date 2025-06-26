@@ -38,9 +38,7 @@
   register: rhel9stig_interactive_users
 
 - name: Include audit specific variables
-  when:
-    - run_audit or audit_only
-    - setup_audit
+  when: run_audit or audit_only or setup_audit
   tags:
     - setup_audit
     - run_audit
@@ -48,9 +46,7 @@
     file: audit.yml
 
 - name: Include pre-remediation audit tasks
-  when:
-    - run_audit or audit_only
-    - setup_audit
+  when: run_audit or audit_only or setup_audit
   tags: run_audit
   ansible.builtin.import_tasks:
     file: pre_remediation_audit.yml
