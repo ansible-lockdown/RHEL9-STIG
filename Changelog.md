@@ -1,6 +1,6 @@
 # RHEL9STIG
 
-## 1.6.0 Based on STIG V2R3 Jan28 2025
+## 2.3.0 Based on STIG V2R3 Jan28 2025
 
 - RuleID Updates
 - CCI Updates
@@ -28,7 +28,7 @@
 - Addresses fix for RHEL-09-232200 on issue #115
 - pre-commit updates include names
 
-## 1.5.0 Based on STIG V2R2 Oct24 2024
+## 2.2.0 Based on STIG V2R2 Oct24 2024
 
 - RuleID updates
 - NIST ID updates
@@ -50,7 +50,7 @@
 
 Many rules now linked with nist and CCI (not on official revision history)
 
-## 1.4.0 Based on STIG V2R1 Jul24 2024
+## 2.1.0 Based on STIG V2R1 Jul24 2024
 
 - Every control ruleid updates due to STiG new CMS
 - Removed as no longer required
@@ -166,7 +166,7 @@ Many rules now linked with nist and CCI (not on official revision history)
   - #13 thanks to @PoundsOfFlesh - some excellent items from PR
   - update audit sumamry output
 
-## 1.2 Based on STIG V1R2 Jan24 2024
+## 1.2.0 Based on STIG V1R2 Jan24 2024
 
 - control updates
 - pre-commit updates
@@ -179,6 +179,6 @@ Many rules now linked with nist and CCI (not on official revision history)
   - #3
   - #4
 
-## 1.1 Based on STIG V1R1
+## 1.1.0 Based on STIG V1R1
 
 Initial release
