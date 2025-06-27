@@ -1,10 +1,34 @@
 # RHEL9STIG
 
-## 1.6.0
+## 2.3.0 Based on STIG V2R3 Jan28 2025
 
-Addresses fix for RHEL-09-232200 on issue #115
+- RuleID Updates
+- CCI Updates
+- package removals/additions now dont skip if package present or not but run through giving correct state
+- Upgraded several control to disruption_high
+- authselect updates for faillock related controls
+- var dictionaries renamed to allow easier overridding of variables
+- RHEL-09-672010 - Becomes RHEL-09-215100
+- RHEL-09-672020 - moved to CAT1 and approach changed to remediate inline with documentation
+- RHEL-09-672030 - removed
+- RHEL-09-171011 - Added
+- RHEL-09-232103 - Added
+- RHEL-09-232104 - Added
+- RHEL-09-251025 - Added firewalld reload as issues seen for new connections
+- RHEL-09-255064 - Added
+- RHEL-09-255070 - Added
+- RHEL-09-433016 - Added fapolicyd ading rules and testing - new var rhel9stig_allow_fapolicy_updates
+- RHEL-09-610205 - title update
+- RHEL-09-652035 - removed
+- RHEL-09-653110 - added audit.rules
+- RHEL-09-653130 - moved to 653xxx as 652035 no longer present
+- RHEL-09-672035 - removed
+- RHEL-09-672040 - removed
+- RHEL-09-672045 - moved to 215105
+- Addresses fix for RHEL-09-232200 on issue #115
+- pre-commit updates include names
 
-## 1.5.0 Based on STIG V2R2 Oct24 2024
+## 2.2.0 Based on STIG V2R2 Oct24 2024
 
 - RuleID updates
 - NIST ID updates
@@ -26,7 +50,7 @@ Addresses fix for RHEL-09-232200 on issue #115
 
 Many rules now linked with nist and CCI (not on official revision history)
 
-## 1.4.0 Based on STIG V2R1 Jul24 2024
+## 2.1.0 Based on STIG V2R1 Jul24 2024
 
 - Every control ruleid updates due to STiG new CMS
 - Removed as no longer required
@@ -142,7 +166,7 @@ Many rules now linked with nist and CCI (not on official revision history)
   - #13 thanks to @PoundsOfFlesh - some excellent items from PR
   - update audit sumamry output
 
-## 1.2 Based on STIG V1R2 Jan24 2024
+## 1.2.0 Based on STIG V1R2 Jan24 2024
 
 - control updates
 - pre-commit updates
@@ -155,6 +179,6 @@ Many rules now linked with nist and CCI (not on official revision history)
   - #3
   - #4
 
-## 1.1 Based on STIG V1R1
+## 1.1.0 Based on STIG V1R1
 
 Initial release

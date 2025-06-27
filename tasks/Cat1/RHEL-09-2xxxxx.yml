@@ -19,13 +19,11 @@
   tags:
     - RHEL-09-211045
     - CAT1
-    - CCI-000366
     - CCI-002235
     - SRG-OS-000324-GPOS-00125
     - SRG-OS-000480-GPOS-00227
-    - SV-257784r958726_rule
+    - SV-257784r1044832_rule
     - V-257784
-    - NIST800-53R4_CM-6
     - NIST800-53R4_AC-6
   notify: Systemd_daemon_reload
   ansible.builtin.lineinfile:
@@ -35,12 +33,11 @@
     create: true
     mode: 'go-wx'
 
-- name: HIGH | RHEL-09-211050 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled
+- name: HIGH | RHEL-09-211050 | PATCH | The x86 Ctrl-Alt-Delete key sequence must be disabled on RHEL 9
   when: rhel_09_211050
   tags:
     - RHEL-09-211050
     - CAT1
-    - CCI-000366
     - CCI-002235
     - SRG-OS-000324-GPOS-00125
     - SRG-OS-000480-GPOS-00227
@@ -69,7 +66,7 @@
     - CAT1
     - CCI-000213
     - SRG-OS-000080-GPOS-00048
-    - SV-257789r1014822_rule
+    - SV-257789r1044841_rule
     - V-257789
     - NIST800-53R4_AC-3
     - grub
@@ -93,7 +90,7 @@
     - CAT1
     - CCI-001749
     - SRG-OS-000366-GPOS-00153
-    - SV-257820r1015076_rule
+    - SV-257820r1044878_rule
     - V-257820
     - NIST800-53R4_CM-5
     - dnf
@@ -127,7 +124,7 @@
     - CAT1
     - CCI-001749
     - SRG-OS-000366-GPOS-00153
-    - SV-257822r997055_rule
+    - SV-257822r1044880_rule
     - V-257822
     - NIST800-53R4_CM-5
     - dnf
@@ -135,11 +132,11 @@
   block:
     - name: HIGH | RHEL-09-214025 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation. | find repo files
       ansible.builtin.find:
-        contains: gpgcheck
-        file_type: file
         path: /etc/yum.repos.d
         patterns: "*.repo"
         use_regex: true
+        contains: gpgcheck
+        file_type: file
       register: discovered_repo_list
 
     - name: HIGH | RHEL-09-214025 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation. | Set gpgcheck
@@ -152,19 +149,16 @@
 - name: HIGH | RHEL-09-215015 | PATCH | RHEL 9 must not have a File Transfer Protocol (FTP) server package installed.
   when:
     - not rhel9stig_is_ftp_server
-    - "'vsftpd' in ansible_facts.packages"
     - rhel_09_215015
-    - ftp
   tags:
     - RHEL-09-215015
     - CAT1
     - CCI-000197
-    - CCI-000366
     - CCI-000381
     - SRG-OS-000074-GPOS-00042
     - SRG-OS-000095-GPOS-00049
     - SRG-OS-000480-GPOS-00227
-    - SV-257826r987796_rule
+    - SV-257826r1044890_rule
     - V-257826
     - NIST800-53R4_IA-5
     - NIST800-53R4_CM-6
@@ -174,15 +168,13 @@
     state: absent
 
 - name: HIGH | RHEL-09-215060 | PATCH | RHEL 9 must not have a Trivial File Transfer Protocol (TFTP) server package installed.
-  when:
-    - "'tftp-server' in ansible_facts.packages"
-    - rhel_09_215060
+  when: rhel_09_215060
   tags:
     - RHEL-09-215060
     - CAT1
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257835r991589_rule
+    - SV-257835r1044906_rule
     - V-257835
     - NIST800-53R4_CM-6
     - tftp
@@ -200,8 +192,8 @@
     - CCI-002476
     - SRG-OS-000405-GPOS-00184
     - SRG-OS-000185-GPOS-00079
-    - SRG-OS-000404-GPOS-0018
-    - SV-257879r1014836_rule
+    - SRG-OS-000404-GPOS-00183
+    - SV-257879r1045454_rule
     - V-257879
     - NIST800-53R4_SC-28
     - encrypt
@@ -305,14 +297,12 @@
   tags:
     - RHEL-09-255040
     - CAT1
-    - CCI-000366
     - CCI-000766
     - SRG-OS-000106-GPOS-00053
     - SRG-OS-000480-GPOS-00229
     - SRG-OS-000480-GPOS-00227
-    - SV-257984r958486_rule
+    - SV-257984r1045026_rule
     - V-257984
-    - NIST800-53R4_CM-6
     - NIST800-53R4_IA-2
     - ssh
   notify: Restart_sshd
@@ -331,7 +321,7 @@
     - CAT1
     - CCI-000877
     - SRG-OS-000125-GPOS-00065
-    - SV-257986r958510_rule
+    - SV-257986r1045030_rule
     - V-257986
     - NIST800-53R4_MA-4
     - ssh
@@ -344,28 +334,23 @@
     validate: sshd -t -f %s
 
 - name: HIGH | RHEL-09-271040 | PATCH | RHEL 9 must not allow unattended or automatic logon via the graphical user interface.
-  when:
-    - "'gdm' in ansible_facts.packages"
-    - rhel_09_271040
+  when: rhel_09_271040
   tags:
     - RHEL-09-271040
     - CAT1
     - CCI-000366
     - SRG-OS-000480-GPOS-0022
-    - SV-258018r991591_rule
+    - SV-258018r1045090_rule
     - V-258018
     - NIST800-53R4_CM-6
     - gui
   ansible.builtin.lineinfile:
     path: /etc/gdm/custom.conf
-    regexp: "{{ autologin.regexp }}"
-    line: "{{ autologin.line }}"
-    insertafter: "{{ autologin.after | default(omit) }}"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    insertafter: "{{ item.after | default(omit) }}"
     create: true
     mode: 'go-wx'
   loop:
-    - { regexp: "[daemon]", line: "[daemon]" }
-    - { regexp: "(?i)^AutomaticLoginEnable=false", line: AutomaticLoginEnable=false, after: "[daemon]" }
-  loop_control:
-    label: "{{ autologin.line }}"
-    loop_var: autologin
+    - { regexp: "\\[daemon\\]", line: '[daemon]' }
+    - { regexp: "(?i)^AutomaticLoginEnable=false", line: AutomaticLoginEnable=false, after: '[daemon]' }

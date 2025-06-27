@@ -1,0 +1,7 @@
+# Added as part of RHEL9-STIG requirements
+
+# Disable CHACHA20-POLY1305 for the TLS protocol (OpenSSL, GnuTLS, NSS, and OpenJDK)
+cipher@TLS = -CHACHA20-POLY1305
+
+# Disable all CBC mode ciphers for the SSH protocol (libssh and OpenSSH)
+cipher@SSH = -*-CBC

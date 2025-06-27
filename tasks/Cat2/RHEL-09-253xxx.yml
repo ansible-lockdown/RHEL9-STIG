@@ -5,15 +5,13 @@
   tags:
     - RHEL-09-253010
     - CAT2
-    - CCI-000366
     - CCI-001095
     - CCI-002385
     - SRG-OS-000480-GPOS-00227
     - SRG-OS-000420-GPOS-00186
     - SRG-OS-000142-GPOS-00071
-    - SV-257957r991589_rule
+    - SV-257957r1045009_rule
     - V-257957
-    - NIST800-53R4_CM-6
     - NIST800-53R4_SC-5
   ansible.posix.sysctl:
     name: net.ipv4.tcp_syncookies
@@ -235,7 +233,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257970r991589_rule
+    - SV-257970r1045011_rule
     - V-257970
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:

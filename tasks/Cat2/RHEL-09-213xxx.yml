@@ -30,7 +30,7 @@
     - CCI-001090
     - SRG-OS-000132-GPOS-00067
     - SRG-OS-000138-GPOS-00069
-    - SV-257798r958514_rule
+    - SV-257798r1044849_rule
     - V-257798
     - NIST800-53R4_SC-2
     - NIST800-53R4_SC-4
@@ -47,10 +47,10 @@
   tags:
     - RHEL-09-213020
     - CAT2
-    - CCI-000366
+    - CCI-001749
     - SRG-OS-000480-GPOS-00227
     - SRG-OS-000366-GPOS-00153
-    - SV-257799r997051_rule
+    - SV-257799r1044850_rule
     - V-257799
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -66,13 +66,14 @@
   tags:
     - RHEL-09-213025
     - CAT2
-    - CCI-000366
     - CCI-001082
+    - CCI-002824
     - SRG-OS-000132-GPOS-00067
     - SRG-OS-000433-GPOS-00192
-    - SV-257800r958514_rule
+    - SRG-OS-000480-GPOS-00227
+    - SV-257800r1044851_rule
     - V-257800
-    - NIST800-53R4_CM-6
+    - NIST800-53R4_SI-16
     - NIST800-53R4_SC-2
   ansible.posix.sysctl:
     name: kernel.kptr_restrict
@@ -149,7 +150,7 @@
     - CAT2
     - CCI-000381
     - SRG-OS-000095-GPOS-00049
-    - SV-257804r958478_rule
+    - SV-257804r1044853_rule
     - V-257804
     - NIST800-53R4_CM-7
   vars:
@@ -167,7 +168,7 @@
     - CAT2
     - CCI-000381
     - SRG-OS-000095-GPOS-00049
-    - SV-257805r958478_rule
+    - SV-257805r1044856_rule
     - V-257805
     - NIST800-53R4_CM-7
   vars:
@@ -185,7 +186,7 @@
     - CAT2
     - CCI-000381
     - SRG-OS-000095-GPOS-00049
-    - SV-257806r958478_rule
+    - SV-257806r1044859_rule
     - V-257806
     - NIST800-53R4_CM-7
   vars:
@@ -204,7 +205,7 @@
     - CAT2
     - CCI-000381
     - SRG-OS-000095-GPOS-00049
-    - SV-257807r958478_rule
+    - SV-257807r1044862_rule
     - V-257807
     - NIST800-53R4_CM-7
   vars:
@@ -222,7 +223,7 @@
     - CAT2
     - CCI-000381
     - SRG-OS-000095-GPOS-00049
-    - SV-257808r958478_rule
+    - SV-257808r1044865_rule
     - V-257808
     - NIST800-53R4_CM-7
   vars:
@@ -238,13 +239,11 @@
   tags:
     - RHEL-09-213070
     - CAT2
-    - CCI-000366
     - CCI-002824
     - SRG-OS-000433-GPOS-00193
     - SRG-OS-000480-GPOS-00227
-    - SV-257809r958928_rule
+    - SV-257809r1044866_rule
     - V-257809
-    - NIST800-53R4_CM-6
     - NIST800-53R4_SI-16
   ansible.posix.sysctl:
     name: kernel.randomize_va_space
@@ -259,13 +258,11 @@
   tags:
     - RHEL-09-213075
     - CAT2
-    - CCI-000366
     - CCI-001082
     - SRG-OS-000132-GPOS-00067
     - SRG-OS-000480-GPOS-00227
-    - SV-257810r958514_rule
+    - SV-257810r1044869_rule
     - V-257810
-    - NIST800-53R4_CM-6
     - NIST800-53R4_SC-2
   ansible.posix.sysctl:
     name: kernel.unprivileged_bpf_disabled
@@ -280,13 +277,11 @@
   tags:
     - RHEL-09-213080
     - CAT2
-    - CCI-000366
     - CCI-001082
     - SRG-OS-000132-GPOS-00067
     - SRG-OS-000480-GPOS-00227
-    - SV-257811r958514_rule
+    - SV-257811r1044872_rule
     - V-257811
-    - NIST800-53R4_CM-6
     - NIST800-53R4_SC-2
   ansible.posix.sysctl:
     name: kernel.yama.ptrace_scope
@@ -303,7 +298,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257812r991589_rule
+    - SV-257812r1051005_rule
     - V-257812
     - NIST800-53R4_CM-6
   ansible.builtin.lineinfile:
@@ -369,7 +364,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257816r991589_rule
+    - SV-257816r1014825_rule
     - V-257816
     - NIST800-53R4_CM-6
   ansible.posix.sysctl:
@@ -411,7 +406,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257818r991589_rule
+    - SV-257818r1044876_rule
     - V-257818
     - NIST800-53R4_CM-6
   ansible.builtin.systemd:

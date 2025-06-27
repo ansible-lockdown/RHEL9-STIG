@@ -5,9 +5,9 @@
   tags:
     - RHEL-09-212010
     - CAT2
-    - CCI-001665
+    - CCI-000213
     - SRG-OS-000080-GPOS-00048
-    - SV-257787r958472_rule
+    - SV-257787r1044836_rule
     - V-257787
     - NIST800-53R4_AC-3
   vars:
@@ -17,11 +17,11 @@
       when: rhel9stig_set_bootloader_password
       notify: Rebuild_grub
       ansible.builtin.template:
+        src: "{{ item.file }}.j2"
         dest: "/{{ item.file }}"
+        owner: root
         group: root
         mode: "{{ item.mode }}"
-        owner: root
-        src: "{{ item.file }}.j2"
       loop:
         - { file: 'boot/grub2/user.cfg', mode: '0644' }
 
@@ -50,7 +50,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257788r991589_rule
+    - SV-257788r1044838_rule
     - V-257788
     - NIST800-53R4_CM-6
   block:
@@ -107,12 +107,12 @@
   tags:
     - RHEL-09-212035
     - CAT2
-    - CCI-000366
+    - CCI-001084
     - SRG-OS-000480-GPOS-00227
     - SRG-OS-000134-GPOS-00068
-    - SV-257792r991589_rule
+    - SV-257792r1044842_rule
     - V-257792
-    - NIST800-53R4_CM-6
+    - NIST800-SC-3
   block:
     - name: "MEDIUM | RHEL-09-212035 | AUDIT | RHEL 9 must disable virtual system calls. | Capture grubby"
       ansible.builtin.shell: grubby --info=ALL | grep args | grep 'vsyscall=none'
@@ -145,13 +145,11 @@
   tags:
     - RHEL-09-212040
     - CAT2
-    - CCI-000366
     - CCI-001084
     - SRG-OS-000480-GPOS-00227
     - SRG-OS-000134-GPOS-00068
-    - SV-257793r991589_rule
+    - SV-257793r1044843_rule
     - V-257793
-    - NIST800-53R4_CM-6
     - NIST800-53R4_SC-3
   block:
     - name: "MEDIUM | RHEL-09-212040 | AUDIT | RHEL 9 must clear the page allocator to prevent use-after-free attacks. | Capture grubby"
@@ -186,6 +184,7 @@
     - RHEL-09-212045
     - CAT2
     - CCI-001084
+    - CCI-002824
     - SRG-OS-000433-GPOS-00192
     - SRG-OS-000134-GPOS-00068
     - SV-257794r958928_rule

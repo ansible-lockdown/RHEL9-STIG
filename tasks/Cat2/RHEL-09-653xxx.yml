@@ -30,6 +30,7 @@
     - CCI-001889
     - CCI-001914
     - CCI-002884
+    - CCI-001814
     - SRG-OS-000062-GPOS-00031
     - SRG-OS-000037-GPOS-00015
     - SRG-OS-000038-GPOS-00016
@@ -55,7 +56,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000475-GPOS-00220
     - SRG-OS-000055-GPOS-00026
-    - SV-258151r997050_rule
+    - SV-258151r1045298_rule
     - V-258151
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-6
@@ -126,7 +127,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000475-GPOS-00220
     - SRG-OS-000055-GPOS-00026
-    - SV-258152r997058_rule
+    - SV-258152r1015127_rule
     - V-258152
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-6
@@ -151,7 +152,7 @@
     - CAT2
     - CCI-000140
     - SRG-OS-000047-GPOS-00023
-    - SV-258153r958426_rule
+    - SV-258153r1038966_rule
     - V-258153
     - NIST800-53R4_AU-5
     - auditd
@@ -169,7 +170,7 @@
     - CAT2
     - CCI-000140
     - SRG-OS-000047-GPOS-00023
-    - SV-258154r958426_rule
+    - SV-258154r1038966_rule
     - V-258154
     - NIST800-53R4_AU-5
     - auditd
@@ -190,7 +191,7 @@
     - CCI-001851
     - SRG-OS-000341-GPOS-00132
     - SRG-OS-000342-GPOS-00133
-    - SV-258155r958752_rule
+    - SV-258155r1045300_rule
     - V-258155
     - NIST800-53R4_AU-4
     - auditd
@@ -232,7 +233,7 @@
     - auditd
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
-    regexp: ^(#|\s*)space_left\s*=
+    regexp: ^(#|)\s*space_left\s*=
     line: space_left = {{ rhel9stig_audit_conf_space_left }}
 
 - name: "MEDIUM | RHEL-09-653040 | PATCH | RHEL 9 must notify the system administrator (SA) and information system security officer (ISSO) (at a minimum) when allocated
@@ -251,7 +252,7 @@
     - auditd
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
-    regexp: ^(#|\s*)space_left_action\s*=
+    regexp: ^(#|)\s*space_left_action\s*=
     line: space_left_action = {{ rhel9stig_audit_conf_space_left_action }}
 
 - name: "MEDIUM | RHEL-09-653045 | PATCH | RHEL 9 must take action when allocated audit record storage volume reaches 95 percent of the audit record storage capacity."
@@ -269,7 +270,7 @@
     - auditd
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
-    regexp: ^(#|\s*)admin_space_left\s*=
+    regexp: ^(#|)\s*admin_space_left\s*=
     line: admin_space_left = {{ rhel9stig_audit_conf_admin_space_left }}
 
 - name: "MEDIUM | RHEL-09-653050 | PATCH | RHEL 9 must take action when allocated audit record storage volume reaches 95 percent of the repository maximum audit record
@@ -288,7 +289,7 @@
     - auditd
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
-    regexp: ^(#|\s*)admin_space_left_action\s*
+    regexp: ^(#|)\s*admin_space_left_action\s*
     line: admin_space_left_action = {{ rhel9stig_audit_conf_admin_space_left_action }}
 
 - name: "MEDIUM | RHEL-09-653055 | PATCH | RHEL 9 audit system must take appropriate action when the audit files have reached maximum size."
@@ -300,13 +301,13 @@
     - CAT2
     - CCI-000140
     - SRG-OS-000047-GPOS-00023
-    - SV-258160r958426_rule
+    - SV-258160r1038966_rule
     - V-258160
     - NIST800-53R4_AU-5
     - auditd
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
-    regexp: ^(#|\s*)max_log_file_action
+    regexp: ^(#|)\s*max_log_file_action
     line: max_log_file_action = {{ rhel9stig_audit_conf_max_log_file_action }}
 
 - name: "MEDIUM | RHEL-09-653060 | PATCH | RHEL 9 must label all offloaded audit logs before sending them to the central log server."
@@ -325,7 +326,7 @@
     - auditd
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
-    regexp: ^(#|\s*)name_format
+    regexp: ^(#|)\s*name_format
     line: name_format = {{ rhel9stig_audit_conf_name_format }}
 
 - name: "MEDIUM | RHEL-09-653065 | PATCH | RHEL 9 must take appropriate action when the internal event queue is full."
@@ -343,7 +344,7 @@
     - auditd
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
-    regexp: ^(#|\s*)overflow_action
+    regexp: ^(#|)\s*overflow_action
     line: overflow_action = {{ rhel9stig_audit_conf_overflow_action }}
 
 - name: "MEDIUM | RHEL-09-653070 | PATCH | RHEL 9 System Administrator (SA) and/or information system security officer (ISSO) (at a minimum) must be alerted of an
@@ -365,7 +366,7 @@
     - auditd
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
-    regexp: ^(#|\s*)overflow_action
+    regexp: ^(#|)\s*overflow_action
     line: overflow_action = {{ rhel9stig_audit_conf_overflow_action }}
 
 - name: "MEDIUM | RHEL-09-653075 | PATCH | RHEL 9 audit system must audit local events."
@@ -376,17 +377,15 @@
     - RHEL-09-653075
     - CAT2
     - CCI-000169
-    - CCI-000366
     - SRG-OS-000062-GPOS-00031
     - SRG-OS-000480-GPOS-00227
-    - SV-258164r958442_rule
+    - SV-258164r1045301_rule
     - V-258164
     - NIST800-53R4_AU-12
-    - NIST800-53R4_CM-6
     - auditd
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
-    regexp: ^(#|\s*)overflow_action
+    regexp: ^(#|)\s*overflow_action
     line: overflow_action = {{ rhel9stig_audit_conf_overflow_action }}
 
 - name: "MEDIUM | RHEL-09-653080 | PATCH | RHEL 9 audit logs must be group-owned by root or by a restricted logging group to prevent unauthorized read access."
@@ -411,7 +410,7 @@
     - name: "MEDIUM | RHEL-09-653080 | PATCH | RHEL 9 audit logs must be group-owned by root or by a restricted logging group to prevent unauthorized read access.| set logfile_group"
       ansible.builtin.lineinfile:
         path: /etc/audit/auditd.conf
-        regexp: ^(#|\s*)log_group
+        regexp: ^(#|)\s*log_group
         line: log_group = {{ rhel9stig_audit_conf_logfile_group }}
 
     - name: "MEDIUM | RHEL-09-653080 | PATCH | RHEL 9 audit logs must be group-owned by root or by a restricted logging group to prevent unauthorized read access. | Set perms"
@@ -430,9 +429,11 @@
     - CCI-000163
     - CCI-000164
     - CCI-001314
-    - SRG-OS-000062-GPOS-00031
-    - SRG-OS-000480-GPOS-00227
-    - SV-258166r958434_rule
+    - SRG-OS-000057-GPOS-00027
+    - SRG-OS-000058-GPOS-00028
+    - SRG-OS-000059-GPOS-00029
+    - SRG-OS-000206-GPOS-00084
+    - SV-258166r1045303_rule
     - V-258166
     - NIST800-53R4_AU-9
     - NIST800-53R4_SI-11
@@ -452,9 +453,11 @@
     - CCI-000163
     - CCI-000164
     - CCI-001314
-    - SRG-OS-000062-GPOS-00031
-    - SRG-OS-000480-GPOS-00227
-    - SV-258167r958434_rule
+    - SRG-OS-000057-GPOS-00027
+    - SRG-OS-000058-GPOS-00028
+    - SRG-OS-000059-GPOS-00029
+    - SRG-OS-000206-GPOS-00084
+    - SV-258167r1045306_rule
     - V-258167
     - NIST800-53R4_AU-9
     - NIST800-53R4_SI-11
@@ -478,7 +481,7 @@
     - auditd
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
-    regexp: ^(#|\s*)freq\s*=
+    regexp: ^(#|)\s*freq\s*=
     line: freq = {{ rhel9stig_audit_conf_freq }}
 
 - name: "MEDIUM | RHEL-09-653100 | PATCH | RHEL 9 must produce audit records containing information to establish the identity of any individual or process associated
@@ -500,7 +503,7 @@
     - auditd
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
-    regexp: ^(#|\s*)log_format\s*=
+    regexp: ^(#|)\s*log_format\s*=
     line: log_format = {{ rhel9stig_audit_conf_log_format }}
 
 - name: "MEDIUM | RHEL-09-653105 | PATCH | RHEL 9 must write audit records to disk."
@@ -518,7 +521,7 @@
     - auditd
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
-    regexp: ^\s*write_logs
+    regexp: ^(#|)\s*write_logs
     line: write_logs = {{ rhel9stig_audit_conf_write_logs }}
 
 - name: "MEDIUM | RHEL-09-653110 | PATCH | RHEL 9 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM) to select which auditable events are to be audited."
@@ -530,22 +533,24 @@
     - CAT2
     - CCI-000171
     - SRG-OS-000063-GPOS-00032
-    - SV-258171r958444_rule
+    - SV-258171r1045308_rule
     - V-258171
     - NIST800-53R4_AU-12
     - auditd
   block:
     - name: "MEDIUM | RHEL-09-653110 | PATCH | RHEL 9 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM) to select which auditable events are to be audited."
       ansible.builtin.file:
-        path: /etc/audit/auditd.conf
         mode: 'u-x,g-wx,o-rwx'
+        path: "{{ item }}"
+      loop:
+        - /etc/audit/audit.rules
+        - /etc/audit/auditd.conf
 
     - name: "MEDIUM | RHEL-09-653110 | PATCH | RHEL 9 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM) to select which auditable events are to be audited."
       ansible.builtin.file:
-        path: "{{ item }}"
+        path: "{{ item.path }}"
         mode: 'u-x,g-wx,o-rwx'
-      with_fileglob:
-        - "etc/audit/rules.d/*.rules"
+      loop: "{{ discovered_audit_rules.files }}"
 
 - name: "MEDIUM | RHEL-09-653115 | PATCH | RHEL 9 /etc/audit/auditd.conf file must have 0640 or less permissive to prevent unauthorized access."
   when:
@@ -581,3 +586,21 @@
     path: /etc/aliases
     regexp: "^root:\\s.*"
     line: "root: ISSO"
+
+- name: "MEDIUM | RHEL-09-653130 | PATCH | RHEL 9 audispd-plugins package must be installed"
+  when:
+    - rhel_09_653130
+    - rhel9stig_auditd_required
+  tags:
+    - RHEL-09-653130
+    - CAT2
+    - CCI-001851
+    - SRG-OS-000342-GPOS-00133
+    - SV-258175r1045310_rule
+    - V-258175
+    - NIST800-53R4_AU-4
+    - rsyslog
+    - auditd
+  ansible.builtin.package:
+    name: audispd-plugins
+    state: present

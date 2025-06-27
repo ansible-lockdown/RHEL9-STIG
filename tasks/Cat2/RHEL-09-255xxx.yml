@@ -15,7 +15,7 @@
     - SRG-OS-000424-GPOS-00188
     - SRG-OS-000425-GPOS-00189
     - SRG-OS-000426-GPOS-00190
-    - SV-257978r958908_rule
+    - SV-257978r1045013_rule
     - V-257978
     - NIST800-53R4_SC-8
   ansible.builtin.package:
@@ -45,13 +45,15 @@
     state: started
 
 - name: "MEDIUM | RHEL-09-255020 | PATCH | RHEL 9 must have the openssh-clients package installed"
-  when: rhel_09_255020
+  when:
+    - rhel_09_255020
+    - rhel9stig_sshd_required
   tags:
     - RHEL-09-255020
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257980r991589_rule
+    - SV-257980r1045016_rule
     - V-257980
     - NIST800-53R4_SC-8
   ansible.builtin.package:
@@ -73,7 +75,7 @@
     - CCI-001388
     - SRG-OS-000023-GPOS-00006
     - SRG-OS-000228-GPOS-00088
-    - SV-257981r958390_rule
+    - SV-257981r1045019_rule
     - V-257981
     - NIST800-53R4_AC-8
     - ssh
@@ -105,7 +107,7 @@
     - CAT2
     - CCI-000067
     - SRG-OS-000032-GPOS-00013
-    - SV-257982r958406_rule
+    - SV-257982r1045021_rule
     - V-257982
     - NIST800-53R4_AC-17
     - ssh
@@ -137,6 +139,8 @@
     - CAT2
     - CCI-000765
     - CCI-000766
+    - CCI-000767
+    - CCI-000768
     - SRG-OS-000105-GPOS-00052
     - SRG-OS-000106-GPOS-00053
     - SRG-OS-000107-GPOS-00054
@@ -171,12 +175,12 @@
   tags:
     - RHEL-09-255045
     - CAT2
-    - CCI-000366
+    - CCI-000770
     - SRG-OS-000109-GPOS-00056
     - SRG-OS-000480-GPOS-00227
-    - SV-257985r997069_rule
+    - SV-257985r1045028_rule
     - V-257985
-    - NIST800-53R4_CM-6
+    - NIST800-53R4_IA-2
     - ssh
   notify: Restart_sshd
   block:
@@ -238,7 +242,7 @@
     - CAT2
     - CCI-001453
     - SRG-OS-000250-GPOS-00093
-    - SV-257988r991554_rule
+    - SV-257988r1051234_rule
     - V-257988
     - NIST800-53R4_AC-17
     - ssh
@@ -251,7 +255,49 @@
     mode: 'go-rwx'
     validate: sshd -t -f %s
 
-- name: "MEDIUM | RHEL-09-255065 | PATCH | RHEL 9 must implement DOD-approved encryption ciphers to protect the confidentiality of SSH server connections."
+- name: "MEDIUM | RHEL-09-255064 | PATCH | The RHEL 9 SSH client must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+  when:
+    - rhel_09_255064
+    - rhel9stig_sshd_required
+  tags:
+    - RHEL-09-255064
+    - CAT2
+    - CCI-001453
+    - SRG-OS-000250-GPOS-00093
+    - SV-270177r1051237_rule
+    - V-270177
+    - NIST800-53R4_AC-17
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-255064"
+  block:
+    - name: "MEDIUM | RHEL-09-255064 | AUDIT | The RHEL 9 SSH client must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | capture current"
+      ansible.builtin.command: grep -i Ciphers /etc/crypto-policies/back-ends/openssh.config
+      changed_when: false
+      register: discovered_openssh_ciphers
+
+    - name: "MEDIUM | RHEL-09-255064 | PATCH | The RHEL 9 SSH client must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | Correct if wrong"
+      when:
+        - rhel9stig_disruption_high
+        - "(rhel9stig_dod_ciphers | join (',')) not in discovered_openssh_ciphers.stdout"
+      ansible.builtin.debug:
+        msg: "Crypto policies being reinstalled as handler"
+      notify: Reinstall_crypto_policies
+
+    - name: "MEDIUM | RHEL-09-255064 | WARN | The RHEL 9 SSH client must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+      when:
+        - not rhel9stig_disruption_high
+        - "(rhel9stig_dod_ciphers | join (',')) not in discovered_openssh_ciphers.stdout"
+      ansible.builtin.debug:
+        msg: "Warning!! Investigate /etc/crypto-policies/back-ends/openssh.config for correct IPS 140-3 ciphers and order"
+
+    - name: "MEDIUM | RHEL-09-255064 | WARN | The RHEL 9 SSH client must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+      when:
+        - not rhel9stig_disruption_high
+        - "(rhel9stig_dod_ciphers | join (',')) not in discovered_openssh_ciphers.stdout"
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "MEDIUM | RHEL-09-255065 | PATCH | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
   when:
     - rhel_09_255065
     - rhel9stig_sshd_required
@@ -260,16 +306,82 @@
     - CAT2
     - CCI-001453
     - SRG-OS-000250-GPOS-00093
-    - SV-257989r991554_rule
-    - V-257989
+    - SV-270177r1051237_rule
+    - V-270177
     - NIST800-53R4_AC-17
-  notify: Change_requires_reboot
-  ansible.builtin.lineinfile:
-    path: /etc/crypto-policies/back-ends/opensshserver.config
-    regexp: ^Ciphers
-    line: "Ciphers {{ rhel9stig_sshd_config.ciphers | join(',') }}"
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-255065"
+  block:
+    - name: "MEDIUM | RHEL-09-255065 | AUDIT | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | capture current"
+      ansible.builtin.command: grep -i Ciphers /etc/crypto-policies/back-ends/opensshserver.config
+      changed_when: false
+      register: discovered_openssh_server_ciphers
 
-- name: "MEDIUM | RHEL-09-255075 | PATCH | RHEL 9 SSH server must be configured to use only Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms."
+    - name: "MEDIUM | RHEL-09-255065 | PATCH | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | Correct if wrong"
+      when:
+        - rhel9stig_disruption_high
+        - "(rhel9stig_dod_ciphers | join (',')) not in discovered_openssh_server_ciphers.stdout"
+      ansible.builtin.debug:
+        msg: "Crypto policies being reinstalled as handler"
+      notify: Reinstall_crypto_policies
+
+    - name: "MEDIUM | RHEL-09-255065 | WARN | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+      when:
+        - not rhel9stig_disruption_high
+        - "(rhel9stig_dod_ciphers | join (',')) not in discovered_openssh_server_ciphers.stdout"
+      ansible.builtin.debug:
+        msg: "Warning!! Investigate /etc/crypto-policies/back-ends/openssh.config for correct IPS 140-3 ciphers and order"
+
+    - name: "MEDIUM | RHEL-09-255065 | WARN | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+      when:
+        - not rhel9stig_disruption_high
+        - "(rhel9stig_dod_ciphers | join (',')) not in discovered_openssh_server_ciphers.stdout"
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "MEDIUM | RHEL-09-255070 | PATCH | The RHEL 9 SSH client must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+  when:
+    - rhel_09_255070
+    - rhel9stig_sshd_required
+  tags:
+    - RHEL-09-255070
+    - CAT2
+    - CCI-001453
+    - SRG-OS-000250-GPOS-00093
+    - SV-270178r1051243_rule
+    - V-270178
+    - NIST800-53R4_AC-17
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-255070"
+  block:
+    - name: "MEDIUM | RHEL-09-255070 | AUDIT | The RHEL 9 SSH client must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | capture current"
+      ansible.builtin.command: grep -i MACs /etc/crypto-policies/back-ends/openssh.config
+      changed_when: false
+      register: discovered_openssh_macs
+
+    - name: "MEDIUM | RHEL-09-255070 | PATCH | The RHEL 9 SSH client must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | Correct if wrong"
+      when:
+        - rhel9stig_disruption_high
+        - "(rhel9stig_dod_macs | join (',')) not in discovered_openssh_macs.stdout"
+      ansible.builtin.debug:
+        msg: "Crypto policies being reinstalled as handler"
+      notify: Reinstall_crypto_policies
+
+    - name: "MEDIUM | RHEL-09-255070 | WARN | The RHEL 9 SSH client must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+      when:
+        - not rhel9stig_disruption_high
+        - "(rhel9stig_dod_macs | join (',')) not in discovered_openssh_macs.stdout"
+      ansible.builtin.debug:
+        msg: "Warning!! Investigate /etc/crypto-policies/back-ends/openssh.config for correct IPS 140-3 MACs and order"
+
+    - name: "MEDIUM | RHEL-09-255070 | WARN | The RHEL 9 SSH client must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+      when:
+        - not rhel9stig_disruption_high
+        - "(rhel9stig_dod_macs | join (',')) not in discovered_openssh_macs.stdout"
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: "MEDIUM | RHEL-09-255075 | PATCH | The RHEL 9 SSH server must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
   when:
     - rhel_09_255075
     - rhel9stig_sshd_required
@@ -278,14 +390,38 @@
     - CAT2
     - CCI-001453
     - SRG-OS-000250-GPOS-00093
-    - SV-257991r991554_rule
+    - SV-257991r1051246_rule
     - V-257991
     - NIST800-53R4_AC-17
-  notify: Change_requires_reboot
-  ansible.builtin.lineinfile:
-    path: /etc/crypto-policies/back-ends/opensshserver.config
-    regexp: ^MACs
-    line: "MACs {{ rhel9stig_sshd_config.macs | join(',') }}"
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-255075"
+  block:
+    - name: "MEDIUM | RHEL-09-255075 | AUDIT | The RHEL 9 SSH server must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | capture current"
+      ansible.builtin.command: grep -i MACs /etc/crypto-policies/back-ends/opensshserver.config
+      changed_when: false
+      register: discovered_openssh_server_macs
+
+    - name: "MEDIUM | RHEL-09-255075 | PATCH | The RHEL 9 SSH server must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | Correct if wrong"
+      when:
+        - rhel9stig_disruption_high
+        - "(rhel9stig_dod_macs | join (',')) not in discovered_openssh_server_macs.stdout"
+      ansible.builtin.debug:
+        msg: "Crypto policies being reinstalled as handler"
+      notify: Reinstall_crypto_policies
+
+    - name: "MEDIUM | RHEL-09-255075 | WARN | The RHEL 9 SSH server must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+      when:
+        - not rhel9stig_disruption_high
+        - "(rhel9stig_dod_macs | join (',')) not in discovered_openssh_server_macs.stdout"
+      ansible.builtin.debug:
+        msg: "Warning!! Investigate /etc/crypto-policies/back-ends/openssh.config for correct IPS 140-3 MACs and order"
+
+    - name: "MEDIUM | RHEL-09-255075 | WARN | The RHEL 9 SSH server must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+      when:
+        - not rhel9stig_disruption_high
+        - "(rhel9stig_dod_macs | join (',')) not in discovered_openssh_server_macs.stdout"
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
 
 - name: "MEDIUM | RHEL-09-255080 | PATCH | RHEL 9 must not allow a noncertificate trusted host SSH logon to the system."
   when:
@@ -295,8 +431,8 @@
     - RHEL-09-255080
     - CAT2
     - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257992r991591_rule
+    - SRG-OS-000480-GPOS-00229
+    - SV-257992r1045047_rule
     - V-257992
     - NIST800-53R4_CM-6
     - ssh
@@ -330,7 +466,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00229
-    - SV-257993r991591_rule
+    - SV-257993r1045049_rule
     - V-257993
     - NIST800-53R4_CM-6
     - ssh
@@ -368,7 +504,7 @@
     - SRG-OS-000423-GPOS-00187
     - SRG-OS-000033-GPOS-00014
     - SRG-OS-000424-GPOS-00188
-    - SV-257994r958908_rule
+    - SV-257994r1045051_rule
     - V-257994
     - NIST800-53R4_AC-17
     - NIST800-53R4_SC-8
@@ -403,10 +539,9 @@
     - CAT2
     - CCI-001133
     - CCI-002361
-    - CCI-002421
     - SRG-OS-000163-GPOS-00072
     - SRG-OS-000279-GPOS-00109
-    - SV-257995r970703_rule
+    - SV-257995r1045053_rule
     - V-257995
     - NIST800-53R4_SC-10
     - NIST800-53R4_AC-12
@@ -446,7 +581,7 @@
     - SRG-OS-000163-GPOS-00072
     - SRG-OS-000279-GPOS-00109
     - SRG-OS-000395-GPOS-00175
-    - SV-257996r997070_rule
+    - SV-257996r1045055_rule
     - V-257996
     - NIST800-53R4_MA-4
     - NIST800-53R4_SC-10
@@ -482,7 +617,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257997r991589_rule
+    - SV-257997r1045057_rule
     - V-257997
     - NIST800-53R4_CM-6
     - ssh
@@ -500,7 +635,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257998r991589_rule
+    - SV-257998r1045059_rule
     - V-257998
     - NIST800-53R4_CM-6
     - ssh
@@ -518,13 +653,28 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257999r991589_rule
+    - SV-257999r1045061_rule
     - V-257999
     - NIST800-53R4_CM-6
     - ssh
-  ansible.builtin.file:
-    path: "{{ rhel9stig_sshd_config_file }}"
-    mode: 'go-rwx'
+  block:
+    - name: "MEDIUM | RHEL-09-255115 | AUDIT | RHEL 9 SSH server configuration file must have mode 0600 or less permissive | capture files"
+      ansible.builtin.find:
+        path: /etc/ssh/sshd_config.d
+        pattern: '*.pub'
+      register: discovered_sshd_configs
+
+    - name: "MEDIUM | RHEL-09-255115 | AUDIT | RHEL 9 SSH server configuration file must have mode 0600 or less permissive | adjust files"
+      ansible.builtin.file:
+        path: "{{ rhel9stig_sshd_config_file }}"
+        mode: 'u-x,go-rwx'
+
+    - name: "MEDIUM | RHEL-09-255115 | AUDIT | RHEL 9 SSH server configuration file must have mode 0600 or less permissive | adjust files"
+      when: discovered_sshd_configs.matched > 0
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        mode: 'u-x,go-rwx'
+      loop: "{{ discovered_sshd_configs.files }}"
 
 - name: "MEDIUM | RHEL-09-255120 | PATCH | RHEL 9 SSH private host key files must have mode 0640 or less permissive."
   when:
@@ -535,7 +685,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258000r991589_rule
+    - SV-258000r1045063_rule
     - V-258000
     - NIST800-53R4_CM-6
   block:
@@ -615,14 +765,12 @@
   tags:
     - RHEL-09-255135
     - CAT2
-    - CCI-000366
     - CCI-001813
     - SRG-OS-000364-GPOS-00151
     - SRG-OS-000480-GPOS-00227
-    - SV-258003r958796_rule
+    - SV-258003r1045065_rule
     - V-258003
     - NIST800-53R4_CM-5
-    - NIST800-53R4_CM-6
     - ssh
   notify: Restart_sshd
   block:
@@ -648,14 +796,12 @@
   tags:
     - RHEL-09-255140
     - CAT2
-    - CCI-000366
     - CCI-001813
     - SRG-OS-000364-GPOS-00151
     - SRG-OS-000480-GPOS-00227
-    - SV-258004r958796_rule
+    - SV-258004r1045067_rule
     - V-258004
     - NIST800-53R4_CM-5
-    - NIST800-53R4_CM-6
     - ssh
   notify: Restart_sshd
   block:
@@ -684,7 +830,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258005r991589_rule
+    - SV-258005r1045069_rule
     - V-258005
     - NIST800-53R4_CM-6
     - ssh
@@ -750,7 +896,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258007r991589_rule
+    - SV-258007r1045073_rule
     - V-258007
     - NIST800-53R4_CM-6
     - ssh
@@ -784,7 +930,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258008r991589_rule
+    - SV-258008r1045075_rule
     - V-258008
     - NIST800-53R4_CM-6
     - ssh
@@ -818,7 +964,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258009r991589_rule
+    - SV-258009r1045077_rule
     - V-258009
     - NIST800-53R4_CM-6
     - ssh
@@ -852,7 +998,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258011r991589_rule
+    - SV-258011r1045079_rule
     - V-258011
     - NIST800-53R4_CM-6
     - ssh
