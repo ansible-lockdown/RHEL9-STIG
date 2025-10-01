@@ -2,12 +2,15 @@
 
 ## 2.3.0 Based on STIG V2R3 Jan28 2025
 
+- 2025_Oct_Updates
+  - Fix for issue #107, Thank you @ccravens
+
 - RuleID Updates
 - CCI Updates
-- package removals/additions now dont skip if package present or not but run through giving correct state
+- package removals/additions now don't skip if package present or not but run through giving correct state
 - Upgraded several control to disruption_high
 - authselect updates for faillock related controls
-- var dictionaries renamed to allow easier overridding of variables
+- var dictionaries renamed to allow easier overriding of variables
 - RHEL-09-672010 - Becomes RHEL-09-215100
 - RHEL-09-672020 - moved to CAT1 and approach changed to remediate inline with documentation
 - RHEL-09-672030 - removed
