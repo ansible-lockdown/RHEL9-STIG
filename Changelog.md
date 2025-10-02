@@ -5,6 +5,7 @@
 - 2025_Oct_Updates
   - Fix for issue #106, Thank you @ccravens
   - Fix for issue #116, Thank you @wdower
+  - Fix for issue #127, Thank you @dsexton18
 
 - RuleID Updates
 - CCI Updates
@@ -56,7 +57,7 @@ Many rules now linked with nist and CCI (not on official revision history)
 
 ## 2.1.0 Based on STIG V2R1 Jul24 2024
 
-- Every control ruleid updates due to STiG new CMS
+- Every control ruleid updates due to STIG new CMS
 - Removed as no longer required
   - RHEL-09-211025
   - RHEL-09-611016
@@ -168,7 +169,7 @@ Many rules now linked with nist and CCI (not on official revision history)
 - issues
   - #12 thanks to @layluke
   - #13 thanks to @PoundsOfFlesh - some excellent items from PR
-  - update audit sumamry output
+  - update audit summary output
 
 ## 1.2.0 Based on STIG V1R2 Jan24 2024
 
