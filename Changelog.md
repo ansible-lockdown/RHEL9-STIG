@@ -3,7 +3,7 @@
 ## 2.3.0 Based on STIG V2R3 Jan28 2025
 
 - 2025_Oct_Updates
-  - Fix for issue #107, Thank you @ccravens
+  - Fix for issue #106, Thank you @ccravens
 
 - RuleID Updates
 - CCI Updates
