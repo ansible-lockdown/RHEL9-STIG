@@ -4,6 +4,7 @@
 
 - 2025_Oct_Updates
   - Fix for issue #106, Thank you @ccravens
+  - Fix for issue #116, Thank you @wdower
 
 - RuleID Updates
 - CCI Updates

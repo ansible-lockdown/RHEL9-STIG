@@ -22,7 +22,7 @@
     option: banner-message-enable
     section: 'org/gnome/login-screen'
     mode: 'u-x,go-wx'
-    value: true
+    value: 'true'
 
 - name: "MEDIUM | RHEL-09-271015 | PATCH | RHEL 9 must prevent a user from overriding the banner-message-enable setting for the graphical user interface."
   when: rhel_09_271015
@@ -67,7 +67,7 @@
     path: "/etc/dconf/db/{{ item }}.d/00-security-settings"
     option: automount-open
     section: 'org/gnome/desktop/media-handling'
-    value: false
+    value: 'false'
     create: true
     mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
@@ -108,7 +108,7 @@
     path: "/etc/dconf/db/{{ item }}.d/00-security-settings"
     section: 'org/gnome/desktop/media-handling'
     option: autorun-never
-    value: true
+    value: 'true'
     create: true
     mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
@@ -197,7 +197,7 @@
     path: "/etc/dconf/db/{{ item }}.d/00-screensaver"
     option: lock-enabled
     section: 'org/gnome/desktop/screensaver'
-    value: true
+    value: 'true'
     create: true
     mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
@@ -428,7 +428,7 @@
     path: "/etc/dconf/db/{{ item }}.d/02-login-screen"
     option: disable-user-list
     section: 'org/gnome/login-screen'
-    value: true
+    value: 'true'
     create: true
     mode: 'go-wx'
   loop: "{{ rhel9stig_dconf_db.stdout_lines }}"
