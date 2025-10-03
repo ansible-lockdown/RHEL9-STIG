@@ -224,9 +224,7 @@
   register: rhel9stig_interactive_users_home
 
 - name: "PRELIM | Capture NetworkManager DNS state"
-  when:
-    - rhel_09_252035 or
-      rhel_09_252040
+  when: rhel_09_252035 or rhel_09_252040
   tags: always
   ansible.builtin.shell: grep -E "dns\s*=" /etc/NetworkManager/NetworkManager.conf | cut -d = -f2 | sed s/" "//g
   changed_when: false

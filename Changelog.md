@@ -3,10 +3,10 @@
 ## 2.3.0 Based on STIG V2R3 Jan28 2025
 
 - 2025_Oct_Updates
-  - Fix for issue #106, Thank you @ccravens
-  - Fix for issue #116, Thank you @wdower
-  - Fix for issue #127, Thank you @dsexton18
-  - Fix for issue #128, Thank you @padili-metrostar
+  - Addresses issue #106, Thank you @ccravens
+  - Addresses issue #116, Thank you @wdower
+  - Addresses issue #127, Thank you @dsexton18
+  - Addresses issue #128, Thank you @padili-metrostar
 
 - RuleID Updates
 - CCI Updates
