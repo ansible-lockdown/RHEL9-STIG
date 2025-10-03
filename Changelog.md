@@ -6,6 +6,7 @@
   - Fix for issue #106, Thank you @ccravens
   - Fix for issue #116, Thank you @wdower
   - Fix for issue #127, Thank you @dsexton18
+  - Fix for issue #128, Thank you @padili-metrostar
 
 - RuleID Updates
 - CCI Updates
