@@ -779,7 +779,7 @@
     - V-257878
     - NIST800-53R4_CM-7
   ansible.posix.mount:
-    path: /var/log/tmp
+    path: /var/tmp
     src: "{{ item.device }}"
     fstype: "{{ item.fstype }}"
     opts: "{{ item.options }}{% if discovered_var_tmp_nodev.changed %},nodev{% endif %}{% if discovered_var_tmp_noexec.changed %},noexec{% endif %},nosuid"

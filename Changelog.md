@@ -2,12 +2,18 @@
 
 ## 2.3.0 Based on STIG V2R3 Jan28 2025
 
+- 2025_Oct_Updates
+  - Addresses issue #106, Thank you @ccravens
+  - Addresses issue #116, Thank you @wdower
+  - Addresses issue #127, Thank you @dsexton18
+  - Addresses issue #128, Thank you @padili-metrostar
+
 - RuleID Updates
 - CCI Updates
-- package removals/additions now dont skip if package present or not but run through giving correct state
+- package removals/additions now don't skip if package present or not but run through giving correct state
 - Upgraded several control to disruption_high
 - authselect updates for faillock related controls
-- var dictionaries renamed to allow easier overridding of variables
+- var dictionaries renamed to allow easier overriding of variables
 - RHEL-09-672010 - Becomes RHEL-09-215100
 - RHEL-09-672020 - moved to CAT1 and approach changed to remediate inline with documentation
 - RHEL-09-672030 - removed
@@ -17,7 +23,7 @@
 - RHEL-09-251025 - Added firewalld reload as issues seen for new connections
 - RHEL-09-255064 - Added
 - RHEL-09-255070 - Added
-- RHEL-09-433016 - Added fapolicyd ading rules and testing - new var rhel9stig_allow_fapolicy_updates
+- RHEL-09-433016 - Added fapolicyd aiding rules and testing - new var rhel9stig_allow_fapolicy_updates
 - RHEL-09-610205 - title update
 - RHEL-09-652035 - removed
 - RHEL-09-653110 - added audit.rules
@@ -52,7 +58,7 @@ Many rules now linked with nist and CCI (not on official revision history)
 
 ## 2.1.0 Based on STIG V2R1 Jul24 2024
 
-- Every control ruleid updates due to STiG new CMS
+- Every control ruleid updates due to STIG new CMS
 - Removed as no longer required
   - RHEL-09-211025
   - RHEL-09-611016
@@ -164,7 +170,7 @@ Many rules now linked with nist and CCI (not on official revision history)
 - issues
   - #12 thanks to @layluke
   - #13 thanks to @PoundsOfFlesh - some excellent items from PR
-  - update audit sumamry output
+  - update audit summary output
 
 ## 1.2.0 Based on STIG V1R2 Jan24 2024
 
