@@ -31,6 +31,14 @@ rpm_gpg_key: /etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9
 gpg_key:
   - name: 'Release Engineering'
     fingerprint: '21CB 256A E16F C54C 6E65  2949 702D 426D 350D 275D'
+{% elif ansible_facts.distribution == "OracleLinux" %}
+# Oracle
+rpm_gpg_key: /etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+gpg_key:
+  - name: 'release key 1'
+    fingerprint: '3E6D 826D 3FBA B389 C2F3  8E34 BC4D 06A0 8D8B 756F'
+  - name: 'backup key 1'
+    fingerprint: '9822 3175 9C74 6706 5D0C  E9B2 A7DD 0708 8B4E FBE6'
 {% elif ansible_facts.distribution == "AlmaLinux" %}
 # Alma
 rpm_gpg_key: /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux

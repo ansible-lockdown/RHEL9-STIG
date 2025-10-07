@@ -116,8 +116,7 @@
   when:
     - update_audit_template
     - rhel9stig_auditd_required
-  tags:
-    - always
+  tags: always
   ansible.builtin.import_tasks:
     file: auditd.yml
 
