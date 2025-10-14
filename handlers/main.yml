@@ -52,14 +52,40 @@
     name: sshd
     state: restarted
 
+- name: ReInstall crypto policies
+  ansible.builtin.command: dnf -y reinstall crypto-policies
+  changed_when: true
+  listen: Reinstall_crypto_policies
+
+- name: Set crypto policies
+  ansible.builtin.command: "update-crypto-policies --set {{ combined_crypto_policy_config }}"
+  changed_when: true
+  notify: Change_requires_reboot
+  listen: Reinstall_crypto_policies
+
+- name: "Get authselect faillock state"
+  when: not rhel9stig_add_faillock_without_authselect
+  ansible.builtin.command: authselect current | grep failock
+  changed_when: false
+  register: discovered_authselect_faillock_state
+  listen: Authselect_enable_faillock
+
+- name: "Set authselect faillock state"
+  when:
+    - not rhel9stig_add_faillock_without_authselect
+    - "'with-faillock' not in discovered_authselect_faillock_state.stdout"
+  ansible.builtin.command: authselect enable-feature with-faillock
+  changed_when: true
+  listen: Authselect_enable_faillock
+
 - name: Restart_sssd
   ansible.builtin.systemd:
     name: sssd
     state: restarted
 
-- name: Restart_usbguard
+- name: Restart_pcscd
   ansible.builtin.systemd:
-    name: usbguard
+    name: pcscd
     state: restarted
 
 - name: Restart_usbguard
@@ -133,33 +159,70 @@
   listen: Build_aide_db
 
 # Must be prior to fapolicyd restart
+
+- name: Fapolicy set to non-permissive
+  ansible.builtin.replace:
+    path: /etc/fapolicyd/fapolicyd.conf
+    regexp: ^permissive\s*=\s*1
+    replace: permissive = 0
+  listen: Restart fapolicyd
+
 - name: Generate fapolicyd rules
   ansible.builtin.command: fagenrules --load
   changed_when: true
+  listen: Restart fapolicyd
 
 - name: Restart fapolicyd
   ansible.builtin.service:
     name: fapolicyd
     state: restarted
+  listen: Restart fapolicyd
 
 ## Auditd tasks note order for handlers to run
 
-- name: Auditd_immutable_check
+- name: Auditd uid immutable check
+  ansible.builtin.command: grep -ci immutable /etc/audit/audit.rules
+  changed_when: false
+  failed_when: discovered_auditd_uid_immutable_check.rc not in [ 0, 1 ]
+  register: discovered_auditd_uid_immutable_check
+  listen: auditd_checks
+
+- name: Auditd unauthorized check
   ansible.builtin.command: grep -c "^-e 2" /etc/audit/rules.d/audit.rules
   changed_when: false
-  failed_when: discovered_auditd_immutable_check.rc not in [ 0, 1 ]
-  register: discovered_auditd_immutable_check
+  failed_when: discovered_auditd_unauth_immutable_check.rc not in [ 0, 1 ]
+  register: discovered_auditd_unauth_immutable_check
+  listen: auditd_checks
 
-- name: Audit_immutable_fact
-  when: discovered_auditd_immutable_check.stdout >= '1'
-  notify: change_requires_reboot
+- name: Set auditd restart or reboot required
+  when:
+    - discovered_auditd_uid_immutable_check == '0'
+    - discovered_auditd_unauth_immutable_check.stdout == '0'
+  ansible.builtin.command: augenrules --load
+  changed_when: true
+  listen: auditd_checks
+
+- name: Set auditd restart or reboot required
+  when: discovered_auditd_uid_immutable_check == '1' or
+        discovered_auditd_unauth_immutable_check.stdout == '1'
+  notify:
+    - Restart_auditd
+    - Change_requires_reboot
   ansible.builtin.debug:
     msg: "Reboot required for auditd to apply new rules as immutable set"
-
-- name: Change_requires_reboot
-  ansible.builtin.set_fact:
-    change_requires_reboot: true
+  listen: auditd_checks
 
 - name: Restart_auditd
   ansible.builtin.command: service auditd restart  # noqa: command-instead-of-module  # Note using service as not a systemd object
   changed_when: true
+  listen: Restart_auditd
+
+- name: Start auditd process
+  ansible.builtin.systemd_service:
+    name: auditd
+    state: started
+  listen: Restart_auditd
+
+- name: Change_requires_reboot
+  ansible.builtin.set_fact:
+    change_requires_reboot: true

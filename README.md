@@ -2,7 +2,7 @@
 
 ## Configure a RHEL9 based system to be complaint with Disa STIG
 
-This role is based on RHEL 9 DISA STIG: [Version 2, Rel 2 released on Oct 24, 2024](https://dl.dod.cyber.mil/wp-content/uploads/stigs/U_RHEL_9_V2R2_STIG.zip).
+This role is based on RHEL 9 DISA STIG: [Version 2, Rel 3 released on Jan, 2025](https://dl.dod.cyber.mil/wp-content/uploads/stigs/U_RHEL_9_V2R3_STIG.zip).
 
 ## Initial Release from STIG, still many items that not quite aligned in the documentation
 
@@ -49,7 +49,7 @@ On our [Discord Server](https://www.lockdownenterprise.com/discord) to ask quest
 
 ---
 
-Configure a RHEL/Rocky/Almalinux/Oraclelinux 9 system to be DISA STIG compliant.
+Configure a RHEL/Rocky/Almalinux/oraclelinux 9 system to be DISA STIG compliant.
 Non-disruptive CAT I, CAT II, and CAT III findings will be corrected by default.
 Disruptive finding remediation can be enabled by setting `rhel9stig_disruption_high` to `true`.
 
@@ -58,7 +58,7 @@ Disruptive finding remediation can be enabled by setting `rhel9stig_disruption_h
 Coming from a previous release.
 
 As with all releases and updates, It is suggested to test and align controls.
-This contains rewrites and ID reference changes as per STIG documentation.
+This contains rewrites and ID reference changes as per STIG documentation. With some controls changing ID number.
 
 ## Auditing
 
@@ -167,6 +167,7 @@ uses:
 STIG Control
 
 - RHEL-09-211035 rngd service - this is replaced if running FIPS see https://bugzilla.redhat.com/show_bug.cgi?id=2208049
+- Some issues on rocky9.4 AWS images updating - require feedback possible rocky/aws issues
 
 ## Support
 
