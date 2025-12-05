@@ -3,7 +3,7 @@
 - name: "MEDIUM | RHEL-09-231010 | PATCH | A separate RHEL 9 file system must be used for user home directories (such as /home or an equivalent)."
   when:
     - rhel_09_231010
-    - ansible_facts['mounts']| selectattr('mount', '==', rhel9stig_home_filesystem)
+    - "rhel9stig_home_filesystem in ansible_facts['mounts'] | map(attribute='mount') | list"
   tags:
     - RHEL-09-231010
     - CAT2
@@ -26,7 +26,7 @@
 - name: "MEDIUM | RHEL-09-231015 | PATCH | RHEL 9 must use a separate file system for /tmp."
   when:
     - rhel_09_231015
-    - ansible_facts['mounts']| selectattr('mount', '==', '/tmp')
+    - "'/tmp' in ansible_facts['mounts'] | map(attribute='mount') | list"
   tags:
     - RHEL-09-231015
     - CAT2
@@ -49,7 +49,7 @@
 - name: "MEDIUM | RHEL-09-231035 | PATCH | RHEL 9 must use a separate file system for /var/tmp."
   when:
     - rhel_09_231035
-    - ansible_facts['mounts']| selectattr('mount', '==', '/var/tmp')
+    - "'/var/tmp' in ansible_facts['mounts'] | map(attribute='mount') | list"
   tags:
     - RHEL-09-231035
     - CAT2
@@ -362,7 +362,8 @@
   when:
     - rhel_09_231105
     - not rhel9stig_legacy_boot
-    - (item.mount == '/boot/efi' and "'nosuid' not in item.options")
+    - item.mount == '/boot/efi'
+    - "'nosuid' not in item.options"
   tags:
     - RHEL-09-231105
     - CAT2

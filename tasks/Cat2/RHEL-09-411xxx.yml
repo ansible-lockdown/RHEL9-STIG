@@ -16,7 +16,10 @@
     line: "PASS_MAX_DAYS {{ rhel9stig_pass_max_days }}"
 
 - name: "MEDIUM | RHEL-09-411015 | PATCH | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
-  when: rhel_09_411015
+  when:
+    - not rhel9stig_disruption_high or (ansible_user in rhel9stig_interactive_users.stdout_lines)
+    - discovered_users_passwd_max is defined
+    - discovered_users_passwd_max.stdout | length > 0
   tags:
     - RHEL-09-411015
     - CAT2

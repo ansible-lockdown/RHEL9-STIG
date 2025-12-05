@@ -132,9 +132,7 @@
     line: clean_requirements_on_remove=1
 
 - name: "LOW | RHEL-09-231020 | AUDIT | RHEL 9 must use a separate file system for /var."
-  when:
-    - rhel_09_231020
-    - ansible_facts['mounts']| selectattr('mount', 'equalto', '/var' | list | length > 0)
+  when: rhel_09_231020
   tags:
     - RHEL-09-231020
     - CAT2
@@ -148,17 +146,23 @@
     warn_control_id: "LOW | RHEL-09-231020"
   block:
     - name: "LOW | RHEL-09-231020 | WARN | RHEL 9 must use a separate file system for /var."
+      when: "'/var' in ansible_facts['mounts'] | map(attribute='mount') | list"
       ansible.builtin.debug:
-        msg: "Warning!! /var directory is not a seperate filesystem"
+        msg: "Congratulations /var is a separate filesystem"
 
-    - name: "LOW | RHEL-09-231020 | WARN | RHEL 9 must use a separate file system for /var."
-      ansible.builtin.import_tasks:
-        file: warning_facts.yml
+    - name: "LOW | RHEL-09-231020 | WARN | RHEL 9 must use a separate file system for /var. | Warning"
+      when: "'/var' not in ansible_facts['mounts'] | map(attribute='mount') | list"
+      block:
+        - name: "LOW | RHEL-09-231020 | WARN | RHEL 9 must use a separate file system for /var."
+          ansible.builtin.debug:
+            msg: "Warning!! /var is not a separate filesystem"
+
+        - name: "LOW | RHEL-09-231020 | WARN | RHEL 9 must use a separate file system for /var."
+          ansible.builtin.import_tasks:
+            file: warning_facts.yml
 
 - name: "LOW | RHEL-09-231025 | AUDIT | RHEL 9 must use a separate file system for /var/log."
-  when:
-    - rhel_09_231025
-    - ansible_facts['mounts']| selectattr('mount', 'equalto', '/var/log' | list | length > 0)
+  when: rhel_09_231025
   tags:
     - RHEL-09-231025
     - CAT2
@@ -172,17 +176,23 @@
     warn_control_id: "LOW | RHEL-09-231025"
   block:
     - name: "LOW | RHEL-09-231025 | WARN | RHEL 9 must use a separate file system for /var/log."
+      when: "'/var/log' in ansible_facts['mounts'] | map(attribute='mount') | list"
       ansible.builtin.debug:
-        msg: "Warning!! /var/log directory is not a separate filesystem"
+        msg: "Congratulations /var/log is a separate filesystem"
 
-    - name: "LOW | RHEL-09-231025 | WARN | RHEL 9 must use a separate file system for /var/log."
-      ansible.builtin.import_tasks:
-        file: warning_facts.yml
+    - name: "LOW | RHEL-09-231025 | WARN | RHEL 9 must use a separate file system for /var/log. | Warning"
+      when: "'/var/log' not in ansible_facts['mounts'] | map(attribute='mount') | list"
+      block:
+        - name: "LOW | RHEL-09-231025 | WARN | RHEL 9 must use a separate file system for /var/log."
+          ansible.builtin.debug:
+            msg: "Warning!! /var/log directory is not a separate filesystem"
+
+        - name: "LOW | RHEL-09-231025 | WARN | RHEL 9 must use a separate file system for /var/log."
+          ansible.builtin.import_tasks:
+            file: warning_facts.yml
 
 - name: "LOW | RHEL-09-231030 | AUDIT | RHEL 9 must use a separate file system for /var/log/audit."
-  when:
-    - rhel_09_231030
-    - ansible_facts['mounts']| selectattr('mount', 'equalto', rhel9stig_audit_log_filesystem | list | length > 0)
+  when: rhel_09_231030
   tags:
     - RHEL-09-231030
     - CAT2
@@ -196,12 +206,20 @@
     warn_control_id: "LOW | RHEL-09-231030"
   block:
     - name: "LOW | RHEL-09-231030 | WARN | RHEL 9 must use a separate file system for /var/log/audit."
+      when: "rhel9stig_audit_log_filesystem in ansible_facts['mounts'] | map(attribute='mount') | list"
       ansible.builtin.debug:
-        msg: "Warning!! {{ rhel9stig_audit_log_filesystem }} directory is not a separate filesystem"
+        msg: "Congratulations /var/log/audit for audit logs is a separate filesystem"
 
-    - name: "LOW | RHEL-09-231025 | WARN | RHEL 9 must use a separate file system for /var/log/audit."
-      ansible.builtin.import_tasks:
-        file: warning_facts.yml
+    - name: "LOW | RHEL-09-231030 | WARN | RHEL 9 must use a separate file system for /var/log/audit. | Warning"
+      when: "rhel9stig_audit_log_filesystem not in ansible_facts['mounts'] | map(attribute='mount') | list"
+      block:
+        - name: "LOW | RHEL-09-231030 | WARN | RHEL 9 must use a separate file system for /var/log/audit."
+          ansible.builtin.debug:
+            msg: "Warning!! {{ rhel9stig_audit_log_filesystem }} for audit logs is not a separate filesystem"
+
+        - name: "LOW | RHEL-09-231025 | WARN | RHEL 9 must use a separate file system for /var/log/audit."
+          ansible.builtin.import_tasks:
+            file: warning_facts.yml
 
 - name: "LOW | RHEL-09-231195 | PATCH | RHEL 9 must disable mounting of cramfs."
   when: rhel_09_231195
