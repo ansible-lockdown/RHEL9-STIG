@@ -1,7 +1,9 @@
 ---
 
 - name: "MEDIUM | RHEL-09-213010 | PATCH | RHEL 9 must restrict access to the kernel message buffer."
-  when: rhel_09_213010
+  when:
+    - rhel_09_213010
+    - "rhel9stig_home_filesystem in ansible_facts['mounts'] | map(attribute='mount') | list"
   tags:
     - RHEL-09-213010
     - CAT2
@@ -22,7 +24,9 @@
     value: '1'
 
 - name: "MEDIUM | RHEL-09-213015 | PATCH | RHEL 9 must prevent kernel profiling by nonprivileged users."
-  when: rhel_09_213015
+  when:
+    - rhel_09_213015
+    - "'/tmp' in ansible_facts['mounts'] | map(attribute='mount') | list"
   tags:
     - RHEL-09-213015
     - CAT2
@@ -105,7 +109,9 @@
     value: '1'
 
 - name: "MEDIUM | RHEL-09-213035 | PATCH | RHEL 9 must enable kernel parameters to enforce discretionary access control on symlinks."
-  when: rhel_09_213035
+  when:
+    - rhel_09_213035
+    - "'/var/tmp' in ansible_facts['mounts'] | map(attribute='mount') | list"
   tags:
     - RHEL-09-213035
     - CAT2
