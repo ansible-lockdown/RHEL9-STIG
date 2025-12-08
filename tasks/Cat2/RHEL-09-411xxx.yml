@@ -50,7 +50,7 @@
 
     - name: "MEDIUM | RHEL-09-411015 | WARN | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
       when:
-        - not rhel9stig_disruption_high or "ansible_facts.user in rhel9stig_interactive_users.stdout_lines"
+        - not rhel9stig_disruption_high or (ansible_user in rhel9stig_interactive_users.stdout_lines)
         - discovered_users_passwd_max is defined
         - discovered_users_passwd_max.stdout | length > 0
       ansible.builtin.debug:
