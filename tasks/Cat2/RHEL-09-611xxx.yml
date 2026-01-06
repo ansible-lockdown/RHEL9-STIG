@@ -710,7 +710,7 @@
     - NIST800-53R4_IA-2
   block:
     - name: "MEDIUM | RHEL-09-611160 | AUDIT | RHEL 9 must use the CAC smart card driver. | get state"
-      ansible.builtin.command: opensc-tool --get-conf-entry app:default:card_driver:cac
+      ansible.builtin.command: opensc-tool --get-conf-entry app:default:card_driver cac
       changed_when: false
       register: discovered_opensc_loaded_card_driver
 
