@@ -22,9 +22,11 @@
 
     - name: Pre Audit Setup | Retrieve audit content files from git
       ansible.builtin.git:
-        repo: "{{ audit_file_git }}"
+        repo: "{{ self_hosted_audit_repo | default(audit_file_git) }}"
         dest: "{{ audit_conf_dir }}"
         version: "{{ audit_git_version }}"
+        key_file: "{{ audit_content_key_file | default(omit) }}"
+      no_log: true
 
 - name: Pre Audit Setup | Copy to audit content files to server
   when: audit_content == 'copy'
