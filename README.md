@@ -1,192 +1,254 @@
 # RHEL 9 DISA STIG
 
-## Configure a RHEL9 based system to be complaint with Disa STIG
+## Configure a RHEL9 based system to be complaint with DISA STIG
 
 This role is based on RHEL 9 DISA STIG: [Version 2, Rel 3 released on Jan, 2025](https://dl.dod.cyber.mil/wp-content/uploads/stigs/U_RHEL_9_V2R3_STIG.zip).
 
-## Initial Release from STIG, still many items that not quite aligned in the documentation
-
 ---
 
-![Org Stars](https://img.shields.io/github/stars/ansible-lockdown?label=Org%20Stars&style=social)
-![Stars](https://img.shields.io/github/stars/ansible-lockdown/rhel9-stig?label=Repo%20Stars&style=social)
-![Forks](https://img.shields.io/github/forks/ansible-lockdown/rhel9-stig?style=social)
-![followers](https://img.shields.io/github/followers/ansible-lockdown?style=social)
-[![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/AnsibleLockdown.svg?style=social&label=Follow%20%40AnsibleLockdown)](https://twitter.com/AnsibleLockdown)
+## Public Repository 📣
 
-![Ansible Galaxy Quality](https://img.shields.io/ansible/quality/56380?label=Quality&&logo=ansible)
+![Org Stars](https://img.shields.io/github/stars/ansible-lockdown?label=Org%20Stars&style=social)
+![Stars](https://img.shields.io/github/stars/ansible-lockdown/RHEL9-STIG?label=Repo%20Stars&style=social)
+![Forks](https://img.shields.io/github/forks/ansible-lockdown/RHEL9-STIG?style=social)
+![Followers](https://img.shields.io/github/followers/ansible-lockdown?style=social)
+[![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/AnsibleLockdown.svg?style=social&label=Follow%20%40AnsibleLockdown)](https://twitter.com/AnsibleLockdown)
 ![Discord Badge](https://img.shields.io/discord/925818806838919229?logo=discord)
 
+![License](https://img.shields.io/github/license/ansible-lockdown/RHEL9-STIG?label=License)
+
+## Lint & Pre-Commit Tools 🔧
+
+![YamlLint](https://img.shields.io/badge/yamllint-Present-brightgreen?style=flat&logo=yaml&logoColor=white)
+![Ansible-Lint](https://img.shields.io/badge/ansible--lint-Present-brightgreen?style=flat&logo=ansible&logoColor=white)
+
+## Community Release Information 📂
+
 ![Release Branch](https://img.shields.io/badge/Release%20Branch-Main-brightgreen)
-![Release Tag](https://img.shields.io/github/v/release/ansible-lockdown/RHEL9-STIG)
-![Release Date](https://img.shields.io/github/release-date/ansible-lockdown/RHEL9-STIG)
-
-
+![Release Tag](https://img.shields.io/github/v/tag/ansible-lockdown/RHEL9-STIG?label=Release%20Tag&&color=success)
+![Main Release Date](https://img.shields.io/github/release-date/ansible-lockdown/RHEL9-STIG?label=Release%20Date)
+![Benchmark Version Main](https://img.shields.io/endpoint?url=https://ansible-lockdown.github.io/github_linux_IaC/badges/RHEL9-STIG/benchmark-version-main.json)
+![Benchmark Version Devel](https://img.shields.io/endpoint?url=https://ansible-lockdown.github.io/github_linux_IaC/badges/RHEL9-STIG/benchmark-version-devel.json)
 
 [![Main Pipeline Status](https://github.com/ansible-lockdown/RHEL9-STIG/actions/workflows/main_pipeline_validation.yml/badge.svg?)](https://github.com/ansible-lockdown/RHEL9-STIG/actions/workflows/main_pipeline_validation.yml)
 
 [![Devel Pipeline Status](https://github.com/ansible-lockdown/RHEL9-STIG/actions/workflows/devel_pipeline_validation.yml/badge.svg?)](https://github.com/ansible-lockdown/RHEL9-STIG/actions/workflows/devel_pipeline_validation.yml)
+
 ![Devel Commits](https://img.shields.io/github/commit-activity/m/ansible-lockdown/RHEL9-STIG/devel?color=dark%20green&label=Devel%20Branch%20Commits)
-
-![Issues Open](https://img.shields.io/github/issues-raw/ansible-lockdown/RHEL9-STIG?label=Open%20Issues)
-![Issues Closed](https://img.shields.io/github/issues-closed-raw/ansible-lockdown/RHEL9-STIG?label=Closed%20Issues&&color=success)
+![Open Issues](https://img.shields.io/github/issues-raw/ansible-lockdown/RHEL9-STIG?label=Open%20Issues)
+![Closed Issues](https://img.shields.io/github/issues-closed-raw/ansible-lockdown/RHEL9-STIG?label=Closed%20Issues&&color=success)
 ![Pull Requests](https://img.shields.io/github/issues-pr/ansible-lockdown/RHEL9-STIG?label=Pull%20Requests)
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
-
-![License](https://img.shields.io/github/license/ansible-lockdown/RHEL9-STIG?label=License)
 
 ---
 
-## Looking for support?
+## Subscriber Release Information 🔐
 
-[Lockdown Enterprise](https://www.lockdownenterprise.com#GH_AL_RH9_stig)
+![Private Release Branch](https://img.shields.io/endpoint?url=https://ansible-lockdown.github.io/github_linux_IaC/badges/Private-RHEL9-STIG/release-branch.json)
+![Private Benchmark Version](https://img.shields.io/endpoint?url=https://ansible-lockdown.github.io/github_linux_IaC/badges/Private-RHEL9-STIG/benchmark-version.json)
 
-[Ansible support](https://www.mindpointgroup.com/cybersecurity-products/ansible-counselor#GH_AL_RH9_stig)
+[![Private Remediate Pipeline](https://img.shields.io/endpoint?url=https://ansible-lockdown.github.io/github_linux_IaC/badges/Private-RHEL9-STIG/remediate.json)](https://github.com/ansible-lockdown/Private-RHEL9-STIG/actions/workflows/main_pipeline_validation.yml)
 
-### Community
+![Private Pull Requests](https://img.shields.io/endpoint?url=https://ansible-lockdown.github.io/github_linux_IaC/badges/Private-RHEL9-STIG/prs.json)
+![Private Closed Issues](https://img.shields.io/endpoint?url=https://ansible-lockdown.github.io/github_linux_IaC/badges/Private-RHEL9-STIG/issues-closed.json)
+
+---
+
+## Looking for support? 🤝
+
+[Lockdown Enterprise](https://www.lockdownenterprise.com#GH_AL_RHEL9-STIG)
+
+[Ansible support](https://www.mindpointgroup.com/cybersecurity-products/ansible-counselor#GH_AL_RHEL9-STIG)
+
+### Community 💬
 
 On our [Discord Server](https://www.lockdownenterprise.com/discord) to ask questions, discuss features, or just chat with other Ansible-Lockdown users
 
 ---
 
-Configure a RHEL/Rocky/Almalinux/oraclelinux 9 system to be DISA STIG compliant.
-Non-disruptive CAT I, CAT II, and CAT III findings will be corrected by default.
-Disruptive finding remediation can be enabled by setting `rhel9stig_disruption_high` to `true`.
+## 🚨 Caution(s) 🚨
 
-## Updating
+This role **will make changes to the system** which may have unintended consequences. This is not an auditing tool but rather a remediation tool to be used after an audit has been conducted.
 
-Coming from a previous release.
+- Testing is the most important thing you can do.
 
-As with all releases and updates, It is suggested to test and align controls.
-This contains rewrites and ID reference changes as per STIG documentation. With some controls changing ID number.
+- Check Mode is not guaranteed! 🚫 The role will complete in check mode without errors, but it is not supported and should be used with caution.
 
-## Auditing
+- This role was developed against a clean install of the Operating System. If you are implementing to an existing system please review this role for any site specific changes that are needed.
 
-This can be turned on or off within the defaults/main.yml file with the variable rhel9stig_run_audit. The value is false by default, please refer to the wiki for more details. The defaults file also populates the goss checks to check only the controls that have been enabled in the ansible role.
+- To use release version please point to main branch and relevant release for the STIG benchmark you wish to work with.
+
+- Did we mention testing??
+
+---
+
+## Coming From A Previous Release ⏪
+
+STIG release always contains changes, it is highly recommended to review the new references and available variables. This have changed significantly since ansible-lockdown initial release.
+This is now compatible with python3 if it is found to be the default interpreter. This does come with pre-requisites which it configures the system accordingly.
+
+Further details can be seen in the [Changelog](./ChangeLog.md)
+
+---
+
+## Matching a security Level for STIG
+
+It is possible to only run CAT 1, 2, or 3 controls for STIG.
+This is managed using tags:
+
+- CAT1
+- CAT2
+- CAT3
+
+The control found in defaults main also need to reflect this as this control the testing that takes place if you are using the audit component.
+
+---
+
+## Requirements ✅
+
+**General:**
+
+- Basic knowledge of Ansible, below are some links to the Ansible documentation to help get started if you are unfamiliar with Ansible
+
+  - [Main Ansible documentation page](https://docs.ansible.com)
+  - [Ansible Getting Started](https://docs.ansible.com/ansible/latest/user_guide/intro_getting_started.html)
+  - [Tower User Guide](https://docs.ansible.com/ansible-tower/latest/html/userguide/index.html)
+  - [Ansible Community Info](https://docs.ansible.com/ansible/latest/community/index.html)
+- Functioning Ansible and/or Tower Installed, configured, and running. This includes all of the base Ansible/Tower configurations, needed packages installed, and infrastructure setup.
+- Please read through the tasks in this role to gain an understanding of what each control is doing. Some of the tasks are disruptive and can have unintended consequences in a live production system. Also familiarize yourself with the variables in the defaults/main.yml file.
+
+**Technical Dependencies:**
+
+RHEL Family OS 9
+
+- Access to download or add the goss binary and content to the system if using auditing
+(other options are available on how to get the content to the system.)
+- Python3.8
+- Ansible 2.12+
+- python-def
+- libselinux-python
+
+---
+
+## Auditing 🔍
+
+This can be turned on or off within the defaults/main.yml file with the variable run_audit. The value is false by default, please refer to the wiki for more details. The defaults file also populates the goss checks to check only the controls that have been enabled in the ansible role.
 
 This is a much quicker, very lightweight, checking (where possible) config compliance and live/running settings.
 
 A new form of auditing has been developed, by using a small (12MB) go binary called [goss](https://github.com/goss-org/goss) along with the relevant configurations to check. Without the need for infrastructure or other tooling.
 This audit will not only check the config has the correct setting but aims to capture if it is running with that configuration also trying to remove [false positives](https://www.mindpointgroup.com/blog/is-compliance-scanning-still-relevant/) in the process.
 
-## Documentation
+Refer to [RHEL9-STIG-Audit](https://github.com/ansible-lockdown/RHEL9-STIG-Audit).
+
+## Example Audit Summary
+
+This is based on a vagrant image with selections enabled. e.g. No GUI or firewall.
+Note: More tests are run during audit as we check config and running state.
+
+```txt
+
+ok: [default] => {
+    "msg": [
+        "The pre remediation results are: ['Total Duration: 5.454s', 'Count: 338, Failed: 47, Skipped: 5'].",
+        "The post remediation results are: ['Total Duration: 5.007s', 'Count: 338, Failed: 46, Skipped: 5'].",
+        "Full breakdown can be found in /var/tmp",
+        ""
+    ]
+}
+
+PLAY RECAP *******************************************************************************************************************************************
+default                    : ok=270  changed=23   unreachable=0    failed=0    skipped=140  rescued=0    ignored=0
+```
+
+## Documentation 📖
 
 - [Read The Docs](https://ansible-lockdown.readthedocs.io/en/latest/)
-
-## Requirements
-
-- RHEL/Rocky/AlmaLinux/OL 9 - Other versions are not supported.
-- Other OSs can be checked by changing the skip_os_check to true for testing purposes.
-- Access to download or add the goss binary and content to the system if using auditing. options are available on how to get the content to the system.
-
-## Dependencies
-
-The following packages must be installed on the controlling host/host where ansible is executed:
-
-- python-lxml
-- python-xmltodict
-
-Package 'python-xmltodict' is required if you enable the OpenSCAP tool installation and run a report. These are all required on the controller host that executes Ansible.
+- [Getting Started](https://www.lockdownenterprise.com/docs/getting-started-with-lockdown#GH_AL_RH9_STIG)
+- [Customizing Roles](https://www.lockdownenterprise.com/docs/customizing-lockdown-enterprise#GH_AL_RH9_STIG)
+- [Per-Host Configuration](https://www.lockdownenterprise.com/docs/per-host-lockdown-enterprise-configuration#GH_AL_RH9_STIG)
+- [Getting the Most Out of the Role](https://www.lockdownenterprise.com/docs/get-the-most-out-of-lockdown-enterprise#GH_AL_RH9_STIG)
 
 ## Role Variables
 
 This role is designed that the end user should not have to edit the tasks themselves. All customizing should be done via the defaults/main.yml file or with extra vars within the project, job, workflow, etc.
 
-### Tags
+## Tags 🏷️
 
-There are many tags available for added control precision. Each control has it's own set of tags noting the control number as well as what parts of the system that control addresses.
+There are many tags available for added control precision. Each control has its own set of tags noting what level, what OS element it relates to, whether it's a patch or audit, and the rule number. Additionally, NIST references follow a specific conversion format for consistency and clarity.
 
-Below is an example of the tag section from a control within this role. Using this example if you set your run to skip all controls with the tag ssh, this task will be skipped. The
-opposite can also happen where you run only controls tagged with ssh.
+### Conversion Format for NIST References:
+
+  1. Standard Prefix:
+    - All references are prefixed with "NIST".
+
+  2. Standard Types:
+    - "800-53" references are formatted as NIST800-53.
+    - "800-53r5" references are formatted as NIST800-53R5 (with 'R' capitalized).
+    - "800-171" references are formatted as NIST800-171.
+
+  3. Details:
+    - Section and subsection numbers use periods (.) for numeric separators.
+    - Parenthetical elements are separated by underscores (_), e.g., IA-5(1)(d) becomes IA-5_1_d.
+    - Subsection letters (e.g., "b") are appended with an underscore.
+Below is an example of the tag section from a control within this role. Using this example if you set your run to skip all controls with the tag services, this task will be skipped. The opposite can also happen where you run only controls tagged with services.
 
 ```sh
-tags:
-    - RHEL-9-010050
-    - ssh
-    - dod_logon_banner
+      tags:
+        - RHEL-09-211010
+        - CAT1
+        - CCI-000366
+        - SRG-OS-000480-GPOS-00227
+        - SV-257777r991589_rule
+        - V-257777
+        - NIST800-53R4_CM-6
 ```
 
-### Example Audit Summary
-
-This is based on a vagrant image with selections enabled. e.g. No Gui or firewall.
-Note: More tests are run during audit as we check config and running state.
-
-```sh
-ok: [rocky9_efi] =>
-  msg:
-  - 'The pre remediation results are: Count: 804, Failed: 416, Duration: 6.488s.'
-  - 'The post remediation results are: Count: 804, Failed: 28, Duration: 68.687s.'
-  - Full breakdown can be found in /opt
-
-PLAY RECAP ****************************************************************************************************************
-rocky9_efi                 : ok=482  changed=269  unreachable=0    failed=0    skipped=207  rescued=0    ignored=0
-```
-
-## Branches
-
-- **devel** - This is the default branch and the working development branch. Community pull requests will pull into this branch
-- **main** - This is the release branch
-- **reports** - This is a protected branch for our scoring reports, no code should ever go here
-- **gh_pages** - github pages
-- **all other branches** - Individual community member branches
-
-## Containers - testing
-
-- system_is_container
-
-This is set to false by defaults/main.yml
-If discovered it is a container type or ansible_connection == docker it will convert to run to with with true.
-Some controls will skip is this is true as they are not applicable at all. Others runs a subset of controls found in vars/is_container.yml based on a vendor supplied un altered image.
-
-**NON altered vendor image.**
-
-- container_vars_file: is_container.yml
-
-This vars file runs controls are grouped into tags so if the container does later have ssh it could be re-enabled by loading an alternative vars file.
-
-## Community Contribution
+## Community Contribution 🧑‍🤝‍🧑
 
 We encourage you (the community) to contribute to this role. Please read the rules below.
 
-- Your work is done in your own individual branch. Make sure to Signed-off and GPG sign all commits you intend to merge.
+- Your work is done in your own individual branch. Make sure to Signed-off-by and GPG sign all commits you intend to merge.
 - All community Pull Requests are pulled into the devel branch
-- Pull Requests into devel will confirm your commits have a GPG signature, Signed-off, and a functional test before being approved
-- Once your changes are merged and a more detailed review is complete, an authorized member will merge your changes into the main branch for a new release.
+- Pull Requests into devel will confirm your commits have a GPG signature, Signed-off-by, and a functional test before being approved
+- Once your changes are merged and a more detailed review is complete, an authorized member will merge your changes into the main branch for a new release
 
-## Pipeline Testing
+## Pipeline Testing 🔄
 
 uses:
 
-- ansible-core 2.12
+- ansible-core 2.16
 - ansible collections - pulls in the latest version based on requirements file
 - runs the audit using the devel branch
 - This is an automated test that occurs on pull requests into devel
+- self-hosted runners using OpenTofu
 
 ## Known Issues
 
-STIG Control
+Almalinux BaseOS, EPEL and many cloud providers repositories, do not allow gpgcheck(rule_1.2.1.2) or repo_gpgcheck (rule_1.2.1.3) this will cause issues during the playbook unless or a workaround is found.
 
-- RHEL-09-211035 rngd service - this is replaced if running FIPS see https://bugzilla.redhat.com/show_bug.cgi?id=2208049
-- Some issues on rocky9.4 AWS images updating - require feedback possible rocky/aws issues
+## Local Testing 💻
 
-## Support
+### example
 
-This is a community project at its core and will be managed as such.
-
-If you would are interested in dedicated support to assist or provide bespoke setups
-
-- [Ansible Counselor](https://www.mindpointgroup.com/products/ansible-counselor-on-demand-ansible-services-and-consulting/)
-- [Try us out](https://engage.mindpointgroup.com/try-ansible-counselor)
-
-## Credits
-
-This repo originated from work done by [Sam Doran](https://github.com/samdoran/ansible-role-stig)
-
-## Added Extras
-
-- makefile - this is there purely for testing and initial setup purposes.
-- [pre-commit](https://pre-commit.com) can be tested and can be run from within the directory
-
-```sh
-pre-commit run
+```bash
+molecule test -s default
+molecule converge -s wsl -- --check
+molecule verify -s localhost
 ```
+
+local testing uses:
+
+- ansible-core
+- molecule 4.0.1
+- molecule-docker 2.0.0
+- molecule-podman 2.0.2
+- molecule-vagrant 1.0.0
+- molecule-azure 0.5.0
+
+## Credits and Thanks 🙏
+
+Massive thanks to the fantastic community and all its members.
+
+This includes a huge thanks and credit to the original authors and maintainers.
+
+Mark Bolwell, George Nalen, Steve Williams, Fred Witty
