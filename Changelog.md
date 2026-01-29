@@ -2,6 +2,12 @@
 
 ## 2.3.0 Based on STIG V2R3 Jan28 2025
 
+- added extra options and explanation for audit component
+- fix for #146, thank you @BlaneStask
+
+- updated aide checks
+- fixed v2.19 compliance and conditionals
+
 - 2025_Oct_Updates
   - Addresses issue #106, Thank you @ccravens
   - Addresses issue #116, Thank you @wdower
