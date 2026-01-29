@@ -704,7 +704,7 @@
       ansible.builtin.file:
         path: "{{ item }}"
         owner: root
-      loop: "{{ rhel9stig_sys_commands_owner.stdout_lines }}"
+      loop: "{{ discovered_sys_commands_owner.stdout_lines }}"
       loop_control:
         label: "{{ item }}"
 

@@ -1,6 +1,11 @@
 # RHEL9STIG
 
-## 2.3.0 Based on STIG V2R3 Jan28 2025
+## 2.5.0
+
+232190_Patch
+- discovered_sys_commands_owner var fix
+
+## 2.4.0 Based on STIG V2R3 Jan28 2025
 
 - added extra options and explanation for audit component
 - fix for #146, thank you @BlaneStask
