@@ -694,7 +694,7 @@
     - NIST800-53R4_CM-5
   block:
     - name: "MEDIUM | RHEL-09-232190 | AUDIT | RHEL 9 system commands must be owned by root."
-      ansible.builtin.shell: find -L /bin /sbin /usr/bin /usr/sbin /usr/libexec /usr/local/bin /usr/local/sbin ! -user root
+      ansible.builtin.shell: find -L /bin /sbin /usr/bin /usr/sbin /usr/libexec /usr/local/bin /usr/local/sbin ! -user root -exec ls {} \;
       changed_when: false
       failed_when: discovered_sys_commands_owner.rc not in [ 0, 1 ]
       register: discovered_sys_commands_owner
@@ -704,7 +704,7 @@
       ansible.builtin.file:
         path: "{{ item }}"
         owner: root
-      loop: "{{ discovered_sys_commands_owner.stdout_lines | unique }}"
+      loop: "{{ discovered_sys_commands_owner.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232195 | PATCH | RHEL 9 system commands must be group-owned by root or a system account."
   when: rhel_09_232195
@@ -720,7 +720,7 @@
     warn_control_id: "MEDIUM | RHEL-09-232195"
   block:
     - name: "MEDIUM | RHEL-09-232195 | AUDIT | RHEL 9 system commands must be group-owned by root or a system account."
-      ansible.builtin.shell: find -L /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin ! \( -group root -o -group tty \) -exec ls -l {} \;
+      ansible.builtin.shell: find -L /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin ! \( -group root -o -group tty \) -exec ls {} \;
       changed_when: false
       failed_when: discovered_sys_commands_group.rc not in [ 0, 1 ]
       register: discovered_sys_commands_group

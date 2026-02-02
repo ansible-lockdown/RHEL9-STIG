@@ -1,23 +1,22 @@
-# Contributing to Ansible-lockdown Projects
+Contributing to MindPoint Group Projects
+========================================
 
-## Rules
-
+Rules
+-----
 1) All commits must be GPG signed (details in Signing section)
-2) All commits must have Signed-off-by in the commit message (details in Signing section). e.g.
-
-    Signed-off-by: Joan Doe <joan.doe@email.com>
-
+2) All commits must have Signed-off-by (Signed-off-by: Joan Doe <joan.doe@email.com>) in the commit message (details in Signing section)
 3) All work is done in your own branch
 4) All pull requests go into the devel branch. There are automated checks for signed commits, signoff in commit message, and functional testing)
-5) Be open and nice to eachother
+5) Be open and nice to each other
 
-## Workflow
-
+Workflow
+--------
 - Your work is done in your own individual branch. Make sure to to Signed-off and GPG sign all commits you intend to merge
 - All community Pull Requests are into the devel branch. There are automated checks for GPG signed, Signed-off in commits, and functional tests before being approved. If your pull request comes in from outside of our repo, the pull request will go into a staging branch. There is info needed from our repo for our CI/CD testing.
 - Once your changes are merged and a more detailed review is complete, an authorized member will merge your changes into the main branch for a new release
 
-## Signing your contribution
+Signing your contribution
+-------------------------
 
 We've chosen to use the Developer's Certificate of Origin (DCO) method
 that is employed by the Linux Kernel Project, which provides a simple
@@ -62,10 +61,6 @@ following text in your contribution commit message:
 
 ::
 
-## Helpful links
-
 This message can be entered manually, or if you have configured git
 with the correct `user.name` and `user.email`, you can use the `-s`
 option to `git commit` to automatically include the signoff message.
-
-For help or understanding how to achieve these requirements good article explaining more. [Signedoff and signing commits](https://dev.to/janderssonse/git-signoff-and-signing-like-a-champ-41f3)
