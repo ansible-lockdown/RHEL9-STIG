@@ -4,6 +4,7 @@
 
 232190_Patch
 - discovered_sys_commands_owner var fix
+- branding templating
 
 ## 2.4.0 Based on STIG V2R3 Jan28 2025
 
