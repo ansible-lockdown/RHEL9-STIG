@@ -704,9 +704,7 @@
       ansible.builtin.file:
         path: "{{ item }}"
         owner: root
-      loop: "{{ rhel9stig_sys_commands_owner.stdout_lines }}"
-      loop_control:
-        label: "{{ item }}"
+      loop: "{{ discovered_sys_commands_owner.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-232195 | PATCH | RHEL 9 system commands must be group-owned by root or a system account."
   when: rhel_09_232195
@@ -722,7 +720,7 @@
     warn_control_id: "MEDIUM | RHEL-09-232195"
   block:
     - name: "MEDIUM | RHEL-09-232195 | AUDIT | RHEL 9 system commands must be group-owned by root or a system account."
-      ansible.builtin.shell: find -L /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin ! \( -group root -o -group tty \) -exec ls -l {} \;
+      ansible.builtin.shell: find -L /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin ! \( -group root -o -group tty \) -exec ls {} \;
       changed_when: false
       failed_when: discovered_sys_commands_group.rc not in [ 0, 1 ]
       register: discovered_sys_commands_group
