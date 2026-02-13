@@ -79,6 +79,7 @@
   listen: Authselect_enable_faillock
 
 - name: Restart_sssd
+  when: rhel9stig_sssd_configure
   ansible.builtin.systemd:
     name: sssd
     state: restarted
