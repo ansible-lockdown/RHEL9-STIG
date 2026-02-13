@@ -293,7 +293,7 @@
         dest: "/{{ item }}"
         owner: root
         group: root
-        mode: "u-x,go-rwx"
+        mode: 'u-x,go-rwx'
       loop:
         - etc/crypto-policies/policies/modules/SCOPES-AND-WILDCARDS.pmod
         - etc/crypto-policies/policies/modules/OPENSSH-SUBPOLICY.pmod

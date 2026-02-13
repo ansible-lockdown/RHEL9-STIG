@@ -1,6 +1,5 @@
-# Configured as Part of Ansible-Locksdown
-# https://github.com/ansible-lockdown
-# Sponsored by {{ company_title }}
+{{ file_managed_by_ansible }}
+
 {% if rhel9stig_resolv_domains is defined %}
 # Domains
 {% for domains in rhel9stig_resolv_domains %}
