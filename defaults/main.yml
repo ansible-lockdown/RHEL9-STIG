@@ -14,23 +14,10 @@ rhel9stig_cat1: true
 rhel9stig_cat2: true
 rhel9stig_cat3: true
 
-# We've defined complexity-high to mean that we cannot automatically remediate
-# the rule in question.  In the future this might mean that the remediation
-# may fail in some cases.
-rhel9stig_complexity_high: false
-
-# Show "changed" for complex items not remediated per complexity-high setting
-# to make them stand out.  "changed" items on a second run of the role would
-# indicate items requiring manual review.
-rhel9stig_audit_complex: true
-
 # We've defined disruption-high to indicate items that are likely to cause
 # disruption in a normal workflow.  These items can be remediated automatically
 # but are disabled by default to avoid disruption.
 rhel9stig_disruption_high: false
-
-# tweak role to run in a chroot, such as in kickstart %post script
-rhel9stig_system_is_chroot: "{{ ansible_is_chroot | default(False) }}"
 
 # Set if system uses ipv6
 rhel9stig_system_uses_ipv6: false
@@ -55,9 +42,6 @@ rhel9stig_playbook_user: "{{ ansible_user | default(rhel9stig_connecting_user) }
 
 # Whether to skip the reboot
 skip_reboot: true
-
-rhel9stig_workaround_for_disa_benchmark: true
-rhel9stig_workaround_for_ssg_benchmark: true
 
 # system acts or requires router networking options
 rhel9stig_system_is_router: false
@@ -616,7 +600,6 @@ rhel_09_231030: true
 rhel_09_231195: true
 rhel_09_252025: true
 rhel_09_291025: true
-rhel_09_412030: true
 rhel_09_412040: true
 rhel_09_412075: true
 rhel_09_651030: true
@@ -663,9 +646,10 @@ rhel9stig_sshd_config:
 rhel9stig_grub_superuser: root
 rhel9stig_bootloader_password_hash: 'grub.pbkdf2.sha512.changethispassword'  # pragma: allowlist secret
 rhel9stig_set_bootloader_password: false
-rhel9stig_grub2_path: /etc/grub2.cfg
 
 ## Banner
+rhel9stig_workaround_for_disa_benchmark: true
+
 rhel9stig_logon_banner: "{{ rhel9stig_workaround_for_disa_benchmark | ternary(
         rhel9stig_logon_banner_nice | regex_replace('(?s)(?<!\\n)\\n(?!(\n|$))', ' '),
         rhel9stig_logon_banner_nice) }}"
@@ -869,16 +853,10 @@ rhel9stig_aide_cron_minute: '30'
 rhel9stig_aide_cron_job: '/usr/sbin/aide --check | /bin/mail -s "$HOSTNAME - Daily aide integrity check run" root@sysname.mil'
 rhel9stig_aide_cron_name: 'Aide Job runs Daily at 0430'
 
-# AIDE is a file integrity checking tool, similar in nature to Tripwire.
-# While it cannot prevent intrusions, it can detect unauthorized changes
-# to configuration files by alerting when the files are changed. Review
-# the AIDE quick start guide and AIDE documentation before proceeding.
-# By setting this variable to `true`, all of the settings related to AIDE will be applied!
-rhel9stig_config_aide: true
-
 ### Rsyslog
 # Set the type either rsyslogd or syslog-ng this sets the audit tools binary as referred to controls
 # RHEL-09-232035, RHEL-09-232220, RHEL-09-232225
+# Used for auditd binary path
 rhel9stig_syslog_binary: rsyslogd
 # Set the following to true if the server accepts incoming syslog data using rsyslog
 rhel9stig_rsyslog_server: false
@@ -888,9 +866,6 @@ rhel9stig_remotelog_server:
   server: 10.10.10.10
   port: 9999
   protocol: '@@'
-
-# Syslog Binary
-rhel9stig_syslog_bin: rsyslogd
 
 ### AUDITD
 # Ensure this matches the filesystem where the audit logs are stored.

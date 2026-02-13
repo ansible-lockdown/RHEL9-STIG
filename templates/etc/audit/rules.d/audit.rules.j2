@@ -1,5 +1,5 @@
-## Auditd Configured by ansible-lockdown RHEL9-STIG
-# Sponsored by {{ company_title }}
+{{ file_managed_by_ansible }}
+
 {% if rhel_09_654010 %}
 # RHEL9-STIG rule 654010
 -a always,exit -F arch=b32 -S execve -C uid!=euid -F euid=0 -k execpriv
