@@ -55,3 +55,9 @@ aide_packages:
   - aide
 # Aide initiate command for new DB creation
 aide_initiate_command: /usr/sbin/aide --init
+
+company_title: 'Mindpoint Group - A Tyto Athene Company'
+file_managed_by_ansible: |-
+  # File managed by ansible as part of {{ benchmark }} benchmark
+  # As part of Ansible-lockdown
+  # Provided by {{ company_title }}

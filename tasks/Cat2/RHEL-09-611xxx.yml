@@ -747,6 +747,7 @@
     - rhel_09_611170
     - rhel9stig_disruption_high
     - "'sssd' in ansible_facts.packages"
+    - rhel9stig_sssd_configure
   tags:
     - RHEL-09-611170
     - CAT2
