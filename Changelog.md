@@ -1,5 +1,10 @@
 # RHEL9STIG
 
+## STIG V2R3 Final
+fixed last issue
+updated changelog
+title and company updates
+
 ## 2.5.0
 
 232190_Patch

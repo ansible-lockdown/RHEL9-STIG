@@ -187,7 +187,9 @@
       loop: "{{ ansible_facts.interfaces }}"
 
 - name: "MEDIUM | RHEL-09-251045 | PATCH | RHEL 9 must enable hardening for the Berkeley Packet Filter just-in-time compiler."
-  when: rhel_09_251045
+  when:
+    - rhel_09_251045
+    - not rhel9stig_nfs_utils_required
   tags:
     - RHEL-09-251045
     - CAT2
