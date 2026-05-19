@@ -1,9 +1,9 @@
 ---
 
 galaxy_info:
-  author: "Mark Bolwell"
+  author: "Ansible-Lockdown Team"
   description: "Apply the RHEL 9 STIG using ansible"
-  company: "MindPoint Group"
+  company: "MindPoint Group - A Tyto Athene Company"
   license: MIT
   role_name: rhel9_stig
   namespace: mindpointgroup
