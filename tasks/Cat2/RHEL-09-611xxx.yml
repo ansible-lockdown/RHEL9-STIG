@@ -13,7 +13,7 @@
     - V-258091
     - NIST800-53R4_IA-5
   block:
-    - name: "MEDIUM | RHEL-09-611010 | PATCH | RHEL 9 must ensure the password complexity module in the system-auth file is configured for three retries or less."
+    - name: MEDIUM | RHEL-09-611010 | AUDIT | RHEL 9 must ensure the password complexity module in the system-auth file is configured for three retries or less. | Check system-auth
       ansible.builtin.shell: grep "password.*pam_pwquality.so" /etc/pam.d/system-auth
       changed_when: false
       failed_when: discovered_pwquality_system_auth_status.rc not in [ 0, 1 ]
@@ -32,6 +32,31 @@
       when: discovered_pwquality_system_auth_status.stdout | length > 0
       community.general.pamd:
         name: system-auth
+        type: password
+        control: requisite
+        module_path: pam_pwquality.so
+        module_arguments: 'retry={{ rhel9stig_pam_retry }}'
+        state: args_present
+
+    - name: "MEDIUM | RHEL-09-611010 | AUDIT | RHEL 9 must ensure the password complexity module in the system-auth file is configured for three retries or less. | Check password-auth"
+      ansible.builtin.shell: grep "password.*pam_pwquality.so" /etc/pam.d/password-auth
+      changed_when: false
+      failed_when: discovered_pwquality_password_auth_status.rc not in [ 0, 1 ]
+      register: discovered_pwquality_password_auth_status
+
+    - name: "MEDIUM | RHEL-09-611010 | PATCH | RHEL 9 must ensure the password complexity module in the system-auth file is configured for three retries or less. | Set if no pw required pam_pwquality"
+      when: discovered_pwquality_password_auth_status.stdout | length == 0
+      ansible.builtin.lineinfile:
+        path: /etc/pam.d/password-auth
+        regexp: '^(password\s+)(required|requisite)(\s+pam_pwquality.so.*)\sretry=\d(.*)'
+        line: '"\1required\3 retry={{ rhel9stig_pam_retry }}\4"'
+        insertafter: '^password'
+        backrefs: true
+
+    - name: "MEDIUM | RHEL-09-611010 | PATCH | RHEL 9 must ensure the password complexity module in the system-auth file is configured for three retries or less. | Set retry in password-auth if pam_pwquality already exists"
+      when: discovered_pwquality_password_auth_status.stdout | length > 0
+      community.general.pamd:
+        name: password-auth
         type: password
         control: requisite
         module_path: pam_pwquality.so

@@ -423,7 +423,7 @@
       when: discovered_dev_shm_status.stdout | length > 0
       ansible.posix.mount:
         path: /dev/shm
-        src: mpfs
+        src: tmpfs
         fstype: tmpfs
         opts: "defaults{{ rhel_09_231110 | ternary(',nodev', '') }}{{ rhel_09_231115 | ternary(',noexec', '') }}{{ rhel_09_231120 | ternary(',nosuid', '') }}"
         state: mounted
