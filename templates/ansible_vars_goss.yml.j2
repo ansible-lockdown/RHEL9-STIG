@@ -118,10 +118,10 @@ rhel_09_213065: {{ rhel_09_213065 }}
 rhel_09_213070: {{ rhel_09_213070 }}
 rhel_09_213075: {{ rhel_09_213075 }}
 rhel_09_213080: {{ rhel_09_213080 }}
-rhel_09_213085: {{ rhel_09_213085 }}
-rhel_09_213090: {{ rhel_09_213090 }}
-rhel_09_213095: {{ rhel_09_213095 }}
-rhel_09_213100: {{ rhel_09_213100 }}
+rhel_09_213085: {% if rhel_09_213040 %}false{% else %}true{% endif %} # Does not apply if 213040 is true conditional on task
+rhel_09_213090: {% if rhel_09_213040 %}false{% else %}true{% endif %} # Does not apply if 213040 is true conditional on task
+rhel_09_213095: {% if rhel_09_213040 %}false{% else %}true{% endif %} # Does not apply if 213040 is true conditional on task
+rhel_09_213100: {% if rhel_09_213040 %}false{% else %}true{% endif %} # Does not apply if 213040 is true conditional on task
 rhel_09_213105: {{ rhel_09_213105 }}
 rhel_09_213110: {{ rhel_09_213110 }}
 rhel_09_213115: {{ rhel_09_213115 }}
@@ -144,6 +144,7 @@ rhel_09_215085: {{ rhel_09_215085 }}
 rhel_09_215090: {{ rhel_09_215090 }}
 rhel_09_215095: {{ rhel_09_215095 }}
 rhel_09_215100: {{ rhel_09_215100 }}
+rhel_09_215101: {{ rhel_09_215101 }}
 rhel_09_215105: {{ rhel_09_215105 }}
 
 rhel_09_231010: {{ rhel_09_231010 }}
@@ -233,7 +234,6 @@ rhel_09_232245: {{ rhel_09_232245 }}
 rhel_09_232250: {{ rhel_09_232250 }}
 rhel_09_232255: {{ rhel_09_232255 }}
 rhel_09_232260: {{ rhel_09_232260 }}
-rhel_09_232265: {{ rhel_09_232265 }}
 rhel_09_232270: {{ rhel_09_232270 }}
 
 rhel_09_251010: {{ rhel_09_251010 }}
@@ -281,8 +281,6 @@ rhel_09_255025: {{ rhel_09_255025 }}
 rhel_09_255030: {{ rhel_09_255030 }}
 rhel_09_255035: {{ rhel_09_255035 }}
 rhel_09_255045: {{ rhel_09_255045 }}
-rhel_09_255055: {{ rhel_09_255055 }}
-rhel_09_255060: {{ rhel_09_255060 }}
 rhel_09_255064: {{ rhel_09_255064 }}
 rhel_09_255065: {{ rhel_09_255065 }}
 rhel_09_255070: {{ rhel_09_255070 }}
@@ -306,6 +304,7 @@ rhel_09_255155: {{ rhel_09_255155 }}
 rhel_09_255160: {{ rhel_09_255160 }}
 rhel_09_255165: {{ rhel_09_255165 }}
 rhel_09_255175: {{ rhel_09_255175 }}
+rhel_09_171011: {{ rhel_09_171011 }}
 rhel_09_271010: {{ rhel_09_271010 }}
 rhel_09_271015: {{ rhel_09_271015 }}
 rhel_09_271020: {{ rhel_09_271020 }}
@@ -322,6 +321,7 @@ rhel_09_271075: {{ rhel_09_271075 }}
 rhel_09_271080: {{ rhel_09_271080 }}
 rhel_09_271085: {{ rhel_09_271085 }}
 rhel_09_271090: {{ rhel_09_271090 }}
+rhel_09_271095: {{ rhel_09_271095 }}
 rhel_09_271100: {{ rhel_09_271100 }}
 rhel_09_271105: {{ rhel_09_271105 }}
 rhel_09_271110: {{ rhel_09_271110 }}
@@ -354,7 +354,6 @@ rhel_09_411090: {{ rhel_09_411090 }}
 rhel_09_411095: {{ rhel_09_411095 }}
 rhel_09_411105: {{ rhel_09_411105 }}
 rhel_09_411110: {{ rhel_09_411110 }}
-rhel_09_411115: {{ rhel_09_411115 }}
 rhel_09_412035: {{ rhel_09_412035 }}
 rhel_09_412045: {{ rhel_09_412045 }}
 rhel_09_412050: {{ rhel_09_412050 }}
@@ -364,6 +363,7 @@ rhel_09_412065: {{ rhel_09_412065 }}
 rhel_09_412070: {{ rhel_09_412070 }}
 rhel_09_412080: {{ rhel_09_412080 }}
 rhel_09_431015: {{ rhel_09_431015 }}
+rhel_09_431016: {{ rhel_09_431016 }}
 rhel_09_431020: {{ rhel_09_431020 }}
 rhel_09_431025: {{ rhel_09_431025 }}
 rhel_09_431030: {{ rhel_09_431030 }}
@@ -411,7 +411,6 @@ rhel_09_611185: {{ rhel_09_611185 }}
 rhel_09_611190: {{ rhel_09_611190 }}
 rhel_09_611195: {{ rhel_09_611195 }}
 rhel_09_611200: {{ rhel_09_611200 }}
-rhel_09_611205: {{ rhel_09_611205 }}
 
 ### CAT2 63xxxx
 rhel_09_631010: {{ rhel_09_631010 }}
@@ -427,8 +426,7 @@ rhel_09_652015: {{ rhel_09_652015 }}
 rhel_09_652020: {{ rhel_09_652020 }}
 rhel_09_652025: {{ rhel_09_652025 }}
 rhel_09_652030: {{ rhel_09_652030 }}
-rhel_09_653130: {{ rhel_09_653130 }}  # NOTE Required before 652035 can run
-rhel_09_652035: {{ rhel_09_652035 }}
+rhel_09_653130: {{ rhel_09_653130 }}
 rhel_09_652040: {{ rhel_09_652040 }}
 rhel_09_652045: {{ rhel_09_652045 }}
 rhel_09_652050: {{ rhel_09_652050 }}
@@ -457,7 +455,6 @@ rhel_09_653095: {{ rhel_09_653095 }}
 rhel_09_653100: {{ rhel_09_653100 }}
 rhel_09_653105: {{ rhel_09_653105 }}
 rhel_09_653110: {{ rhel_09_653110 }}
-rhel_09_653115: {{ rhel_09_653115 }}
 rhel_09_653125: {{ rhel_09_653125 }}
 
 rhel_09_654010: {{ rhel_09_654010 }}
@@ -478,6 +475,7 @@ rhel_09_654080: {{ rhel_09_654080 }}
 rhel_09_654085: {{ rhel_09_654085 }}
 rhel_09_654090: {{ rhel_09_654090 }}
 rhel_09_654095: {{ rhel_09_654095 }}
+rhel_09_654097: {{ rhel_09_654097 }}
 rhel_09_654100: {{ rhel_09_654100 }}
 rhel_09_654105: {{ rhel_09_654105 }}
 rhel_09_654110: {{ rhel_09_654110 }}
@@ -510,7 +508,6 @@ rhel_09_654240: {{ rhel_09_654240 }}
 rhel_09_654245: {{ rhel_09_654245 }}
 rhel_09_654250: {{ rhel_09_654250 }}
 rhel_09_654255: {{ rhel_09_654255 }}
-rhel_09_654260: {{ rhel_09_654260 }}
 rhel_09_654265: {{ rhel_09_654265 }}
 rhel_09_654270: {{ rhel_09_654270 }}
 rhel_09_654275: {{ rhel_09_654275 }}
@@ -518,8 +515,6 @@ rhel_09_654275: {{ rhel_09_654275 }}
 rhel_09_671015: {{ rhel_09_671015 }}
 rhel_09_671020: {{ rhel_09_671020 }}
 rhel_09_671025: {{ rhel_09_671025 }}
-
-rhel_09_672025: {{ rhel_09_672025 }}
 rhel_09_672050: {{ rhel_09_672050 }}
 
 # Cat 3 controls
@@ -535,7 +530,6 @@ rhel_09_231195: {{ rhel_09_231195 }}
 rhel_09_252025: {{ rhel_09_252025 }}
 rhel_09_291025: {{ rhel_09_291025 }}
 rhel_09_412040: {{ rhel_09_412040 }}
-rhel_09_412075: {{ rhel_09_412075 }}
 rhel_09_651030: {{ rhel_09_651030 }}
 rhel_09_651035: {{ rhel_09_651035 }}
 rhel_09_653120: {{ rhel_09_653120 }}
@@ -589,7 +583,7 @@ rhel9stig_custom_firewall:
   - "{{ if }}"
   {% endfor %}
 
-# rhel9stig_white_list_services is the services that you want to allow through initially for teh new firewall zone
+# rhel9stig_white_list_services is the services that you want to allow through initially for the new firewall zone
 # http and ssh need to be enabled for the role to run.
 # This can also be a port number if no service exists
 rhel9stig_white_list_services:
@@ -613,7 +607,7 @@ rhel9stig_time_synchronization_servers:
 {% for time_server in rhel9stig_time_synchronization_servers %}
   - {{ time_server }}
 {% endfor %}
-rhel9stig_chrony_server_options: "{{ rhel9stig_chrony_server_options }}"  # Max Settings is maxpoll 16
+rhel9stig_chrony_server_options: "{{ rhel9stig_chrony_server_options }}"  # Max Setting is maxpoll 16
 
 # DNS
 {% if rhel9stig_dns_ip4_servers is defined %}
@@ -636,44 +630,44 @@ rhel9stig_postfix_client_conf: {{ rhel9stig_postfix_client_conf }}
 rhel9stig_sshd_config_file: {{ rhel9stig_sshd_config_file }}
 rhel9stig_ssh_required: {{ rhel9stig_sshd_required }}
 rhel9stig_sshd_config:
-  banner_file: {{ rhel9stig_sshd_config.banner_file }}
+  banner_file: {{ rhel9stig_sshd_config_banner_file }}
   ciphers:
-  {% for cipher in rhel9stig_sshd_config.ciphers %}
+  {% for cipher in rhel9stig_sshd_config_ciphers %}
   - {{ cipher }}
   {% endfor -%}
 
-  clientalivecountmax: {{ rhel9stig_sshd_config.clientalivecountmax }}
-  clientaliveinterval: {{ rhel9stig_sshd_config.clientaliveinterval }}  # max 600
-  compress: {{ rhel9stig_sshd_config.compress }}
-  gssapiauth: {{ rhel9stig_sshd_config.gssapiauth }}
-  hostauth: {{ rhel9stig_sshd_config.hostauth }}
-  ignoreknownhosts: {{ rhel9stig_sshd_config.ignoreknownhosts }}
-  ignorerhosts: {{ rhel9stig_sshd_config.ignorerhosts }}
-  include_conf: {{ rhel9stig_sshd_config.include_conf }}
-  kerbauth: {{ rhel9stig_sshd_config.kerbauth }}
-  lastlog: {{ rhel9stig_sshd_config.lastlog }}
-  loglevel: {{ rhel9stig_sshd_config.loglevel }}
-  macs: {{ rhel9stig_sshd_config.macs }}
-  pubkeyauth: {{ rhel9stig_sshd_config.pubkeyauth }}
-  permitroot: {{ rhel9stig_sshd_config.permitroot }}
-  privsep: {{ rhel9stig_sshd_config.privsep }}
-  rekeylimit: {{ rhel9stig_sshd_config.rekeylimit }}
-  strictmodes: {{ rhel9stig_sshd_config.strictmodes }}
-  userenv: {{ rhel9stig_sshd_config.userenv }}
-  x11forward: {{ rhel9stig_sshd_config.x11forward }}
-  x11uselocal: {{ rhel9stig_sshd_config.x11uselocal }}
+  clientalivecountmax: {{ rhel9stig_sshd_config_clientalivecountmax }}
+  clientaliveinterval: {{ rhel9stig_sshd_config_clientaliveinterval }}  # max 600
+  compress: {{ rhel9stig_sshd_config_compress }}
+  gssapiauth: {{ rhel9stig_sshd_config_gssapiauth }}
+  hostauth: {{ rhel9stig_sshd_config_hostauth }}
+  ignoreknownhosts: {{ rhel9stig_sshd_config_ignoreknownhosts }}
+  ignorerhosts: {{ rhel9stig_sshd_config_ignorerhosts }}
+  include_conf: {{ rhel9stig_sshd_config_include_conf }}
+  kerbauth: {{ rhel9stig_sshd_config_kerbauth }}
+  lastlog: {{ rhel9stig_sshd_config_lastlog }}
+  loglevel: {{ rhel9stig_sshd_config_loglevel }}
+  macs: {{ rhel9stig_sshd_config_macs }}
+  pubkeyauth: {{ rhel9stig_sshd_config_pubkeyauth }}
+  permitroot: {{ rhel9stig_sshd_config_permitroot }}
+  privsep: {{ rhel9stig_sshd_config_privsep }}
+  rekeylimit: {{ rhel9stig_sshd_config_rekeylimit }}
+  strictmodes: {{ rhel9stig_sshd_config_strictmodes }}
+  userenv: {{ rhel9stig_sshd_config_userenv }}
+  x11forward: {{ rhel9stig_sshd_config_x11forward }}
+  x11uselocal: {{ rhel9stig_sshd_config_x11uselocal }}
 
 ##27XXXX GUI Settings
-{% if rhel9stig_dconf_locald_files.files is defined %}
+{% if prelim_dconf_db.files is defined %}
 rhel9stig_dconf_locald_files:
-{% for file in rhel9stig_dconf_locald_files.files %}
+{% for file in prelim_dconf_db.files %}
 - {{ file.path }}
 {% endfor %}
 {% endif %}
 
 {% if rhel9stig_gui %}
-{% if rhel9stig_dconf_db is defined %}
-rhel9stig_dconf_db: {{ rhel9stig_dconf_db.stdout }}
+{% if prelim_dconf_db is defined %}
+rhel9stig_dconf_db: {{ prelim_dconf_db.stdout }}
 {% endif %}
 {% endif %}
 
@@ -721,13 +715,33 @@ rhel9stig_aide_cron:
 rhel9stig_rsyslog_server: {{ rhel9stig_rsyslog_server }}
 
 # Adjust to match remote syslog server configuration
+# There are two ways to offload
+# 1. Legacy way - using @@
+# 2. New way - using rainerscripts
+# The new way is more secure and is the preferred method.
+
+# If using legacy offload, set this to true
+# If using rainerscripts offload, set this to false
+rhel9stig_rsyslog_legacy_offload: {{ rhel9stig_rsyslog_legacy_offload }}
+# Adjust to match remote syslog server configuration
 rhel9stig_remotelog_server:
-  server: "{{ rhel9stig_remotelog_server.server }}"
-  port: "{{ rhel9stig_remotelog_server.port }}"
-  protocol: "{{ rhel9stig_remotelog_server.protocol }}"
+  server: "{{ rhel9stig_rsyslog_remote_server_server }}"
+  port: "{{ rhel9stig_rsyslog_remote_server_port }}"
+  protocol: "{{ rhel9stig_rsyslog_remote_server_protocol }}"
+
+
+# Stream driver settings for rainerscripts offload
+# Stream driver type
+rhel9stig_rsyslog_stream_driver: {{ rhel9stig_rsyslog_stream_driver }}
+# Stream driver mode
+rhel9stig_rsyslog_stream_driver_mode: {{ rhel9stig_rsyslog_stream_driver_mode }}
+# Stream driver authentication mode
+rhel9stig_rsyslog_stream_driver_auth_mode: {{ rhel9stig_rsyslog_stream_driver_auth_mode }}
+# Stream driver permitted peers
+rhel9stig_rsyslog_stream_driver_permitted_peers: {{ rhel9stig_rsyslog_stream_driver_permitted_peers }}
 
 ### AUDITD
-rhel9stig_audit_log_filesystem: /var/log/audit
+rhel9stig_audit_log_filesystem: {{ rhel9stig_audit_log_filesystem }}
 rhel9stig_audit_conf:
   action_mail_acct: {{ rhel9stig_audit_conf_action_mail_acct }}
   admin_space_left: {{ rhel9stig_audit_conf_admin_space_left }}

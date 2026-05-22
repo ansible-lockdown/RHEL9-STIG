@@ -61,19 +61,36 @@
     name: ypserv
     state: absent
 
-- name: "MEDIUM | RHEL-09-215035 | PATCH | RHEL 9 must not have the rsh-server package installed."
+- name: "MEDIUM | RHEL-09-215035 | PATCH | RHEL 9 must not install packages from the Extra Packages for Enterprise Linux (EPEL) repository."
   when: rhel_09_215035
   tags:
     - RHEL-09-215035
     - CAT2
     - CCI-000381
     - SRG-OS-000095-GPOS-00049
-    - SV-257830r958478_rule
+    - SV-257830r1134906_rule
     - V-257830
     - NIST800-53R4_CM-7
-  ansible.builtin.package:
-    name: rsh-server
-    state: absent
+  block:
+    - name: "MEDIUM | RHEL-09-215035 | PATCH | RHEL 9 must not install packages from the Extra Packages for Enterprise Linux (EPEL) repository."
+      when: not rhel9stig_epel_required
+      ansible.builtin.package:
+        name: epel-release
+        state: absent
+
+    - name: "MEDIUM | RHEL-09-215035 | AUDIT | RHEL 9 must not install packages from the Extra Packages for Enterprise Linux (EPEL) repository."
+      when: rhel9stig_epel_required
+      ansible.builtin.command: dnf repolist | grep epel
+      changed_when: false
+      failed_when: discovered_epel_repos.rc not in [0, 1]
+      register: discovered_epel_repos
+
+    - name: "MEDIUM | RHEL-09-215035 | WARN | RHEL 9 must not install packages from the Extra Packages for Enterprise Linux (EPEL) repository."
+      when:
+        - rhel9stig_epel_required
+        - discovered_epel_repos.stdout is defined
+      ansible.builtin.command: dnf config-manager --disable epel
+      changed_when: true
 
 - name: "MEDIUM | RHEL-09-215040 | PATCH | RHEL 9 must not have the telnet-server package installed."
   when: rhel_09_215040
@@ -90,7 +107,9 @@
     state: absent
 
 - name: "MEDIUM | RHEL-09-215045 | PATCH | RHEL 9 must not have the gssproxy package installed."
-  when: rhel_09_215045
+  when:
+    - rhel_09_215045
+    - not rhel9stig_nfs_utils_required
   tags:
     - RHEL-09-215045
     - CAT2
@@ -259,6 +278,24 @@
     name: crypto-policies
     state: present
 
+- name: "MEDIUM | RHEL-09-215101 | PATCH | RHEL 9 must have the Postfix package installed."
+  when: rhel_09_215101
+  tags:
+    - RHEL-09-215101
+    - CAT2
+    - CCI-000015
+    - SRG-OS-000304-GPOS-00121
+    - SRG-OS-000343-GPOS-00134
+    - SRG-OS-000363-GPOS-00150
+    - SRG-OS-000447-GPOS-00201
+    - SV-272488r1155665_rule
+    - V-272488
+    - NIST800-53R4_AC-2
+    - postfix
+  ansible.builtin.package:
+    name: postfix
+    state: present
+
 - name: "MEDIUM | RHEL-09-215105 | PATCH | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy"
   when: rhel_09_215105
   tags:
@@ -270,15 +307,13 @@
     - SRG-OS-000396-GPOS-00176
     - SRG-OS-000393-GPOS-00173
     - SRG-OS-000394-GPOS-00174
-    - SV-258241r1051259_rule
+    - SV-258241r1106302_rule
     - V-258241
     - NIST800-53R4_SC-13
     - NIST800-53R4_MA-4
     - fips
     - encryption
   notify: Change_requires_reboot
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-215105"
   block:
     - name: "MEDIUM | RHEL-09-215105 | AUDIT | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy | Get crypto state"
       ansible.builtin.command: update-crypto-policies --show
@@ -320,3 +355,5 @@
         - not rhel9stig_disruption_high
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-215105"

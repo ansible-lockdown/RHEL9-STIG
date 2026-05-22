@@ -60,7 +60,7 @@
     - CAT2
     - CCI-001499
     - SRG-OS-000259-GPOS-00100
-    - SV-257884r991560_rule
+    - SV-257884r1106306_rule
     - V-257884
     - NIST800-53R4_CM-5
   block:
@@ -130,27 +130,47 @@
     owner: root
   loop: "{{ rhel9stig_audit_bins }}"
 
-- name: "MEDIUM | RHEL-09-232040 | PATCH | RHEL 9 cron configuration directories must have a mode of 0700 or less permissive."
+- name: "MEDIUM | RHEL-09-232040 | PATCH | RHEL 9 permissions of cron configuration files and directories must not be modified from the operating system defaults."
   when: rhel_09_232040
   tags:
     - RHEL-09-232040
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257888r1044957_rule
+    - SV-257888r1134910_rule
     - V-257888
     - NIST800-53R4_CM-6
-  ansible.builtin.file:
-    path: "/etc/{{ item }}"
-    mode: 'u+x,go-rwx'
-    modification_time: preserve
-    owner: root
-  loop:
-    - cron.d
-    - cron.daily
-    - cron.hourly
-    - cron.monthly
-    - cron.weekly
+  block:
+    - name: "MEDIUM | RHEL-09-232040 | PATCH | RHEL 9 permissions of cron configuration files and directories must not be modified from the operating system defaults. | directories"
+      ansible.builtin.file:
+        path: "/etc/{{ item }}"
+        mode: 'go-w'
+        modification_time: preserve
+        owner: root
+        group: root
+      failed_when: discovered_cron_dirs_exists.state not in ['directory', 'absent']
+      register: discovered_cron_dirs_exists
+      loop:
+        - cron.d
+        - cron.daily
+        - cron.hourly
+        - cron.monthly
+        - cron.weekly
+
+    - name: "MEDIUM | RHEL-09-232040 | PATCH | RHEL 9 permissions of cron configuration files and directories must not be modified from the operating system defaults. | files"
+      ansible.builtin.file:
+        path: "/etc/{{ item }}"
+        mode: 'u-x,go-wx'
+        modification_time: preserve
+        owner: root
+        group: root
+      failed_when: discovered_cron_files_exists.state not in ['file', 'absent']
+      register: discovered_cron_files_exists
+      loop:
+        - crontab
+        - cron.allow
+        - cron.deny
+        - cron.d/0hourly
 
 - name: "MEDIUM | RHEL-09-232045 | PATCH | All RHEL 9 local initialization files must have mode 0740 or less permissive."
   when:
@@ -201,7 +221,7 @@
       ansible.builtin.stat:
         path: "{{ item }}"
       register: discovered_home_dir_perms
-      loop: "{{ rhel9stig_interactive_users_home.stdout_lines }}"
+      loop: "{{ prelim_interactive_users_home.stdout_lines }}"
 
     - name: "MEDIUM | RHEL-09-232050 | PATCH | All RHEL 9 local interactive user home directories must have mode 0750 or less permissive. | amend if needed"
       when: item.stat.path is defined
@@ -401,7 +421,7 @@
     - CAT2
     - CCI-000162
     - SRG-OS-000080-GPOS-00048
-    - SV-270175r1044964_rule
+    - SV-270175r1117265_rule
     - V-270175
     - NIST800-53R4_AU-9
   ansible.builtin.file:
@@ -415,7 +435,7 @@
     - CAT2
     - CCI-000162
     - SRG-OS-000080-GPOS-00048
-    - SV-270175r1044964_rule
+    - SV-270176r1117265_rule
     - V-270175
     - NIST800-53R4_AU-9
   ansible.builtin.file:
@@ -661,7 +681,7 @@
     - CAT2
     - CCI-001314
     - SRG-OS-000206-GPOS-00084
-    - SV-257916r1044973_rule
+    - SV-257916r1101916_rule
     - V-257916
     - NIST800-53R4_SI-11
   ansible.builtin.file:
@@ -716,8 +736,6 @@
     - SV-257919r1044979_rule
     - V-257919
     - NIST800-53R4_CM-5
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-232195"
   block:
     - name: "MEDIUM | RHEL-09-232195 | AUDIT | RHEL 9 system commands must be group-owned by root or a system account."
       ansible.builtin.shell: find -L /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin ! \( -group root -o -group tty \) -exec ls {} \;
@@ -736,6 +754,8 @@
       when: discovered_sys_commands_group.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-232195"
 
 - name: "MEDIUM | RHEL-09-232200 | PATCH | RHEL 9 library files must be owned by root."
   when: rhel_09_232200
@@ -744,12 +764,12 @@
     - CAT2
     - CCI-001499
     - SRG-OS-000259-GPOS-00100
-    - SV-257920r1044982_rule
+    - SV-257920r1101926_rule
     - V-257920
     - NIST800-53R4_CM-5
   block:
     - name: "MEDIUM | RHEL-09-232200 | AUDIT | RHEL 9 library files must be owned by root."
-      ansible.builtin.command: find -L /lib /lib64 /usr/lib /usr/lib64 ! -user root
+      ansible.builtin.command: find -L /lib /lib64 /usr/lib /usr/lib64 -type f -name "*.so*" ! -user root
       changed_when: false
       failed_when: discovered_lib_files_owner.rc not in [ 0, 1 ]
       register: discovered_lib_files_owner
@@ -768,14 +788,12 @@
     - CAT2
     - CCI-001499
     - SRG-OS-000259-GPOS-00100
-    - SV-257921r1044985_rule
+    - SV-257921r1106308_rule
     - V-257921
     - NIST800-53R4_CM-5
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-232205"
   block:
     - name: "MEDIUM | RHEL-09-232205 | AUDIT | RHEL 9 library files must be group-owned by root or a system account."
-      ansible.builtin.shell: find -L /lib /lib64 /usr/lib /usr/lib64 -uid +1000 -type f -exec ls {} \;
+      ansible.builtin.shell: find -L /lib /lib64 /usr/lib /usr/lib64 -type f -name "*.so*" -gid +999 -exec ls {} \;
       changed_when: false
       failed_when: discovered_lib_files_group.rc not in [ 0, 1 ]
       register: discovered_lib_files_group
@@ -791,6 +809,8 @@
       when: discovered_lib_files_group.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-232205"
 
 - name: "MEDIUM | RHEL-09-232210 | PATCH | RHEL 9 library directories must be owned by root."
   when: rhel_09_232210
@@ -821,8 +841,6 @@
     - SV-257923r1044991_rule
     - V-257923
     - NIST800-53R4_CM-5
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-232215"
   block:
     - name: "MEDIUM | RHEL-09-232215 | AUDIT | RHEL 9 library directories must be group-owned by root or a system account."
       ansible.builtin.shell: find -L /lib /lib64 /usr/lib /usr/lib64 -uid +1000 -type d -exec ls {} \;
@@ -841,6 +859,8 @@
       when: discovered_lib_dirs_group.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-232215"
 
 - name: "MEDIUM | RHEL-09-232220 | PATCH | RHEL 9 audit tools must be owned by root."
   when: rhel_09_232220
@@ -926,14 +946,12 @@
     - CCI-001090
     - SRG-OS-000480-GPOS-00227
     - SRG-OS-000138-GPOS-00069
-    - SV-257928r1044992_rule
+    - SV-257928r1155576_rule
     - V-257928
     - NIST800-53R4_SC-4
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-232240"
   block:
     - name: "MEDIUM | RHEL-09-232240 | AUDIT | All RHEL 9 world-writable directories must be owned by root, sys, bin, or an application user."
-      ansible.builtin.shell: df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d -perm -0002 -uid +0
+      ansible.builtin.shell: df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d -perm -0002 -uid +999
       changed_when: false
       failed_when: discovered_worldwide_dir_owners.rc not in [ 0, 1 ]
       register: discovered_worldwide_dir_owners
@@ -949,6 +967,8 @@
       when: discovered_worldwide_dir_owners.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-232240"
 
 - name: "MEDIUM | RHEL-09-232245 | PATCH | A sticky bit must be set on all RHEL 9 public directories."
   when:
@@ -959,11 +979,9 @@
     - CAT2
     - CCI-001090
     - SRG-OS-000138-GPOS-00069
-    - SV-257929r958524_rule
+    - SV-257929r1117267_rule
     - V-257929
     - NIST800-53R4_SC-4
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-232245"
   block:
     - name: "MEDIUM | RHEL-09-232245 | AUDIT | A sticky bit must be set on all RHEL 9 public directories."
       ansible.builtin.shell: df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d -perm -0002 -a ! -perm -1000 2>/dev/null
@@ -995,6 +1013,8 @@
         - discovered_public_dirs_stickybit.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-232245"
 
 - name: "MEDIUM | RHEL-09-232250 | PATCH | All RHEL 9 local files and directories must have a valid group owner."
   when: rhel_09_232250
@@ -1006,8 +1026,6 @@
     - SV-257930r991589_rule
     - V-257930
     - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-232250"
   block:
     - name: "MEDIUM | RHEL-09-232250 | AUDIT | All RHEL 9 local files and directories must have a valid group owner."
       when:
@@ -1038,6 +1056,8 @@
       when: rhel9stig_ungrouped_files_results | length > 1
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-232250"
 
 - name: "MEDIUM | RHEL-09-232255 | PATCH | All RHEL 9 local files and directories must have a valid owner."
   when: rhel_09_232255
@@ -1046,11 +1066,9 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257931r991589_rulev
+    - SV-257931r991589_rule
     - V-257931
     - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-232255"
   block:
     - name: "MEDIUM | RHEL-09-232255 | AUDIT | All RHEL 9 local files and directories must have a valid owner."
       when:
@@ -1081,6 +1099,8 @@
       when: rhel9stig_unowned_files_results | length > 1
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-232255"
 
 - name: "MEDIUM | RHEL-09-232260 | PATCH | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification."
   when: rhel_09_232260
@@ -1092,8 +1112,6 @@
     - SV-257932r1014838_rule
     - V-257932
     - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-232260"
   block:
     - name: "MEDIUM | RHEL-09-232260 | AUDIT | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification. | / scan"
       ansible.builtin.command: find /dev \( -context *:unlabeled_t:* -o -context *:device_t:* \) \( -type c -o -type b \) -printf "%p %Z" | grep -v 'vmci'
@@ -1122,20 +1140,8 @@
         - not rhel9stig_disruption_high
       ansible.builtin.import_tasks:
         file: warning_facts.yml
-
-- name: "MEDIUM | RHEL-09-232265 | PATCH | RHEL 9 /etc/crontab file must have mode 0600."
-  when: rhel_09_232265
-  tags:
-    - RHEL-09-232265
-    - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257933r991589_rule
-    - V-257933
-    - NIST800-53R4_CM-6
-  ansible.builtin.file:
-    path: /etc/crontab
-    mode: 'u-x,go-rwx'
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-232260"
 
 - name: "MEDIUM | RHEL-09-232270 | PATCH | RHEL 9 /etc/shadow file must have mode 0000 to prevent unauthorized access."
   when: rhel_09_232270

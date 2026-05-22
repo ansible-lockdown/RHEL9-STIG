@@ -7,11 +7,9 @@
     - CAT2
     - CCI-000213
     - SRG-OS-000080-GPOS-00048
-    - SV-257787r1044836_rule
+    - SV-257787r1117265_rule
     - V-257787
     - NIST800-53R4_AC-3
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-212010"
   block:
     - name: "MEDIUM | RHEL-09-212010 | PATCH | RHEL 9 must require a boot loader superuser password. | set password for grub2 user"
       when: rhel9stig_set_bootloader_password
@@ -23,7 +21,7 @@
         group: root
         mode: "{{ item.mode }}"
       loop:
-        - { file: 'boot/grub2/user.cfg', mode: '0644' }
+        - { file: 'boot/grub2/user.cfg', mode: 'u-x,go-wx' }
 
     - name: "MEDIUM | RHEL-09-212010 | AUDIT | RHEL 9 must require a boot loader superuser password.| warning"
       when: not rhel9stig_set_bootloader_password
@@ -41,7 +39,10 @@
 
         - name: "MEDIUM | RHEL-09-212010 | WARN | RHEL 9 must require a boot loader superuser password. | Warning"
           when: discovered_grub_passwd_state.rc != 0
-          ansible.builtin.import_tasks: warning_facts.yml
+          ansible.builtin.import_tasks:
+            file: warning_facts.yml
+          vars:
+            warn_control_id: "MEDIUM | RHEL-09-212010"
 
 - name: "MEDIUM | RHEL-09-212015 | PATCH | RHEL 9 must disable the ability of systemd to spawn an interactive boot process."
   when: rhel_09_212015
@@ -178,7 +179,7 @@
         backrefs: true
       notify: Rebuild_grub
 
-- name: "MEDIUM | RHEL-09-212045 | PATCH | RHEL 9 must clear SLUB/SLAB objects to prevent use-after-free attacks"
+- name: "MEDIUM | RHEL-09-212045 | PATCH | RHEL 9 must clear memory when it is freed to prevent use-after-free attacks."
   when: rhel_09_212045
   tags:
     - RHEL-09-212045
@@ -187,33 +188,19 @@
     - CCI-002824
     - SRG-OS-000433-GPOS-00192
     - SRG-OS-000134-GPOS-00068
-    - SV-257794r958928_rule
+    - SV-257794r1069362_rule
     - V-257794
     - NIST800-53R4_SC-3
     - NIST800-53R4_SI-16
   block:
-    - name: "MEDIUM | RHEL-09-212045 | AUDIT | RHEL 9 must clear SLUB/SLAB objects to prevent use-after-free attacks | capture grubby"
-      ansible.builtin.shell: grubby --info=ALL | grep args | grep 'slub_debug=P'
+    - name: "MEDIUM | RHEL-09-212045 | AUDIT | RHEL 9 must clear memory when it is freed to prevent use-after-free attacks. | Capture grubby"
+      ansible.builtin.shell: grubby --info=ALL | grep args | grep 'init_on_free=1'
       changed_when: false
       failed_when: discovered_grubby_slab.rc not in [ 0, 1 ]
       register: discovered_grubby_slab
 
-    - name: "MEDIUM | RHEL-09-212045 | PATCH | RHEL 9 must clear SLUB/SLAB objects to prevent use-after-free attacks | Amend grubby"
+    - name: "MEDIUM | RHEL-09-212045 | PATCH | RHEL 9 must clear memory when it is freed to prevent use-after-free attacks. | Amend grubby"
       when: discovered_grubby_slab.stdout | length == 0
-      ansible.builtin.command: grubby --update-kernel=ALL --args="slub_debug=P"
+      ansible.builtin.command: grubby --update-kernel=ALL --args="init_on_free=1"
       changed_when: true
-
-    - name: "MEDIUM | RHEL-09-212045 | AUDIT | RHEL 9 must clear SLUB/SLAB objects to prevent use-after-free attacks | Capture default grub"
-      ansible.builtin.shell: grep "^GRUB_CMDLINE_LINUX=" /etc/default/grub | cut -f2 -d'"' | grep slub_debug
-      changed_when: false
-      failed_when: discovered_def_grub_slub.rc not in [ 0, 1 ]
-      register: discovered_def_grub_slub
-
-    - name: "MEDIUM | RHEL-09-212045 | PATCH | RHEL 9 must clear SLUB/SLAB objects to prevent use-after-free attacks | Set default"
-      when: discovered_def_grub_slub.rc != 0
-      ansible.builtin.lineinfile:
-        path: /etc/default/grub
-        regexp: ^(GRUB_CMDLINE_LINUX=")(.*)"
-        line: '\1\2 slub_debug=P"'
-        backrefs: true
       notify: Rebuild_grub

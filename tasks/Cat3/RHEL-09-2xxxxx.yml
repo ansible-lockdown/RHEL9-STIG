@@ -3,7 +3,7 @@
 - name: "LOW | RHEL-09-211035 | PATCH | RHEL 9 must enable the hardware random number generator entropy gatherer service."
   when:
     - rhel_09_211035
-    - not rhel_09_215105  # Dont run if FIPs Enabled
+    - not rhel_09_215105  # Don't run if FIPs Enabled
   tags:
     - RHEL-09-211035
     - CAT2
@@ -142,8 +142,6 @@
     - V-257845
     - NIST800-53R4_CM-6
     - filesystem
-  vars:
-    warn_control_id: "LOW | RHEL-09-231020"
   block:
     - name: "LOW | RHEL-09-231020 | WARN | RHEL 9 must use a separate file system for /var."
       when: "'/var' in ansible_facts['mounts'] | map(attribute='mount') | list"
@@ -160,6 +158,8 @@
         - name: "LOW | RHEL-09-231020 | WARN | RHEL 9 must use a separate file system for /var."
           ansible.builtin.import_tasks:
             file: warning_facts.yml
+          vars:
+            warn_control_id: "LOW | RHEL-09-231020"
 
 - name: "LOW | RHEL-09-231025 | AUDIT | RHEL 9 must use a separate file system for /var/log."
   when: rhel_09_231025
@@ -172,8 +172,6 @@
     - V-257846
     - NIST800-53R4_CM-6
     - filesystem
-  vars:
-    warn_control_id: "LOW | RHEL-09-231025"
   block:
     - name: "LOW | RHEL-09-231025 | WARN | RHEL 9 must use a separate file system for /var/log."
       when: "'/var/log' in ansible_facts['mounts'] | map(attribute='mount') | list"
@@ -190,6 +188,8 @@
         - name: "LOW | RHEL-09-231025 | WARN | RHEL 9 must use a separate file system for /var/log."
           ansible.builtin.import_tasks:
             file: warning_facts.yml
+          vars:
+            warn_control_id: "LOW | RHEL-09-231025"
 
 - name: "LOW | RHEL-09-231030 | AUDIT | RHEL 9 must use a separate file system for /var/log/audit."
   when: rhel_09_231030
@@ -202,8 +202,6 @@
     - V-257847
     - NIST800-53R4_CM-6
     - filesystem
-  vars:
-    warn_control_id: "LOW | RHEL-09-231030"
   block:
     - name: "LOW | RHEL-09-231030 | WARN | RHEL 9 must use a separate file system for /var/log/audit."
       when: "rhel9stig_audit_log_filesystem in ansible_facts['mounts'] | map(attribute='mount') | list"
@@ -220,6 +218,8 @@
         - name: "LOW | RHEL-09-231025 | WARN | RHEL 9 must use a separate file system for /var/log/audit."
           ansible.builtin.import_tasks:
             file: warning_facts.yml
+          vars:
+            warn_control_id: "LOW | RHEL-09-231030"
 
 - name: "LOW | RHEL-09-231195 | PATCH | RHEL 9 must disable mounting of cramfs."
   when: rhel_09_231195

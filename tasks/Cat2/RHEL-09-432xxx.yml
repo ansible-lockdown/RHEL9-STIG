@@ -15,7 +15,9 @@
     state: present
 
 - name: "MEDIUM | RHEL-09-432015 | PATCH | RHEL 9 must require reauthentication when using the 'sudo' command."
-  when: rhel_09_432015
+  when:
+    - rhel_09_432015
+    - prelim_sudoers_files.files is defined
   tags:
     - RHEL-09-432015
     - CAT2
@@ -25,13 +27,15 @@
     - V-258084
     - NIST800-53R4_IA-11
   ansible.builtin.lineinfile:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     regexp: ^Defaults timestamp_timeout\s*=\s*(-|)\d
     line: Defaults timestamp_timeout=0
-  loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
+  loop: "{{ prelim_sudoers_files.files }}"
 
 - name: "MEDIUM | RHEL-09-432020 | PATCH | RHEL 9 must use the invoking user's password for privilege escalation when using 'sudo'."
-  when: rhel_09_432020
+  when:
+    - rhel_09_432020
+    - prelim_sudoers_files.files is defined
   tags:
     - RHEL-09-432020
     - CAT2
@@ -43,58 +47,61 @@
   block:
     - name: "MEDIUM | RHEL-09-432020 | PATCH | RHEL 9 must use the invoking user's password for privilege escalation when using 'sudo'. | targetpw"
       ansible.builtin.lineinfile:
-        path: "{{ item }}"
+        path: "{{ item.path }}"
         regexp: ^(#|)Defaults !targetpw
         line: Defaults !targetpw
-      loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
+      loop: "{{ prelim_sudoers_files.files }}"
 
     - name: "MEDIUM | RHEL-09-432020 | PATCH | RHEL 9 must use the invoking user's password for privilege escalation when using 'sudo'. | rootpw"
       ansible.builtin.lineinfile:
-        path: "{{ item }}"
+        path: "{{ item.path }}"
         regexp: ^(#|)Defaults !rootpw
         line: Defaults !rootpw
-      loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
+      loop: "{{ prelim_sudoers_files.files }}"
 
     - name: "MEDIUM | RHEL-09-432020 | PATCH | RHEL 9 must use the invoking user's password for privilege escalation when using 'sudo'. | runaspw"
       ansible.builtin.lineinfile:
-        path: "{{ item }}"
+        path: "{{ item.path }}"
         regexp: ^(#|)Defaults !runaspw
         line: Defaults !runaspw
-      loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
+      loop: "{{ prelim_sudoers_files.files }}"
 
 - name: "MEDIUM | RHEL-09-432025 | PATCH |  RHEL 9 must require users to reauthenticate for privilege escalation."
-  when: rhel_09_432025
+  when:
+    - rhel_09_432025
+    - prelim_sudoers_files.files is defined
   tags:
     - RHEL-09-432025
     - CAT2
     - CCI-002038
     - SRG-OS-000373-GPOS-00156
-    - SV-258086r1050789_rule
+    - SV-258086r1102063_rule
     - V-258086
     - NIST800-53R4_IA-11
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     line: '!authenticate'
     state: absent
-  loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
+  loop: "{{ prelim_sudoers_files.files }}"
 
 - name: "MEDIUM | RHEL-09-432030 | PATCH | RHEL 9 must restrict privilege elevation to authorized personnel."
   when:
     - rhel_09_432030
     - rhel9stig_disruption_high
+    - prelim_sudoers_files.files is defined
   tags:
     - RHEL-09-432030
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258087r1045177_rule
+    - SV-258087r1102071_rule
     - V-258087
     - NIST800-53R4_CM-6
   ansible.builtin.lineinfile:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     regexp: ALL\s*ALL=\(ALL(:ALL|)\)\s*ALL
     state: absent
-  loop: "{{ rhel9stig_sudoers_files.stdout_lines }}"
+  loop: "{{ prelim_sudoers_files.files }}"
 
 - name: "MEDIUM | RHEL-09-432035 | PATCH | RHEL 9 must restrict the use of the 'su' command."
   when: rhel_09_432035
@@ -105,7 +112,7 @@
     - CCI-002165
     - SRG-OS-000373-GPOS-00156
     - SRG-OS-000312-GPOS-00123
-    - SV-258088r1050789_rule
+    - SV-258088r1155643_rule
     - V-258088
     - NIST800-53R4_AC-3
     - NIST800-53R4_IA-11

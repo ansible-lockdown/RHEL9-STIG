@@ -7,7 +7,7 @@
     - CAT1
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257777r991589_rule
+    - SV-257777r1155676_rule
     - V-257777
     - NIST800-53R4_CM-6
   ansible.builtin.debug:
@@ -22,16 +22,34 @@
     - CCI-002235
     - SRG-OS-000324-GPOS-00125
     - SRG-OS-000480-GPOS-00227
-    - SV-257784r1044832_rule
+    - SV-257784r1155651_rule
     - V-257784
     - NIST800-53R4_AC-6
   notify: Systemd_daemon_reload
-  ansible.builtin.lineinfile:
-    path: /etc/systemd/system.conf
-    regexp: ^CtrlAltDelBurstAction=none
-    line: CtrlAltDelBurstAction=none
-    create: true
-    mode: 'go-wx'
+  block:
+    - name: HIGH | RHEL-09-211045 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled | ansible.builtin.systemd
+      ansible.builtin.file:
+        path: /etc/systemd/system.conf.d/
+        state: directory
+        mode: 'go-w'
+        owner: root
+        group: root
+
+    - name: HIGH | RHEL-09-211045 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled | ansible.builtin.lineinfile
+      ansible.builtin.template:
+        src: etc/systemd/system.conf.d/55-CtrlAltDel-BurstAction.j2
+        dest: /etc/systemd/system.conf.d/55-CtrlAltDel-BurstAction
+        mode: 'go-wx'
+        owner: root
+        group: root
+
+    - name: HIGH | RHEL-09-211045 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled | ansible.builtin.lineinfile
+      ansible.builtin.lineinfile:
+        path: /etc/systemd/system.conf.d/55-CtrlAltDel-BurstAction
+        regexp: ^CtrlAltDelBurstAction=none
+        line: CtrlAltDelBurstAction=none
+        create: true
+        mode: 'go-wx'
 
 - name: HIGH | RHEL-09-211050 | PATCH | The x86 Ctrl-Alt-Delete key sequence must be disabled on RHEL 9
   when: rhel_09_211050
@@ -66,7 +84,7 @@
     - CAT1
     - CCI-000213
     - SRG-OS-000080-GPOS-00048
-    - SV-257789r1044841_rule
+    - SV-257789r1137691_rule
     - V-257789
     - NIST800-53R4_AC-3
     - grub
@@ -74,7 +92,7 @@
   ansible.builtin.lineinfile:
     path: /etc/grub.d/01_users
     regexp: '^(\s*set superusers=).*$'
-    line: \1"{{ rhel9stig_grub_superuser }}"
+    line: '\1"{{ rhel9stig_grub_superuser }}"'
     backrefs: true
 
 - name: HIGH | RHEL-09-214015 | PATCH | RHEL 9 must check the GPG signature of software packages originating from external software repositories before installation.
@@ -118,7 +136,7 @@
     - CAT1
     - CCI-001749
     - SRG-OS-000366-GPOS-00153
-    - SV-257822r1044880_rule
+    - SV-257822r1155615_rule
     - V-257822
     - NIST800-53R4_CM-5
     - dnf
@@ -152,7 +170,7 @@
     - SRG-OS-000074-GPOS-00042
     - SRG-OS-000095-GPOS-00049
     - SRG-OS-000480-GPOS-00227
-    - SV-257826r1044890_rule
+    - SV-257826r1106299_rule
     - V-257826
     - NIST800-53R4_IA-5
     - NIST800-53R4_CM-6
@@ -161,20 +179,34 @@
     name: vsftpd
     state: absent
 
-- name: HIGH | RHEL-09-215060 | PATCH | RHEL 9 must not have a Trivial File Transfer Protocol (TFTP) server package installed.
+- name: HIGH | RHEL-09-215060 | PATCH | The Trivial File Transfer Protocol (TFTP) server must not be installed unless it is required, and if required, the RHEL 9 TFTP daemon must be configured to operate in secure mode..
   when: rhel_09_215060
   tags:
     - RHEL-09-215060
     - CAT1
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257835r1044906_rule
+    - SV-257835r1155679_rule
     - V-257835
     - NIST800-53R4_CM-6
     - tftp
-  ansible.builtin.package:
-    name: tftp-server
-    state: absent
+  block:
+    - name: HIGH | RHEL-09-215060 | PATCH | The Trivial File Transfer Protocol (TFTP) server must not be installed unless it is required, and if required, the RHEL 9 TFTP daemon must be configured to operate in secure mode. | Get tftp-server package
+      when: not rhel9stig_is_tftp_server
+      ansible.builtin.package:
+        name: tftp-server
+        state: absent
+
+    - name: HIGH | RHEL-09-215060 | PATCH | The Trivial File Transfer Protocol (TFTP) server must not be installed unless it is required, and if required, the RHEL 9 TFTP daemon must be configured to operate in secure mode. | Get tftp-server package
+      when: rhel9stig_is_tftp_server
+      ansible.builtin.lineinfile:
+        path: /usr/lib/systemd/system/tftp.service
+        regexp: '^ExecStart=.*'
+        line: 'ExecStart=/usr/sbin/in.tftpd -s /var/lib/tftpboot'
+        create: true
+        mode: 'go-wx'
+        owner: root
+        group: root
 
 - name: HIGH | RHEL-09-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification of all information that requires at rest protection.
   when: rhel_09_231190
@@ -192,8 +224,6 @@
     - NIST800-53R4_SC-28
     - encrypt
     - filesystem
-  vars:
-    warn_control_id: "HIGH | RHEL-09-231190"
   block:
     - name: HIGH | RHEL-09-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification of all information that requires at rest protection. | Get partition layout
       ansible.builtin.command: blkid
@@ -211,8 +241,10 @@
     - name: HIGH | RHEL-09-231190 | WARN | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification of all information that requires at rest protection. | Message out warning
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "HIGH | RHEL-09-231190"
 
-- name: HIGH | RHEL-09-252070 | There must be no shosts.equiv files on RHEL 9.
+- name: HIGH | RHEL-09-252070 | PATCH | There must be no shosts.equiv files on RHEL 9.
   when: rhel_09_252070
   tags:
     - RHEL-09-252070
@@ -223,8 +255,6 @@
     - V-257955
     - NIST800-53R4_CM-6
     - files
-  vars:
-    warn_control_id: "HIGH | RHEL-09-252070"
   block:
     - name: HIGH | RHEL-09-252070 | AUDIT | There must be no shosts.equiv files on RHEL 9. | find files
       ansible.builtin.find:
@@ -247,8 +277,10 @@
         - not rhel9stig_disruption_high
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "HIGH | RHEL-09-252070"
 
-- name: HIGH | RHEL-09-252075 | There must be no .shosts files on RHEL 9.
+- name: HIGH | RHEL-09-252075 | PATCH | There must be no .shosts files on RHEL 9.
   when: rhel_09_252075
   tags:
     - RHEL-09-252075
@@ -259,8 +291,6 @@
     - V-257956
     - NIST800-53R4_CM-6
     - files
-  vars:
-    warn_control_id: "HIGH | RHEL-09-252075"
   block:
     - name: HIGH | RHEL-09-252075 | AUDIT | There must be no .shosts files on RHEL 9. | find files
       ansible.builtin.find:
@@ -282,7 +312,10 @@
       when:
         - discovered_dot_shosts is defined
         - not rhel9stig_disruption_high
-      ansible.builtin.import_tasks: warning_facts.yml
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+      vars:
+        warn_control_id: "HIGH | RHEL-09-252075"
 
 - name: HIGH | RHEL-09-255040 | PATCH | RHEL 9 SSHD must not allow blank passwords.
   when:

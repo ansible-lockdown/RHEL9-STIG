@@ -12,8 +12,6 @@
     - SV-257843r991589_rule
     - V-257843
     - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-231010"
   block:
     - name: "MEDIUM | RHEL-09-231010 | PATCH | A separate RHEL 9 file system must be used for user home directories (such as /home or an equivalent)."
       ansible.builtin.debug:
@@ -22,6 +20,8 @@
     - name: "MEDIUM | RHEL-09-231010 | PATCH | A separate RHEL 9 file system must be used for user home directories (such as /home or an equivalent)."
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-231010"
 
 - name: "MEDIUM | RHEL-09-231015 | PATCH | RHEL 9 must use a separate file system for /tmp."
   when:
@@ -35,16 +35,16 @@
     - SV-257844r1044918_rule
     - V-257844
     - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-231015"
   block:
     - name: "MEDIUM | RHEL-09-231015 | PATCH | RHEL 9 must use a separate file system for /tmp."
       ansible.builtin.debug:
-        msg: "Warning!! /tmp directory is not a seperate filesystem"
+        msg: "Warning!! /tmp directory is not a separate filesystem"
 
     - name: "MEDIUM | RHEL-09-231015 | PATCH | RHEL 9 must use a separate file system for /tmp."
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-231015"
 
 - name: "MEDIUM | RHEL-09-231035 | PATCH | RHEL 9 must use a separate file system for /var/tmp."
   when:
@@ -58,16 +58,16 @@
     - SV-257848r1044926_rule
     - V-257848
     - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-231035"
   block:
     - name: "MEDIUM | RHEL-09-231035 | PATCH | RHEL 9 must use a separate file system for /var/tmp."
       ansible.builtin.debug:
-        msg: "Warning!! /var/tmp directory is not a seperate filesystem"
+        msg: "Warning!! /var/tmp directory is not a separate filesystem"
 
     - name: "MEDIUM | RHEL-09-231035 | PATCH | RHEL 9 must use a separate file system for /var/tmp."
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-231035"
 
 - name: "MEDIUM | RHEL-09-231040 | PATCH | RHEL 9 file system automount function must be disabled unless required."
   when: rhel_09_231040
@@ -246,8 +246,6 @@
     - SV-257857r991589_rule
     - V-257857
     - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-231080"
   block:
     - name: "MEDIUM | RHEL-09-231080 | WARN | RHEL 9 must prevent code from being executed on file systems that are used with removable media."
       when: rhel9stig_discovered_removable_storage | length > 0
@@ -258,6 +256,8 @@
       when: rhel9stig_discovered_removable_storage | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-231080"
 
 - name: "MEDIUM | RHEL-09-231085 | WARN | RHEL 9 must prevent special devices on file systems that are used with removable media."
   when:
@@ -271,8 +271,6 @@
     - SV-257858r991589_rule
     - V-257858
     - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-231085"
   block:
     - name: "MEDIUM | RHEL-09-231085 | WARN | RHEL 9 must prevent special devices on file systems that are used with removable media."
       when: rhel9stig_discovered_removable_storage | length > 0
@@ -283,6 +281,8 @@
       when: rhel9stig_discovered_removable_storage | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-231085"
 
 - name: "MEDIUM | RHEL-09-231090 | WARN | RHEL 9 must prevent files with the setuid and setgid bit set from being executed on file systems that are used with removable media."
   when:
@@ -296,8 +296,6 @@
     - SV-257859r991589_rule
     - V-257859
     - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-231090"
   block:
     - name: "MEDIUM | RHEL-09-231090 | WARN | RHEL 9 must prevent files with the setuid and setgid bit set from being executed on file systems that are used with removable media."
       when: rhel9stig_discovered_removable_storage | length > 0
@@ -308,6 +306,8 @@
       when: rhel9stig_discovered_removable_storage | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-231090"
 
 - name: "MEDIUM | RHEL-09-231095 | PATCH | RHEL 9 must mount /boot with the nodev option. | BIOS based OS"
   when:
@@ -369,7 +369,7 @@
     - CAT2
     - CCI-001764
     - SRG-OS-000368-GPOS-00154
-    - SV-257862r1051265_rule
+    - SV-257862r1155661_rule
     - V-257862
     - NIST800-53R4_CM-7
   notify: Change_requires_reboot
@@ -395,17 +395,15 @@
     - CAT2
     - CCI-001764
     - SRG-OS-000368-GPOS-00154
-    - SV-257863r958804_rule
-    - SV-257864r958804_rule
-    - SV-257865r1044946_rule
+    - SV-257863r1155633_rule
+    - SV-257864r1155639_rule
+    - SV-257865r1155636_rule
     - V-257863
     - V-257864
     - V-257865
     - NIST800-53R4_CM-7
   notify:
     - Change_requires_reboot
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-231110-231120"
   block:
     - name: |
         "MEDIUM | RHEL-09-231110 | AUDIT | RHEL 9 must mount /dev/shm with the nodev option.
@@ -443,8 +441,10 @@
       when: discovered_dev_shm_status.stdout | length == 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-231110-231120"
 
-- name: MEDIUM | RHEL-09-231125 | PATCH | RHEL 9 must mount /tmp with the nodev option.""
+- name: "MEDIUM | RHEL-09-231125 | PATCH | RHEL 9 must mount /tmp with the nodev option."
   when:
     - rhel_09_231125
     - item.mount == '/tmp'
@@ -536,7 +536,7 @@
     - CAT2
     - CCI-001764
     - SRG-OS-000368-GPOS-00154
-    - SV-257869r958804_rule
+    - SV-257869r1102009_rule
     - V-257869
     - NIST800-53R4_CM-7
   ansible.posix.mount:
@@ -796,14 +796,12 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257881r991589_rule
+    - SV-257881r1155663_rule
     - V-257881
     - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-231200"
   block:
     - name: "MEDIUM | RHEL-09-231200 | AUDIT | RHEL 9 must prevent special devices on non-root local partitions. | discover partition"
-      ansible.builtin.shell: mount | grep '^/dev\S* on /\S' | grep -v nodev | awk -F" " '{print $3}'  # noqa: command-instead-of-module
+      ansible.builtin.shell: mount | grep '^/dev\S* on /\S' | grep -Ev 'nodev|vfat' | awk -F" " '{print $3}'  # noqa: command-instead-of-module
       changed_when: false
       failed_when: discovered_non_root_missing_nodev.rc not in [ 0, 1 ]
       register: discovered_non_root_missing_nodev
@@ -817,3 +815,5 @@
       when: discovered_non_root_missing_nodev.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-231200"

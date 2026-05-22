@@ -25,8 +25,6 @@
     - SV-258042r1045133_rule
     - V-258042
     - NIST800-53R4_IA-5
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-411015"
   block:
     - name: "MEDIUM | RHEL-09-411015 | AUDIT | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
       ansible.builtin.command: "awk -F: '$1 !~ /^root$/ && $2 !~ /^[!*]/ && $5 > {{ rhel9stig_pass_max_days }} {print $1}' /etc/shadow"
@@ -47,7 +45,7 @@
 
     - name: "MEDIUM | RHEL-09-411015 | WARN | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
       when:
-        - not rhel9stig_disruption_high or (ansible_user in rhel9stig_interactive_users.stdout_lines)
+        - not rhel9stig_disruption_high or (ansible_user in prelim_interactive_users.stdout_lines)
         - discovered_users_passwd_max is defined
         - discovered_users_passwd_max.stdout | length > 0
       ansible.builtin.debug:
@@ -60,6 +58,8 @@
         - discovered_users_passwd_max.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-411015"
 
 - name: "MEDIUM | RHEL-09-411020 | PATCH | All RHEL 9 local interactive user accounts must be assigned a home directory upon creation."
   when: rhel_09_411020
@@ -86,8 +86,6 @@
     - SV-258044r1045135_rule
     - V-258044
     - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-411025"
   block:
     - name: "MEDIUM | RHEL-09-411025 | AUDIT | RHEL 9 must set the umask value to 077 for all local interactive user accounts."
       ansible.builtin.shell: grep -ri umask {{ rhel9stig_home_filesystem }}/*/.[^.]*  # noqa: shell-instead-of-command
@@ -108,6 +106,8 @@
         - discovered_homedirs_umasks_set.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-411025"
 
 - name: "MEDIUM | RHEL-09-411030 | PATCH | RHEL 9 duplicate User IDs (UIDs) must not exist for interactive users."
   when: rhel_09_411030
@@ -123,8 +123,6 @@
     - SV-258045r958482_rule
     - V-258045
     - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-411030"
   block:
     - name: "MEDIUM | RHEL-09-411030 | PATCH | RHEL 9 duplicate User IDs (UIDs) must not exist for interactive users."
       ansible.builtin.shell: "cat /etc/passwd | awk -F: '{ print $3}' | sort -n | uniq -d"
@@ -145,6 +143,8 @@
         - discovered_duplicate_uids.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-411030"
 
 - name: "MEDIUM | RHEL-09-411035 | PATCH | RHEL 9 system accounts must not have an interactive login shell."
   when:
@@ -154,7 +154,7 @@
     - item.id != "shutdown"
     - item.id != "halt"
     - item.id != "nfsnobody"
-    - item.uid < uid_min_id | int
+    - item.uid < min_int_uid | int
     - item.shell != "      /bin/false"
     - item.shell != "      /usr/sbin/nologin"
   tags:
@@ -168,7 +168,7 @@
   ansible.builtin.user:
     name: "{{ item.id }}"
     shell: /usr/sbin/nologin
-  loop: "{{ rhel9stig_passwd }}"
+  loop: "{{ prelim_captured_passwd_data }}"
   loop_control:
     label: "{{ item.id }}"
 
@@ -181,15 +181,23 @@
     - CCI-001682
     - SRG-OS-000123-GPOS-00064
     - SRG-OS-000002-GPOS-00002
-    - SV-258047r958508_rule
+    - SV-258047r1101951_rule
     - V-258047
     - NIST800-53R4_AC-2
-  ansible.builtin.debug:
-    msg:
-      - "WARNING!!  Please check temporary accounts for expiration dates to be 72 hours or less."
-      - "To do this please run sudo chage -l account_name for the accounts you need to check"
-      - "The results will display the Account Expires information"
-      - 'To set account expire run sudo chage -E `date -d "+3 days" +%Y-%m-%d` account_name'
+  block:
+    - name: "MEDIUM | RHEL-09-411040 | WARN | RHEL 9 must automatically expire temporary accounts within 72 hours."
+      ansible.builtin.debug:
+        msg:
+          - "WARNING!!  Please check temporary accounts for expiration dates to be 72 hours or less."
+          - "To do this please run sudo chage -l account_name for the accounts you need to check"
+          - "The results will display the Account Expires information"
+          - 'To set account expire run sudo chage -E `date -d "+3 days" +%Y-%m-%d` account_name'
+
+    - name: "MEDIUM | RHEL-09-411040 | WARN | RHEL 9 must automatically expire temporary accounts within 72 hours."
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-411040"
 
 - name: "MEDIUM | RHEL-09-411045 | AUDIT | All RHEL 9 interactive users must have a primary group that exists."
   when: rhel_09_411045
@@ -198,11 +206,9 @@
     - CAT2
     - CCI-000764
     - SRG-OS-000104-GPOS-00051
-    - SV-258048r958482_rule
+    - SV-258048r1069380_rule
     - V-258048
     - NIST800-53R4_AC-2
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-411045"
   block:
     - name: "MEDIUM | RHEL-09-411045 | AUDIT | All RHEL 9 interactive users must have a primary group that exists."
       ansible.builtin.command: pwck -qr
@@ -211,7 +217,7 @@
       register: discovered_gid_exists
 
     - name: "MEDIUM | RHEL-09-411045 | AUDIT | All RHEL 9 interactive users must have a primary group that exists."
-      ansible.builtin.command: "cat /etc/passwd | awk -F: '{ print $4 }' | sort | uniq -d | awk '$1 > {{ uid_min_id }}' "
+      ansible.builtin.command: "cat /etc/passwd | awk -F: '{ print $4 }' | sort | uniq -d | awk '$1 > {{ min_int_uid }}' "
       changed_when: false
       failed_when: discovered_duplicate_gids.rc not in [ 0, 1 ]
       register: discovered_duplicate_gids
@@ -228,6 +234,8 @@
         - discovered_duplicate_gids.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-411045"
 
 - name: "MEDIUM | RHEL-09-411050 | PATCH | RHEL 9 must disable account identifiers (individuals, groups, roles, and devices) after 35 days of inactivity."
   when: rhel_09_411050
@@ -298,7 +306,7 @@
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
     - SV-258051r991589_rule
-    - SV-258052r991589_rule
+    - SV-258052r1155588_rule
     - V-258051
     - V-258052
     - NIST800-53R4_CM-6
@@ -313,7 +321,7 @@
         group: "{{ item.gid }}"
         mode: 'o-rwx'
       register: discovered_home_dir
-      loop: "{{ rhel9stig_passwd | selectattr('uid', '>=', min_int_uid | int) | selectattr('uid', '<=', max_int_uid | int) | list }}"
+      loop: "{{ prelim_captured_passwd_data | selectattr('uid', '>=', min_int_uid | int) | selectattr('uid', '<=', max_int_uid | int) | list }}"
       loop_control:
         label: "{{ item.id }}"
 
@@ -362,7 +370,7 @@
     group: "{{ item.gid }}"
     state: directory
     mode: 'o-rwx'
-  loop: "{{ rhel9stig_passwd | selectattr('gid', '>=', min_int_uid | int) | selectattr('gid', '<=', max_int_uid | int) | list }}"
+  loop: "{{ prelim_captured_passwd_data | selectattr('gid', '>=', min_int_uid | int) | selectattr('gid', '<=', max_int_uid | int) | list }}"
   loop_control:
     label: "{{ item.id }}"
 
@@ -482,8 +490,6 @@
     - SV-258058r1045148_rule
     - V-258058
     - NIST800-53R4_CM-6
-  vars:
-    rhel9stig_passwd_tasks: "RHEL-09-411095"  # pragma: allowlist secret
   block:
     - name: "MEDIUM | RHEL-09-411095 | AUDIT | RHEL 9 must not have unauthorized accounts. | Find unnecessary accounts"
       ansible.builtin.command: "grep '^{{ item }}:' /etc/passwd"
@@ -504,7 +510,7 @@
     - name: "MEDIUM | RHEL-09-411095 | PATCH | RHEL 9 must not have unauthorized accounts. | Re-parse passwd file"
       when: discovered_accounts_removed is changed  # noqa no-handler
       ansible.builtin.include_tasks:
-        file: ../parse_etc_password.yml
+        file: ../parse_etc_passwd.yml
 
 - name: "MEDIUM | RHEL-09-411105 | PATCH | RHEL 9 must ensure account lockouts persist."
   when: rhel_09_411105
@@ -542,8 +548,6 @@
     - SV-258061r958482_rule
     - V-258061
     - NIST800-53R4_IA-2
-  vars:
-    warn_control_id: 'MEDIUM | RHEL-09-411110'
   block:
     - name: "MEDIUM | RHEL-09-411110 | AUDIT | RHEL 9 groups must have unique Group ID (GID)."
       ansible.builtin.shell: 'getent passwd | cut -d: -f1 | sort -n | uniq -d'
@@ -561,27 +565,5 @@
       when: discovered_dup_group_check.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
-
-- name: "MEDIUM | RHEL-09-411115 | PATCH | Local RHEL 9 initialization files must not execute world-writable programs."
-  when: rhel_09_411115
-  tags:
-    - RHEL-09-411115
-    - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-258062r991589_rule
-    - V-258062
-    - NIST800-53R4_IA-2
-  block:
-    - name: "MEDIUM | RHEL-09-411115 | AUDIT | Local RHEL 9 initialization files must not execute world-writable programs."
-      ansible.builtin.shell: find /home -perm -002 -type f -name ".[^.]*" -exec ls -ld {} \;
-      changed_when: false
-      failed_when: discovered_user_exec_ww_files.rc not in [ 0, 1 ]
-      register: discovered_user_exec_ww_files
-
-    - name: "MEDIUM | RHEL-09-411115 | AUDIT | Local RHEL 9 initialization files must not execute world-writable programs."
-      when: discovered_user_exec_ww_files is defined
-      ansible.builtin.file:
-        path: "{{ item }}"
-        mode: 'go-wx'
-      loop: "{{ discovered_user_exec_ww_files.stdout_lines }}"
+      vars:
+        warn_control_id: 'MEDIUM | RHEL-09-411110'

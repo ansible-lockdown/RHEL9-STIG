@@ -55,7 +55,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257949r1014841_rule
+    - SV-257949r1134947_rule
     - V-257949
     - NIST800-53R4_CM-6
   community.general.ini_file:
@@ -63,10 +63,11 @@
     option: dns
     section: main
     state: present
-    value: none
+    value: "{{ rhel9stig_dns_processing_mode }}"
     no_extra_spaces: true
     mode: 'u-x,go-wx'
   register: discovered_dns_nm_set
+  notify: Restart_NetworkManager
 
 - name: "MEDIUM | RHEL-09-252035 | PATCH | RHEL 9 systems using Domain Name Servers (DNS) resolution must have at least two name servers configured."
   when: rhel_09_252035
@@ -82,8 +83,8 @@
     - name: "MEDIUM | RHEL-09-252035 | PATCH | RHEL 9 systems using Domain Name Servers (DNS) resolution must have at least two name servers configured."
       when:
         - discovered_dns_nm_set is defined or
-          rhel9stig_network_manager_dns.stdout == 'none' or
-          rhel9stig_network_manager_dns.stdout == 'unmanaged'
+          prelim_network_manager_dns.stdout == 'none' or
+          prelim_network_manager_dns.stdout == 'unmanaged'
       ansible.builtin.template:
         src: etc/resolv.conf.j2
         dest: /etc/resolv.conf
@@ -92,8 +93,8 @@
     - name: "MEDIUM | RHEL-09-252035 | PATCH | RHEL 9 systems using Domain Name Servers (DNS) resolution must have at least two name servers configured."
       when:
         - not rhel_09_252040
-        - rhel9stig_network_manager_dns.stdout != 'none'
-        - rhel9stig_network_manager_dns.stdout != 'unmanaged'
+        - prelim_network_manager_dns.stdout != 'none'
+        - prelim_network_manager_dns.stdout != 'unmanaged'
       notify: Restart_NetworkManager
       community.general.nmcli:
         conn_name: "{{ ansible_default_ipv4.interface }}"
@@ -114,8 +115,6 @@
     - SV-257950r1045006_rule
     - V-257950
     - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-252045"
   block:
     - name: "MEDIUM | RHEL-09-252045 | AUDIT | RHEL 9 must not have unauthorized IP tunnels configured. | check ipsec connections"
       ansible.builtin.shell: 'systemctl status ipsec | grep ": active" > /dev/null && grep -rni conn /etc/ipsec.conf /etc/ipsec.d/'
@@ -134,11 +133,11 @@
       when: discovered_ipsec_connections.stdout | length > 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-252045"
 
 - name: "MEDIUM | RHEL-09-252050 | PATCH | RHEL 9 must be configured to prevent unrestricted mail relaying."
-  when:
-    - rhel_09_252050
-    - "'postfix' in ansible_facts.packages"
+  when: rhel_09_252050
   tags:
     - RHEL-09-252050
     - CAT2
@@ -147,8 +146,6 @@
     - SV-257951r1014843_rule
     - V-257951
     - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-252050"
   block:
     - name: "MEDIUM | RHEL-09-252050 | AUDIT | RHEL 9 must be configured to prevent unrestricted mail relaying."
       ansible.builtin.command: postconf -n smtpd_client_restrictions
@@ -159,19 +156,25 @@
     - name: "MEDIUM | RHEL-09-252050 | PATCH | RHEL 9 must be configured to prevent unrestricted mail relaying. | configure postfix"
       when:
         - rhel9stig_disruption_high
-        - "rhel9stig_postfix_client_conf not in discovered_postfix_client_restrict"
+        - discovered_postfix_client_restrict.stdout | length == 0 or "rhel9stig_postfix_client_conf not in discovered_postfix_client_restrict"
       ansible.builtin.command: "postconf -e 'smtpd_client_restrictions = {{ rhel9stig_postfix_client_conf }}'"
       changed_when: true
 
     - name: "MEDIUM | RHEL-09-252050 | PATCH | RHEL 9 must be configured to prevent unrestricted mail relaying. | Alert Warning"
-      when: rhel9stig_postfix_client_conf not in discovered_postfix_client_restrict
+      when:
+        - not rhel9stig_disruption_high
+        - discovered_postfix_client_restrict.stdout | length == 0
       ansible.builtin.debug:
         msg: "Warning!! Please check postfix client restriction configurations"
 
     - name: "MEDIUM | RHEL-09-252050 | PATCH | RHEL 9 must be configured to prevent unrestricted mail relaying. | Warning Count"
-      when: rhel9stig_postfix_client_conf not in discovered_postfix_client_restrict
+      when:
+        - not rhel9stig_disruption_high
+        - discovered_postfix_client_restrict.stdout | length == 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-252050"
 
 - name: "MEDIUM | RHEL-09-252060 | PATCH | RHEL 9 must forward mail from postmaster to the root account using a postfix alias."
   when:
@@ -201,7 +204,7 @@
     - CCI-000803
     - SRG-OS-000480-GPOS-00227
     - SRG-OS-000120-GPOS-00061
-    - SV-257954r1045008_rule
+    - SV-257954r1106315_rule
     - V-257954
     - NIST800-53R4_IA-7
   ansible.builtin.package:

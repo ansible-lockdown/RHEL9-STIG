@@ -86,6 +86,11 @@
 # RHEL9-STIG rule 654095
 -a always,exit -F path=/usr/bin/crontab -F perm=x -F auid>=1000 -F auid!=unset -k privileged-crontab
 {% endif %}
+{% if rhel_09_654097 %}
+# RHEL9-STIG rule 654097
+-w /etc/cron.d -p wa -k cronjobs
+-w /var/spool/cron -p wa -k cronjobs
+{% endif %}
 {% if rhel_09_654100 %}
 # RHEL9-STIG rule 654100
 -a always,exit -F path=/usr/bin/gpasswd -F perm=x -F auid>=1000 -F auid!=unset -k privileged-gpasswd
@@ -216,10 +221,6 @@
 {% if rhel_09_654255 %}
 # RHEL9-STIG rule 654255
 -w /var/log/lastlog -p wa -k logins
-{% endif %}
-{% if rhel_09_654260 %}
-# RHEL9-STIG rule 654260
--w /var/log/tallylog -p wa -k logins
 {% endif %}
 {% if rhel_09_654265 %}
 # RHEL9-STIG rule 654265
