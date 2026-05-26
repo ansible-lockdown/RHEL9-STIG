@@ -31,6 +31,7 @@ defaults/main.yml documentation improved - added WARNING block on variable prece
 defaults/main.yml list vars indented with 2-space sequence style for consistency
 devel_pipeline_validation.yml IAC_BRANCH if-else block normalized to 2-space indent (matches main_pipeline_validation.yml)
 export_badges_private.yml dead conditional removed (referenced github.event_name == 'schedule' but no schedule trigger is defined)
+tasks/main.yml connecting-user check: fixed undefined variable rhel10stig_playbook_user -> rhel9stig_playbook_user and stray trailing quote in task name
 
 ## Based on STIG V2R7 - 05 Jan 2026
 
