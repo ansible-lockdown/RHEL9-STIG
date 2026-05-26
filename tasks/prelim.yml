@@ -255,9 +255,9 @@
   failed_when: prelim_pwquality_conf_files.rc not in [ 0, 1 ]
   register: prelim_pwquality_conf_files
 
-- name: "PRELIM | RHEL-09-411080 | RHEL-09-411080 | RHEL-09-411090 | Setup authselect if setting allow"
+- name: "PRELIM | RHEL-09-411080 | RHEL-09-411085 | RHEL-09-411090 | Setup authselect if setting allow"
   when:
-    - rhel_09_411085 or rhel_09_411085 or rhel_09_411090
+    - rhel_09_411080 or rhel_09_411085 or rhel_09_411090
     - rhel9stig_authselect_custom_profile is defined
     - not rhel9stig_add_faillock_without_authselect
     - rhel9stig_disruption_high
@@ -277,7 +277,7 @@
           - "{{ prelim_authselect_profiles_faillock.stdout_lines }}"
 
     - name: "PRELIM | PATCH | Setup authselect if setting allow | Create custom profiles"
-      ansible.builtin.command: "authselect select custom/{{ rhel9stig_authselect['custom_profile_name'] }} with-faillock"
+      ansible.builtin.command: "authselect select custom/{{ rhel9stig_authselect_custom_profile }} with-faillock"
       changed_when: true
       check_mode: false
 
