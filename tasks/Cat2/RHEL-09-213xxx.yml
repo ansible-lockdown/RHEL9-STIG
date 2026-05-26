@@ -316,7 +316,7 @@
     mode: 'u-x,go-wx'
     create: true
 
-- name: "MEDIUM | RHEL-09-213090 | PATCH | RHEL 9 must storage core dumps."
+- name: "MEDIUM | RHEL-09-213090 | PATCH | RHEL 9 must disable storing core dumps."
   when:
     - rhel_09_213090
     - not rhel_09_213040

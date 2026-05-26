@@ -118,7 +118,7 @@
     regexp: ^(#|)FirewallBackend=.*
     line: FirewallBackend=nftables
 
-- name: "MEDIUM | RHEL-09-251035 | AUDIT | To prevent unauthorized connection of devices, unauthorized transfer of information, or unauthorized tunneling (i.e., embedding of data types within data types), organizations must disable or restrict unused or unnecessary physical and logical ports/protocols on information systems."
+- name: "MEDIUM | RHEL-09-251035 | AUDIT | RHEL 9 must be configured to prohibit or restrict the use of functions, ports, protocols, and/or services, as defined in the Ports, Protocols, and Services Management (PPSM) Category Assignments List (CAL) and vulnerability assessments."
   when: rhel_09_251035
   tags:
     - RHEL-09-251035
@@ -129,14 +129,14 @@
     - V-257940
     - NIST800-53R4_CM-7
   block:
-    - name: "MEDIUM | RHEL-09-251035 | AUDIT | To prevent unauthorized connection of devices, unauthorized transfer of information, or unauthorized tunneling (i.e., embedding of data types within data types), organizations must disable or restrict unused or unnecessary physical and logical ports/protocols on information systems.. | Get services using firewalld"
+    - name: "MEDIUM | RHEL-09-251035 | AUDIT | RHEL 9 must be configured to prohibit or restrict the use of functions, ports, protocols, and/or services, as defined in the Ports, Protocols, and Services Management (PPSM) Category Assignments List (CAL) and vulnerability assessments. | Get services using firewalld"
       ansible.builtin.command: firewall-cmd --list-all
       changed_when: false
       failed_when: false
       check_mode: false
       register: discovered_ppsm_clsa_zone_config
 
-    - name: "MEDIUM | RHEL-09-251035 | AUDIT | To prevent unauthorized connection of devices, unauthorized transfer of information, or unauthorized tunneling (i.e., embedding of data types within data types), organizations must disable or restrict unused or unnecessary physical and logical ports/protocols on information systems. | Message out findings"
+    - name: "MEDIUM | RHEL-09-251035 | AUDIT | RHEL 9 must be configured to prohibit or restrict the use of functions, ports, protocols, and/or services, as defined in the Ports, Protocols, and Services Management (PPSM) Category Assignments List (CAL) and vulnerability assessments. | Message out findings"
       when: discovered_ppsm_clsa_zone_config.stdout_lines is defined
       ansible.builtin.debug:
         msg:

@@ -13,7 +13,7 @@
   ansible.builtin.package:
     name: chrony
 
-- name: "MEDIUM | RHEL-09-252015 | PATCH | RHEL 9 must have the chrony package installed."
+- name: "MEDIUM | RHEL-09-252015 | PATCH | RHEL 9 chronyd service must be enabled."
   when: rhel_09_252015
   tags:
     - RHEL-09-252015

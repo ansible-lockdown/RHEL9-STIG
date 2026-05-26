@@ -309,7 +309,7 @@
     mode: 'go-wx'
   loop: "{{ prelim_dconf_db.stdout_lines }}"
 
-- name: "MEDIUM | RHEL-09-271080 | PATCH | RHEL 9 must prevent a user from overriding the session idle-delay setting for the graphical user interface"
+- name: "MEDIUM | RHEL-09-271080 | PATCH | RHEL 9 must prevent a user from overriding the session lock-delay setting for the graphical user interface."
   when:
     - rhel_09_271080
     - "'dconf' in ansible_facts.packages"

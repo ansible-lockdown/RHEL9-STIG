@@ -1,6 +1,6 @@
 ---
 
-- name: "MEDIUM | RHEL-09-291010 | PATCH | USB mass storage permits easy introduction of unknown devices, thereby facilitating malicious activity."
+- name: "MEDIUM | RHEL-09-291010 | PATCH | RHEL 9 must be configured to disable USB mass storage."
   when: rhel_09_291010
   tags:
     - RHEL-09-291010

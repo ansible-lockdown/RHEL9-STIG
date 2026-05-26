@@ -683,7 +683,7 @@
   loop_control:
     label: "{{ item.device }}"
 
-- name: "MEDIUM | RHEL-09-231170 | PATCH | RHEL 9 must mount /var/log/audit with the noexec option."
+- name: "MEDIUM | RHEL-09-231170 | PATCH | RHEL 9 must mount /var/log/audit with the nosuid option."
   when:
     - rhel_09_231170
     - item.mount == '/var/log/audit'

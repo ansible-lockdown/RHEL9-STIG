@@ -827,7 +827,7 @@
     name: pcsc-lite
     state: present
 
-- name: "MEDIUM | RHEL-09-611180 | PATCH | RHEL 9 must have the pcsc-lite package installed."
+- name: "MEDIUM | RHEL-09-611180 | PATCH | The pcscd service on RHEL 9 must be active."
   when:
     - rhel_09_611180
     - rhel9stig_smartcard_reader

@@ -1,6 +1,6 @@
 ---
 
-- name: "MEDIUM | RHEL-09-431015 | PATCH | RHEL 9 must enable the SELinux targeted policy."
+- name: "MEDIUM | RHEL-09-431015 | PATCH | RHEL 9 must configure SELinux context type to allow the use of a nondefault faillock tally directory."
   when: rhel_09_431015
   tags:
     - RHEL-09-431015
@@ -68,7 +68,7 @@
 
 ## RHEL-09-431025 and 431030 are Pre-reqs for this control
 
-- name: "MEDIUM | RHEL-09-431020 | PATCH | RHEL 9 must enable the SELinux targeted policy."
+- name: "MEDIUM | RHEL-09-431020 | PATCH | RHEL 9 must configure SELinux context type to allow the use of a nondefault faillock tally directory."
   when: rhel_09_431020
   tags:
     - RHEL-09-431020
@@ -79,7 +79,7 @@
     - V-258080
     - NIST800-53R4_AC-7
   block:
-    - name: "MEDIUM | RHEL-09-431020 | PATCH | RHEL 9 must enable the SELinux targeted policy."
+    - name: "MEDIUM | RHEL-09-431020 | PATCH | RHEL 9 must configure SELinux context type to allow the use of a nondefault faillock tally directory."
       community.general.sefcontext:
         target: "{{ rhel9stig_faillock_dir }}(/.*)?"
         ftype: a
@@ -88,7 +88,7 @@
         state: present
       register: discovered_faillock_secontext
 
-    - name: "MEDIUM | RHEL-09-431020 | PATCH | RHEL 9 must enable the SELinux targeted policy."
+    - name: "MEDIUM | RHEL-09-431020 | PATCH | RHEL 9 must configure SELinux context type to allow the use of a nondefault faillock tally directory."
       when: discovered_faillock_secontext.changed  # noqa no-handler
       ansible.builtin.command: "restorecon -irvF {{ rhel9stig_faillock_dir }}"
       changed_when: true

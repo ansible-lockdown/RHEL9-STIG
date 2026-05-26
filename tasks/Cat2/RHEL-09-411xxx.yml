@@ -1,6 +1,6 @@
 ---
 
-- name: "MEDIUM | RHEL-09-411010 | PATCH | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
+- name: "MEDIUM | RHEL-09-411010 | PATCH | RHEL 9 user account passwords must have a 60-day maximum password lifetime restriction."
   when: rhel_09_411010
   tags:
     - RHEL-09-411010
@@ -15,7 +15,7 @@
     regexp: '^PASS_MAX_DAYS'
     line: "PASS_MAX_DAYS {{ rhel9stig_pass_max_days }}"
 
-- name: "MEDIUM | RHEL-09-411015 | PATCH | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
+- name: "MEDIUM | RHEL-09-411015 | PATCH | RHEL 9 user account passwords must have a 60-day maximum password lifetime restriction."
   when: rhel_09_411015
   tags:
     - RHEL-09-411015
@@ -26,13 +26,13 @@
     - V-258042
     - NIST800-53R4_IA-5
   block:
-    - name: "MEDIUM | RHEL-09-411015 | AUDIT | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
+    - name: "MEDIUM | RHEL-09-411015 | AUDIT | RHEL 9 user account passwords must have a 60-day maximum password lifetime restriction."
       ansible.builtin.command: "awk -F: '$1 !~ /^root$/ && $2 !~ /^[!*]/ && $5 > {{ rhel9stig_pass_max_days }} {print $1}' /etc/shadow"
       changed_when: false
       failed_when: discovered_users_passwd_max.rc not in [ 0, 1 ]
       register: discovered_users_passwd_max
 
-    - name: "MEDIUM | RHEL-09-411015 | PATCH | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
+    - name: "MEDIUM | RHEL-09-411015 | PATCH | RHEL 9 user account passwords must have a 60-day maximum password lifetime restriction."
       when:
         - rhel9stig_disruption_high
         - discovered_users_passwd_max is defined
@@ -43,7 +43,7 @@
       failed_when: discovered_users_passwd_max.rc not in [ 0, 1 ]
       loop: "{{ discovered_users_passwd_max.stdout_lines }}"
 
-    - name: "MEDIUM | RHEL-09-411015 | WARN | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs."
+    - name: "MEDIUM | RHEL-09-411015 | WARN | RHEL 9 user account passwords must have a 60-day maximum password lifetime restriction."
       when:
         - not rhel9stig_disruption_high or (ansible_user in prelim_interactive_users.stdout_lines)
         - discovered_users_passwd_max is defined
@@ -51,7 +51,7 @@
       ansible.builtin.debug:
         msg: "Warning!! The following users do not match maximum password life {{ discovered_users_passwd_max.stdout_lines }}"
 
-    - name: "MEDIUM | RHEL-09-411015 | WARN | RHEL 9 user account passwords for new users or password changes must have a 60-day maximum password lifetime restriction in /etc/login.defs.| Warning Count"
+    - name: "MEDIUM | RHEL-09-411015 | WARN | RHEL 9 user account passwords must have a 60-day maximum password lifetime restriction.| Warning Count"
       when:
         - not rhel9stig_disruption_high
         - discovered_users_passwd_max is defined

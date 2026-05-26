@@ -112,7 +112,7 @@
     regexp: ^gpgcheck
     line: gpgcheck=1
 
-- name: HIGH | RHEL-09-214020 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation.
+- name: HIGH | RHEL-09-214020 | PATCH | RHEL 9 must have GPG signature verification enabled for all software repositories.
   when: rhel_09_214020
   tags:
     - RHEL-09-214020
@@ -129,7 +129,7 @@
     regexp: ^localpkg_gpgcheck
     line: localpkg_gpgcheck=1
 
-- name: HIGH | RHEL-09-214025 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation.
+- name: HIGH | RHEL-09-214025 | PATCH | RHEL 9 must have GPG signature verification enabled for all software repositories.
   when: rhel_09_214025
   tags:
     - RHEL-09-214025
@@ -142,7 +142,7 @@
     - dnf
     - packages
   block:
-    - name: HIGH | RHEL-09-214025 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation. | find repo files
+    - name: HIGH | RHEL-09-214025 | PATCH | RHEL 9 must have GPG signature verification enabled for all software repositories. | find repo files
       ansible.builtin.find:
         path: /etc/yum.repos.d
         patterns: "*.repo"
@@ -151,7 +151,7 @@
         file_type: file
       register: discovered_repo_list
 
-    - name: HIGH | RHEL-09-214025 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation. | Set gpgcheck
+    - name: HIGH | RHEL-09-214025 | PATCH | RHEL 9 must have GPG signature verification enabled for all software repositories. | Set gpgcheck
       ansible.builtin.replace:
         path: "{{ item }}"
         regexp: ^gpgcheck
