@@ -152,8 +152,8 @@
 
     - name: HIGH | RHEL-09-214025 | PATCH | RHEL 9 must have GPG signature verification enabled for all software repositories. | Set gpgcheck
       ansible.builtin.replace:
-        path: "{{ item }}"
-        regexp: ^gpgcheck
+        path: "{{ item.path }}"
+        regexp: ^gpgcheck\s*=.*$
         replace: gpgcheck=1
       loop: "{{ discovered_repo_list.files }}"
 
