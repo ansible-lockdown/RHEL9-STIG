@@ -1371,10 +1371,10 @@
 
 - name: "MEDIUM | RHEL-09-654245 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/shadow."
   when:
-    - rhel_09_654240
+    - rhel_09_654245
     - rhel9stig_auditd_required
   tags:
-    - RHEL-09-654240
+    - RHEL-09-654245
     - CAT2
     - CCI-000015
     - CCI-000018

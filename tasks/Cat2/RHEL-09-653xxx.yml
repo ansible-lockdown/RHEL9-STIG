@@ -166,7 +166,7 @@
     - rhel_09_653025
     - rhel9stig_auditd_required
   tags:
-    - RHEL-09-653055
+    - RHEL-09-653025
     - CAT2
     - CCI-000140
     - SRG-OS-000047-GPOS-00023
