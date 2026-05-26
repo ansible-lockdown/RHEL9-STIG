@@ -852,6 +852,41 @@ rhel9stig_sssd_config_certmap: |
   maprule = (userCertificate;binary={cert!bin})
   domains = example.com
 
+### Rsyslog
+# Set the type either rsyslogd or syslog-ng this sets the audit tools binary as referred to controls
+# RHEL-09-232035, RHEL-09-232220, RHEL-09-232225
+rhel9stig_syslog_binary: rsyslogd
+# Set the following to true if the server accepts incoming syslog data using rsyslog
+rhel9stig_rsyslog_server: false
+
+# Adjust to match remote syslog server configuration
+# There are two ways to offload
+# 1. Legacy way - using @@
+# 2. New way - using Rainer scripts
+# The new way is more secure and is the preferred method.
+
+# If using legacy offload, set this to true
+# If using Rainer scripts offload, set this to false
+rhel9stig_rsyslog_legacy_offload: false
+
+# Standard settings for remote syslog server
+# Server IP address
+rhel9stig_rsyslog_remote_server_ip: 10.10.10.10
+# Server port
+rhel9stig_rsyslog_remote_server_port: 9999
+# Server protocol
+rhel9stig_rsyslog_remote_server_protocol: '@@'
+
+# Stream driver settings for rainerscripts offload
+# Stream driver type
+rhel9stig_rsyslog_stream_driver: 'gtls'
+# Stream driver mode
+rhel9stig_rsyslog_stream_driver_mode: '1'
+# Stream driver authentication mode
+rhel9stig_rsyslog_stream_driver_auth_mode: 'x509/name'
+# Stream driver permitted peers
+rhel9stig_rsyslog_stream_driver_permitted_peers: 'central.example.net'
+
 ### Aide
 # AIDE is a file integrity checking tool, similar in nature to Tripwire.
 # While it cannot prevent intrusions, it can detect unauthorized changes
@@ -878,41 +913,6 @@ rhel9stig_aide_cron_hour: '4'
 rhel9stig_aide_cron_minute: '30'
 rhel9stig_aide_cron_job: '/usr/sbin/aide --check | /bin/mail -s "$HOSTNAME - Daily aide integrity check run" root@sysname.mil'
 rhel9stig_aide_cron_name: 'Aide Job runs Daily at 0430'
-
-### Rsyslog
-# Set the type either rsyslogd or syslog-ng this sets the audit tools binary as referred to controls
-# RHEL-09-232035, RHEL-09-232220, RHEL-09-232225
-rhel9stig_syslog_binary: rsyslogd
-# Set the following to true if the server accepts incoming syslog data using rsyslog
-rhel9stig_rsyslog_server: false
-
-# Adjust to match remote syslog server configuration
-# There are two ways to offload
-# 1. Legacy way - using @@
-# 2. New way - using rainerscripts
-# The new way is more secure and is the preferred method.
-
-# If using legacy offload, set this to true
-# If using rainerscripts offload, set this to false
-rhel9stig_rsyslog_legacy_offload: false
-
-# Standard settings for remote syslog server
-# Server IP address
-rhel9stig_rsyslog_remote_server_server: 10.10.10.10
-# Server port
-rhel9stig_rsyslog_remote_server_port: 9999
-# Server protocol
-rhel9stig_rsyslog_remote_server_protocol: '@@'
-
-# Stream driver settings for rainerscripts offload
-# Stream driver type
-rhel9stig_rsyslog_stream_driver: 'gtls'
-# Stream driver mode
-rhel9stig_rsyslog_stream_driver_mode: '1'
-# Stream driver authentication mode
-rhel9stig_rsyslog_stream_driver_auth_mode: 'x509/name'
-# Stream driver permitted peers
-rhel9stig_rsyslog_stream_driver_permitted_peers: 'central.example.net'
 
 ### AUDITD
 # Ensure this matches the filesystem where the audit logs are stored.

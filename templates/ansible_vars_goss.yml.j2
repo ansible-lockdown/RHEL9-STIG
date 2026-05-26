@@ -725,7 +725,7 @@ rhel9stig_rsyslog_server: {{ rhel9stig_rsyslog_server }}
 rhel9stig_rsyslog_legacy_offload: {{ rhel9stig_rsyslog_legacy_offload }}
 # Adjust to match remote syslog server configuration
 rhel9stig_remotelog_server:
-  server: "{{ rhel9stig_rsyslog_remote_server_server }}"
+  server: "{{ rhel9stig_rsyslog_remote_server_ip }}"
   port: "{{ rhel9stig_rsyslog_remote_server_port }}"
   protocol: "{{ rhel9stig_rsyslog_remote_server_protocol }}"
 

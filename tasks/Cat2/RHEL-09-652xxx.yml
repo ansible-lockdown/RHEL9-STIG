@@ -233,7 +233,7 @@
       ansible.builtin.lineinfile:
         path: /etc/rsyslog.conf
         regexp: '^.*\@\@'
-        line: "*.* {{ rhel9stig_remotelog_server_protocol }}{{ rhel9stig_remotelog_server_server }}:{{ rhel9stig_remotelog_server_port }}"
+        line: "*.* {{ rhel9stig_rsyslog_remote_server_protocol }}{{ rhel9stig_rsyslog_remote_server_ip }}:{{ rhel9stig_rsyslog_remote_server_port }}"
 
     - name: MEDIUM | RHEL-09-652055 | PATCH | RHEL 9 must be configured to forward audit records via TCP to a different system or media from the system being audited via rsyslog. | add remote log server
       when: not rhel9stig_rsyslog_legacy_offload
