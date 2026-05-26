@@ -6,7 +6,7 @@
     - rhel9stig_use_aide
   tags:
     - RHEL-09-651030
-    - CAT2
+    - CAT3
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
     - SV-258138r1045274_rule
@@ -24,7 +24,7 @@
     - rhel9stig_use_aide
   tags:
     - RHEL-09-651035
-    - CAT2
+    - CAT3
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
     - SV-258139r1045276_rule
@@ -40,7 +40,7 @@
   when: rhel_09_653120
   tags:
     - RHEL-09-653120
-    - CAT2
+    - CAT3
     - CCI-001464
     - CCI-001849
     - SRG-OS-000254-GPOS-00095

@@ -34,6 +34,7 @@ export_badges_private.yml dead conditional removed (referenced github.event_name
 tasks/main.yml connecting-user check: fixed undefined variable rhel10stig_playbook_user -> rhel9stig_playbook_user and stray trailing quote in task name
 rsyslog remote-server var aligned end-to-end (defaults rhel9stig_rsyslog_remote_server_ip; legacy lineinfile, rainerscript template, and audit bridge updated to match)
 tasks/prelim.yml authselect prelim task: replaced undefined dict ref rhel9stig_authselect['custom_profile_name'] with scalar rhel9stig_authselect_custom_profile; corrected duplicated STIG IDs in name (411080|411080|411090 -> 411080|411085|411090) and when condition (411085 or 411085 or 411090 -> 411080 or 411085 or 411090)
+tasks/Cat3/*.yml: replaced CAT2 tag with CAT3 on all 15 Cat3 controls (selective `--tags CAT3` runs were silently empty)
 
 ## Based on STIG V2R7 - 05 Jan 2026
 
