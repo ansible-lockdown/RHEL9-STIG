@@ -38,6 +38,7 @@ tasks/Cat3/*.yml: replaced CAT2 tag with CAT3 on all 15 Cat3 controls (selective
 tasks/Cat2/RHEL-09-653xxx.yml: 653025 task tag corrected from RHEL-09-653055 to RHEL-09-653025
 tasks/Cat2/RHEL-09-654xxx.yml: 654245 shadow-audit task now uses rhel_09_654245 toggle and RHEL-09-654245 tag (previously both pointed at 654240)
 Task name titles aligned verbatim to V2R7 XCCDF for 12 controls where the role title was inverted, cross-pasted from an adjacent rule, contained discussion text, or otherwise diverged: 213090 (storage->disable storing), 231170 (noexec->nosuid), 252015 (chrony package->chronyd service), 271080 (idle-delay->lock-delay), 431020 (SELinux targeted policy->faillock tally directory context), 611180 (pcsc-lite package->pcscd service), 651020/651025 (file integrity tool->cryptographic mechanisms audit tools), 214025 (locally installed packages->all software repositories), 251035 (discussion text->PPSM CAL rule title), 291010 (discussion text->disable USB mass storage), 411015 (added scope qualifiers removed)
+RHEL-09-214025 find repo files task: removed use_regex:true (incompatible with glob pattern *.repo); the find module was silently returning zero files due to "nothing to repeat at position 0" regex error, leaving the gpgcheck=1 replace loop with an empty list. CAT-1 control now executes correctly.
 
 ## Based on STIG V2R7 - 05 Jan 2026
 

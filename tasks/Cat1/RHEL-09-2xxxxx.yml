@@ -146,7 +146,6 @@
       ansible.builtin.find:
         path: /etc/yum.repos.d
         patterns: "*.repo"
-        use_regex: true
         contains: gpgcheck
         file_type: file
       register: discovered_repo_list
