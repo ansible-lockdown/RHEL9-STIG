@@ -908,6 +908,7 @@
         dest: /etc/systemd/system/emergency.service.d/emergency.service.conf
         remote_src: true
         mode: 'u-x,go-wx'
+        force: false
 
     - name: MEDIUM | RHEL-09-611195 | PATCH | RHEL 9 must require authentication to access emergency mode. | add ExecStart
       ansible.builtin.lineinfile:
@@ -953,6 +954,7 @@
         dest: /etc/systemd/system/rescue.service.d/rescue.service.conf
         remote_src: true
         mode: 'u-x,go-wx'
+        force: false
 
     - name: MEDIUM | RHEL-09-611200 | PATCH | RHEL 9 must require authentication to access single-user mode. | add ExecStart
       ansible.builtin.lineinfile:
