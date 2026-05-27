@@ -429,7 +429,7 @@
     - NIST800-53R4_CM-6
   block:
     - name: "MEDIUM | RHEL-09-271105 | AUDIT | RHEL 9 must disable the ability of a user to accidentally press Ctrl-Alt-Del and cause a system to shut down or reboot."
-      ansible.builtin.command: gsettings set org.gnome.settings-daemon.plugins.media-keys logout
+      ansible.builtin.command: gsettings get org.gnome.settings-daemon.plugins.media-keys logout
       changed_when: false
       failed_when: discovered_gnome_logout_option.rc not in [0, 1]
       register: discovered_gnome_logout_option

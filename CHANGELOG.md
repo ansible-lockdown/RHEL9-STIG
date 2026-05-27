@@ -45,6 +45,7 @@ RHEL-09-271065 ini_file: added no_extra_spaces:true so the dconf drop-in writes 
 RHEL-09-231085 when-toggle alignment: parent block when: was rhel_09_231080 (gated by sibling control's toggle); corrected to rhel_09_231085 so the control honors its own toggle.
 RHEL-09-653015 task name: added trailing period to align verbatim with V2R7 XCCDF title.
 RHEL-09-432035 task name: changed outer YAML quoting from double to single to preserve XCCDF's literal "su" double-quoted command name (was 'su' single-quoted).
+RHEL-09-271105 AUDIT sub-task: changed gsettings set -> gsettings get (the discovery task was destructively writing the value before register could capture state).
 
 ## Based on STIG V2R7 - 05 Jan 2026
 
