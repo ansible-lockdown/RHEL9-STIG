@@ -261,6 +261,7 @@
     option: idle-delay
     section: 'org/gnome/desktop/session'
     value: 'uint32 600'
+    no_extra_spaces: true
     create: true
     mode: 'go-wx'
   loop: "{{ prelim_dconf_db.stdout_lines }}"
