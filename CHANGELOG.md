@@ -42,6 +42,9 @@ RHEL-09-214025 find repo files task: removed use_regex:true (incompatible with g
 RHEL-09-214025 Set gpgcheck task: path: "{{ item }}" -> path: "{{ item.path }}" (find returns stat dicts, not path strings); regexp tightened from ^gpgcheck (which matched only the word "gpgcheck" and left "gpgcheck=0" partially replaced as "gpgcheck=1=0") to ^gpgcheck\s*=.*$ to replace the full key=value line per the XCCDF fix-text. Surfaced by molecule failure once the find no-op was fixed.
 RHEL-09-611195/611200 copy service file: added force:false to the copy task that clobbered the lineinfile-edited drop-in on every converge. Goss audit was flipping these two controls from pass to fail between converges because the copy ran before the lineinfile re-edit. Audit state now stable run-to-run.
 RHEL-09-271065 ini_file: added no_extra_spaces:true so the dconf drop-in writes idle-delay=uint32 600 (no spaces around =) per dconf format convention, matching the audit goss content regex.
+RHEL-09-231085 when-toggle alignment: parent block when: was rhel_09_231080 (gated by sibling control's toggle); corrected to rhel_09_231085 so the control honors its own toggle.
+RHEL-09-653015 task name: added trailing period to align verbatim with V2R7 XCCDF title.
+RHEL-09-432035 task name: changed outer YAML quoting from double to single to preserve XCCDF's literal "su" double-quoted command name (was 'su' single-quoted).
 
 ## Based on STIG V2R7 - 05 Jan 2026
 

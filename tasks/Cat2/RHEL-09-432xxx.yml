@@ -103,7 +103,7 @@
     state: absent
   loop: "{{ prelim_sudoers_files.files }}"
 
-- name: "MEDIUM | RHEL-09-432035 | PATCH | RHEL 9 must restrict the use of the 'su' command."
+- name: 'MEDIUM | RHEL-09-432035 | PATCH | RHEL 9 must restrict the use of the "su" command.'
   when: rhel_09_432035
   tags:
     - RHEL-09-432035

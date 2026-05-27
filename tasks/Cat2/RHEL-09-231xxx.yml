@@ -261,7 +261,7 @@
 
 - name: "MEDIUM | RHEL-09-231085 | WARN | RHEL 9 must prevent special devices on file systems that are used with removable media."
   when:
-    - rhel_09_231080
+    - rhel_09_231085
     - rhel9stig_discovered_removable_storage is defined
   tags:
     - RHEL-09-231085

@@ -71,7 +71,7 @@
     name: audit
     state: present
 
-- name: "MEDIUM | RHEL-09-653015 | PATCH | RHEL 9 audit service must be enabled"
+- name: "MEDIUM | RHEL-09-653015 | PATCH | RHEL 9 audit service must be enabled."
   when:
     - rhel_09_653015
     - rhel9stig_auditd_required
