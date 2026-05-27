@@ -1,0 +1,19 @@
+---
+
+- name: Converge - apply RHEL 9 STIG remediation
+  hosts: all
+  any_errors_fatal: true
+  vars:
+    setup_audit: true
+    run_audit: true
+    audit_git_version: benchmark_v2r7
+    system_is_container: true
+    skip_reboot: true
+    rhel9stig_disruption_high: false
+  pre_tasks:
+    - name: Set root password so PAM rules don't lock us out
+      ansible.builtin.user:
+        name: root
+        password: "{{ 'changeme123!' | password_hash('sha512') }}"
+  roles:
+    - role: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}"

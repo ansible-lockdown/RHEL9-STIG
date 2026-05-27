@@ -1,0 +1,4 @@
+{{ file_managed_by_ansible }}
+
+# 254035 | RHEL 9 must prevent IPv6 Internet Control Message Protocol (ICMP) redirect messages from being accepted by default.
+net.ipv6.conf.default.accept_redirects = 0

@@ -37,15 +37,13 @@
     - SRG-OS-000396-GPOS-00176
     - SRG-OS-000423-GPOS-00187
     - SRG-OS-000478-GPOS-00223
-    - SV-258230r958408_rule
+    - SV-258230r1155585_rule
     - V-258230
     - NIST800-53R4_AC-17
     - NIST800-53R4_MA-4
     - NIST800-53R4_SC-8
     - NIST800-53R4_SC-13
     - fips
-  vars:
-    warn_control_id: "HIGH | RHEL-09-671010"
   notify: Change_requires_reboot
   block:
     - name: HIGH | RHEL-09-671010 | AUDIT | RHEL 9 must enable FIPS mode | Check current state.
@@ -61,6 +59,14 @@
       ansible.builtin.command: fips-mode-setup --enable
       changed_when: true
 
+    - name: HIGH | RHEL-09-671010 | PATCH | RHEL 9 must enable FIPS mode.
+      when:
+        - rhel9stig_disruption_high
+        - "'disabled' in discovered_current_fips_mode.stdout or 'Inconsistent' in discovered_current_fips_mode.stdout"
+      ansible.builtin.command: grubby --update-kernel=ALL --args="fips=1"
+      changed_when: true
+      notify: Change_requires_reboot
+
     - name: HIGH | RHEL-09-671010 | WARN | RHEL 9 must enable FIPS mode. | Give Warning
       when:
         - not rhel9stig_disruption_high
@@ -74,6 +80,8 @@
         - "'disabled' in discovered_current_fips_mode.stdout or 'Inconsistent' in discovered_current_fips_mode.stdout"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "HIGH | RHEL-09-671010"
 
 - name: "HIGH | RHEL-09-672020 | PATCH | RHEL 9 crypto policy must not be overridden."
   when: rhel_09_672020
@@ -86,16 +94,14 @@
     - SRG-OS-000396-GPOS-00176
     - SRG-OS-000393-GPOS-00173
     - SRG-OS-000394-GPOS-00174
-    - SV-258236r987791_rule
+    - SV-258236r1101920_rule
     - V-258236
     - NIST800-53R4_SC-13
     - NIST800-53R4_MA-4
     - crypto
-  vars:
-    warn_control_id: "HIGH | RHEL-09-672020"
   block:
     - name: "HIGH | RHEL-09-672020 | AUDIT | RHEL 9 crypto policy must not be overridden."
-      ansible.builtin.shell: update-crypto-policies --check && echo PASS
+      ansible.builtin.command: update-crypto-policies --check
       changed_when: false
       failed_when: discovered_crypto_policies_fips.rc not in [ 0, 1 ]
       register: discovered_crypto_policies_fips
@@ -131,3 +137,5 @@
         - not rhel9stig_disruption_high
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "HIGH | RHEL-09-672020"

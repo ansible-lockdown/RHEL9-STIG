@@ -1,0 +1,4 @@
+{{ file_managed_by_ansible }}
+
+# 253045 | RHEL 9 must not forward IPv4 source-routed packets by default.
+net.ipv4.conf.default.accept_source_route = 0

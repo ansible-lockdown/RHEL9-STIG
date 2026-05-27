@@ -10,8 +10,6 @@
     - SV-257819r1015075_rule
     - V-257819
     - NIST800-53R4_CM-5
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-214010"
   block:
     - name: "MEDIUM | RHEL-09-214010 | AUDIT | RHEL 9 must ensure cryptographic verification of vendor software packages. | find keys"
       ansible.builtin.shell: "rpm -qa | grep {{ os_gpg_key_pubkey_name }}"  # noqa: command-instead-of-module
@@ -37,7 +35,10 @@
       when:
         - discovered_os_installed_pub_keys.rc == 1 or
           discovered_os_gpg_key_check.rc == 1
-      ansible.builtin.import_tasks: warning_facts.yml
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-214010"
 
 - name: "MEDIUM | RHEL-09-214030 | PATCH | RHEL 9 must be configured so that the cryptographic hashes of system files match vendor values."
   when:
@@ -48,11 +49,9 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257823r1051231_rule
+    - SV-257823r1155641_rule
     - V-257823
     - NIST800-53R4_CM-6
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-214030"
   block:
     - name: "MEDIUM | RHEL-09-214030 | AUDIT | RHEL 9 must be configured so that the cryptographic hashes of system files match vendor values."
       ansible.builtin.shell: rpm -Va --noconfig | awk '$1 ~ /..5/ && $2 != "c"'  # noqa: command-instead-of-module
@@ -67,4 +66,7 @@
 
     - name: "MEDIUM | RHEL-09-214030 | AUDIT | RHEL 9 must be configured so that the cryptographic hashes of system files match vendor values."
       when: discovered_rpm_file_hash.stdout | length > 0
-      ansible.builtin.import_tasks: warning_facts.yml
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-214030"

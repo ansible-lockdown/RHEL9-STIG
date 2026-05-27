@@ -11,7 +11,7 @@
     - CCI-002234
     - SRG-OS-000326-GPOS-00126
     - SRG-OS-000327-GPOS-00127
-    - SV-258176r1045313_rule
+    - SV-258176r1155595_rule
     - V-258176
     - NIST800-53R4_AC-6
     - auditd
@@ -39,7 +39,7 @@
     - SRG-OS-000064-GPOS-00033
     - SRG-OS-000466-GPOS-00210
     - SRG-OS-000458-GPOS-00203
-    - SV-258177r1045316_rule
+    - SV-258177r1155597_rule
     - V-258177
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -70,7 +70,7 @@
     - SRG-OS-000466-GPOS-00210
     - SRG-OS-000458-GPOS-00203
     - SRG-OS-000474-GPOS-00219
-    - SV-258178r1045319_rule
+    - SV-258178r1155599_rule
     - V-258178
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -101,7 +101,7 @@
     - SRG-OS-000466-GPOS-00210
     - SRG-OS-000458-GPOS-00203
     - SRG-OS-000474-GPOS-00219
-    - SV-258179r1045322_rule
+    - SV-258179r1155601_rule
     - V-258179
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -328,7 +328,7 @@
     - SRG-OS-000466-GPOS-00210
     - SRG-OS-000467-GPOS-00211
     - SRG-OS-000468-GPOS-00212
-    - SV-258187r1045346_rule
+    - SV-258187r1155603_rule
     - V-258187
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -358,7 +358,7 @@
     - SRG-OS-000064-GPOS-00033
     - SRG-OS-000458-GPOS-00203
     - SRG-OS-000461-GPOS-00205
-    - SV-258188r1045349_rule
+    - SV-258188r1155605_rule
     - V-258188
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -387,7 +387,7 @@
     - SRG-OS-000471-GPOS-00215
     - SRG-OS-000471-GPOS-00216
     - SRG-OS-000477-GPOS-00222
-    - SV-258189r1045352_rule
+    - SV-258189r1155607_rule
     - V-258189
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -416,7 +416,7 @@
     - SRG-OS-000471-GPOS-00215
     - SRG-OS-000471-GPOS-00216
     - SRG-OS-000477-GPOS-00222
-    - SV-258190r1045355_rule
+    - SV-258190r1106379_rule
     - V-258190
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -503,6 +503,22 @@
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
     - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: "MEDIUM | RHEL-09-654097 | PATCH | RHEL 9 must audit any script or executable called by cron as root or by any privileged user."
+  when:
+    - rhel_09_654097
+    - rhel9stig_auditd_required
+  tags:
+    - RHEL-09-654097
+    - CAT2
+    - CCI-000172
+    - SRG-OS-000471-GPOS-00215
+    - SV-279936r1156361_rule
+    - V-279936
+    - NIST800-53R4_AU-12
     - auditd
   ansible.builtin.set_fact:
     update_audit_template: true
@@ -1053,7 +1069,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
-    - SV-258215r1045430_rule
+    - SV-258215r1155611_rule
     - V-258215
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -1078,7 +1094,7 @@
     - SRG-OS-000392-GPOS-00172
     - SRG-OS-000462-GPOS-00206
     - SRG-OS-000471-GPOS-00215
-    - SV-258216r1045433_rule
+    - SV-258216r1155613_rule
     - V-258216
     - NIST800-53R4_AU-3
     - NIST800-53R4_AU-12
@@ -1163,7 +1179,7 @@
     - SRG-OS-000303-GPOS-00120
     - SRG-OS-000466-GPOS-00210
     - SRG-OS-000476-GPOS-00221
-    - SV-258218r1045439_rule
+    - SV-258218r1101981_rule
     - V-258218
     - NIST800-53R4_AC-2
     - NIST800-53R4_AU-3
@@ -1355,10 +1371,10 @@
 
 - name: "MEDIUM | RHEL-09-654245 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/shadow."
   when:
-    - rhel_09_654240
+    - rhel_09_654245
     - rhel9stig_auditd_required
   tags:
-    - RHEL-09-654240
+    - RHEL-09-654245
     - CAT2
     - CCI-000015
     - CCI-000018
@@ -1438,26 +1454,6 @@
     - SV-258225r1014990_rule
     - V-258225
     - NIST800-53R4_AU-3
-    - NIST800-53R4_AU-12
-    - NIST800-53R4_MA-4
-    - auditd
-  ansible.builtin.set_fact:
-    update_audit_template: true
-
-- name: "MEDIUM | RHEL-09-654260 | PATCH | RHEL 9 must generate audit records for all account creations, modifications, disabling, and termination events that affect /var/log/tallylog."
-  when:
-    - rhel_09_654260
-    - rhel9stig_auditd_required
-  tags:
-    - RHEL-09-654260
-    - CAT2
-    - CCI-000172
-    - CCI-002884
-    - SRG-OS-000392-GPOS-00172
-    - SRG-OS-000470-GPOS-00214
-    - SRG-OS-000473-GPOS-00218
-    - SV-258226r958846_rule
-    - V-258226
     - NIST800-53R4_AU-12
     - NIST800-53R4_MA-4
     - auditd

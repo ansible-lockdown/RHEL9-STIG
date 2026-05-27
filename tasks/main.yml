@@ -18,7 +18,7 @@
 
 - name: Setup rules if container
   when:
-    - ansible_connection == 'docker' or
+    - ansible_connection in ['docker', 'community.docker.docker'] or
       ansible_virtualization_type in ["docker", "lxc", "openvz", "podman", "container"]
   tags:
     - container_discovery
@@ -43,19 +43,20 @@
     - not system_is_ec2
     - not audit_only
   block:
-    - name: Capture current password state of connecting user"
-      ansible.builtin.shell: "grep {{ ansible_env.SUDO_USER }} /etc/shadow | awk -F: '{print $2}'"
+    - name: Capture current password state of connecting user
+      ansible.builtin.shell: "grep {{ rhel9stig_playbook_user }} /etc/shadow | awk -F: '{print $2}'"
       changed_when: false
       failed_when: false
       check_mode: false
+      no_log: true
       register: discovered_ansible_user_password_set
 
-    - name: Assert that password set for {{ ansible_env.SUDO_USER }} and account not locked  # noqa:name[template]
+    - name: Assert that password set for {{ rhel9stig_playbook_user }} and account not locked  # noqa:name[template]
       tags: user_passwd
       ansible.builtin.assert:
-        that: discovered_ansible_user_password_set.stdout | length != 0 and discovered_ansible_user_password_set.stdout != "!!"
-        fail_msg: You have {{ sudo_password_rule }} enabled but the user = {{ ansible_env.SUDO_USER }} has no password set - It can break access
-        success_msg: You have a password set for the {{ ansible_env.SUDO_USER }}
+        that: discovered_rhel9stig_playbook_user_password_set.stdout | length != 0 and discovered_rhel9stig_playbook_user_password_set.stdout != "!!"
+        fail_msg: You have {{ sudo_password_rule }} enabled but the user = {{ rhel9stig_playbook_user }} has no password set - It can break access
+        success_msg: You have a password set for the connecting user {{ rhel9stig_playbook_user }}
       vars:
         sudo_password_rule: RHEL-09-010380  # pragma: allowlist secret
 
@@ -125,8 +126,6 @@
   ansible.builtin.meta: flush_handlers
 
 - name: Reboot system if changes require it and not skipped
-  vars:
-    warn_control_id: Reboot_required
   block:
     - name: POST | Reboot system if changes require it and not skipped
       when: not skip_reboot
@@ -142,6 +141,8 @@
       when: skip_reboot
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "Reboot_required"
 
 - name: Run post remediation audit
   when: run_audit
@@ -164,7 +165,7 @@
         state: directory
         owner: root
         group: root
-        mode: 'u=rwx,go=rx'
+        mode: 'go-w'
 
     - name: Create ansible facts file and levels applied if audit facts not present
       ansible.builtin.template:
@@ -178,7 +179,8 @@
   when:
     - fetch_audit_output
     - run_audit
-  tags: always
+  tags:
+    - run_audit
   ansible.builtin.import_tasks:
     file: fetch_audit_output.yml
 

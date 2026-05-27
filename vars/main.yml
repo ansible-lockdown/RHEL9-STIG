@@ -1,14 +1,14 @@
 ---
 # vars file for RHEL9-STIG
 
-min_ansible_version: 2.12.1
+min_ansible_version: 2.16.1
 
 rhel9stig_min_supported_os_ver:
-  RedHat: "9.2"
-  CentOS: "9.2"
-  Rocky: "9.2"
-  AlmaLinux: "9.2"
-  OracleLinux: "9.2"
+  RedHat: "9.6"
+  CentOS: "9.6"
+  Rocky: "9.6"
+  AlmaLinux: "9.6"
+  OracleLinux: "9.6"
 
 # Set dynamically if discovered to be non UEFI boot
 rhel9stig_legacy_boot: false
@@ -21,9 +21,6 @@ warn_control_list: ""
 warn_count: 0
 
 gpg_key_package: "{{ ansible_distribution | lower }}-gpg-keys"
-
-# Allow automated discovery of uids
-discover_int_uid: true
 
 # Default for facts
 change_requires_reboot: false
@@ -44,19 +41,8 @@ rhel9stig_dod_macs:
   - hmac-sha2-256
   - hmac-sha2-512
 
-rhel9stig_dod_kex:
+company_title: 'MindPoint Group - A Tyto Athene Company'
 
-# Defaults added for searches
-rhel9stig_ungrouped_files_found: false
-rhel9stig_unowned_files_found: false
-
-# Aide packages
-aide_packages:
-  - aide
-# Aide initiate command for new DB creation
-aide_initiate_command: /usr/sbin/aide --init
-
-company_title: 'Mindpoint Group - A Tyto Athene Company'
 file_managed_by_ansible: |-
   # File managed by ansible as part of {{ benchmark }} benchmark
   # As part of Ansible-lockdown

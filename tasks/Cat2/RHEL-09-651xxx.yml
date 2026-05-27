@@ -11,7 +11,7 @@
     - CCI-002696
     - SRG-OS-000363-GPOS-00150
     - SRG-OS-000445-GPOS-00199
-    - SV-258134r1045265_rule
+    - SV-258134r1155620_rule
     - V-258134
     - NIST800-53R4_CM-3
     - NIST800-53R4_SI-6
@@ -54,7 +54,7 @@
     state: present
     user: root
 
-- name: "MEDIUM | RHEL-09-651020 | PATCH | RHEL 9 must routinely check the baseline configuration for unauthorized changes and notify the system administrator when anomalies in the operation of any security functions are discovered."
+- name: "MEDIUM | RHEL-09-651020 | PATCH | RHEL 9 must use a file integrity tool that is configured to use FIPS 140-3-approved cryptographic hashes for validating file contents and directories."
   when:
     - rhel_09_651020
     - rhel9stig_use_aide
@@ -72,7 +72,7 @@
     dest: /etc/aide.conf
     mode: 'u-x,go-rwx'
 
-- name: "MEDIUM | RHEL-09-651025 | PATCH | RHEL 9 must use a file integrity tool that is configured to use FIPS 140-3-approved cryptographic hashes for validating file contents and directories."
+- name: "MEDIUM | RHEL-09-651025 | PATCH | RHEL 9 must use cryptographic mechanisms to protect the integrity of audit tools."
   when:
     - rhel_09_651025
     - rhel9stig_use_aide
@@ -87,7 +87,7 @@
     - SRG-OS-000257-GPOS-00098
     - SRG-OS-000258-GPOS-00099
     - SRG-OS-000278-GPOS-00108
-    - SV-258137r1045272_rule
+    - SV-258137r1102081_rule
     - V-258137
     - NIST800-53R4_AU-9
     - aide

@@ -9,11 +9,9 @@
     - CCI-001991
     - SRG-OS-000066-GPOS-00034
     - SRG-OS-000384-GPOS-00167
-    - SV-258131r1015125_rule
+    - SV-258131r1134927_rule
     - V-258131
     - NIST800-53R4_IA-5
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-631010"
   block:
     - name: "MEDIUM | RHEL-09-631010 | AUDIT | RHEL 9, for PKI-based authentication, must validate certificates by constructing a certification path (which includes status information) to an accepted trust anchor."
       ansible.builtin.shell: "openssl x509 -text -in /etc/sssd/pki/sssd_auth_ca_db.pem | grep 'Issuer: C = US, O = U.S. Government, OU = DoD, OU = PKI, CN = DoD Root CA 3'"
@@ -30,6 +28,8 @@
       when: discovered_dod_cert_check is defined
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-631010"
 
 - name: "MEDIUM | RHEL-09-631015 | PATCH | RHEL 9 must map the authenticated identity to the user or group account for PKI-based authentication."
   when:
@@ -65,5 +65,5 @@
     path: /etc/sssd/sssd.conf
     option: offline_credentials_expiration
     section: pam
-    value: 1
+    value: '1'
     mode: 'u-x,g-wx,o-rwx'

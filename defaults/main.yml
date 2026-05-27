@@ -1,26 +1,33 @@
 ---
+# defaults file for rhel9-stig
+# WARNING:
+# These values may be overridden by other vars-setting options(e.g. like the below 'container_vars_file'), as explained here:
+# https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable
 
 ## metadata for Audit benchmark
-benchmark_version: 'v2r3'
+benchmark_version: 'v2r7'
 
 ## Benchmark name used by auditing control role
 # The audit variable found at the base
 benchmark: RHEL9-STIG
 
 # Whether to skip the OS check for supported OS's
+# Supported OSs will not need for this to be changed - see README e.g. CentOS
 skip_os_check: false
 
+## Switching on/off specific STIG categories
+# These variables govern whether the tasks of a particular CAT are to be executed when running the role.
+# E.g: If you want to execute the tasks of CAT I you should set the "_cat1" variable to true.
+# If you do not want the tasks from that CAT to get executed you simply set the variable to "false".
 rhel9stig_cat1: true
 rhel9stig_cat2: true
 rhel9stig_cat3: true
 
-# We've defined disruption-high to indicate items that are likely to cause
-# disruption in a normal workflow.  These items can be remediated automatically
-# but are disabled by default to avoid disruption.
+# Disruption is high
+## Run tests that are considered higher risk and could have a system impact if not properly tested
+## Default false
+## Will be fine if clean new un-configured build
 rhel9stig_disruption_high: false
-
-# Set if system uses ipv6
-rhel9stig_system_uses_ipv6: false
 
 # Place to find the container yml file for your environment - /vars/...
 container_vars_file: is_container.yml
@@ -40,67 +47,61 @@ rhel9stig_default_user: root
 rhel9stig_connecting_user: "{{ ansible_env.SUDO_USER | default(rhel9stig_default_user) }}"
 rhel9stig_playbook_user: "{{ ansible_user | default(rhel9stig_connecting_user) }}"
 
-# Whether to skip the reboot
+# Whether to skip the system reboot before audit
+# System will reboot if false, can give better audit results
 skip_reboot: true
+
+# default value will change to true but won't reboot if not enabled but will error
+change_requires_reboot: false
 
 # system acts or requires router networking options
 rhel9stig_system_is_router: false
 
-########## BEGIN ##########
-### Audit role Settings ###
-###########################
-## Goss the audit binary
-## is required to be available
-## on the remote host
-## Other settings found vars/audit.yml
+###
+### Settings for associated Audit role using Goss
+###
 
-# Allow audit to setup the requirements including installing git (if option chosen and downloading and adding goss binary to system)
+###########################################
+### Goss is required on the remote host ###
+### vars/auditd.yml for other settings  ###
+
+## Audit setup
+# Audits are carried out using Goss. This variable
+# determines whether execution of the role prepares for auditing
+# by installing the required binary.
 setup_audit: false
 
-# enable audits to run - this runs the audit and get the latest content
+## Enable audits to run - this runs the audit and get the latest content
+# This variable governs whether the audit using the
+# separately maintained audit role using Goss
+# is carried out.
+# This runs the audit and gets the latest content
 run_audit: false
-
 # Run heavy tests - some tests can have more impact on a system enabling these can have greater impact on a system
 audit_run_heavy_tests: true
+# Ability to limit the number of concurrent processes used by goss (default 50)
+audit_max_concurrent: 50
 
 ## Only run Audit do not remediate
 audit_only: false
 
 #############################
-## If using audit content ###
-## e.g. lockdown dashboard ##
-#############################
-## Ability to collect and take audit files moving to a centralised location
 
-## This enables the collection of the files from the host
-fetch_audit_output: false
-
-## Method of getting,uploading the summary files
-## Ensure access and permissions are available for these to occur.
-## options are
-## fetch - fetches from server and moves to location on the ansible controller (could be a mount point available to controller)
-## copy - copies file to a location available to the managed node
-audit_output_collection_method: fetch
-
-## Location to put the audit files
-audit_output_destination: /opt/audit_summaries/
-
-############################
-### Audit binary options ###
-############################
-## How to retrieve audit binary
-## Options are copy or download - detailed settings at the bottom of this file
-## you will need to access to either github or the file already downloaded
+## How to retrieve audit binary(Goss)
+# Options are 'copy' or 'download' - detailed settings at the bottom of this file
+# - if 'copy':
+#    - the filepath mentioned via the below 'audit_bin_copy_location' var will be used to access already downloaded Goss
+# - if 'download':
+#    - the GitHub Goss-releases URL will be used for a fresh-download, via 'audit_bin_url' and 'audit_pkg_arch_name' vars
 get_audit_binary_method: download
 
-## If downloading the audit binary(goss)
+## If downloading the audit binary(Goss)
 ## Useful when self hosting the content
-## This enables the ability to not check ssl certificates using the get_url module
+## Enables the ability to not check ssl certificates using the get_url module
 audit_bin_validate_certs: true
 
-## Added the following options will default to not pass options
-## Please utilize a vault or alternative way to ensure encryption of details
-#
+## Optional credentials for downloading the audit binary from a private location.
+## Uncomment and set; prefer a vault or alternative encryption for these values.
 # audit_bin_url_username:
 # audit_bin_url_password:
 
@@ -109,28 +110,47 @@ audit_bin_validate_certs: true
 ## e.g copy from ansible control node to remote host
 audit_bin_copy_location: /some/accessible/path
 
-#############################
-### Audit Content options ###
-#############################
-## how to get audit files onto host options
-## options are git/copy/archive/get_url other e.g. if you wish to run from already downloaded conf
+## How to retrieve the audit role
+# The role for auditing is maintained separately.
+# This variable specifies the method of how to get the audit role
+# options are git/copy/archive/get_url other e.g. if you wish to run from already downloaded conf
+# onto the system. The options are as follows:
+# - 'git': clone audit content from GitHub REPOSITORY, set up via `audit_file_git` var, and
+#          VERSION(e.g. branch, tag name), set up via `audit_git_version` var.
+# - 'copy': copy from path as specified in variable `audit_conf_copy`.
+# - 'archive': same as 'copy', only that the specified filepath needs to be unpacked.
+# - 'get_url': Download from url as specified in variable `audit_files_url`
 audit_content: git
 
+# If using either archive, copy, get_url:
 ## Note will work with .tar files - zip will require extra configuration
-## If using get_url this is expecting github url in tar.gz format e.g.
-## https://github.com/ansible-lockdown/{OSTYPE}-{BENCMHARK_TYPE}-Audit/archive/refs/heads/benchmark-{{ benchmark_version }}.tar.gz
+### If using get_url this is expecting github url in tar.gz format e.g.
+### https://github.com/ansible-lockdown/{{ OS_TYPE }}-{{ BENCHMARK_TYPE }}-Audit/archive/refs/heads/benchmark-{{ benchmark_version }}.tar.gz
 audit_conf_source: "some path or url to copy from"
 
-## Destination for the audit content to be placed on managed node
-## note may not need full path e.g. /opt with the directory being the {{ benchmark }}-Audit directory
+# Destination for the audit content to be placed on managed node
+# note may not need full path e.g. /opt with the directory being the {{ benchmark }}-Audit directory
 audit_conf_dest: "/opt"
 
-## Where the audit logs are stored
+# Where the audit logs are stored
 audit_log_dir: '/opt'
 
-########### END ###########
-### Audit role Settings ###
-###########################
+## Ability to collect and take audit files moving to a centralized location
+# This enables the collection of the files from the host
+fetch_audit_output: false
+
+# Method of getting,uploading the summary files
+## Ensure access and permissions are available for these to occur.
+## options are
+# fetch - fetches from server and moves to location on the ansible controller (could be a mount point available to controller)
+# copy - copies file to a location available to the managed node
+audit_output_collection_method: fetch
+
+# Location to put the audit files
+audit_output_destination: /opt/audit_summaries/
+
+### Goss Settings ##
+####### END ########
 
 #### CAT 1
 rhel_09_211010: true
@@ -182,10 +202,10 @@ rhel_09_213065: true
 rhel_09_213070: true
 rhel_09_213075: true
 rhel_09_213080: true
-rhel_09_213085: true
-rhel_09_213090: true
-rhel_09_213095: true
-rhel_09_213100: true
+rhel_09_213085: true # Does not apply if 213040 is true conditional on task
+rhel_09_213090: true # Does not apply if 213040 is true conditional on task
+rhel_09_213095: true # Does not apply if 213040 is true conditional on task
+rhel_09_213100: true # Does not apply if 213040 is true conditional on task
 rhel_09_213105: true
 rhel_09_213110: true
 rhel_09_213115: true
@@ -208,6 +228,7 @@ rhel_09_215085: true
 rhel_09_215090: true
 rhel_09_215095: true
 rhel_09_215100: true
+rhel_09_215101: true
 rhel_09_215105: true
 
 rhel_09_231010: true
@@ -296,7 +317,6 @@ rhel_09_232245: true
 rhel_09_232250: true
 rhel_09_232255: true
 rhel_09_232260: true
-rhel_09_232265: true
 rhel_09_232270: true
 
 rhel_09_251010: true
@@ -305,7 +325,7 @@ rhel_09_251020: true
 rhel_09_251030: true
 rhel_09_251035: true
 rhel_09_251040: true
-rhel_09_251045: true  # Note this can conflict for 251025 asgssproxy requires nfs-utils
+rhel_09_251045: true
 rhel_09_252010: true
 rhel_09_252015: true
 rhel_09_252020: true
@@ -344,8 +364,6 @@ rhel_09_255025: true
 rhel_09_255030: true
 rhel_09_255035: true
 rhel_09_255045: true
-rhel_09_255055: true
-rhel_09_255060: true
 rhel_09_255064: true
 rhel_09_255065: true
 rhel_09_255070: true
@@ -369,6 +387,8 @@ rhel_09_255155: true
 rhel_09_255160: true
 rhel_09_255165: true
 rhel_09_255175: true
+## CAT2 171xxx graphical login banner (when rhel9stig_gui)
+rhel_09_171011: true
 rhel_09_271010: true
 rhel_09_271015: true
 rhel_09_271020: true
@@ -419,7 +439,6 @@ rhel_09_411090: true
 rhel_09_411095: true
 rhel_09_411105: true
 rhel_09_411110: true
-rhel_09_411115: true
 rhel_09_412035: true
 rhel_09_412045: true
 rhel_09_412050: true
@@ -429,6 +448,7 @@ rhel_09_412065: true
 rhel_09_412070: true
 rhel_09_412080: true
 rhel_09_431015: true
+rhel_09_431016: true
 rhel_09_431020: true
 rhel_09_431025: true
 rhel_09_431030: true
@@ -477,7 +497,6 @@ rhel_09_611185: true
 rhel_09_611190: true
 rhel_09_611195: true
 rhel_09_611200: true
-rhel_09_611205: true
 
 ### CAT2 63xxxx
 rhel_09_631010: true
@@ -493,8 +512,7 @@ rhel_09_652015: true
 rhel_09_652020: true
 rhel_09_652025: true
 rhel_09_652030: true
-rhel_09_653130: true  # NOTE Required before 652035 can run
-rhel_09_652035: true
+rhel_09_653130: true  # audispd-plugins package (see RHEL-09-653130)
 rhel_09_652040: true
 rhel_09_652045: true
 rhel_09_652050: true
@@ -523,7 +541,6 @@ rhel_09_653095: true
 rhel_09_653100: true
 rhel_09_653105: true
 rhel_09_653110: true
-rhel_09_653115: true
 rhel_09_653125: true
 
 ### CAT2 65xxxx
@@ -546,6 +563,7 @@ rhel_09_654080: true
 rhel_09_654085: true
 rhel_09_654090: true
 rhel_09_654095: true
+rhel_09_654097: true
 rhel_09_654100: true
 rhel_09_654105: true
 rhel_09_654110: true
@@ -578,7 +596,6 @@ rhel_09_654240: true
 rhel_09_654245: true
 rhel_09_654250: true
 rhel_09_654255: true
-rhel_09_654260: true
 rhel_09_654265: true
 rhel_09_654270: true
 rhel_09_654275: true
@@ -586,7 +603,6 @@ rhel_09_654275: true
 rhel_09_671015: true
 rhel_09_671020: true
 rhel_09_671025: true
-rhel_09_672025: true
 rhel_09_672050: true
 
 ### Cat3
@@ -601,7 +617,6 @@ rhel_09_231195: true
 rhel_09_252025: true
 rhel_09_291025: true
 rhel_09_412040: true
-rhel_09_412075: true
 rhel_09_651030: true
 rhel_09_651035: true
 rhel_09_653120: true
@@ -612,40 +627,40 @@ rhel_09_653120: true
 rhel9stig_gui_approved: false
 
 # If gui not installed
-rhel9stig_gui: "{{ rhel_09_gnome_present.stat.exists | default(false) }}"
+rhel9stig_gui: "{{ prelim_gnome_present.stat.exists | default(false) }}"
 
 ## SSHD
-rhel9stig_sshd_config_file: /etc/ssh/sshd_config
 rhel9stig_sshd_required: true
+rhel9stig_sshd_config_file: /etc/ssh/sshd_config
+
+rhel9stig_sshd_config_banner_file: /etc/issue
+rhel9stig_sshd_config_ciphers: "{{ rhel9stig_dod_ciphers }}"
+rhel9stig_sshd_config_clientalivecountmax: 1
+rhel9stig_sshd_config_clientaliveinterval: 600  # max 600
+rhel9stig_sshd_config_compress: 'no'
+rhel9stig_sshd_config_gssapiauth: 'no'
+rhel9stig_sshd_config_hostauth: 'no'
+rhel9stig_sshd_config_ignoreknownhosts: 'yes'
+rhel9stig_sshd_config_ignorerhosts: 'yes'
+rhel9stig_sshd_config_include_conf: /etc/ssh/sshd_config.d/*.conf
+rhel9stig_sshd_config_kerbauth: 'no'
+rhel9stig_sshd_config_lastlog: 'yes'
+rhel9stig_sshd_config_loglevel: VERBOSE
+rhel9stig_sshd_config_macs: "{{ rhel9stig_dod_macs }}"
 rhel9stig_sshd_config_maxlogins: 10
-rhel9stig_sshd_config:
-  banner_file: /etc/issue
-  ciphers: "{{ rhel9stig_dod_ciphers }}"
-  clientalivecountmax: 1
-  clientaliveinterval: 600  # max 600
-  compress: 'no'
-  gssapiauth: 'no'
-  hostauth: 'no'
-  ignoreknownhosts: 'yes'
-  ignorerhosts: 'yes'
-  include_conf: /etc/ssh/sshd_config.d/*.conf
-  kerbauth: 'no'
-  lastlog: 'yes'
-  loglevel: VERBOSE
-  macs: "{{ rhel9stig_dod_macs }}"
-  pubkeyauth: 'yes'
-  permitroot: 'no'
-  privsep: sandbox
-  rekeylimit: '1G 1h'
-  strictmodes: 'yes'
-  userenv: 'no'
-  x11forward: 'no'
-  x11uselocal: 'yes'
+rhel9stig_sshd_config_pubkeyauth: 'yes'
+rhel9stig_sshd_config_permitroot: 'no'
+rhel9stig_sshd_config_privsep: sandbox
+rhel9stig_sshd_config_rekeylimit: '1G 1h'
+rhel9stig_sshd_config_strictmodes: 'yes'
+rhel9stig_sshd_config_userenv: 'no'
+rhel9stig_sshd_config_x11forward: 'no'
+rhel9stig_sshd_config_x11uselocal: 'yes'
 
 ## Bootloader/Grub settings
 rhel9stig_grub_superuser: root
 rhel9stig_bootloader_password_hash: 'grub.pbkdf2.sha512.changethispassword'  # pragma: allowlist secret
-rhel9stig_set_bootloader_password: false
+rhel9stig_set_bootloader_password: false # pragma: allowlist secret
 
 ## Banner
 rhel9stig_workaround_for_disa_benchmark: true
@@ -685,6 +700,8 @@ rhel9stig_logon_banner_nice: |
 rhel9stig_is_ftp_server: false
 rhel9stig_is_tftp_server: false
 rhel9stig_sendmail_required: false
+# NFS - this affects controls RHEL-09-215025 and RHEL-09-215045 as gssproxy is a dependency of nfs-utils.
+# If nfs-utils is required then RHEL-09-215045 for gssproxy will be skipped and the controls will be met.
 rhel9stig_nfs_utils_required: false
 rhel9stig_ypserv_required: false
 rhel9stig_rsh_server_required: false
@@ -695,6 +712,11 @@ rhel9stig_tuned_required: false
 rhel9stig_quagga_required: false
 
 ## 215xxx
+# 215035 - EPEL repository required
+# If not required then the package will be removed
+# if required then the repository will be disabled
+rhel9stig_epel_required: false
+
 # Add list of additional crypto subpolicies to be added to FIPS
 rhel9stig_additional_fips_crypto_subpolicies: false
 rhel9stig_additional_fips_crypto_subpolicies_list:
@@ -705,6 +727,12 @@ rhel9stig_additional_fips_crypto_subpolicies_list:
 rhel9stig_home_filesystem: '/home'
 
 ## 25xxxx
+# 252040 - DNS processing mode in Network Manager - Must be one of the following: default, none, systemd-resolved
+# default: NetworkManager will update /etc/resolv.conf to reflect the nameservers provided by currently active connections.
+# none: NetworkManager will not modify /etc/resolv.conf. Used when DNS is managed manually or by another service.
+# systemd-resolved: Uses systemd-resolved to manage DNS.
+rhel9stig_dns_processing_mode: 'none'
+
 ## Firewalld
 # rhel9stig_custom_firewall_zone is the desired name for the firewall zone
 rhel9stig_custom_firewall:
@@ -715,11 +743,11 @@ rhel9stig_custom_firewall:
 # http and ssh need to be enabled for the role to run.
 # This can also be a port number if no service exists
 rhel9stig_white_list_services:
-- ssh
+  - ssh
 
 ## Interface list allowed to have promiscuous mode set
 rhel9stig_promisc_if:
-- none
+  - none
 
 # Set sysctl files
 # Sysctl file
@@ -729,14 +757,12 @@ rhel9stig_sysctl_file:
   kernel: "{{ rhel9stig_sysctl_file_default }}"
   network: "{{ rhel9stig_sysctl_file_default }}"
   user: "{{ rhel9stig_sysctl_file_default }}"
-# Systems that run containers must set this value to greater then 0 for example: 65536
-rhel9stig_sysctl_max_user_namespaces: '0'
 
 ## Chrony
 rhel9stig_time_synchronization_servers:
-- '0.us.pool.ntp.mil'
-- '1.us.pool.ntp.mil'
-rhel9stig_chrony_server_options: "iburst maxpoll 16"  # Max Settings is maxpoll 16
+  - '0.us.pool.ntp.mil'
+  - '1.us.pool.ntp.mil'
+rhel9stig_chrony_server_options: "iburst maxpoll 16"  # Max Setting is maxpoll 16
 
 ## fapolicy
 # Allow adding of fapolicy rules to be updated - also needs rhel9stig_disruption_high
@@ -744,16 +770,16 @@ rhel9stig_allow_fapolicy_updates: false
 
 # rhel9stig_fapolicy_white_list is the whitelist for fapolicyd
 rhel9stig_fapolicy_white_list:
-- '# Allow Ansible'
-- "allow perm=any trust=1 : dir={{ ansible_env.PWD }}/.ansible/"
-- 'allow perm=any trust=1 : dir=/root/.ansible/'
-- 'allow perm=any trust=1 : dir=/tmp/ansible/'
+  - '# Allow Ansible'
+  - "allow perm=any trust=1 : dir={{ ansible_env.PWD }}/.ansible/"
+  - 'allow perm=any trust=1 : dir=/root/.ansible/'
+  - 'allow perm=any trust=1 : dir=/tmp/ansible/'
 
 ## DNS
 # Please adjust accordingly for ipv4 or ipv6
 rhel9stig_dns_ip4_servers:
-- 8.8.8.8
-- 8.8.4.4
+  - 8.8.8.8
+  - 8.8.4.4
 
 # rhel9stig_dns_ip6_servers:
 #   - '2001:4860:4860::8888'
@@ -761,7 +787,7 @@ rhel9stig_dns_ip4_servers:
 
 ## Optional settings Please adjust accordingly for your environment
 # rhel9stig_resolv_domains:
-# - example.com
+#   - example.com
 # rhel9stig_resolv_search_options: example.com example1.com
 # rhel9stig_resolv_dns_options: 'timeout:2 rotate'
 
@@ -791,13 +817,13 @@ rhel9stig_faillock_unlock_time: 0  # should be set to 0 unless documented
 rhel9stig_faillock_dir: '/var/log/faillock'
 
 rhel9stig_unnecessary_accounts:
-- ftp
-- games
+  - ftp
+  - games
 rhel9stig_remove_unnecessary_user_files: false
 
 rhel9stig_login_defs_fail_delay: '4'
 
-rhel9stig_logind_conf_stopsessionidle: '900'
+rhel9stig_logind_conf_stopsessionidle: '600'
 
 rhel9stig_pam_retry: '3'  # must be set between 1-3, anything else is a failure
 rhel9stig_pam_rounds: '5000'
@@ -813,8 +839,8 @@ rhel9stig_pwquality_ocredit: -1
 rhel9stig_pwquality_ucredit: -1
 
 rhel9stig_sudoers_exclude_nopasswd_list:
-- ec2-user
-- vagrant
+  - ec2-user
+  - vagrant
 
 rhel9stig_smartcard_reader: false
 
@@ -825,6 +851,41 @@ rhel9stig_sssd_config_certmap: |
   matchrule ='.*example@mil'
   maprule = (userCertificate;binary={cert!bin})
   domains = example.com
+
+### Rsyslog
+# Set the type either rsyslogd or syslog-ng this sets the audit tools binary as referred to controls
+# RHEL-09-232035, RHEL-09-232220, RHEL-09-232225
+rhel9stig_syslog_binary: rsyslogd
+# Set the following to true if the server accepts incoming syslog data using rsyslog
+rhel9stig_rsyslog_server: false
+
+# Adjust to match remote syslog server configuration
+# There are two ways to offload
+# 1. Legacy way - using @@
+# 2. New way - using Rainer scripts
+# The new way is more secure and is the preferred method.
+
+# If using legacy offload, set this to true
+# If using Rainer scripts offload, set this to false
+rhel9stig_rsyslog_legacy_offload: false
+
+# Standard settings for remote syslog server
+# Server IP address
+rhel9stig_rsyslog_remote_server_ip: 10.10.10.10
+# Server port
+rhel9stig_rsyslog_remote_server_port: 9999
+# Server protocol
+rhel9stig_rsyslog_remote_server_protocol: '@@'
+
+# Stream driver settings for rainerscripts offload
+# Stream driver type
+rhel9stig_rsyslog_stream_driver: 'gtls'
+# Stream driver mode
+rhel9stig_rsyslog_stream_driver_mode: '1'
+# Stream driver authentication mode
+rhel9stig_rsyslog_stream_driver_auth_mode: 'x509/name'
+# Stream driver permitted peers
+rhel9stig_rsyslog_stream_driver_permitted_peers: 'central.example.net'
 
 ### Aide
 # AIDE is a file integrity checking tool, similar in nature to Tripwire.
@@ -853,20 +914,6 @@ rhel9stig_aide_cron_minute: '30'
 rhel9stig_aide_cron_job: '/usr/sbin/aide --check | /bin/mail -s "$HOSTNAME - Daily aide integrity check run" root@sysname.mil'
 rhel9stig_aide_cron_name: 'Aide Job runs Daily at 0430'
 
-### Rsyslog
-# Set the type either rsyslogd or syslog-ng this sets the audit tools binary as referred to controls
-# RHEL-09-232035, RHEL-09-232220, RHEL-09-232225
-# Used for auditd binary path
-rhel9stig_syslog_binary: rsyslogd
-# Set the following to true if the server accepts incoming syslog data using rsyslog
-rhel9stig_rsyslog_server: false
-
-# Adjust to match remote syslog server configuration
-rhel9stig_remotelog_server:
-  server: 10.10.10.10
-  port: 9999
-  protocol: '@@'
-
 ### AUDITD
 # Ensure this matches the filesystem where the audit logs are stored.
 # It will affect checks for control RHEL-09-653030
@@ -889,13 +936,12 @@ rhel9stig_audit_conf_space_left: 25%
 rhel9stig_audit_conf_space_left_action: email
 rhel9stig_audit_conf_write_logs: 'yes'
 rhel9stig_audit_backlog_limit: 8192
-
 # Audit binaries
 rhel9stig_audit_bins:
-- '/usr/sbin/auditctl'
-- '/usr/sbin/aureport'
-- '/usr/sbin/ausearch'
-- '/usr/sbin/autrace'
-- '/usr/sbin/auditd'
-- '/usr/sbin/{{ rhel9stig_syslog_binary }}'  # Note you may not need this is container
-- '/usr/sbin/augenrules'
+  - '/usr/sbin/auditctl'
+  - '/usr/sbin/aureport'
+  - '/usr/sbin/ausearch'
+  - '/usr/sbin/autrace'
+  - '/usr/sbin/auditd'
+  - '/usr/sbin/{{ rhel9stig_syslog_binary }}'  # Note you may not need this is container
+  - '/usr/sbin/augenrules'

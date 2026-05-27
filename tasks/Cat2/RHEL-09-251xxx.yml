@@ -48,7 +48,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257937r991589_rule
+    - SV-257937r1106310_rule
     - V-257937
     - NIST800-53R4_CM-6
   notify: Firewalld_reload
@@ -118,25 +118,25 @@
     regexp: ^(#|)FirewallBackend=.*
     line: FirewallBackend=nftables
 
-- name: "MEDIUM | RHEL-09-251035 | AUDIT | To prevent unauthorized connection of devices, unauthorized transfer of information, or unauthorized tunneling (i.e., embedding of data types within data types), organizations must disable or restrict unused or unnecessary physical and logical ports/protocols on information systems."
+- name: "MEDIUM | RHEL-09-251035 | AUDIT | RHEL 9 must be configured to prohibit or restrict the use of functions, ports, protocols, and/or services, as defined in the Ports, Protocols, and Services Management (PPSM) Category Assignments List (CAL) and vulnerability assessments."
   when: rhel_09_251035
   tags:
     - RHEL-09-251035
     - CAT2
     - CCI-000382
     - SRG-OS-000096-GPOS-00050
-    - SV-257940r958480_rule
+    - SV-257940r1106312_rule
     - V-257940
     - NIST800-53R4_CM-7
   block:
-    - name: "MEDIUM | RHEL-09-251035 | AUDIT | To prevent unauthorized connection of devices, unauthorized transfer of information, or unauthorized tunneling (i.e., embedding of data types within data types), organizations must disable or restrict unused or unnecessary physical and logical ports/protocols on information systems.. | Get services using firewalld"
+    - name: "MEDIUM | RHEL-09-251035 | AUDIT | RHEL 9 must be configured to prohibit or restrict the use of functions, ports, protocols, and/or services, as defined in the Ports, Protocols, and Services Management (PPSM) Category Assignments List (CAL) and vulnerability assessments. | Get services using firewalld"
       ansible.builtin.command: firewall-cmd --list-all
       changed_when: false
       failed_when: false
       check_mode: false
       register: discovered_ppsm_clsa_zone_config
 
-    - name: "MEDIUM | RHEL-09-251035 | AUDIT | To prevent unauthorized connection of devices, unauthorized transfer of information, or unauthorized tunneling (i.e., embedding of data types within data types), organizations must disable or restrict unused or unnecessary physical and logical ports/protocols on information systems. | Message out findings"
+    - name: "MEDIUM | RHEL-09-251035 | AUDIT | RHEL 9 must be configured to prohibit or restrict the use of functions, ports, protocols, and/or services, as defined in the Ports, Protocols, and Services Management (PPSM) Category Assignments List (CAL) and vulnerability assessments. | Message out findings"
       when: discovered_ppsm_clsa_zone_config.stdout_lines is defined
       ansible.builtin.debug:
         msg:
@@ -154,8 +154,6 @@
     - SV-257941r991589_rule
     - V-257941
     - NIST800-53R4_CM-5
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-251040"
   block:
     - name: "MEDIUM | RHEL-09-251040 | PATCH | RHEL 9 network interfaces must not be in promiscuous mode."
       when:
@@ -185,6 +183,8 @@
       ansible.builtin.include_tasks:
         file: warning_facts.yml
       loop: "{{ ansible_facts.interfaces }}"
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-251040"
 
 - name: "MEDIUM | RHEL-09-251045 | PATCH | RHEL 9 must enable hardening for the Berkeley Packet Filter just-in-time compiler."
   when:
@@ -195,12 +195,21 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257942r1044999_rule
+    - SV-257942r1155718_rule
     - V-257942
     - NIST800-53R4_CM-6
-  ansible.posix.sysctl:
-    name: net.core.bpf_jit_harden
-    state: present
-    reload: true
-    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
-    value: '2'
+  notify: Reload_sysctl
+  block:
+    - name: "MEDIUM | RHEL-09-251045 | PATCH | RHEL 9 must enable hardening for the Berkeley Packet Filter just-in-time compiler."
+      ansible.builtin.template:
+        dest: "/etc/sysctl.d/99-net_core_bpf_jit_harden.conf"
+        src: etc/sysctl.d/99-net_core_bpf_jit_harden.conf.j2
+        mode: 'u-x,go-wx'
+        owner: root
+        group: root
+
+    - name: "MEDIUM | RHEL-09-251045 | PATCH | RHEL 9 must enable hardening for the Berkeley Packet Filter just-in-time compiler."
+      ansible.builtin.command: sysctl net.core.bpf_jit_harden
+      changed_when: false
+      failed_when: false
+      register: discovered_bpf_jit_harden
