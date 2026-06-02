@@ -27,11 +27,11 @@
       changed_when: true
       notify: Build_aide_db
 
-    - name: "MEDIUM | RHEL-09-651010 | PATCH | RHEL 9 must have the AIDE package installed. | Refresh package facts after install"
+    - name: "MEDIUM | RHEL-09-651010 | AUDIT | RHEL 9 must have the AIDE package installed. | Refresh package facts after install"
       ansible.builtin.package_facts:
         manager: auto
 
-    - name: "MEDIUM | RHEL-09-651010 | PATCH | RHEL 9 must have the AIDE package installed. | Set discovered_aide_version fact"
+    - name: "MEDIUM | RHEL-09-651010 | AUDIT | RHEL 9 must have the AIDE package installed. | Set discovered_aide_version fact"
       ansible.builtin.set_fact:
         discovered_aide_version: "{{ ansible_facts.packages['aide'][0].version | default('0.18') }}"
 
