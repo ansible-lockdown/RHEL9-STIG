@@ -2,6 +2,7 @@
 
 ## Based on STIG V2R7 - 2026 May QA Final updates
 
+fixed templates/etc/aide.conf.j2 for aide >= 0.18 compatibility (addresses #161): renamed `database=` to `database_in=` (input directive renamed in aide 0.18); removed `verbose=5` (replaced by log_level/report_level in aide 0.18). `file:` URL prefix retained on database_in / database_out / report_url (plain paths are rejected by aide >= 0.18). RHEL-09-651020 / RHEL-09-651025 templates affected; previously caused `aide --init` rc=17 with "unexpected character: ':'" on RHEL 9.8 / aide-0.19.2 hosts.
 Lint
 Alignment
 dup control removed
