@@ -4,9 +4,14 @@
 @@define LOGDIR /var/log/aide
 
 # The location of the database to be read.
-# AIDE 0.18 renamed the input directive `database` -> `database_in`; the
+{% if discovered_aide_version is version_compare('0.18', '<') %}
+# AIDE < 0.18 uses the legacy `database` directive.
+database=file:@@{DBDIR}/aide.db.gz
+{% else %}
+# AIDE >= 0.18 renamed the input directive `database` -> `database_in`.
 # `file:` URL prefix MUST be kept (plain paths are rejected by aide >= 0.18).
 database_in=file:@@{DBDIR}/aide.db.gz
+{% endif %}
 
 # The location of the database to be written.
 #database_out=sql:host:port:database:login_name:passwd:table
@@ -16,9 +21,14 @@ database_out=file:@@{DBDIR}/aide.db.new.gz
 # Whether to gzip the output to database.
 gzip_dbout=yes
 
+{% if discovered_aide_version is version_compare('0.18', '<') %}
+# Default verbosity (aide < 0.18; replaced by log_level/report_level in 0.18+).
+verbose=5
+
+{% else %}
 # `verbose=N` was removed in AIDE 0.18 (replaced by log_level/report_level);
 # omitted here so `aide --init` works on aide >= 0.18 (e.g. RHEL 9.8 / aide-0.19.2).
-
+{% endif %}
 report_url=file:@@{LOGDIR}/aide.log
 report_url=stdout
 #report_url=stderr

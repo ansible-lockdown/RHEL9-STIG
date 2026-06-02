@@ -26,6 +26,12 @@ gpg_key_package: "{{ ansible_distribution | lower }}-gpg-keys"
 change_requires_reboot: false
 update_audit_template: false
 
+# AIDE version discovered at runtime by tasks/Cat2/RHEL-09-651xxx.yml (after
+# the package is installed). '0.18' is the safe assumption for RHEL 9.4+
+# baselines so the templates/etc/aide.conf.j2 version gate renders correctly
+# even when RHEL-09-651010 is disabled.
+discovered_aide_version: '0.18'
+
 # RHEL-09-215105 - set default value
 combined_crypto_policy_config: FIPS
 
