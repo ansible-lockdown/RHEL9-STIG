@@ -20,7 +20,7 @@ system_is_container: false
 warn_control_list: ""
 warn_count: 0
 
-gpg_key_package: "{{ ansible_distribution | lower }}-gpg-keys"
+gpg_key_package: "{{ ansible_facts['distribution'] | lower }}-gpg-keys"
 
 # Default for facts
 change_requires_reboot: false
@@ -30,7 +30,8 @@ update_audit_template: false
 # the package is installed). '0.18' is the safe assumption for RHEL 9.4+
 # baselines so the templates/etc/aide.conf.j2 version gate renders correctly
 # even when RHEL-09-651010 is disabled.
-discovered_aide_version: '0.18'
+# This variable is used as a default fallback by the prereq in the cat2/651xxx.yml
+aide_version_prechanges: '0.18'
 
 # RHEL-09-215105 - set default value
 combined_crypto_policy_config: FIPS
