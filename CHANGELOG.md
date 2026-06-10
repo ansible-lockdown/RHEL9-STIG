@@ -4,7 +4,7 @@
 
 - aide.conf.j2 + RHEL-09-651xxx hardened for aide 0.18+ compatibility (addresses #161)
 - Thank you @hectoralicea for submitting issue #161
-- Thank you @uk-bolly for Private PR 29 review
+- Thank you @uk-bolly for Private PR 32 review
 - Lint
 - Alignment
 - dup control removed
@@ -50,9 +50,7 @@
 - RHEL-09-432035 task name: changed outer YAML quoting from double to single to preserve XCCDF's literal "su" double-quoted command name (was 'su' single-quoted).
 - RHEL-09-271105 AUDIT sub-task: changed gsettings set -> gsettings get (the discovery task was destructively writing the value before register could capture state).
 
-## Based on STIG V2R7 - 05 Jan 2026
-
-# May 26 update for public release
+## Based on STIG V2R7 - 05 Jan 2026 - May 26 update for public release
 
 Public issue #154 addressed thanks to @PrymalInstynct
 Public issue # 157 and #158 addressed thanks to @hectoralicea
@@ -64,7 +62,7 @@ remove unused variables
 connecting user test updated
 vars moved to task rather than on blocks
 
-# Initial
+### Initial
 
 Linting
 company name alignment
@@ -164,6 +162,7 @@ Cat II
 - 654260 - removed
 
 ## Based on STIG V2R5 07 August 2025 - Feb26 updates
+
 - 611160 updated
 - 232190 updated
 - 232195 updated
@@ -174,9 +173,6 @@ Cat II
 ## 2.5.0 Based on STIG V2R5 07 August 2025
 
 - added extra options and explanation for audit component
-
-## 2.5.0 Based on STIG V2R5 07 August 2025
-
 - updated aide checks
 - fixed v2.19 compliance and conditionals
 
