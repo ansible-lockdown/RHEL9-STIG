@@ -36,6 +36,8 @@
           - tmux
           - git
           - procps-ng
+          - openssl-pkcs11
+          - opensc
         state: present
 
     - name: Create directories that minimal images lack

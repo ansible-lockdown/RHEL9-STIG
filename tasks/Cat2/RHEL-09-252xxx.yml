@@ -97,7 +97,7 @@
         - prelim_network_manager_dns.stdout != 'unmanaged'
       notify: Restart_NetworkManager
       community.general.nmcli:
-        conn_name: "{{ ansible_default_ipv4.interface }}"
+        conn_name: "{{ ansible_facts['default_ipv4']['interface'] }}"
         type: ethernet
         dns4:
           - "{{ rhel9stig_dns_ip4_servers }}"
@@ -156,7 +156,7 @@
     - name: "MEDIUM | RHEL-09-252050 | PATCH | RHEL 9 must be configured to prevent unrestricted mail relaying. | configure postfix"
       when:
         - rhel9stig_disruption_high
-        - discovered_postfix_client_restrict.stdout | length == 0 or "rhel9stig_postfix_client_conf not in discovered_postfix_client_restrict"
+        - discovered_postfix_client_restrict.stdout | length == 0 or rhel9stig_postfix_client_conf not in discovered_postfix_client_restrict.stdout
       ansible.builtin.command: "postconf -e 'smtpd_client_restrictions = {{ rhel9stig_postfix_client_conf }}'"
       changed_when: true
 
