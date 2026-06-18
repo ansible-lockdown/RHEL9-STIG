@@ -401,7 +401,9 @@
     - NIST800-53R4_SI-16
   block:
     - name: "MEDIUM | RHEL-09-213110 | AUDIT | RHEL 9 must implement nonexecutable data to protect its memory from unauthorized code execution."
-      ansible.builtin.shell: dmesg | grep '[NX|DX]*protection'
+      ansible.builtin.shell: |
+        set -o pipefail
+        dmesg | grep '[NX|DX]*protection'
       changed_when: false
       failed_when: discovered_nxdx.rc not in [ 0, 1 ]
       register: discovered_nxdx

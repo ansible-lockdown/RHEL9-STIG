@@ -103,7 +103,7 @@
       ansible.builtin.command: firewall-cmd --reload
       changed_when: true
 
-- name: "MEDIUM | RHEL-09-251030 | AUDIT |  RHEL 9 must protect against or limit the effects of denial-of-service (DoS) attacks by ensuring rate-limiting measures on impacted network interfaces are implemented."
+- name: "MEDIUM | RHEL-09-251030 | PATCH | RHEL 9 must protect against or limit the effects of denial-of-service (DoS) attacks by ensuring rate-limiting measures on impacted network interfaces are implemented."
   when: rhel_09_251030
   tags:
     - RHEL-09-251030
@@ -140,7 +140,7 @@
       when: discovered_ppsm_clsa_zone_config.stdout_lines is defined
       ansible.builtin.debug:
         msg:
-          - "The following output is what firewalld is configured for {{ ansible_hostname }}."
+          - "The following output is what firewalld is configured for {{ ansible_facts['hostname'] }}."
           - "{{ discovered_ppsm_clsa_zone_config.stdout_lines }}"
       changed_when: true
 

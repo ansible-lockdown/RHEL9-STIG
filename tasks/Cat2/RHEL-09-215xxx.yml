@@ -321,7 +321,7 @@
       failed_when: discovered_crypto_policies_check.rc not in [0 , 1]
       register: discovered_crypto_policies_check
 
-    - name: "MEDIUM | RHEL-09-215105 | AUDIT | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy | Add required pmod files"
+    - name: "MEDIUM | RHEL-09-215105 | PATCH | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy | Add required pmod files"
       when: rhel9stig_disruption_high
       ansible.builtin.template:
         src: "{{ item }}.j2"

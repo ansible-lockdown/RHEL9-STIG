@@ -44,7 +44,7 @@ ansible_facts_path: /etc/ansible/facts.d
 # This is useful when part of kickstart build or running as root and not defining the ansible_user option
 # used @ RHEL-09-411015
 rhel9stig_default_user: root
-rhel9stig_connecting_user: "{{ ansible_env.SUDO_USER | default(rhel9stig_default_user) }}"
+rhel9stig_connecting_user: "{{ ansible_facts['env']['SUDO_USER'] | default(rhel9stig_default_user) }}"
 rhel9stig_playbook_user: "{{ ansible_user | default(rhel9stig_connecting_user) }}"
 
 # Whether to skip the system reboot before audit
@@ -737,7 +737,7 @@ rhel9stig_dns_processing_mode: 'none'
 # rhel9stig_custom_firewall_zone is the desired name for the firewall zone
 rhel9stig_custom_firewall:
   zone: "drop"
-  interface: "{{ ansible_default_ipv4.interface }}"
+  interface: "{{ ansible_facts['default_ipv4']['interface'] }}"
 
 # rhel9stig_white_list_services is the services that you want to allow through initially for the new firewall zone
 # http and ssh need to be enabled for the role to run.
@@ -771,7 +771,7 @@ rhel9stig_allow_fapolicy_updates: false
 # rhel9stig_fapolicy_white_list is the whitelist for fapolicyd
 rhel9stig_fapolicy_white_list:
   - '# Allow Ansible'
-  - "allow perm=any trust=1 : dir={{ ansible_env.PWD }}/.ansible/"
+  - "allow perm=any trust=1 : dir={{ ansible_facts['env']['PWD'] }}/.ansible/"
   - 'allow perm=any trust=1 : dir=/root/.ansible/'
   - 'allow perm=any trust=1 : dir=/tmp/ansible/'
 

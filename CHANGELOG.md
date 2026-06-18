@@ -2,9 +2,17 @@
 
 ## Based on STIG V2R7 - 2026 May QA Final updates
 
-- aide.conf.j2 + RHEL-09-651xxx hardened for aide 0.18+ compatibility (addresses #161)
-- Thank you @hectoralicea for submitting issue #161
-- Thank you @uk-bolly for Private PR 32 review
+- RHEL-09-252050 PATCH configure postfix: removed quoted-string clause from the `when:` list at `tasks/Cat2/RHEL-09-252xxx.yml:159` and appended `.stdout` to the register access. The clause `"rhel9stig_postfix_client_conf not in discovered_postfix_client_restrict"` was a literal YAML string (truthy, but non-boolean); Ansible 2.19+ strict-conditional rejected it on the second converge, hard-failing the role. The first converge masked it because the parent `rhel9stig_disruption_high: false` gate short-circuited before the broken item was evaluated.
+- Audit bridge template (`templates/ansible_vars_goss.yml.j2`): removed doubled `RPM-GPG-KEY-RPM-GPG-KEY-` segment from `rpm_gpg_key` path (audit was asserting a non-existent file); merged duplicate `rhel9stig_dns_servers` key emitted under separate IPv4/IPv6 conditionals into a single key block (IPv6 silently overwrote IPv4 when both `rhel9stig_dns_ip4_servers` and `rhel9stig_dns_ip6_servers` were defined, hiding the IPv4 list from the audit role).
+- Renamed 6 AUDIT-named tasks that modified state to PATCH (read-only contract). Tasks named `| AUDIT |` must not invoke modifying modules; `--tags AUDIT` and `--check` runs were silently mutating state. Affected: RHEL-09-215105 "Add required pmod files" (template), RHEL-09-232045 "update permissions" (file with mode/owner), RHEL-09-251030 (lineinfile to /etc/firewalld/firewalld.conf), RHEL-09-411090 "no authselect" both password-auth and system-auth variants (lineinfile), RHEL-09-412035 "create file if absent" + "Edit file if present" (template + lineinfile). The 411090 password-auth task name suffix also disambiguated to "password-auth no authselect" so it no longer collides with the system-auth sibling.
+- `set -o pipefail` added to 25 single-line `ansible.builtin.shell:` tasks with piped commands across `tasks/prelim.yml` (10) and `tasks/Cat2/RHEL-09-{212,213,214,232}xxx.yml` (15). All converted to the multi-line block-scalar shell form matching the existing convention in `tasks/parse_etc_passwd.yml`, `tasks/pre_remediation_audit.yml`, and `tasks/post_remediation_audit.yml`. Without pipefail, early-pipeline failures (e.g. grep rc=2 from a missing file) were masked by the final command's rc=0 and the failed_when conditions never tripped, allowing silently corrupt registered variables.
+- PRELIM NetworkManager DNS state task: `failed_when:` accepts rc=2 (file absent) in addition to rc=0/1. Required follow-up to the `set -o pipefail` change because grep's rc=2 (NetworkManager.conf missing on minimal containers) now propagates through the pipeline instead of being masked by sed's rc=0. On systems without NetworkManager.conf the task now succeeds with an empty stdout, matching the pre-pipefail behavior.
+- `no_log: true` added to 4 tasks that handle shadow-file content or lock accounts: RHEL-09-411015 AUDIT (awk on /etc/shadow for pass-max-days), RHEL-09-611080 AUDIT (awk on /etc/shadow for 24-hour restriction), RHEL-09-671015 AUDIT (cat/grep on /etc/shadow for non-FIPS hashes), RHEL-09-611155 PATCH (`ansible.builtin.user password_lock` looping empty-password accounts). Prevents password hash leakage in verbose Ansible output and Ansible logs.
+- aide.conf.j2 + RHEL-09-651xxx hardened for aide 0.18+ compatibility (addresses ansible-lockdown/RHEL9-STIG#161)
+- molecule default scenario aligned with RHEL8-STIG sibling: enabled rhel9stig_disruption_high, fetch_audit_output, audit_output_destination; prepare.yml adds openssl-pkcs11 + opensc for PAM smartcard coverage
+- added molecule/README_Molecule_QuickStart.md - quick-start guide for the default scenario (venv, host_vars, expected results, gating-run command sequence)
+- Thank you @hectoralicea for submitting issue ansible-lockdown/RHEL9-STIG#161
+- Thank you @uk-bolly for the review
 - Lint
 - Alignment
 - dup control removed
@@ -32,8 +40,6 @@
 - molecule ubi prepare stubs /etc/audit, /etc/audit/rules.d, /etc/aide, /etc/aide/aide.conf.d since those packages are subscription-gated in public UBI repos
 - defaults/main.yml documentation improved - added WARNING block on variable precedence, richer comments for setup_audit/run_audit/get_audit_binary_method/audit_content/disruption_high, exposed change_requires_reboot
 - defaults/main.yml list vars indented with 2-space sequence style for consistency
-- devel_pipeline_validation.yml IAC_BRANCH if-else block normalized to 2-space indent (matches main_pipeline_validation.yml)
-- export_badges_private.yml dead conditional removed (referenced github.event_name == 'schedule' but no schedule trigger is defined)
 - tasks/main.yml connecting-user check: fixed undefined variable rhel10stig_playbook_user -> rhel9stig_playbook_user and stray trailing quote in task name
 - rsyslog remote-server var aligned end-to-end (defaults rhel9stig_rsyslog_remote_server_ip; legacy lineinfile, rainerscript template, and audit bridge updated to match)
 - tasks/prelim.yml authselect prelim task: replaced undefined dict ref rhel9stig_authselect['custom_profile_name'] with scalar rhel9stig_authselect_custom_profile; corrected duplicated STIG IDs in name (411080|411080|411090 -> 411080|411085|411090) and when condition (411085 or 411085 or 411090 -> 411080 or 411085 or 411090)

@@ -35,6 +35,13 @@ provisioner:
         audit_git_version: benchmark_v2r7
         skip_reboot: true
         system_is_container: true
-        rhel9stig_disruption_high: false
+        # Override role default (`false` in defaults/main.yml) - safe in this
+        # throwaway container, exercises the full disruption_high code paths.
+        rhel9stig_disruption_high: true
+        fetch_audit_output: true
+        # Files land one level above the role repo (working dir root), e.g.
+        # `<working_dir>/_temp_fetched_audits/`. Override with `-e audit_output_destination=...`
+        # if you want them somewhere else.
+        audit_output_destination: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../_temp_fetched_audits/"
 verifier:
   name: ansible
