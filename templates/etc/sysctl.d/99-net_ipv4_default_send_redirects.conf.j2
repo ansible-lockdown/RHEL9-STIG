@@ -1,0 +1,4 @@
+{{ file_managed_by_ansible }}
+
+# 253070 | RHEL 9 must not allow interfaces to perform Internet Control Message Protocol (ICMP) redirects by default.
+net.ipv4.conf.default.send_redirects = 0

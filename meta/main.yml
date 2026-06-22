@@ -7,7 +7,7 @@ galaxy_info:
   license: MIT
   role_name: rhel9_stig
   namespace: mindpointgroup
-  min_ansible_version: 2.12.1
+  min_ansible_version: 2.16.1
   platforms:
     - name: EL
       versions:
@@ -23,7 +23,6 @@ galaxy_info:
     - complianceascode
     - disa
     - rhel9
-    - cis
     - rocky
     - alma
 collections:

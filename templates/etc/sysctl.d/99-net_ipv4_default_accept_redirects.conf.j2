@@ -1,0 +1,4 @@
+{{ file_managed_by_ansible }}
+
+# 253040 | RHEL 9 must prevent IPv4 Internet Control Message Protocol (ICMP) redirect messages from being accepted by default.
+net.ipv4.conf.default.accept_redirects = 0

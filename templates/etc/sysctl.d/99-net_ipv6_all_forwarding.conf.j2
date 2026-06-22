@@ -1,0 +1,4 @@
+{{ file_managed_by_ansible }}
+
+# 254025 | RHEL 9 must not enable IPv6 packet forwarding unless the system is a router.
+net.ipv6.conf.all.forwarding = 0

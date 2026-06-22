@@ -9,7 +9,7 @@
     - CCI-000196
     - SRG-OS-000073-GPOS-00041
     - SRG-OS-000120-GPOS-00061
-    - SV-258231r1015135_rule
+    - SV-258231r1069375_rule
     - V-258231
     - NIST800-53R4_IA-7
     - NIST800-53R4_IA-5
@@ -20,6 +20,7 @@
       ansible.builtin.shell: 'cat /etc/shadow | grep -v "*" | grep -v "!" | grep -v ":$6$" | cut -f1 -d:'
       changed_when: false
       failed_when: false
+      no_log: true
       register: discovered_non_fips_hashed_accounts
 
     - name: "MEDIUM | RHEL-09-671015 | PATCH | RHEL 9 must employ FIPS 140-3 approved cryptographic hashing algorithms for all stored passwords. | Lock user not using FIPS 140-3 hashing"
@@ -28,10 +29,9 @@
         - rhel9stig_disruption_high
       ansible.builtin.command: "passwd -l {{ item }}"
       changed_when: true
-      loop:
-        - "{{ discovered_non_fips_hashed_accounts.stdout_lines }}"
+      loop: "{{ discovered_non_fips_hashed_accounts.stdout_lines }}"
 
-    - name: "MEDIUM | RHEL-09-671015 | AUDIT | RHEL 8 must employ FIPS 140-2 approved cryptographic hashing algorithms for all stored passwords. | Message out user accounts"
+    - name: "MEDIUM | RHEL-09-671015 | AUDIT | RHEL 9 must employ FIPS 140-2 approved cryptographic hashing algorithms for all stored passwords. | Message out user accounts"
       when:
         - not rhel9stig_disruption_high
         - discovered_non_fips_hashed_accounts.stdout | length > 0

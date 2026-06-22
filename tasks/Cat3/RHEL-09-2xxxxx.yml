@@ -3,10 +3,10 @@
 - name: "LOW | RHEL-09-211035 | PATCH | RHEL 9 must enable the hardware random number generator entropy gatherer service."
   when:
     - rhel_09_211035
-    - not rhel_09_215105  # Dont run if FIPs Enabled
+    - not rhel_09_215105  # Don't run if FIPs Enabled
   tags:
     - RHEL-09-211035
-    - CAT2
+    - CAT3
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
     - SV-257782r991589_rule
@@ -22,7 +22,7 @@
   when: rhel_09_212050
   tags:
     - RHEL-09-212050
-    - CAT2
+    - CAT3
     - CCI-000381
     - CCI-002824
     - SRG-OS-000433-GPOS-00193
@@ -64,7 +64,7 @@
   when: rhel_09_212055
   tags:
     - RHEL-09-212055
-    - CAT2
+    - CAT3
     - CCI-000130
     - CCI-000135
     - CCI-000169
@@ -119,7 +119,7 @@
   when: rhel_09_214035
   tags:
     - RHEL-09-214035
-    - CAT2
+    - CAT3
     - CCI-0002617
     - SRG-OS-000437-GPOS-00194
     - SV-257824r1044886_rule
@@ -135,15 +135,13 @@
   when: rhel_09_231020
   tags:
     - RHEL-09-231020
-    - CAT2
+    - CAT3
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
     - SV-257845r1044920_rule
     - V-257845
     - NIST800-53R4_CM-6
     - filesystem
-  vars:
-    warn_control_id: "LOW | RHEL-09-231020"
   block:
     - name: "LOW | RHEL-09-231020 | WARN | RHEL 9 must use a separate file system for /var."
       when: "'/var' in ansible_facts['mounts'] | map(attribute='mount') | list"
@@ -160,20 +158,20 @@
         - name: "LOW | RHEL-09-231020 | WARN | RHEL 9 must use a separate file system for /var."
           ansible.builtin.import_tasks:
             file: warning_facts.yml
+          vars:
+            warn_control_id: "LOW | RHEL-09-231020"
 
 - name: "LOW | RHEL-09-231025 | AUDIT | RHEL 9 must use a separate file system for /var/log."
   when: rhel_09_231025
   tags:
     - RHEL-09-231025
-    - CAT2
+    - CAT3
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
     - SV-257846r1044922_rule
     - V-257846
     - NIST800-53R4_CM-6
     - filesystem
-  vars:
-    warn_control_id: "LOW | RHEL-09-231025"
   block:
     - name: "LOW | RHEL-09-231025 | WARN | RHEL 9 must use a separate file system for /var/log."
       when: "'/var/log' in ansible_facts['mounts'] | map(attribute='mount') | list"
@@ -190,20 +188,20 @@
         - name: "LOW | RHEL-09-231025 | WARN | RHEL 9 must use a separate file system for /var/log."
           ansible.builtin.import_tasks:
             file: warning_facts.yml
+          vars:
+            warn_control_id: "LOW | RHEL-09-231025"
 
 - name: "LOW | RHEL-09-231030 | AUDIT | RHEL 9 must use a separate file system for /var/log/audit."
   when: rhel_09_231030
   tags:
     - RHEL-09-231030
-    - CAT2
+    - CAT3
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
     - SV-257847r1044924_rule
     - V-257847
     - NIST800-53R4_CM-6
     - filesystem
-  vars:
-    warn_control_id: "LOW | RHEL-09-231030"
   block:
     - name: "LOW | RHEL-09-231030 | WARN | RHEL 9 must use a separate file system for /var/log/audit."
       when: "rhel9stig_audit_log_filesystem in ansible_facts['mounts'] | map(attribute='mount') | list"
@@ -220,12 +218,14 @@
         - name: "LOW | RHEL-09-231025 | WARN | RHEL 9 must use a separate file system for /var/log/audit."
           ansible.builtin.import_tasks:
             file: warning_facts.yml
+          vars:
+            warn_control_id: "LOW | RHEL-09-231030"
 
 - name: "LOW | RHEL-09-231195 | PATCH | RHEL 9 must disable mounting of cramfs."
   when: rhel_09_231195
   tags:
     - RHEL-09-231195
-    - CAT2
+    - CAT3
     - CCI-000381
     - SRG-OS-000095-GPOS-00049
     - SV-257880r1044951_rule
@@ -244,7 +244,7 @@
   when: rhel_09_252025
   tags:
     - RHEL-09-252025
-    - CAT2
+    - CAT3
     - CCI-000381
     - CCI-000382
     - SRG-OS-000095-GPOS-00049
@@ -262,7 +262,7 @@
   when: rhel_09_252030
   tags:
     - RHEL-09-252030
-    - CAT2
+    - CAT3
     - CCI-000381
     - CCI-000382
     - SRG-OS-000095-GPOS-00049
@@ -280,7 +280,7 @@
   when: rhel_09_291025
   tags:
     - RHEL-09-291025
-    - CAT2
+    - CAT3
     - CCI-000169
     - SRG-OS-000062-GPOS-00031
     - SV-258037r1014863_rule

@@ -1,0 +1,4 @@
+{{ file_managed_by_ansible }}
+
+# 213080 | RHEL 9 must restrict usage of ptrace to descendant processes.
+kernel.yama.ptrace_scope = 1

@@ -39,13 +39,20 @@
   changed_when: true
 
 - name: Firewalld_reload
+  when: not system_is_container
   ansible.builtin.command: firewall-cmd --reload
   changed_when: true
 
 - name: Restart_NetworkManager
+  when: not system_is_container
   ansible.builtin.systemd:
     name: NetworkManager
     state: restarted
+
+- name: Validate_sshd_config
+  ansible.builtin.command: sshd -t
+  changed_when: false
+  listen: Restart_sshd
 
 - name: Restart_sshd
   ansible.builtin.systemd:
@@ -67,6 +74,7 @@
   when: not rhel9stig_add_faillock_without_authselect
   ansible.builtin.command: authselect current | grep failock
   changed_when: false
+  failed_when: discovered_authselect_faillock_state.rc not in [ 0, 1 ]
   register: discovered_authselect_faillock_state
   listen: Authselect_enable_faillock
 
@@ -106,6 +114,11 @@
   ansible.builtin.systemd:
     name: rsyslog.service
     state: restarted
+
+- name: Reload_sysctl
+  ansible.builtin.command: sysctl --system
+  changed_when: true
+  listen: Restart_sysctl
 
 - name: AIDE - Check for DB file
   ansible.builtin.stat:
@@ -153,10 +166,10 @@
 
 - name: AIDE - Warning if checks fail
   when: discovered_aidedb_check.rc != 0
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-651010-Aide-Check"
   ansible.builtin.import_tasks:
     file: warning_facts.yml
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-651010-Aide-Check"
   listen: Build_aide_db
 
 # Must be prior to fapolicyd restart
@@ -195,7 +208,7 @@
   register: discovered_auditd_unauth_immutable_check
   listen: auditd_checks
 
-- name: Set auditd restart or reboot required
+- name: Reload auditd rules
   when:
     - discovered_auditd_uid_immutable_check == '0'
     - discovered_auditd_unauth_immutable_check.stdout == '0'
@@ -203,7 +216,7 @@
   changed_when: true
   listen: auditd_checks
 
-- name: Set auditd restart or reboot required
+- name: Schedule auditd reboot
   when: discovered_auditd_uid_immutable_check == '1' or
         discovered_auditd_unauth_immutable_check.stdout == '1'
   notify:

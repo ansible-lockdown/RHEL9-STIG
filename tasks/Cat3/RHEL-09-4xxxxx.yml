@@ -4,7 +4,7 @@
   when: rhel_09_412040
   tags:
     - RHEL-09-412040
-    - CAT2
+    - CAT3
     - CCI-000054
     - SRG-OS-000027-GPOS-00008
     - SV-258069r958398_rule
@@ -15,28 +15,3 @@
     path: /etc/security/limits.conf
     regexp: '^\s*\*\s+hard\s+maxlogins\s+\d{1,}'
     line: "* hard maxlogins {{ rhel9stig_sshd_config_maxlogins }}"
-
-- name: "LOW | RHEL-09-412075 | PATCH | RHEL 9 must display the date and time of the last successful account logon upon logon."
-  when: rhel_09_412075
-  tags:
-    - RHEL-09-412075
-    - CAT2
-    - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-258076r991589_rule
-    - V-258076
-    - NIST800-53R4_CM-6
-    - pam
-  block:
-    - name: "LOW | RHEL-09-412075 | PATCH | RHEL 9 must display the date and time of the last successful account logon upon logon."
-      ansible.builtin.lineinfile:
-        path: /etc/pam.d/postlogin
-        regex: session required pam_lastlog.so showfailed
-        line: session required pam_lastlog.so showfailed
-        insertbefore: BOF
-
-    - name: "LOW | RHEL-09-412075 | PATCH | RHEL 9 must display the date and time of the last successful account logon upon logon."
-      ansible.builtin.replace:
-        path: /etc/pam.d/postlogin
-        replace: '\1\2'
-        regexp: '^(.*\spam_lastlog\.so\s.*)silent(\s.*)$'

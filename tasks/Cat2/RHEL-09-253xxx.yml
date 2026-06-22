@@ -10,15 +10,16 @@
     - SRG-OS-000480-GPOS-00227
     - SRG-OS-000420-GPOS-00186
     - SRG-OS-000142-GPOS-00071
-    - SV-257957r1045009_rule
+    - SV-257957r1155618_rule
     - V-257957
     - NIST800-53R4_SC-5
-  ansible.posix.sysctl:
-    name: net.ipv4.tcp_syncookies
-    state: present
-    reload: true
-    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
-    value: '1'
+  ansible.builtin.template:
+    dest: "/etc/sysctl.d/99-net_ipv4_tcp_syncookies.conf"
+    src: etc/sysctl.d/99-net_ipv4_tcp_syncookies.conf.j2
+    mode: 'u-x,go-wx'
+    owner: root
+    group: root
+  notify: Reload_sysctl
 
 - name: "MEDIUM | RHEL-09-253015 | PATCH | RHEL 9 must ignore Internet Protocol version 4 (IPv4) Internet Control Message Protocol (ICMP) redirect messages."
   when: rhel_09_253015
@@ -27,15 +28,16 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257958r991589_rule
+    - SV-257958r1155721_rule
     - V-257958
     - NIST800-53R4_CM-6
-  ansible.posix.sysctl:
-    name: net.ipv4.conf.all.accept_redirects
-    state: present
-    reload: true
-    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
-    value: '0'
+  ansible.builtin.template:
+    dest: "/etc/sysctl.d/99-net_ipv4_all_accept_redirects.conf"
+    src: etc/sysctl.d/99-net_ipv4_all_accept_redirects.conf.j2
+    mode: 'u-x,go-wx'
+    owner: root
+    group: root
+  notify: Reload_sysctl
 
 - name: "MEDIUM | RHEL-09-253020 | PATCH | RHEL 9 must not forward Internet Protocol version 4 (IPv4) source-routed packets."
   when: rhel_09_253020
@@ -44,15 +46,16 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257959r991589_rule
+    - SV-257959r1155724_rule
     - V-257959
     - NIST800-53R4_CM-6
-  ansible.posix.sysctl:
-    name: net.ipv4.conf.all.accept_source_route
-    state: present
-    reload: true
-    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
-    value: '0'
+  ansible.builtin.template:
+    dest: "/etc/sysctl.d/99-net_ipv4_all_accept_source_route.conf"
+    src: etc/sysctl.d/99-net_ipv4_all_accept_source_route.conf.j2
+    mode: 'u-x,go-wx'
+    owner: root
+    group: root
+  notify: Reload_sysctl
 
 - name: "MEDIUM | RHEL-09-253025 | PATCH | RHEL 9 must log IPv4 packets with impossible addresses."
   when: rhel_09_253025
@@ -61,15 +64,16 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257960r991589_rule
+    - SV-257959r1155724_rule
     - V-257960
     - NIST800-53R4_CM-6
-  ansible.posix.sysctl:
-    name: net.ipv4.conf.all.log_martians
-    state: present
-    reload: true
-    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
-    value: '1'
+  ansible.builtin.template:
+    dest: "/etc/sysctl.d/99-net_ipv4_all_log_martians.conf"
+    src: etc/sysctl.d/99-net_ipv4_all_log_martians.conf.j2
+    mode: 'u-x,go-wx'
+    owner: root
+    group: root
+  notify: Reload_sysctl
 
 - name: "MEDIUM | RHEL-09-253030 | PATCH | RHEL 9 must log IPv4 packets with impossible addresses by default."
   when: rhel_09_253030
@@ -78,15 +82,16 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257961r991589_rule
+    - SV-257961r1155730_rule
     - V-257961
     - NIST800-53R4_CM-6
-  ansible.posix.sysctl:
-    name: net.ipv4.conf.default.log_martians
-    state: present
-    reload: true
-    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
-    value: '1'
+  ansible.builtin.template:
+    dest: "/etc/sysctl.d/99-net_ipv4_default_log_martians.conf"
+    src: etc/sysctl.d/99-net_ipv4_default_log_martians.conf.j2
+    mode: 'u-x,go-wx'
+    owner: root
+    group: root
+  notify: Reload_sysctl
 
 - name: "MEDIUM | RHEL-09-253035 | PATCH | RHEL 9 must use reverse path filtering on all IPv4 interfaces."
   when: rhel_09_253035
@@ -95,15 +100,26 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257962r991589_rule
+    - SV-257962r1155733_rule
     - V-257962
     - NIST800-53R4_CM-6
-  ansible.posix.sysctl:
-    name: net.ipv4.conf.all.rp_filter
-    state: present
-    reload: true
-    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
-    value: '1'
+  notify: Reload_sysctl
+  block:
+    - name: "MEDIUM | RHEL-09-253035 | PATCH | RHEL 9 must use reverse path filtering on all IPv4 interfaces."
+      ansible.builtin.command: sysctl net.ipv4.conf.all.rp_filter
+      changed_when: false
+      failed_when: false
+      register: discovered_rp_filter
+    - name: "MEDIUM | RHEL-09-253035 | PATCH | RHEL 9 must use reverse path filtering on all IPv4 interfaces."
+      when:
+        - discovered_rp_filter.stdout is defined
+        - "'1' not in discovered_rp_filter.stdout"
+      ansible.builtin.template:
+        dest: "/etc/sysctl.d/99-net_ipv4_all_rp_filter.conf"
+        src: etc/sysctl.d/99-net_ipv4_all_rp_filter.conf.j2
+        mode: 'u-x,go-wx'
+        owner: root
+        group: root
 
 - name: "MEDIUM | RHEL-09-253040 | PATCH | RHEL 9 must prevent IPv4 Internet Control Message Protocol (ICMP) redirect messages from being accepted."
   when: rhel_09_253040
@@ -112,15 +128,16 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257963r991589_rule
+    - SV-257963r1155736_rule
     - V-257963
     - NIST800-53R4_CM-6
-  ansible.posix.sysctl:
-    name: net.ipv4.conf.default.accept_redirects
-    state: present
-    reload: true
-    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
-    value: '0'
+  ansible.builtin.template:
+    dest: "/etc/sysctl.d/99-net_ipv4_default_accept_redirects.conf"
+    src: etc/sysctl.d/99-net_ipv4_default_accept_redirects.conf.j2
+    mode: 'u-x,go-wx'
+    owner: root
+    group: root
+  notify: Reload_sysctl
 
 - name: "MEDIUM | RHEL-09-253045 | PATCH | RHEL 9 must not forward IPv4 source-routed packets by default."
   when: rhel_09_253045
@@ -129,15 +146,16 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257964r991589_rule
+    - SV-257964r1155739_rule
     - V-257964
     - NIST800-53R4_CM-6
-  ansible.posix.sysctl:
-    name: net.ipv4.conf.default.accept_source_route
-    state: present
-    reload: true
-    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
-    value: '0'
+  ansible.builtin.template:
+    dest: "/etc/sysctl.d/99-net_ipv4_default_accept_source_route.conf"
+    src: etc/sysctl.d/99-net_ipv4_default_accept_source_route.conf.j2
+    mode: 'u-x,go-wx'
+    owner: root
+    group: root
+  notify: Reload_sysctl
 
 - name: "MEDIUM | RHEL-09-253050 | PATCH | RHEL 9 must use a reverse-path filter for IPv4 network traffic when possible by default."
   when: rhel_09_253050
@@ -146,15 +164,16 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257965r991589_rule
+    - SV-257965r1155646_rule
     - V-257965
     - NIST800-53R4_CM-6
-  ansible.posix.sysctl:
-    name: net.ipv4.conf.default.rp_filter
-    state: present
-    reload: true
-    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
-    value: '1'
+  ansible.builtin.template:
+    dest: "/etc/sysctl.d/99-net_ipv4_default_rp_filter.conf"
+    src: etc/sysctl.d/99-net_ipv4_default_rp_filter.conf.j2
+    mode: 'u-x,go-wx'
+    owner: root
+    group: root
+  notify: Reload_sysctl
 
 - name: "MEDIUM | RHEL-09-253055 | PATCH | RHEL 9 must not respond to Internet Control Message Protocol (ICMP) echoes sent to a broadcast address."
   when: rhel_09_253055
@@ -163,15 +182,16 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257966r991589_rule
+    - SV-257966r1155742_rule
     - V-257966
     - NIST800-53R4_CM-6
-  ansible.posix.sysctl:
-    name: net.ipv4.icmp_echo_ignore_broadcasts
-    state: present
-    reload: true
-    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
-    value: '1'
+  ansible.builtin.template:
+    dest: "/etc/sysctl.d/99-net_ipv4_icmp_echo_ignore_broadcasts.conf"
+    src: etc/sysctl.d/99-net_ipv4_icmp_echo_ignore_broadcasts.conf.j2
+    mode: 'u-x,go-wx'
+    owner: root
+    group: root
+  notify: Reload_sysctl
 
 - name: "MEDIUM | RHEL-09-253060 | PATCH | RHEL 9 must limit the number of bogus Internet Control Message Protocol (ICMP) response errors logs."
   when: rhel_09_253060
@@ -180,15 +200,16 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257967r991589_rule
+    - SV-257967r1155745_rule
     - V-257967
     - NIST800-53R4_CM-6
-  ansible.posix.sysctl:
-    name: net.ipv4.icmp_ignore_bogus_error_responses
-    state: present
-    reload: true
-    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
-    value: '1'
+  ansible.builtin.template:
+    dest: "/etc/sysctl.d/99-net_ipv4_icmp_ignore_bogus_error_responses.conf"
+    src: etc/sysctl.d/99-net_ipv4_icmp_ignore_bogus_error_responses.conf.j2
+    mode: 'u-x,go-wx'
+    owner: root
+    group: root
+  notify: Reload_sysctl
 
 - name: "MEDIUM | RHEL-09-253065 | PATCH | RHEL 9 must not send Internet Control Message Protocol (ICMP) redirects."
   when: rhel_09_253065
@@ -196,16 +217,17 @@
     - RHEL-09-253065
     - CAT2
     - CCI-000366
-    - SRG-OS-000480-GPOS-00227
-    - SV-257968r991589_rule
+    - SRG-OS-000250-GPOS-00093
+    - SV-257968r1155748_rule
     - V-257968
     - NIST800-53R4_CM-6
-  ansible.posix.sysctl:
-    name: net.ipv4.conf.all.send_redirects
-    state: present
-    reload: true
-    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
-    value: '0'
+  ansible.builtin.template:
+    dest: "/etc/sysctl.d/99-net_ipv4_all_send_redirects.conf"
+    src: etc/sysctl.d/99-net_ipv4_all_send_redirects.conf.j2
+    mode: 'u-x,go-wx'
+    owner: root
+    group: root
+  notify: Reload_sysctl
 
 - name: "MEDIUM | RHEL-09-253070 | PATCH | RHEL 9 must not allow interfaces to perform Internet Control Message Protocol (ICMP) redirects by default."
   when: rhel_09_253070
@@ -214,15 +236,16 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257969r991589_rule
+    - SV-257969r1155623_rule
     - V-257969
     - NIST800-53R4_CM-6
-  ansible.posix.sysctl:
-    name: net.ipv4.conf.default.send_redirects
-    state: present
-    reload: true
-    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
-    value: '0'
+  ansible.builtin.template:
+    dest: "/etc/sysctl.d/99-net_ipv4_default_send_redirects.conf"
+    src: etc/sysctl.d/99-net_ipv4_default_send_redirects.conf.j2
+    mode: 'u-x,go-wx'
+    owner: root
+    group: root
+  notify: Reload_sysctl
 
 - name: "MEDIUM | RHEL-09-253075 | PATCH | RHEL 9 must not enable IPv4 packet forwarding unless the system is a router."
   when:
@@ -233,12 +256,13 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257970r1045011_rule
+    - SV-257970r1155751_rule
     - V-257970
     - NIST800-53R4_CM-6
-  ansible.posix.sysctl:
-    name: net.ipv4.conf.all.forwarding
-    state: present
-    reload: true
-    sysctl_file: "{{ rhel9stig_sysctl_file.network }}"
-    value: '0'
+  ansible.builtin.template:
+    dest: "/etc/sysctl.d/99-net_ipv4_all_forwarding.conf"
+    src: etc/sysctl.d/99-net_ipv4_all_forwarding.conf.j2
+    mode: 'u-x,go-wx'
+    owner: root
+    group: root
+  notify: Reload_sysctl

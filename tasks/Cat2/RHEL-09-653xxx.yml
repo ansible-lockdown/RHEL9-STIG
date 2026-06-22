@@ -71,7 +71,7 @@
     name: audit
     state: present
 
-- name: "MEDIUM | RHEL-09-653015 | PATCH | RHEL 9 audit service must be enabled"
+- name: "MEDIUM | RHEL-09-653015 | PATCH | RHEL 9 audit service must be enabled."
   when:
     - rhel_09_653015
     - rhel9stig_auditd_required
@@ -166,7 +166,7 @@
     - rhel_09_653025
     - rhel9stig_auditd_required
   tags:
-    - RHEL-09-653055
+    - RHEL-09-653025
     - CAT2
     - CCI-000140
     - SRG-OS-000047-GPOS-00023
@@ -195,8 +195,6 @@
     - V-258155
     - NIST800-53R4_AU-4
     - auditd
-  vars:
-    warn_control_id: "MEDIUM | RHEL-09-653030"
   block:
     - name: "MEDIUM | RHEL-09-653030 | AUDIT | RHEL 9 must allocate audit record storage capacity to store at least one week's worth of audit records."
       ansible.builtin.set_fact:
@@ -216,9 +214,10 @@
     - name: "MEDIUM | RHEL-09-653030 | WARN | RHEL 9 must allocate audit record storage capacity to store at least one week's worth of audit records."
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: "MEDIUM | RHEL-09-653030"
 
-- name: "MEDIUM | RHEL-09-653035 | PATCH | RHEL 9 must take action when allocated audit record storage volume reaches 75 percent of the repository maximum audit record
-    storage capacity."
+- name: "MEDIUM | RHEL-09-653035 | PATCH | RHEL 9 must take action when allocated audit record storage volume reaches 75 percent of the repository maximum audit record storage capacity."
   when:
     - rhel_09_653035
     - rhel9stig_auditd_required
@@ -227,7 +226,7 @@
     - CAT2
     - CCI-001855
     - SRG-OS-000343-GPOS-00134
-    - SV-258156r971542_rule
+    - SV-258156r1106364_rule
     - V-258156
     - NIST800-53R4_AU-5
     - auditd
@@ -246,13 +245,13 @@
     - CAT2
     - CCI-001855
     - SRG-OS-000343-GPOS-00134
-    - SV-258157r971542_rule
+    - SV-258157r1134932_rule
     - V-258157
     - NIST800-53R4_AU-5
     - auditd
   ansible.builtin.lineinfile:
     path: /etc/audit/auditd.conf
-    regexp: ^(#|)\s*space_left_action\s*=
+    regexp: ^(?#)\s*space_left_action\s*=
     line: space_left_action = {{ rhel9stig_audit_conf_space_left_action }}
 
 - name: "MEDIUM | RHEL-09-653045 | PATCH | RHEL 9 must take action when allocated audit record storage volume reaches 95 percent of the audit record storage capacity."
@@ -457,7 +456,7 @@
     - SRG-OS-000058-GPOS-00028
     - SRG-OS-000059-GPOS-00029
     - SRG-OS-000206-GPOS-00084
-    - SV-258167r1045306_rule
+    - SV-258167r1155630_rule
     - V-258167
     - NIST800-53R4_AU-9
     - NIST800-53R4_SI-11
@@ -533,7 +532,7 @@
     - CAT2
     - CCI-000171
     - SRG-OS-000063-GPOS-00032
-    - SV-258171r1045308_rule
+    - SV-258171r1134934_rule
     - V-258171
     - NIST800-53R4_AU-12
     - auditd
@@ -551,23 +550,6 @@
         path: "{{ item.path }}"
         mode: 'u-x,g-wx,o-rwx'
       loop: "{{ discovered_audit_rules.files }}"
-
-- name: "MEDIUM | RHEL-09-653115 | PATCH | RHEL 9 /etc/audit/auditd.conf file must have 0640 or less permissive to prevent unauthorized access."
-  when:
-    - rhel_09_653115
-    - rhel9stig_auditd_required
-  tags:
-    - RHEL-09-653115
-    - CAT2
-    - CCI-000171
-    - SRG-OS-000063-GPOS-00032
-    - SV-258172r958444_rule
-    - V-258172
-    - NIST800-53R4_AU-12
-    - auditd
-  ansible.builtin.file:
-    path: /etc/audit/auditd.conf
-    mode: 'u-x,g-wx,o-rwx'
 
 - name: "MEDIUM | RHEL-09-653125 | PATCH | RHEL 9 must have mail aliases to notify the information system security officer (ISSO) and system administrator (SA) (at a minimum) in the event of an audit processing failure."
   when:

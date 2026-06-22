@@ -48,13 +48,11 @@
     - SV-270180r1045182_rule
     - V-270180
     - NIST800-53R4_CM-7
-  vars:
-    warn_control_id: 'MEDIUM | RHEL-09-433016'
   block:
     - name: "MEDIUM | RHEL-09-433016 | AUDIT | The RHEL 9 fapolicy module must be configured to employ a deny-all, permit-by-exception policy to allow the execution of authorized software programs. | capture fapolicy state"
       ansible.builtin.shell: fapolicyd-cli --check-config && fagenrules --check
       changed_when: false
-      failed_when: discovered_fapolicy_rules_state.rc not in [ 0, 1 ]
+      failed_when: discovered_fapolicy_rules_state.rc not in [ 0, 1, 127 ]
       register: discovered_fapolicy_rules_state
 
     - name: "MEDIUM | RHEL-09-433016 | WARN | The RHEL 9 fapolicy module must be configured to employ a deny-all, permit-by-exception policy to allow the execution of authorized software programs. | Warning"
@@ -62,10 +60,12 @@
       ansible.builtin.debug:
         msg: "Warning!! Fapolicy not clean please run: fapolicyd-cli --check-config && fagenrules --check"
 
-    - name: "MEDIUM | RHEL-09-411110 | WARN | The RHEL 9 fapolicy module must be configured to employ a deny-all, permit-by-exception policy to allow the execution of authorized software programs. | Warning count"
+    - name: "MEDIUM | RHEL-09-433016 | WARN | The RHEL 9 fapolicy module must be configured to employ a deny-all, permit-by-exception policy to allow the execution of authorized software programs. | Warning count"
       when: discovered_fapolicy_rules_state.rc != 0
       ansible.builtin.import_tasks:
         file: warning_facts.yml
+      vars:
+        warn_control_id: 'MEDIUM | RHEL-09-433016'
 
     - name: "MEDIUM | RHEL-09-433016 | AUDIT | The RHEL 9 fapolicy module must be configured to employ a deny-all, permit-by-exception policy to allow the execution of authorized software programs."
       when:
@@ -79,15 +79,15 @@
           register: discovered_fapolicy_permissive_state
 
         - name: "MEDIUM | RHEL-09-433016 | PATCH | The RHEL 9 fapolicy module must be configured to employ a deny-all, permit-by-exception policy to allow the execution of authorized software programs. | set permissive"
-          when: "'permissive = 0' in discovered_fapolicy_permissive_state.stdout"
+          when: "'permissive = 1' in discovered_fapolicy_permissive_state.stdout"
           ansible.builtin.replace:
             path: /etc/fapolicyd/fapolicyd.conf
-            regexp: ^permissive\s*=\s*0
-            replace: permissive = 1
+            regexp: ^permissive\s*=\s*1
+            replace: permissive = 0
           notify: Restart fapolicyd
 
         - name: "MEDIUM | RHEL-09-433016 | PATCH | The RHEL 9 fapolicy module must be configured to employ a deny-all, permit-by-exception policy to allow the execution of authorized software programs. | reload fapolicyd"
-          when: "'permissive = 0' in discovered_fapolicy_permissive_state.stdout"
+          when: "'permissive = 1' in discovered_fapolicy_permissive_state.stdout"
           ansible.builtin.systemd:
             name: fapolicyd
             state: restarted
