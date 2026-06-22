@@ -30,6 +30,7 @@
       ansible.builtin.command: "awk -F: '$1 !~ /^root$/ && $2 !~ /^[!*]/ && $5 > {{ rhel9stig_pass_max_days }} {print $1}' /etc/shadow"
       changed_when: false
       failed_when: discovered_users_passwd_max.rc not in [ 0, 1 ]
+      no_log: true
       register: discovered_users_passwd_max
 
     - name: "MEDIUM | RHEL-09-411015 | PATCH | RHEL 9 user account passwords must have a 60-day maximum password lifetime restriction."
@@ -449,7 +450,7 @@
         line: "unlock_time = 0"
         mode: 'go-wx'
 
-    - name: "MEDIUM | RHEL-09-411090 | AUDIT | RHEL 9 must maintain an account lock until the locked account is released by an administrator. | not auth select profile"
+    - name: "MEDIUM | RHEL-09-411090 | PATCH | RHEL 9 must maintain an account lock until the locked account is released by an administrator. | password-auth no authselect"
       ansible.builtin.lineinfile:
         path: "/etc/pam.d/password-auth"
         regexp: "{{ item.regexp }}"

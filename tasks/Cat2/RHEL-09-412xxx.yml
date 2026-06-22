@@ -19,7 +19,7 @@
         path: /etc/profile.d/tmout.sh
       register: discovered_timeout_script
 
-    - name: "MEDIUM | RHEL-09-412035 | AUDIT | RHEL 9 must automatically exit interactive command shell user sessions after 10 minutes of inactivity. | create file if absent"
+    - name: "MEDIUM | RHEL-09-412035 | PATCH | RHEL 9 must automatically exit interactive command shell user sessions after 10 minutes of inactivity. | create file if absent"
       when: not discovered_timeout_script.stat.exists
       ansible.builtin.template:
         src: etc/profile.d/tmout.sh.j2
@@ -28,7 +28,7 @@
         owner: root
         mode: 'u+x,go-w,go+x'
 
-    - name: "MEDIUM | RHEL-09-412035 | AUDIT | RHEL 9 must automatically exit interactive command shell user sessions after 10 minutes of inactivity. | Edit file if present"
+    - name: "MEDIUM | RHEL-09-412035 | PATCH | RHEL 9 must automatically exit interactive command shell user sessions after 10 minutes of inactivity. | Edit file if present"
       when: discovered_timeout_script.stat.exists
       ansible.builtin.lineinfile:
         path: /etc/profile.d/tmout.sh

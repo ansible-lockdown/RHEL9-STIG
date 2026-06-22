@@ -2,54 +2,61 @@
 
 ## Based on STIG V2R7 - 2026 May QA Final updates
 
-Lint
-Alignment
-dup control removed
-/var check fixed - typo
-ordering updated
-fixed conditionals and dconf logic
-removed committed .DS_Store artifact
-container detection now covers community.docker.docker connection plugin
-CONTRIBUTING.md branding aligned to Ansible-Lockdown (hyphen)
-README Twitter URL migrated to x.com
-Rocky vars now define rhel9stig_rule_enable_repogpg override (parity with RedHat/AlmaLinux/OracleLinux)
-typo fix in is_container.yml comment for rhel_09_232255 (rrhel9stig_ -> rhel9stig_)
-ansible_vars_goss template now outputs rhel_09_271095 toggle (audit test was using zero/empty value)
-register: moved after failed_when: in 232xxx and 271xxx bundle tasks (per Lockdown convention)
-absolute file modes converted to relative notation in tasks/main.yml and 232xxx
-RHEL-09-433016 fapolicy audit failed_when tolerates rc=127 when fapolicyd-cli is absent
-Firewalld_reload and Restart_NetworkManager handlers now skip in containers
-molecule default scenario added for local QA testing (Rocky 9 docker)
-is_container.yml cleaned up - removed 4 orphan TMUX entries (412010/412015/412025/412030 no longer in defaults)
-is_container.yml inline per-control comments stripped for consistency
-is_container.yml controls grouped by STIG ID prefix with section headers (211xxx, 212xxx, etc.)
-molecule scenarios: remove yaml stdout_callback (incompatible with ansible-core 2.19 + community.general 9.4.0)
-molecule ubi scenario added for redhat/ubi9 cross-image testing alongside the default rockylinux9 scenario
-molecule images switched to multi-arch ubi-init variants (rockylinux/rockylinux:9-ubi-init, redhat/ubi9-init:latest) - native arm64 on Apple Silicon, systemd as PID 1 without a Dockerfile
-molecule ubi prepare stubs /etc/audit, /etc/audit/rules.d, /etc/aide, /etc/aide/aide.conf.d since those packages are subscription-gated in public UBI repos
-defaults/main.yml documentation improved - added WARNING block on variable precedence, richer comments for setup_audit/run_audit/get_audit_binary_method/audit_content/disruption_high, exposed change_requires_reboot
-defaults/main.yml list vars indented with 2-space sequence style for consistency
-devel_pipeline_validation.yml IAC_BRANCH if-else block normalized to 2-space indent (matches main_pipeline_validation.yml)
-export_badges_private.yml dead conditional removed (referenced github.event_name == 'schedule' but no schedule trigger is defined)
-tasks/main.yml connecting-user check: fixed undefined variable rhel10stig_playbook_user -> rhel9stig_playbook_user and stray trailing quote in task name
-rsyslog remote-server var aligned end-to-end (defaults rhel9stig_rsyslog_remote_server_ip; legacy lineinfile, rainerscript template, and audit bridge updated to match)
-tasks/prelim.yml authselect prelim task: replaced undefined dict ref rhel9stig_authselect['custom_profile_name'] with scalar rhel9stig_authselect_custom_profile; corrected duplicated STIG IDs in name (411080|411080|411090 -> 411080|411085|411090) and when condition (411085 or 411085 or 411090 -> 411080 or 411085 or 411090)
-tasks/Cat3/*.yml: replaced CAT2 tag with CAT3 on all 15 Cat3 controls (selective `--tags CAT3` runs were silently empty)
-tasks/Cat2/RHEL-09-653xxx.yml: 653025 task tag corrected from RHEL-09-653055 to RHEL-09-653025
-tasks/Cat2/RHEL-09-654xxx.yml: 654245 shadow-audit task now uses rhel_09_654245 toggle and RHEL-09-654245 tag (previously both pointed at 654240)
-Task name titles aligned verbatim to V2R7 XCCDF for 12 controls where the role title was inverted, cross-pasted from an adjacent rule, contained discussion text, or otherwise diverged: 213090 (storage->disable storing), 231170 (noexec->nosuid), 252015 (chrony package->chronyd service), 271080 (idle-delay->lock-delay), 431020 (SELinux targeted policy->faillock tally directory context), 611180 (pcsc-lite package->pcscd service), 651020/651025 (file integrity tool->cryptographic mechanisms audit tools), 214025 (locally installed packages->all software repositories), 251035 (discussion text->PPSM CAL rule title), 291010 (discussion text->disable USB mass storage), 411015 (added scope qualifiers removed)
-RHEL-09-214025 find repo files task: removed use_regex:true (incompatible with glob pattern *.repo); the find module was silently returning zero files due to "nothing to repeat at position 0" regex error, leaving the gpgcheck=1 replace loop with an empty list. CAT-1 control now executes correctly.
-RHEL-09-214025 Set gpgcheck task: path: "{{ item }}" -> path: "{{ item.path }}" (find returns stat dicts, not path strings); regexp tightened from ^gpgcheck (which matched only the word "gpgcheck" and left "gpgcheck=0" partially replaced as "gpgcheck=1=0") to ^gpgcheck\s*=.*$ to replace the full key=value line per the XCCDF fix-text. Surfaced by molecule failure once the find no-op was fixed.
-RHEL-09-611195/611200 copy service file: added force:false to the copy task that clobbered the lineinfile-edited drop-in on every converge. Goss audit was flipping these two controls from pass to fail between converges because the copy ran before the lineinfile re-edit. Audit state now stable run-to-run.
-RHEL-09-271065 ini_file: added no_extra_spaces:true so the dconf drop-in writes idle-delay=uint32 600 (no spaces around =) per dconf format convention, matching the audit goss content regex.
-RHEL-09-231085 when-toggle alignment: parent block when: was rhel_09_231080 (gated by sibling control's toggle); corrected to rhel_09_231085 so the control honors its own toggle.
-RHEL-09-653015 task name: added trailing period to align verbatim with V2R7 XCCDF title.
-RHEL-09-432035 task name: changed outer YAML quoting from double to single to preserve XCCDF's literal "su" double-quoted command name (was 'su' single-quoted).
-RHEL-09-271105 AUDIT sub-task: changed gsettings set -> gsettings get (the discovery task was destructively writing the value before register could capture state).
+- RHEL-09-252050 PATCH configure postfix: removed quoted-string clause from the `when:` list at `tasks/Cat2/RHEL-09-252xxx.yml:159` and appended `.stdout` to the register access. The clause `"rhel9stig_postfix_client_conf not in discovered_postfix_client_restrict"` was a literal YAML string (truthy, but non-boolean); Ansible 2.19+ strict-conditional rejected it on the second converge, hard-failing the role. The first converge masked it because the parent `rhel9stig_disruption_high: false` gate short-circuited before the broken item was evaluated.
+- Audit bridge template (`templates/ansible_vars_goss.yml.j2`): removed doubled `RPM-GPG-KEY-RPM-GPG-KEY-` segment from `rpm_gpg_key` path (audit was asserting a non-existent file); merged duplicate `rhel9stig_dns_servers` key emitted under separate IPv4/IPv6 conditionals into a single key block (IPv6 silently overwrote IPv4 when both `rhel9stig_dns_ip4_servers` and `rhel9stig_dns_ip6_servers` were defined, hiding the IPv4 list from the audit role).
+- Renamed 6 AUDIT-named tasks that modified state to PATCH (read-only contract). Tasks named `| AUDIT |` must not invoke modifying modules; `--tags AUDIT` and `--check` runs were silently mutating state. Affected: RHEL-09-215105 "Add required pmod files" (template), RHEL-09-232045 "update permissions" (file with mode/owner), RHEL-09-251030 (lineinfile to /etc/firewalld/firewalld.conf), RHEL-09-411090 "no authselect" both password-auth and system-auth variants (lineinfile), RHEL-09-412035 "create file if absent" + "Edit file if present" (template + lineinfile). The 411090 password-auth task name suffix also disambiguated to "password-auth no authselect" so it no longer collides with the system-auth sibling.
+- `set -o pipefail` added to 25 single-line `ansible.builtin.shell:` tasks with piped commands across `tasks/prelim.yml` (10) and `tasks/Cat2/RHEL-09-{212,213,214,232}xxx.yml` (15). All converted to the multi-line block-scalar shell form matching the existing convention in `tasks/parse_etc_passwd.yml`, `tasks/pre_remediation_audit.yml`, and `tasks/post_remediation_audit.yml`. Without pipefail, early-pipeline failures (e.g. grep rc=2 from a missing file) were masked by the final command's rc=0 and the failed_when conditions never tripped, allowing silently corrupt registered variables.
+- PRELIM NetworkManager DNS state task: `failed_when:` accepts rc=2 (file absent) in addition to rc=0/1. Required follow-up to the `set -o pipefail` change because grep's rc=2 (NetworkManager.conf missing on minimal containers) now propagates through the pipeline instead of being masked by sed's rc=0. On systems without NetworkManager.conf the task now succeeds with an empty stdout, matching the pre-pipefail behavior.
+- `no_log: true` added to 4 tasks that handle shadow-file content or lock accounts: RHEL-09-411015 AUDIT (awk on /etc/shadow for pass-max-days), RHEL-09-611080 AUDIT (awk on /etc/shadow for 24-hour restriction), RHEL-09-671015 AUDIT (cat/grep on /etc/shadow for non-FIPS hashes), RHEL-09-611155 PATCH (`ansible.builtin.user password_lock` looping empty-password accounts). Prevents password hash leakage in verbose Ansible output and Ansible logs.
+- aide.conf.j2 + RHEL-09-651xxx hardened for aide 0.18+ compatibility (addresses ansible-lockdown/RHEL9-STIG#161)
+- molecule default scenario aligned with RHEL8-STIG sibling: enabled rhel9stig_disruption_high, fetch_audit_output, audit_output_destination; prepare.yml adds openssl-pkcs11 + opensc for PAM smartcard coverage
+- added molecule/README_Molecule_QuickStart.md - quick-start guide for the default scenario (venv, host_vars, expected results, gating-run command sequence)
+- Thank you @hectoralicea for submitting issue ansible-lockdown/RHEL9-STIG#161
+- Thank you @uk-bolly for the review
+- Lint
+- Alignment
+- dup control removed
+- /var check fixed - typo
+- ordering updated
+- fixed conditionals and dconf logic
+- removed committed .DS_Store artifact
+- container detection now covers community.docker.docker connection plugin
+- CONTRIBUTING.md branding aligned to Ansible-Lockdown (hyphen)
+- README Twitter URL migrated to x.com
+- Rocky vars now define rhel9stig_rule_enable_repogpg override (parity with RedHat/AlmaLinux/OracleLinux)
+- typo fix in is_container.yml comment for rhel_09_232255 (rrhel9stig_ -> rhel9stig_)
+- ansible_vars_goss template now outputs rhel_09_271095 toggle (audit test was using zero/empty value)
+- register: moved after failed_when: in 232xxx and 271xxx bundle tasks (per Lockdown convention)
+- absolute file modes converted to relative notation in tasks/main.yml and 232xxx
+- RHEL-09-433016 fapolicy audit failed_when tolerates rc=127 when fapolicyd-cli is absent
+- Firewalld_reload and Restart_NetworkManager handlers now skip in containers
+- molecule default scenario added for local QA testing (Rocky 9 docker)
+- is_container.yml cleaned up - removed 4 orphan TMUX entries (412010/412015/412025/412030 no longer in defaults)
+- is_container.yml inline per-control comments stripped for consistency
+- is_container.yml controls grouped by STIG ID prefix with section headers (211xxx, 212xxx, etc.)
+- molecule scenarios: remove yaml stdout_callback (incompatible with ansible-core 2.19 + community.general 9.4.0)
+- molecule ubi scenario added for redhat/ubi9 cross-image testing alongside the default rockylinux9 scenario
+- molecule images switched to multi-arch ubi-init variants (rockylinux/rockylinux:9-ubi-init, redhat/ubi9-init:latest) - native arm64 on Apple Silicon, systemd as PID 1 without a Dockerfile
+- molecule ubi prepare stubs /etc/audit, /etc/audit/rules.d, /etc/aide, /etc/aide/aide.conf.d since those packages are subscription-gated in public UBI repos
+- defaults/main.yml documentation improved - added WARNING block on variable precedence, richer comments for setup_audit/run_audit/get_audit_binary_method/audit_content/disruption_high, exposed change_requires_reboot
+- defaults/main.yml list vars indented with 2-space sequence style for consistency
+- tasks/main.yml connecting-user check: fixed undefined variable rhel10stig_playbook_user -> rhel9stig_playbook_user and stray trailing quote in task name
+- rsyslog remote-server var aligned end-to-end (defaults rhel9stig_rsyslog_remote_server_ip; legacy lineinfile, rainerscript template, and audit bridge updated to match)
+- tasks/prelim.yml authselect prelim task: replaced undefined dict ref rhel9stig_authselect['custom_profile_name'] with scalar rhel9stig_authselect_custom_profile; corrected duplicated STIG IDs in name (411080|411080|411090 -> 411080|411085|411090) and when condition (411085 or 411085 or 411090 -> 411080 or 411085 or 411090)
+- tasks/Cat3/*.yml: replaced CAT2 tag with CAT3 on all 15 Cat3 controls (selective `--tags CAT3` runs were silently empty)
+- tasks/Cat2/RHEL-09-653xxx.yml: 653025 task tag corrected from RHEL-09-653055 to RHEL-09-653025
+- tasks/Cat2/RHEL-09-654xxx.yml: 654245 shadow-audit task now uses rhel_09_654245 toggle and RHEL-09-654245 tag (previously both pointed at 654240)
+- Task name titles aligned verbatim to V2R7 XCCDF for 12 controls where the role title was inverted, cross-pasted from an adjacent rule, contained discussion text, or otherwise diverged: 213090 (storage->disable storing), 231170 (noexec->nosuid), 252015 (chrony package->chronyd service), 271080 (idle-delay->lock-delay), 431020 (SELinux targeted policy->faillock tally directory context), 611180 (pcsc-lite package->pcscd service), 651020/651025 (file integrity tool->cryptographic mechanisms audit tools), 214025 (locally installed packages->all software repositories), 251035 (discussion text->PPSM CAL rule title), 291010 (discussion text->disable USB mass storage), 411015 (added scope qualifiers removed)
+- RHEL-09-214025 find repo files task: removed use_regex:true (incompatible with glob pattern *.repo); the find module was silently returning zero files due to "nothing to repeat at position 0" regex error, leaving the gpgcheck=1 replace loop with an empty list. CAT-1 control now executes correctly.
+- RHEL-09-214025 Set gpgcheck task: path: "{{ item }}" -> path: "{{ item.path }}" (find returns stat dicts, not path strings); regexp tightened from ^gpgcheck (which matched only the word "gpgcheck" and left "gpgcheck=0" partially replaced as "gpgcheck=1=0") to ^gpgcheck\s*=.*$ to replace the full key=value line per the XCCDF fix-text. Surfaced by molecule failure once the find no-op was fixed.
+- RHEL-09-611195/611200 copy service file: added force:false to the copy task that clobbered the lineinfile-edited drop-in on every converge. Goss audit was flipping these two controls from pass to fail between converges because the copy ran before the lineinfile re-edit. Audit state now stable run-to-run.
+- RHEL-09-271065 ini_file: added no_extra_spaces:true so the dconf drop-in writes idle-delay=uint32 600 (no spaces around =) per dconf format convention, matching the audit goss content regex.
+- RHEL-09-231085 when-toggle alignment: parent block when: was rhel_09_231080 (gated by sibling control's toggle); corrected to rhel_09_231085 so the control honors its own toggle.
+- RHEL-09-653015 task name: added trailing period to align verbatim with V2R7 XCCDF title.
+- RHEL-09-432035 task name: changed outer YAML quoting from double to single to preserve XCCDF's literal "su" double-quoted command name (was 'su' single-quoted).
+- RHEL-09-271105 AUDIT sub-task: changed gsettings set -> gsettings get (the discovery task was destructively writing the value before register could capture state).
 
-## Based on STIG V2R7 - 05 Jan 2026
-
-# May 26 update for public release
+## Based on STIG V2R7 - 05 Jan 2026 - May 26 update for public release
 
 Public issue #154 addressed thanks to @PrymalInstynct
 Public issue # 157 and #158 addressed thanks to @hectoralicea
@@ -61,7 +68,7 @@ remove unused variables
 connecting user test updated
 vars moved to task rather than on blocks
 
-# Initial
+### Initial
 
 Linting
 company name alignment
@@ -161,6 +168,7 @@ Cat II
 - 654260 - removed
 
 ## Based on STIG V2R5 07 August 2025 - Feb26 updates
+
 - 611160 updated
 - 232190 updated
 - 232195 updated
@@ -171,9 +179,6 @@ Cat II
 ## 2.5.0 Based on STIG V2R5 07 August 2025
 
 - added extra options and explanation for audit component
-
-## 2.5.0 Based on STIG V2R5 07 August 2025
-
 - updated aide checks
 - fixed v2.19 compliance and conditionals
 

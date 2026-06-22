@@ -6,12 +6,16 @@
   tags: always
   block:
     - name: PRELIM | Capture UID_MIN information from logins.def
-      ansible.builtin.shell: grep -w "^UID_MIN" /etc/login.defs | awk '{print $NF}'
+      ansible.builtin.shell: |
+        set -o pipefail
+        grep -w "^UID_MIN" /etc/login.defs | awk '{print $NF}'
       changed_when: false
       register: prelim_uid_min_id
 
     - name: PRELIM | Capture UID_MAX information from logins.def
-      ansible.builtin.shell: grep -w "^UID_MAX" /etc/login.defs | awk '{print $NF}'
+      ansible.builtin.shell: |
+        set -o pipefail
+        grep -w "^UID_MAX" /etc/login.defs | awk '{print $NF}'
       changed_when: false
       register: prelim_uid_max_id
 
@@ -27,7 +31,9 @@
 
 - name: PRELIM | Interactive Users
   tags: always
-  ansible.builtin.shell: "grep -Ev 'nologin|/sbin' /etc/passwd | awk -F: '$3 >= {{ min_int_uid }} {print $1}'"
+  ansible.builtin.shell: |
+    set -o pipefail
+    grep -Ev 'nologin|/sbin' /etc/passwd | awk -F: '$3 >= {{ min_int_uid }} {print $1}'
   changed_when: false
   register: prelim_interactive_users
 
@@ -47,7 +53,9 @@
 
 - name: PRELIM | Interactive User account home
   tags: always
-  ansible.builtin.shell: 'cat /etc/passwd | grep -Ev "nologin|/sbin" | cut -d: -f6'
+  ansible.builtin.shell: |
+    set -o pipefail
+    cat /etc/passwd | grep -Ev "nologin|/sbin" | cut -d: -f6
   changed_when: false
   register: prelim_interactive_users_home
 
@@ -60,7 +68,9 @@
 - name: PRELIM | Gather accounts with empty password fields
   when: rhel_09_611155
   tags: passwords
-  ansible.builtin.shell: "cat /etc/shadow | awk -F: '($2 == \"\" ) {j++;print $1; } END {exit j}'"
+  ansible.builtin.shell: |
+    set -o pipefail
+    cat /etc/shadow | awk -F: '($2 == "" ) {j++;print $1; } END {exit j}'
   changed_when: false
   failed_when: prelim_empty_password_accounts.rc not in [ 0, 1 ]
   no_log: true
@@ -71,7 +81,9 @@
     - level1-server
     - level1-workstation
     - users
-  ansible.builtin.shell: "cat /etc/passwd | awk -F: '($3 == 0 && $1 != \"root\") {i++;print $1 } END {exit i}'"
+  ansible.builtin.shell: |
+    set -o pipefail
+    cat /etc/passwd | awk -F: '($3 == 0 && $1 != "root") {i++;print $1 } END {exit i}'
   changed_when: false
   check_mode: false
   register: prelim_uid_zero_accounts_except_root
@@ -79,7 +91,7 @@
 - name: PRELIM | Create list of mount points
   tags: always
   ansible.builtin.set_fact:
-    mount_names: "{{ ansible_mounts | map(attribute='mount') | list }}"
+    mount_names: "{{ ansible_facts['mounts'] | map(attribute='mount') | list }}"
 
 - name: PRELIM | Ensure python3-libselinux is installed
   when:
@@ -152,7 +164,9 @@
       rhel_09_653085 or
       rhel_09_653090
   tags: always
-  ansible.builtin.shell: grep ^log_file /etc/audit/auditd.conf | awk '{ print $NF }'
+  ansible.builtin.shell: |
+    set -o pipefail
+    grep ^log_file /etc/audit/auditd.conf | awk '{ print $NF }'
   changed_when: false
   register: discovered_auditd_logfile
 
@@ -204,9 +218,11 @@
 - name: "PRELIM | Capture NetworkManager DNS state"
   when: rhel_09_252035 or rhel_09_252040
   tags: always
-  ansible.builtin.shell: grep -E "dns\s*=" /etc/NetworkManager/NetworkManager.conf | cut -d = -f2 | sed s/" "//g
+  ansible.builtin.shell: |
+    set -o pipefail
+    grep -E "dns\s*=" /etc/NetworkManager/NetworkManager.conf | cut -d = -f2 | sed s/" "//g
   changed_when: false
-  failed_when: prelim_network_manager_dns.rc not in [ 0, 1 ]
+  failed_when: prelim_network_manager_dns.rc not in [ 0, 1, 2 ]
   register: prelim_network_manager_dns
 
 - name: PRELIM | Discover Gnome Desktop Environment
@@ -217,7 +233,9 @@
 
 - name: PRELIM | Discover dconf systemdb
   when: rhel9stig_gui
-  ansible.builtin.shell: grep system-db /etc/dconf/profile/user | cut -d ':' -f2
+  ansible.builtin.shell: |
+    set -o pipefail
+    grep system-db /etc/dconf/profile/user | cut -d ':' -f2
   changed_when: false
   failed_when: prelim_dconf_db.rc not in [ 0, 1 ]
   register: prelim_dconf_db
@@ -264,7 +282,9 @@
   tags: always
   block:
     - name: "PRELIM | Setup authselect if setting allow"
-      ansible.builtin.shell: "authselect current | grep with-faillock"
+      ansible.builtin.shell: |
+        set -o pipefail
+        authselect current | grep with-faillock
       failed_when: false
       changed_when: false
       check_mode: false

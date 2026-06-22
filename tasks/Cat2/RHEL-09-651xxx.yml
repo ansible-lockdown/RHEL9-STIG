@@ -21,11 +21,17 @@
       ansible.builtin.package:
         name: aide
         state: present
+      register: discovered_aide_install_result
 
     - name: "MEDIUM | RHEL-09-651010 | PATCH | RHEL 9 must have the AIDE package installed. | Check DB"
       ansible.builtin.command: echo "Set Aide DB setup for handler"
       changed_when: true
       notify: Build_aide_db
+
+    - name: "MEDIUM | RHEL-09-651010 | AUDIT | RHEL 9 must have the AIDE package installed. | Refresh package facts after install"
+      when: discovered_aide_install_result is changed  # noqa: no-handler
+      ansible.builtin.package_facts:
+        manager: auto
 
 - name: "MEDIUM | RHEL-09-651015 | PATCH | RHEL 9 must routinely check the baseline configuration for unauthorized changes and notify the system administrator when anomalies in the operation of any security functions are discovered."
   when:
@@ -53,6 +59,18 @@
     name: "{{ rhel9stig_aide_cron_name }}"
     state: present
     user: root
+
+- name: "MEDIUM | AIDE Pre-Requisite | Set discovered_aide_version fact"
+  when:
+    - rhel9stig_use_aide
+    - rhel_09_651020 or rhel_09_651025
+  tags:
+    - aide
+    - CAT2
+    - RHEL-09-651020
+    - RHEL-09-651025
+  ansible.builtin.set_fact:
+    discovered_aide_version: "{{ ansible_facts.packages['aide'][0].version | default(aide_version_prechanges) }}"
 
 - name: "MEDIUM | RHEL-09-651020 | PATCH | RHEL 9 must use a file integrity tool that is configured to use FIPS 140-3-approved cryptographic hashes for validating file contents and directories."
   when:

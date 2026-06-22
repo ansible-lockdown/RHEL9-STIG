@@ -377,6 +377,7 @@
       ansible.builtin.command: "awk -F: '$4 < 1 {print $1}' /etc/shadow"
       changed_when: false
       failed_when: discovered_24hr_passwd_restrict.rc not in [ 0, 1 ]
+      no_log: true
       register: discovered_24hr_passwd_restrict
 
     - name: "MEDIUM | RHEL-09-611080 | WARN | RHEL 9 passwords must have a 24 hours minimum password lifetime restriction in /etc/shadow. | Warning"
@@ -687,6 +688,7 @@
         name: "{{ item }}"
         password_lock: true
       loop: "{{ prelim_empty_password_accounts.stdout_lines }}"
+      no_log: true
 
 # Prerequisite for 611160-611160
 - name: "MEDIUM | RHEL-09-611185 | PATCH | RHEL 9 must have the opensc package installed."

@@ -14,7 +14,9 @@
     - NIST800-53R4_CM-5
   block:
     - name: "MEDIUM | RHEL-09-232010 | AUDIT | RHEL 9 system commands must have mode 755 or less permissive."
-      ansible.builtin.shell: find -L /bin /sbin /usr/bin /usr/sbin /usr/libexec /usr/local/bin /usr/local/sbin -perm /022 -type f -exec ls -l {} \; | awk '{ print $NF}'
+      ansible.builtin.shell: |
+        set -o pipefail
+        find -L /bin /sbin /usr/bin /usr/sbin /usr/libexec /usr/local/bin /usr/local/sbin -perm /022 -type f -exec ls -l {} \; | awk '{ print $NF}'
       changed_when: false
       failed_when: discovered_system_command_permissions.rc not in [ 0, 1 ]
       register: discovered_system_command_permissions
@@ -40,7 +42,9 @@
     - NIST800-53R4_CM-5
   block:
     - name: "MEDIUM | RHEL-09-232015 | AUDIT | RHEL 9 library directories must have mode 755 or less permissive."
-      ansible.builtin.shell: find -L /lib /lib64 /usr/lib /usr/lib64 -perm /022 -type d -exec ls -l {} \; | awk '{ print $NF}'
+      ansible.builtin.shell: |
+        set -o pipefail
+        find -L /lib /lib64 /usr/lib /usr/lib64 -perm /022 -type d -exec ls -l {} \; | awk '{ print $NF}'
       changed_when: false
       failed_when: discovered_library_directory_perms.rc not in [ 0, 1 ]
       register: discovered_library_directory_perms
@@ -65,7 +69,9 @@
     - NIST800-53R4_CM-5
   block:
     - name: "MEDIUM | RHEL-09-232020 | AUDIT | RHEL 9 library files must have mode 755 or less permissive."
-      ansible.builtin.shell: find -L /lib /lib64 /usr/lib /usr/lib64 -perm /022 -type f -exec ls -l {} \; | awk '{ print $NF}'
+      ansible.builtin.shell: |
+        set -o pipefail
+        find -L /lib /lib64 /usr/lib /usr/lib64 -perm /022 -type f -exec ls -l {} \; | awk '{ print $NF}'
       changed_when: false
       failed_when: discovered_library_file_perms.rc not in [ 0, 1 ]
       register: discovered_library_file_perms
@@ -195,7 +201,7 @@
         recurse: true
       register: discovered_user_dot_files
 
-    - name: "MEDIUM | RHEL-09-232045 | AUDIT | All RHEL 9 local initialization files must have mode 0740 or less permissive. | update permissions"
+    - name: "MEDIUM | RHEL-09-232045 | PATCH | All RHEL 9 local initialization files must have mode 0740 or less permissive. | update permissions"
       ansible.builtin.file:
         path: "{{ item.path }}"
         mode: 'g-wx,o-rwx'
@@ -951,7 +957,9 @@
     - NIST800-53R4_SC-4
   block:
     - name: "MEDIUM | RHEL-09-232240 | AUDIT | All RHEL 9 world-writable directories must be owned by root, sys, bin, or an application user."
-      ansible.builtin.shell: df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d -perm -0002 -uid +999
+      ansible.builtin.shell: |
+        set -o pipefail
+        df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d -perm -0002 -uid +999
       changed_when: false
       failed_when: discovered_worldwide_dir_owners.rc not in [ 0, 1 ]
       register: discovered_worldwide_dir_owners
@@ -984,7 +992,9 @@
     - NIST800-53R4_SC-4
   block:
     - name: "MEDIUM | RHEL-09-232245 | AUDIT | A sticky bit must be set on all RHEL 9 public directories."
-      ansible.builtin.shell: df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d -perm -0002 -a ! -perm -1000 2>/dev/null
+      ansible.builtin.shell: |
+        set -o pipefail
+        df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d -perm -0002 -a ! -perm -1000 2>/dev/null
       changed_when: false
       failed_when: discovered_public_dirs_stickybit.rc not in [ 0, 1 ]
       register: discovered_public_dirs_stickybit

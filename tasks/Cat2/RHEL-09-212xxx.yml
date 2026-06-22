@@ -56,7 +56,9 @@
     - NIST800-53R4_CM-6
   block:
     - name: "MEDIUM | RHEL-09-212015 | AUDIT | RHEL 9 must disable the ability of systemd to spawn an interactive boot process."
-      ansible.builtin.shell: grubby --info=ALL | grep args | grep 'systemd.confirm_spawn'
+      ansible.builtin.shell: |
+        set -o pipefail
+        grubby --info=ALL | grep args | grep 'systemd.confirm_spawn'
       changed_when: false
       failed_when: discovered_systemd_spawn.rc not in [ 0, 1 ]
       register: discovered_systemd_spawn
@@ -116,7 +118,9 @@
     - NIST800-SC-3
   block:
     - name: "MEDIUM | RHEL-09-212035 | AUDIT | RHEL 9 must disable virtual system calls. | Capture grubby"
-      ansible.builtin.shell: grubby --info=ALL | grep args | grep 'vsyscall=none'
+      ansible.builtin.shell: |
+        set -o pipefail
+        grubby --info=ALL | grep args | grep 'vsyscall=none'
       changed_when: false
       failed_when: discovered_grubby_vsyscall.rc not in [ 0, 1 ]
       register: discovered_grubby_vsyscall
@@ -127,7 +131,9 @@
       changed_when: true
 
     - name: "MEDIUM | RHEL-09-212035 | AUDIT | RHEL 9 must disable virtual system calls. | Capture default grub"
-      ansible.builtin.shell: grep "^GRUB_CMDLINE_LINUX=" /etc/default/grub | cut -f2 -d'"' | grep vsyscall
+      ansible.builtin.shell: |
+        set -o pipefail
+        grep "^GRUB_CMDLINE_LINUX=" /etc/default/grub | cut -f2 -d'"' | grep vsyscall
       changed_when: false
       failed_when: discovered_def_grub_vsyscall.rc not in [ 0, 1 ]
       register: discovered_def_grub_vsyscall
@@ -154,7 +160,9 @@
     - NIST800-53R4_SC-3
   block:
     - name: "MEDIUM | RHEL-09-212040 | AUDIT | RHEL 9 must clear the page allocator to prevent use-after-free attacks. | Capture grubby"
-      ansible.builtin.shell: grubby --info=ALL | grep args | grep 'page_poison=1'
+      ansible.builtin.shell: |
+        set -o pipefail
+        grubby --info=ALL | grep args | grep 'page_poison=1'
       changed_when: false
       failed_when: discovered_grubby_page_alloc.rc not in [ 0, 1 ]
       register: discovered_grubby_page_alloc
@@ -165,7 +173,9 @@
       changed_when: true
 
     - name: "MEDIUM | RHEL-09-212040 | AUDIT | RHEL 9 must clear the page allocator to prevent use-after-free attacks. | Capture default grub"
-      ansible.builtin.shell: grep "^GRUB_CMDLINE_LINUX=" /etc/default/grub | cut -f2 -d'"' | grep page_poison
+      ansible.builtin.shell: |
+        set -o pipefail
+        grep "^GRUB_CMDLINE_LINUX=" /etc/default/grub | cut -f2 -d'"' | grep page_poison
       changed_when: false
       failed_when: discovered_def_grub_poison.rc not in [ 0 ,1 ]
       register: discovered_def_grub_poison
@@ -194,7 +204,9 @@
     - NIST800-53R4_SI-16
   block:
     - name: "MEDIUM | RHEL-09-212045 | AUDIT | RHEL 9 must clear memory when it is freed to prevent use-after-free attacks. | Capture grubby"
-      ansible.builtin.shell: grubby --info=ALL | grep args | grep 'init_on_free=1'
+      ansible.builtin.shell: |
+        set -o pipefail
+        grubby --info=ALL | grep args | grep 'init_on_free=1'
       changed_when: false
       failed_when: discovered_grubby_slab.rc not in [ 0, 1 ]
       register: discovered_grubby_slab

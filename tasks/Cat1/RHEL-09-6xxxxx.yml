@@ -24,7 +24,7 @@
 - name: HIGH | RHEL-09-671010 | PATCH | RHEL 9 must enable FIPS mode.
   when:
     - rhel_09_671010
-    - not ansible_fips
+    - not ansible_facts['fips']
   tags:
     - RHEL-09-671010
     - CAT1
