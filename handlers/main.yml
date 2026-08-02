@@ -72,7 +72,7 @@
 
 - name: "Get authselect faillock state"
   when: not rhel9stig_add_faillock_without_authselect
-  ansible.builtin.command: authselect current | grep failock
+  ansible.builtin.command: authselect current
   changed_when: false
   failed_when: discovered_authselect_faillock_state.rc not in [ 0, 1 ]
   register: discovered_authselect_faillock_state

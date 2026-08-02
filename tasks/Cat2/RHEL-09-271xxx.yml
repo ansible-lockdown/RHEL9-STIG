@@ -391,13 +391,18 @@
     - V-258029
     - NIST800-53R4_CM-6
   notify: Update_dconf
-  ansible.builtin.command: gsettings set org.gnome.login-screen disable-restart-buttons true
-  changed_when: true
+  community.general.ini_file:
+    path: "/etc/dconf/db/{{ item }}.d/02-login-screen"
+    section: org/gnome/login-screen
+    option: disable-restart-buttons
+    value: 'true'
+    create: true
+    mode: 'go-wx'
   loop: "{{ prelim_dconf_db.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-271100 | PATCH | RHEL 9 must prevent a user from overriding the disable-restart-buttons setting for the graphical user interface."
   when:
-    - mrhel_09_271100
+    - rhel_09_271100
     - "'dconf' in ansible_facts.packages"
   tags:
     - RHEL-09-271100

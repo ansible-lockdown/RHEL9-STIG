@@ -176,7 +176,7 @@
     - rhel_09_653110
   tags: always
   ansible.builtin.find:
-    path: etc/audit/rules.d
+    path: /etc/audit/rules.d
     patterns: '*.rules'
   register: discovered_audit_rules
 
