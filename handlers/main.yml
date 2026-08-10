@@ -158,7 +158,7 @@
     - not discovered_aide_db_file.stat.exists or
       (discovered_aide_db_age.files | length > 0) or
       rhel9stig_aide_db_recreate
-    - discovered_new_aide_db_created.changed  # noqa: no-changed-when
+    - discovered_new_aide_db_created.changed
   ansible.builtin.command: "mv -f {{ rhel9stig_aide_db_new_file }} {{ rhel9stig_aide_db_file }}"
   changed_when: true
   listen: Build_aide_db
@@ -166,7 +166,7 @@
 - name: AIDE - If DB exists run check comparison
   when:
     - discovered_aide_db_file.stat.exists
-    - not discovered_new_aide_db_created.changed  # noqa: no-changed-when
+    - not discovered_new_aide_db_created.changed
   ansible.builtin.command: /usr/sbin/aide --check
   changed_when: true
   failed_when: discovered_aidedb_check.rc not in [ 0, 1, 4, 5, 7 ]
