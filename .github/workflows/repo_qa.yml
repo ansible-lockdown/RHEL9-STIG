@@ -5,11 +5,11 @@ name: Repo QA
 on:  # yamllint disable-line rule:truthy
   push:
     branches:
-      - latest
+      - devel
   pull_request:
     branches:
-      - latest
-      - benchmark*
+      - main
+      - devel
   # The checker is pinned, but the role's own content and the pinned linters' rule sets do
   # not move in lock-step with PR activity. A weekly run surfaces drift as its own build
   # rather than on whatever unrelated PR is open at the time.

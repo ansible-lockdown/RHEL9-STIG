@@ -168,7 +168,7 @@ CI never hits this - a fresh runner has an empty image cache, so the pull resolv
 
 ## CI (GitHub Actions)
 
-`.github/workflows/molecule.yml` runs both scenarios on GitHub-hosted `ubuntu-latest` runners, in a `fail-fast: false` matrix, on pull requests to `latest` and `benchmark*`, on pushes to `latest`, weekly, and on demand. Because the runners are amd64, the workflow exports `MOLECULE_DOCKER_PLATFORM=linux/amd64`. The workflow file is intentionally byte-identical to the one on the V2R9 branch.
+`.github/workflows/molecule.yml` runs both scenarios on GitHub-hosted `ubuntu-latest` runners, in a `fail-fast: false` matrix, on pull requests to `main` and `devel`, on pushes to `devel`, weekly, and on demand. Because the runners are amd64, the workflow exports `MOLECULE_DOCKER_PLATFORM=linux/amd64`. The workflow file is intentionally byte-identical to the one on the V2R9 branch.
 
 This is a fast, secret-free gate that runs in front of the tofu/EC2 pipelines - it does not replace them. Three things about it differ from the local ritual above and are deliberate:
 

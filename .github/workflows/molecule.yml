@@ -5,7 +5,7 @@ name: Molecule
 on:  # yamllint disable-line rule:truthy
   push:
     branches:
-      - latest
+      - devel
     paths:
       - 'defaults/**'
       - 'handlers/**'
@@ -18,8 +18,8 @@ on:  # yamllint disable-line rule:truthy
       - '.github/workflows/molecule.yml'
   pull_request:
     branches:
-      - latest
-      - benchmark*
+      - main
+      - devel
     paths:
       - 'defaults/**'
       - 'handlers/**'
