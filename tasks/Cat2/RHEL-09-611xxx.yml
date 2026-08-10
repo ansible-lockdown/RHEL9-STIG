@@ -14,13 +14,13 @@
     - NIST800-53R4_IA-5
   block:
     - name: "MEDIUM | RHEL-09-611010 | PATCH | RHEL 9 must ensure the password complexity module in the system-auth file is configured for three retries or less. | Check system-auth"
-      ansible.builtin.shell: grep "password.*pam_pwquality.so" /etc/pam.d/system-auth
+      ansible.builtin.command: grep "password.*pam_pwquality.so" /etc/pam.d/system-auth
       changed_when: false
       failed_when: discovered_pwquality_system_auth_status.rc not in [ 0, 1 ]
       register: discovered_pwquality_system_auth_status
 
     - name: "MEDIUM | RHEL-09-611010 | PATCH | RHEL 9 must ensure the password complexity module in the system-auth file is configured for three retries or less. | Check password-auth"
-      ansible.builtin.shell: grep "password.*pam_pwquality.so" /etc/pam.d/password-auth
+      ansible.builtin.command: grep "password.*pam_pwquality.so" /etc/pam.d/password-auth
       changed_when: false
       failed_when: discovered_pwquality_password_auth_status.rc not in [ 0, 1 ]
       register: discovered_pwquality_password_auth_status
@@ -369,7 +369,7 @@
     - CAT2
     - CCI-000198
     - SRG-OS-000075-GPOS-00043
-    - SV-258105r1015105_rule
+    - SV-258105r1045212_rule
     - V-258105
     - NIST800-53R4_IA-5
   block:
@@ -421,9 +421,13 @@
     - NIST800-53R4_IA-11
   block:
     - name: "MEDIUM | RHEL-09-611085 | AUDIT | RHEL 9 must require users to provide a password for privilege escalation"
-      ansible.builtin.shell: grep -Ei '(nopasswd)' /etc/sudoers /etc/sudoers.d/* | cut -d':' -f1
+      ansible.builtin.shell: |
+        set -o pipefail
+        grep -Ei '(nopasswd)' /etc/sudoers /etc/sudoers.d/* | cut -d':' -f1
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
-      failed_when: discovered_sudoers_nopasswd.rc not in [ 0, 1 ]
+      failed_when: discovered_sudoers_nopasswd.rc not in [ 0, 1, 2 ]  # rc=2 when /etc/sudoers.d is empty (glob unmatched) - now surfaced by set -o pipefail
       register: discovered_sudoers_nopasswd
 
     - name: "MEDIUM | RHEL-09-611085 | PATCH | RHEL 9 must require users to provide a password for privilege escalation"
@@ -741,7 +745,7 @@
       changed_when: false
       register: discovered_opensc_loaded_card_driver
 
-    - name: "MEDIUM | RHEL-09-611160 | AUDIT | RHEL 9 must use the CAC smart card driver. | get state"
+    - name: "MEDIUM | RHEL-09-611160 | PATCH | RHEL 9 must use the CAC smart card driver. | set driver"
       when: "'cac' not in discovered_opensc_loaded_card_driver.stdout"
       ansible.builtin.command: opensc-tool --set-conf-entry app:default:card_driver:cac
       changed_when: true
@@ -787,9 +791,13 @@
   notify: Restart_sssd
   block:
     - name: "MEDIUM | RHEL-09-611170 | AUDIT | RHEL 9 must implement certificate status checking for multifactor authentication. | Capture existence"
-      ansible.builtin.shell: 'grep certificate_verification /etc/sssd/sssd.conf /etc/sssd/conf.d/*.conf | grep -v "^#"'
+      ansible.builtin.shell: |
+        set -o pipefail
+        grep certificate_verification /etc/sssd/sssd.conf /etc/sssd/conf.d/*.conf | grep -v "^#"
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
-      failed_when: discovered_sssd_cert_verification_files.rc not in [ 0, 1 ]
+      failed_when: discovered_sssd_cert_verification_files.rc not in [ 0, 1, 2 ]  # rc=2 when /etc/sssd/conf.d is empty (glob unmatched) - now surfaced by set -o pipefail
       register: discovered_sssd_cert_verification_files
 
     - name: "MEDIUM | RHEL-09-611170 | PATCH | RHEL 9 must implement certificate status checking for multifactor authentication. | Add if missing"
@@ -837,12 +845,13 @@
     - RHEL-09-611180
     - CAT2
     - CCI-001948
+    - CCI-004046
     - SRG-OS-000375-GPOS-00160
     - SV-258125r1045253_rule
     - V-258125
     - NIST800-53R4_IA-2
   ansible.builtin.systemd:
-    name: pcscd
+    name: pcscd.socket
     enabled: true
     state: started
 
@@ -904,31 +913,13 @@
         mode: 'u,go-w'
         state: directory
 
-    - name: MEDIUM | RHEL-09-611195 | PATCH | RHEL 9 must require authentication to access emergency mode. | copy service file
-      ansible.builtin.copy:
-        src: /usr/lib/systemd/system/emergency.service
+    - name: MEDIUM | RHEL-09-611195 | PATCH | RHEL 9 must require authentication to access emergency mode. | deploy authentication override drop-in
+      ansible.builtin.template:
+        src: etc/systemd/system/emergency.service.d/emergency.service.conf.j2
         dest: /etc/systemd/system/emergency.service.d/emergency.service.conf
-        remote_src: true
+        owner: root
+        group: root
         mode: 'u-x,go-wx'
-        force: false
-
-    - name: MEDIUM | RHEL-09-611195 | PATCH | RHEL 9 must require authentication to access emergency mode. | add ExecStart
-      ansible.builtin.lineinfile:
-        path: /etc/systemd/system/emergency.service.d/emergency.service.conf
-        regexp: ^(#|)ExecStart=
-        line: ExecStart=-/usr/lib/systemd/systemd-sulogin-shell emergency
-        backrefs: true
-      notify: Systemd_daemon_reload
-
-    - name: MEDIUM | RHEL-09-611195 | PATCH | RHEL 9 must require authentication to access emergency mode. | comment out ExecStartPre
-      ansible.builtin.lineinfile:
-        path: /usr/lib/systemd/system/emergency.service
-        regexp: (^\s*{{ item }})
-        line: '#\1'
-        backrefs: true
-      loop:
-        - ExecStart
-        - ExecStartPre
       notify: Systemd_daemon_reload
 
 - name: "MEDIUM | RHEL-09-611200 | PATCH | RHEL 9 must require authentication to access single-user mode"
@@ -950,29 +941,11 @@
         state: directory
         mode: 'u,go-w'
 
-    - name: MEDIUM | RHEL-09-611200 | PATCH | RHEL 9 must require authentication to access single-user mode. | copy service file
-      ansible.builtin.copy:
-        src: /usr/lib/systemd/system/rescue.service
+    - name: MEDIUM | RHEL-09-611200 | PATCH | RHEL 9 must require authentication to access single-user mode. | deploy authentication override drop-in
+      ansible.builtin.template:
+        src: etc/systemd/system/rescue.service.d/rescue.service.conf.j2
         dest: /etc/systemd/system/rescue.service.d/rescue.service.conf
-        remote_src: true
+        owner: root
+        group: root
         mode: 'u-x,go-wx'
-        force: false
-
-    - name: MEDIUM | RHEL-09-611200 | PATCH | RHEL 9 must require authentication to access single-user mode. | add ExecStart
-      ansible.builtin.lineinfile:
-        path: /etc/systemd/system/rescue.service.d/rescue.service.conf
-        regexp: ^(#|)ExecStart=
-        line: ExecStart=-/usr/lib/systemd/systemd-sulogin-shell rescue
-        backrefs: true
-      notify: Systemd_daemon_reload
-
-    - name: MEDIUM | RHEL-09-611200 | PATCH | RHEL 9 must require authentication to access single-user mode. | comment out ExecStartPre
-      ansible.builtin.lineinfile:
-        path: /usr/lib/systemd/system/rescue.service
-        regexp: (^\s*{{ item }})
-        line: '#\1'
-        backrefs: true
-      loop:
-        - ExecStart
-        - ExecStartPre
       notify: Systemd_daemon_reload

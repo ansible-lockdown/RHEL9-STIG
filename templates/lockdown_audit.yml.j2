@@ -610,14 +610,13 @@ rhel9stig_time_synchronization_servers:
 rhel9stig_chrony_server_options: "{{ rhel9stig_chrony_server_options }}"  # Max Setting is maxpoll 16
 
 # DNS
+rhel9stig_dns_processing_mode: {{ rhel9stig_dns_processing_mode }}
+{% if rhel9stig_dns_ip4_servers is defined or rhel9stig_dns_ip6_servers is defined %}
 rhel9stig_dns_servers:
-{% if rhel9stig_dns_ip4_servers is defined %}
-{% for server in rhel9stig_dns_ip4_servers %}
+{% for server in rhel9stig_dns_ip4_servers | default([]) %}
   - nameserver {{ server }}
 {% endfor %}
-{% endif %}
-{% if rhel9stig_dns_ip6_servers is defined %}
-{% for server in rhel9stig_dns_ip6_servers %}
+{% for server in rhel9stig_dns_ip6_servers | default([]) %}
   - nameserver {{ server }}
 {% endfor %}
 {% endif %}

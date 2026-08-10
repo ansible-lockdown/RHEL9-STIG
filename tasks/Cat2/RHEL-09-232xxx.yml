@@ -17,6 +17,8 @@
       ansible.builtin.shell: |
         set -o pipefail
         find -L /bin /sbin /usr/bin /usr/sbin /usr/libexec /usr/local/bin /usr/local/sbin -perm /022 -type f -exec ls -l {} \; | awk '{ print $NF}'
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_system_command_permissions.rc not in [ 0, 1 ]
       register: discovered_system_command_permissions
@@ -45,6 +47,8 @@
       ansible.builtin.shell: |
         set -o pipefail
         find -L /lib /lib64 /usr/lib /usr/lib64 -perm /022 -type d -exec ls -l {} \; | awk '{ print $NF}'
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_library_directory_perms.rc not in [ 0, 1 ]
       register: discovered_library_directory_perms
@@ -72,6 +76,8 @@
       ansible.builtin.shell: |
         set -o pipefail
         find -L /lib /lib64 /usr/lib /usr/lib64 -perm /022 -type f -exec ls -l {} \; | awk '{ print $NF}'
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_library_file_perms.rc not in [ 0, 1 ]
       register: discovered_library_file_perms
@@ -187,7 +193,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257889r1044959_rule
+    - SV-257889r1184302_rule
     - V-257889
     - NIST800-53R4_CM-6
   block:
@@ -219,7 +225,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257890r1044961_rule
+    - SV-257890r1184305_rule
     - V-257890
     - NIST800-53R4_CM-6
   block:
@@ -427,7 +433,7 @@
     - CAT2
     - CCI-000162
     - SRG-OS-000080-GPOS-00048
-    - SV-270175r1117265_rule
+    - SV-270175r1137691_rule
     - V-270175
     - NIST800-53R4_AU-9
   ansible.builtin.file:
@@ -441,7 +447,7 @@
     - CAT2
     - CCI-000162
     - SRG-OS-000080-GPOS-00048
-    - SV-270176r1117265_rule
+    - SV-270176r1137691_rule
     - V-270175
     - NIST800-53R4_AU-9
   ansible.builtin.file:
@@ -701,7 +707,7 @@
     - CAT2
     - CCI-001314
     - SRG-OS-000206-GPOS-00084
-    - SV-257917r1044975_rule
+    - SV-257917r1101914_rule
     - V-257917
     - NIST800-53R4_SI-11
   ansible.builtin.file:
@@ -720,7 +726,7 @@
     - NIST800-53R4_CM-5
   block:
     - name: "MEDIUM | RHEL-09-232190 | AUDIT | RHEL 9 system commands must be owned by root."
-      ansible.builtin.shell: find -L /bin /sbin /usr/bin /usr/sbin /usr/libexec /usr/local/bin /usr/local/sbin ! -user root -exec ls {} \;
+      ansible.builtin.command: find -L /bin /sbin /usr/bin /usr/sbin /usr/libexec /usr/local/bin /usr/local/sbin ! -user root -exec ls {} \;
       changed_when: false
       failed_when: discovered_sys_commands_owner.rc not in [ 0, 1 ]
       register: discovered_sys_commands_owner
@@ -744,7 +750,7 @@
     - NIST800-53R4_CM-5
   block:
     - name: "MEDIUM | RHEL-09-232195 | AUDIT | RHEL 9 system commands must be group-owned by root or a system account."
-      ansible.builtin.shell: find -L /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin ! \( -group root -o -group tty \) -exec ls {} \;
+      ansible.builtin.command: find -L /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin ! \( -group root -o -group tty \) -exec ls {} \;
       changed_when: false
       failed_when: discovered_sys_commands_group.rc not in [ 0, 1 ]
       register: discovered_sys_commands_group
@@ -799,7 +805,7 @@
     - NIST800-53R4_CM-5
   block:
     - name: "MEDIUM | RHEL-09-232205 | AUDIT | RHEL 9 library files must be group-owned by root or a system account."
-      ansible.builtin.shell: find -L /lib /lib64 /usr/lib /usr/lib64 -type f -name "*.so*" -gid +999 -exec ls {} \;
+      ansible.builtin.command: find -L /lib /lib64 /usr/lib /usr/lib64 -type f -name "*.so*" -gid +999 -exec ls {} \;
       changed_when: false
       failed_when: discovered_lib_files_group.rc not in [ 0, 1 ]
       register: discovered_lib_files_group
@@ -849,7 +855,7 @@
     - NIST800-53R4_CM-5
   block:
     - name: "MEDIUM | RHEL-09-232215 | AUDIT | RHEL 9 library directories must be group-owned by root or a system account."
-      ansible.builtin.shell: find -L /lib /lib64 /usr/lib /usr/lib64 -uid +1000 -type d -exec ls {} \;
+      ansible.builtin.command: find -L /lib /lib64 /usr/lib /usr/lib64 -uid +1000 -type d -exec ls {} \;
       changed_when: false
       failed_when: discovered_lib_dirs_group.rc not in [ 0, 1 ]
       register: discovered_lib_dirs_group
@@ -960,6 +966,8 @@
       ansible.builtin.shell: |
         set -o pipefail
         df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d -perm -0002 -uid +999
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_worldwide_dir_owners.rc not in [ 0, 1 ]
       register: discovered_worldwide_dir_owners
@@ -987,7 +995,7 @@
     - CAT2
     - CCI-001090
     - SRG-OS-000138-GPOS-00069
-    - SV-257929r1117267_rule
+    - SV-257929r1137695_rule
     - V-257929
     - NIST800-53R4_SC-4
   block:
@@ -995,6 +1003,8 @@
       ansible.builtin.shell: |
         set -o pipefail
         df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d -perm -0002 -a ! -perm -1000 2>/dev/null
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_public_dirs_stickybit.rc not in [ 0, 1 ]
       register: discovered_public_dirs_stickybit
@@ -1124,12 +1134,16 @@
     - NIST800-53R4_CM-6
   block:
     - name: "MEDIUM | RHEL-09-232260 | AUDIT | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification. | / scan"
-      ansible.builtin.command: find /dev \( -context *:unlabeled_t:* -o -context *:device_t:* \) \( -type c -o -type b \) -printf "%p %Z" | grep -v 'vmci'
+      ansible.builtin.shell: |
+        set -o pipefail
+        find /dev \( -context *:unlabeled_t:* -o -context *:device_t:* \) \( -type c -o -type b \) -printf "%p %Z" | grep -v 'vmci'
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_unlabelled_files.rc not in [ 0, 1 ]
       register: discovered_unlabelled_files
 
-    - name: "MEDIUM | RHEL-09-232260 | AUDIT | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification. | / scan"
+    - name: "MEDIUM | RHEL-09-232260 | PATCH | RHEL 9 must be configured so that all system device files are correctly labeled to prevent unauthorized modification. | / relabel"
       when:
         - discovered_unlabelled_files.stdout | length > 0
         - rhel9stig_disruption_high

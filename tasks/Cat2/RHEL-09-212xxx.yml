@@ -7,7 +7,7 @@
     - CAT2
     - CCI-000213
     - SRG-OS-000080-GPOS-00048
-    - SV-257787r1117265_rule
+    - SV-257787r1184288_rule
     - V-257787
     - NIST800-53R4_AC-3
   block:
@@ -27,7 +27,7 @@
       when: not rhel9stig_set_bootloader_password
       block:
         - name: "MEDIUM | RHEL-09-212010 | AUDIT | RHEL 9 must require a boot loader superuser password. | Check bootloader password required"
-          ansible.builtin.shell: grep "password_pbkdf2 {{ rhel9stig_grub_superuser }} \${GRUB2_PASSWORD}" /etc/grub2.cfg
+          ansible.builtin.command: grep 'password_pbkdf2 {{ rhel9stig_grub_superuser }} ${GRUB2_PASSWORD}' /etc/grub2.cfg
           changed_when: false
           failed_when: discovered_grub_passwd_state.rc not in [ 0,1 ]
           register: discovered_grub_passwd_state
@@ -59,6 +59,8 @@
       ansible.builtin.shell: |
         set -o pipefail
         grubby --info=ALL | grep args | grep 'systemd.confirm_spawn'
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_systemd_spawn.rc not in [ 0, 1 ]
       register: discovered_systemd_spawn
@@ -113,7 +115,7 @@
     - CCI-001084
     - SRG-OS-000480-GPOS-00227
     - SRG-OS-000134-GPOS-00068
-    - SV-257792r1044842_rule
+    - SV-257792r1184289_rule
     - V-257792
     - NIST800-SC-3
   block:
@@ -121,6 +123,8 @@
       ansible.builtin.shell: |
         set -o pipefail
         grubby --info=ALL | grep args | grep 'vsyscall=none'
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_grubby_vsyscall.rc not in [ 0, 1 ]
       register: discovered_grubby_vsyscall
@@ -134,6 +138,8 @@
       ansible.builtin.shell: |
         set -o pipefail
         grep "^GRUB_CMDLINE_LINUX=" /etc/default/grub | cut -f2 -d'"' | grep vsyscall
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_def_grub_vsyscall.rc not in [ 0, 1 ]
       register: discovered_def_grub_vsyscall
@@ -163,6 +169,8 @@
       ansible.builtin.shell: |
         set -o pipefail
         grubby --info=ALL | grep args | grep 'page_poison=1'
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_grubby_page_alloc.rc not in [ 0, 1 ]
       register: discovered_grubby_page_alloc
@@ -176,6 +184,8 @@
       ansible.builtin.shell: |
         set -o pipefail
         grep "^GRUB_CMDLINE_LINUX=" /etc/default/grub | cut -f2 -d'"' | grep page_poison
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_def_grub_poison.rc not in [ 0 ,1 ]
       register: discovered_def_grub_poison
@@ -207,6 +217,8 @@
       ansible.builtin.shell: |
         set -o pipefail
         grubby --info=ALL | grep args | grep 'init_on_free=1'
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_grubby_slab.rc not in [ 0, 1 ]
       register: discovered_grubby_slab

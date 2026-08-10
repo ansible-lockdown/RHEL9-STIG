@@ -75,7 +75,7 @@
     - CCI-000366
     - SRG-OS-000480-GPOS-00228
     - SRG-OS-000480-GPOS-00227
-    - SV-258072r1045155_rule
+    - SV-258072r1184320_rule
     - V-258072
     - NIST800-53R4_CM-6
   block:
@@ -99,7 +99,7 @@
     - CCI-000366
     - SRG-OS-000480-GPOS-00228
     - SRG-OS-000480-GPOS-00227
-    - SV-258073r1045157_rule
+    - SV-258073r1184322_rule
     - V-258073
     - NIST800-53R4_CM-6
   block:
@@ -146,7 +146,7 @@
     - CCI-000366
     - SRG-OS-000480-GPOS-00228
     - SRG-OS-000480-GPOS-00227
-    - SV-258075r991590_rule
+    - SV-258075r1184324_rule
     - V-258075
     - NIST800-53R4_CM-6
   block:
@@ -169,7 +169,7 @@
     - CAT2
     - CCI-001133
     - SRG-OS-000163-GPOS-00072
-    - SV-258077r1014874_rule
+    - SV-258077r1155659_rule
     - V-258077
     - NIST800-53R4_SC-10
   ansible.builtin.lineinfile:

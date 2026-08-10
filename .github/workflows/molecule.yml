@@ -1,0 +1,120 @@
+---
+
+name: Molecule
+
+on:  # yamllint disable-line rule:truthy
+  push:
+    branches:
+      - devel
+    paths:
+      - 'defaults/**'
+      - 'handlers/**'
+      - 'tasks/**'
+      - 'templates/**'
+      - 'vars/**'
+      - 'molecule/**'
+      - 'collections/**'
+      - 'site.yml'
+      - '.github/workflows/molecule.yml'
+  pull_request:
+    branches:
+      - main
+      - devel
+    paths:
+      - 'defaults/**'
+      - 'handlers/**'
+      - 'tasks/**'
+      - 'templates/**'
+      - 'vars/**'
+      - 'molecule/**'
+      - 'collections/**'
+      - 'site.yml'
+      - '.github/workflows/molecule.yml'
+  # collections/requirements.yml pulls its collections from git with no version pin, and the
+  # test images track a moving tag, so the substrate shifts underneath this suite between
+  # commits. A weekly run surfaces that drift as its own red build rather than as a mystery
+  # failure on whatever unrelated PR is open at the time.
+  schedule:
+    - cron: "0 6 * * 1"
+  # Allow manual running of workflow
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  molecule:
+    # Container-based smoke test on GitHub-hosted runners. This does not replace the
+    # tofu/EC2 pipelines - it is the fast, secret-free gate that runs in front of them.
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario: [default, ubi]
+    env:
+      # Overrides the linux/arm64 default in molecule.yml - GitHub-hosted runners are amd64.
+      MOLECULE_DOCKER_PLATFORM: linux/amd64
+      PY_COLORS: "1"
+      ANSIBLE_FORCE_COLOR: "1"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          # Pinned to 3.12: the converge plays call password_hash('sha512'), which falls
+          # back to the stdlib crypt module - removed in 3.13.
+          python-version: "3.12"
+
+      - name: Install Ansible, Molecule, and the docker driver
+        run: |
+          python -m pip install --upgrade pip
+          pip install "ansible-core>=2.19" "molecule>=25.0" "molecule-plugins[docker]" docker passlib
+
+      # The molecule docker driver requires community.docker and ansible.posix, and
+      # collections/requirements.yml (installed by molecule's own dependency step) does not
+      # carry community.docker. ansible-core ships no bundled collections, so install both
+      # here or `molecule create` fails before it reaches the role.
+      - name: Install collections required by the molecule docker driver
+        run: ansible-galaxy collection install community.docker ansible.posix
+
+      # No separate ansible-galaxy step for the role's own collections: both scenarios run
+      # `dependency` as the first step of the create sequence, so they install the same way
+      # here and on a developer's machine.
+      - name: Create container
+        run: molecule create -s ${{ matrix.scenario }}
+
+      - name: Converge
+        run: |
+          molecule converge -s ${{ matrix.scenario }} -- \
+            --extra-vars 'audit_output_destination=${{ github.workspace }}/molecule_audit_output/'
+
+      # Deliberately no idempotence step. Converge #2 is a known non-zero-change run: the
+      # disruption_high-gated 411090 pam_faillock/authselect settle, 252060 /etc/aliases, and
+      # the inherently-changed harness tasks (root password, pre/post audit scans, fetch).
+      # Gating on it here would be red for reasons that are not regressions.
+      - name: Verify
+        run: molecule verify -s ${{ matrix.scenario }}
+
+      # Goss results are published for inspection, not used as a gate: post-scan failures are
+      # expected in a container (SSH, user-state, kernel and mount controls). The real gate is
+      # converge finishing failed=0 across all 445 rules; verify.yml is a narrow regression
+      # check on top of that, and in a container all but one of its assertions skip by design.
+      - name: Upload goss audit output
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: molecule-audit-${{ matrix.scenario }}
+          path: molecule_audit_output/
+          if-no-files-found: ignore
+
+      - name: Destroy container
+        if: always()
+        run: molecule destroy -s ${{ matrix.scenario }}

@@ -8,7 +8,9 @@ driver:
 platforms:
   - name: rhel9-stig-qa
     image: rockylinux/rockylinux:9-ubi-init
-    platform: linux/arm64
+    # The image is multi-arch. Default keeps local Apple Silicon runs on arm64;
+    # CI exports MOLECULE_DOCKER_PLATFORM=linux/amd64 for GitHub-hosted runners.
+    platform: "${MOLECULE_DOCKER_PLATFORM:-linux/arm64}"
     pre_build_image: true
     command: /usr/sbin/init
     privileged: true
@@ -32,7 +34,10 @@ provisioner:
         ansible_become: false
         setup_audit: true
         run_audit: true
-        audit_git_version: benchmark_v2r7
+        # audit_git_version intentionally omitted: vars/audit.yml derives it from
+        # benchmark_version via include_vars (which outranks play/host vars), so a
+        # value here is inert. Pin a QA branch at run time with:
+        #   molecule converge -- --extra-vars 'audit_git_version=<branch>'
         skip_reboot: true
         system_is_container: true
         # Override role default (`false` in defaults/main.yml) - safe in this

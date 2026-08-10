@@ -1,0 +1,142 @@
+---
+
+# Molecule verifier for the RHEL 9 STIG role, V2R8 branch.
+#
+# IMPORTANT: these assertions encode V2R8 semantics and are deliberately the inverse of the
+# V2R9 branch's verify.yml on two controls. Do not port either file across branches wholesale.
+#   - RHEL-09-654215..654255 / 654097: V2R8 uses watch-style rules (`-w <path> -p wa -k <key>`).
+#     V2R9 replaced them with syscall-form rules. Here the watch form is what must be present,
+#     and the syscall form is what must be absent - the reverse of the V2R9 file.
+#   - RHEL-09-211045: V2R8 writes the drop-in at the suffixless path
+#     /etc/systemd/system.conf.d/55-CtrlAltDel-BurstAction. V2R9 renamed it to `.conf`. Here the
+#     suffixless path is correct and the `.conf` path must not appear.
+#   - RHEL-09-653110: V2R8 applies `u-x,g-wx,o-rwx` (0640). V2R9 tightened this to 0600.
+#
+# Container-aware by design. Most STIG controls (auditd rules, file modes on audit config) are
+# gated off in a container via vars/is_container.yml, so /etc/audit/rules.d/audit.rules stays
+# the stock package default. Those assertions therefore only fire when the artifact was actually
+# managed on the target (detected by the template's "# RHEL9-STIG rule" marker), so the play
+# validates on a real host and skips cleanly in a container instead of false-failing. Live
+# `auditctl -l` is never asserted (rules are not loaded in an unprivileged container).
+#
+# Expect very few assertions to fire under molecule - see "What verify.yml actually covers in a
+# container" in README_Molecule_QuickStart.md. A green verify step is not by itself evidence.
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check whether the audit rules file is present
+      ansible.builtin.stat:
+        path: /etc/audit/rules.d/audit.rules
+      register: verify_audit_rules_stat
+
+    - name: Read the deployed audit rules file
+      ansible.builtin.slurp:
+        src: /etc/audit/rules.d/audit.rules
+      register: verify_audit_rules
+      when: verify_audit_rules_stat.stat.exists
+
+    - name: Determine whether the audit rules were managed by this role
+      ansible.builtin.set_fact:
+        verify_audit_rules_text: "{{ (verify_audit_rules.content | b64decode) if verify_audit_rules_stat.stat.exists else '' }}"
+
+    - name: Note when the audit rules file is absent - audit assertions skipped
+      ansible.builtin.debug:
+        msg: "/etc/audit/rules.d/audit.rules does not exist (the audit package is subscription-gated on UBI); skipping audit-rule assertions"
+      when: not verify_audit_rules_stat.stat.exists
+
+    - name: Note when auditd is unmanaged (e.g. container) - audit assertions skipped
+      ansible.builtin.debug:
+        msg: "auditd rules not managed on this target (stock file); skipping audit-rule assertions"
+      when:
+        - verify_audit_rules_stat.stat.exists
+        - "'# RHEL9-STIG rule' not in verify_audit_rules_text"
+
+    - name: RHEL-09-654215..654255 | V2R8 watch-style identity/logins rules present
+      ansible.builtin.assert:
+        quiet: true
+        that:
+          - "'-w /etc/sudoers -p wa -k identity' in verify_audit_rules_text"
+          - "'-w /etc/sudoers.d/ -p wa -k identity' in verify_audit_rules_text"
+          - "'-w /etc/security/opasswd -p wa -k identity' in verify_audit_rules_text"
+          - "'-w /etc/passwd -p wa -k identity' in verify_audit_rules_text"
+          - "'-w /etc/shadow -p wa -k identity' in verify_audit_rules_text"
+          - "'-w /var/log/faillock -p wa -k logins' in verify_audit_rules_text"
+          - "'-w /var/log/lastlog -p wa -k logins' in verify_audit_rules_text"
+        fail_msg: "V2R8 watch-style audit rules (654215-654255) missing from a managed /etc/audit/rules.d/audit.rules"
+      when: "'# RHEL9-STIG rule' in verify_audit_rules_text"
+
+    - name: RHEL-09-654097 | V2R8 cron watch rules present
+      ansible.builtin.assert:
+        quiet: true
+        that:
+          - "'-w /etc/cron.d -p wa -k cronjobs' in verify_audit_rules_text"
+          - "'-w /var/spool/cron -p wa -k cronjobs' in verify_audit_rules_text"
+        fail_msg: "V2R8 cron watch rules (654097) missing from a managed audit.rules"
+      when: "'# RHEL9-STIG rule' in verify_audit_rules_text"
+
+    - name: V2R8 | V2R9 syscall-form rules must not be present on this branch
+      ansible.builtin.assert:
+        quiet: true
+        that:
+          - "'-F path=/etc/sudoers -F perm=wa -k identity' not in verify_audit_rules_text"
+          - "'-F subj_type=crond_t' not in verify_audit_rules_text"
+        fail_msg: "V2R9 syscall-form audit rules found on the V2R8 branch - a V2R9 change has been back-ported without its benchmark bump"
+      when: "'# RHEL9-STIG rule' in verify_audit_rules_text"
+
+    - name: RHEL-09-653110 | collect audit config file modes
+      ansible.builtin.shell: >-
+        find /etc/audit/rules.d/ /etc/audit/audit.rules /etc/audit/auditd.conf
+        -type f -exec stat -c '%a' {} \;
+      register: verify_audit_modes
+      changed_when: false
+      when: "'# RHEL9-STIG rule' in verify_audit_rules_text"
+
+    - name: RHEL-09-653110 | assert no audit config file is more permissive than 0640
+      ansible.builtin.assert:
+        quiet: true
+        that:
+          - verify_audit_modes.stdout_lines | reject('match', '^[0-6][0-4]0$') | list | length == 0
+        fail_msg: "An audit config file is more permissive than the V2R8 requirement of 0640: {{ verify_audit_modes.stdout_lines | default([]) }}"
+      when:
+        - "'# RHEL9-STIG rule' in verify_audit_rules_text"
+        - verify_audit_modes.stdout_lines is defined
+
+    - name: RHEL-09-211045 | Ctrl-Alt-Del burst drop-in (V2R8 suffixless path)
+      ansible.builtin.stat:
+        path: /etc/systemd/system.conf.d/55-CtrlAltDel-BurstAction
+      register: verify_cad_v2r8
+
+    - name: RHEL-09-211045 | the V2R9 .conf path must not exist on this branch
+      ansible.builtin.stat:
+        path: /etc/systemd/system.conf.d/55-CtrlAltDel-BurstAction.conf
+      register: verify_cad_v2r9
+
+    - name: RHEL-09-211045 | the V2R9 .conf drop-in path is absent
+      ansible.builtin.assert:
+        quiet: true
+        that:
+          - not verify_cad_v2r9.stat.exists
+        fail_msg: "The V2R9 `.conf` Ctrl-Alt-Del drop-in exists on the V2R8 branch - a V2R9 change has been back-ported without its benchmark bump"
+
+    - name: RHEL-09-211045 | when the control applied, the suffixless drop-in exists
+      ansible.builtin.assert:
+        quiet: true
+        that:
+          - verify_cad_v2r8.stat.exists
+        fail_msg: "211045 Ctrl-Alt-Del drop-in is not at the V2R8 suffixless path"
+      when: verify_cad_v2r8.stat.exists or verify_cad_v2r9.stat.exists
+
+    - name: RHEL-09-255120 | collect SSH private host key modes
+      ansible.builtin.shell: "stat -c '%a' /etc/ssh/*_key"
+      register: verify_ssh_key_modes
+      changed_when: false
+      failed_when: false
+
+    - name: RHEL-09-255120 | assert SSH private host keys are 0600 or less permissive
+      ansible.builtin.assert:
+        quiet: true
+        that:
+          - verify_ssh_key_modes.stdout_lines | reject('match', '^[0-6]00$') | list | length == 0
+        fail_msg: "An SSH private host key is more permissive than 0600: {{ verify_ssh_key_modes.stdout_lines }}"
+      when: verify_ssh_key_modes.rc == 0 and verify_ssh_key_modes.stdout | length > 0
