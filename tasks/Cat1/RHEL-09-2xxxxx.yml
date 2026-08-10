@@ -59,7 +59,7 @@
     - CCI-002235
     - SRG-OS-000324-GPOS-00125
     - SRG-OS-000480-GPOS-00227
-    - SV-257785r958726_rule
+    - SV-257785r1044833_rule
     - V-257785
     - NIST800-53R4_CM-6
     - NIST800-53R4_AC-6
@@ -88,12 +88,22 @@
     - V-257789
     - NIST800-53R4_AC-3
     - grub
-  notify: Rebuild_grub
-  ansible.builtin.lineinfile:
-    path: /etc/grub.d/01_users
-    regexp: '^(\s*set superusers=).*$'
-    line: '\1"{{ rhel9stig_grub_superuser }}"'
-    backrefs: true
+  block:
+    - name: HIGH | RHEL-09-212020 | PATCH | RHEL 9 must require a unique superusers name upon booting into single-user and maintenance modes. | Set superusers name
+      notify: Rebuild_grub
+      ansible.builtin.lineinfile:
+        path: /etc/grub.d/01_users
+        regexp: '^(\s*set superusers=).*$'
+        line: '\1"{{ rhel9stig_grub_superuser }}"'
+        backrefs: true
+
+    - name: HIGH | RHEL-09-212020 | PATCH | RHEL 9 must require a unique superusers name upon booting into single-user and maintenance modes. | Align password_pbkdf2 user to the superuser
+      when: rhel9stig_set_bootloader_password
+      notify: Rebuild_grub
+      ansible.builtin.replace:
+        path: /etc/grub.d/01_users
+        regexp: '^(\s*password_pbkdf2\s+)\S+'
+        replace: '\1{{ rhel9stig_grub_superuser }}'
 
 - name: HIGH | RHEL-09-214015 | PATCH | RHEL 9 must check the GPG signature of software packages originating from external software repositories before installation.
   when: rhel_09_214015
@@ -196,16 +206,111 @@
         name: tftp-server
         state: absent
 
-    - name: HIGH | RHEL-09-215060 | PATCH | The Trivial File Transfer Protocol (TFTP) server must not be installed unless it is required, and if required, the RHEL 9 TFTP daemon must be configured to operate in secure mode. | Get tftp-server package
+    # Written as a systemd drop-in rather than an edit to the RPM-owned unit under
+    # /usr/lib/systemd/system/. Modifying the vendor unit changes its hash and makes
+    # RHEL-09-214030's `rpm -Va` integrity check report a finding - the same conflict
+    # RHEL-09-611195/611200 were changed to avoid. The bare `ExecStart=` line is required:
+    # ExecStart is a list-type directive, so it must be reset before being redefined.
+    - name: HIGH | RHEL-09-215060 | PATCH | The Trivial File Transfer Protocol (TFTP) server must not be installed unless it is required, and if required, the RHEL 9 TFTP daemon must be configured to operate in secure mode. | create drop-in directory
       when: rhel9stig_is_tftp_server
-      ansible.builtin.lineinfile:
-        path: /usr/lib/systemd/system/tftp.service
-        regexp: '^ExecStart=.*'
-        line: 'ExecStart=/usr/sbin/in.tftpd -s /var/lib/tftpboot'
-        create: true
-        mode: 'go-wx'
+      ansible.builtin.file:
+        path: /etc/systemd/system/tftp.service.d
         owner: root
         group: root
+        mode: 'u,go-w'
+        state: directory
+
+    - name: HIGH | RHEL-09-215060 | PATCH | The Trivial File Transfer Protocol (TFTP) server must not be installed unless it is required, and if required, the RHEL 9 TFTP daemon must be configured to operate in secure mode. | deploy secure-mode drop-in
+      when: rhel9stig_is_tftp_server
+      ansible.builtin.template:
+        src: etc/systemd/system/tftp.service.d/tftp.service.conf.j2
+        dest: /etc/systemd/system/tftp.service.d/tftp.service.conf
+        owner: root
+        group: root
+        mode: 'u-x,go-wx'
+      notify: Systemd_daemon_reload
+
+- name: "HIGH | RHEL-09-215100 | PATCH | RHEL 9 must have the crypto-policies package installed."
+  when: rhel_09_215100
+  tags:
+    - RHEL-09-215100
+    - CAT1
+    - CCI-002450
+    - CCI-002890
+    - CCI-003123
+    - SRG-OS-000396-GPOS-00176
+    - SRG-OS-000393-GPOS-00173
+    - SRG-OS-000394-GPOS-00174
+    - SV-258234r1184292_rule
+    - V-258234
+    - NIST800-53R4_SC-13
+    - NIST800-53R4_MA-4
+    - crypto
+  ansible.builtin.package:
+    name: crypto-policies
+    state: present
+
+- name: "HIGH | RHEL-09-215105 | PATCH | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy"
+  when: rhel_09_215105
+  tags:
+    - RHEL-09-215105
+    - CAT1
+    - CCI-002450
+    - CCI-002890
+    - CCI-003123
+    - SRG-OS-000396-GPOS-00176
+    - SRG-OS-000393-GPOS-00173
+    - SRG-OS-000394-GPOS-00174
+    - SV-258241r1184293_rule
+    - V-258241
+    - NIST800-53R4_SC-13
+    - NIST800-53R4_MA-4
+    - fips
+    - encryption
+  notify: Change_requires_reboot
+  block:
+    - name: "HIGH | RHEL-09-215105 | AUDIT | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy | Get crypto state"
+      ansible.builtin.command: update-crypto-policies --show
+      changed_when: false
+      failed_when: discovered_crypto_policies_check.rc not in [0 , 1]
+      register: discovered_crypto_policies_check
+
+    - name: "HIGH | RHEL-09-215105 | PATCH | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy | Add required pmod files"
+      when: rhel9stig_disruption_high
+      ansible.builtin.template:
+        src: "{{ item }}.j2"
+        dest: "/{{ item }}"
+        owner: root
+        group: root
+        mode: "u-x,go-rwx"
+      loop:
+        - etc/crypto-policies/policies/modules/SCOPES-AND-WILDCARDS.pmod
+        - etc/crypto-policies/policies/modules/OPENSSH-SUBPOLICY.pmod
+        - etc/crypto-policies/policies/modules/REQUIRE.pmod
+
+    - name: "HIGH | RHEL-09-215105 | PATCH | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy | set FIPS"
+      when:
+        - "combined_crypto_policy_config != discovered_crypto_policies_check.stdout"
+        - rhel9stig_disruption_high
+      ansible.builtin.command: "update-crypto-policies --set {{ combined_crypto_policy_config }}"
+      changed_when: true
+      notify: Change_requires_reboot
+
+    - name: "HIGH | RHEL-09-215105 | WARN | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy"
+      when:
+        - "combined_crypto_policy_config != discovered_crypto_policies_check.stdout"
+        - not rhel9stig_disruption_high
+      ansible.builtin.debug:
+        msg: "WARNING!! - Crypto-Policies is not set to {{ combined_crypto_policy_config }} only - Current {{ discovered_crypto_policies_check.stdout }}"
+
+    - name: "HIGH | RHEL-09-215105 | WARN | RHEL 9 must implement a FIPS 140-3 compliant systemwide cryptographic policy"
+      when:
+        - "combined_crypto_policy_config != discovered_crypto_policies_check.stdout"
+        - not rhel9stig_disruption_high
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+      vars:
+        warn_control_id: "HIGH | RHEL-09-215105"
 
 - name: HIGH | RHEL-09-231190 | AUDIT | All RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification of all information that requires at rest protection.
   when: rhel_09_231190
@@ -358,6 +463,174 @@
     regexp: (?i)^(#|)usepam
     line: UsePAM yes
     validate: sshd -t -f %s
+
+- name: "HIGH | RHEL-09-255064 | PATCH | The RHEL 9 SSH client must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+  when:
+    - rhel_09_255064
+    - rhel9stig_sshd_required
+  tags:
+    - RHEL-09-255064
+    - CAT1
+    - CCI-001453
+    - SRG-OS-000250-GPOS-00093
+    - SV-270177r1184308_rule
+    - V-270177
+    - NIST800-53R4_AC-17
+  block:
+    - name: "HIGH | RHEL-09-255064 | AUDIT | The RHEL 9 SSH client must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | capture current"
+      ansible.builtin.command: grep -i Ciphers /etc/crypto-policies/back-ends/openssh.config
+      changed_when: false
+      register: discovered_openssh_ciphers
+
+    - name: "HIGH | RHEL-09-255064 | PATCH | The RHEL 9 SSH client must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | Correct if wrong"
+      when:
+        - rhel9stig_disruption_high
+        - "(rhel9stig_dod_ciphers | join (',')) not in discovered_openssh_ciphers.stdout"
+      ansible.builtin.debug:
+        msg: "Crypto policies being reinstalled as handler"
+      notify: Reinstall_crypto_policies
+
+    - name: "HIGH | RHEL-09-255064 | WARN | The RHEL 9 SSH client must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+      when:
+        - not rhel9stig_disruption_high
+        - "(rhel9stig_dod_ciphers | join (',')) not in discovered_openssh_ciphers.stdout"
+      ansible.builtin.debug:
+        msg: "Warning!! Investigate /etc/crypto-policies/back-ends/openssh.config for correct IPS 140-3 ciphers and order"
+
+    - name: "HIGH | RHEL-09-255064 | WARN | The RHEL 9 SSH client must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+      when:
+        - not rhel9stig_disruption_high
+        - "(rhel9stig_dod_ciphers | join (',')) not in discovered_openssh_ciphers.stdout"
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+      vars:
+        warn_control_id: "HIGH | RHEL-09-255064"
+
+- name: "HIGH | RHEL-09-255065 | PATCH | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+  when:
+    - rhel_09_255065
+    - rhel9stig_sshd_required
+  tags:
+    - RHEL-09-255065
+    - CAT1
+    - CCI-001453
+    - SRG-OS-000250-GPOS-00093
+    - SV-257989r1184309_rule
+    - V-257989
+    - NIST800-53R4_AC-17
+  block:
+    - name: "HIGH | RHEL-09-255065 | AUDIT | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | capture current"
+      ansible.builtin.command: grep -i Ciphers /etc/crypto-policies/back-ends/opensshserver.config
+      changed_when: false
+      register: discovered_openssh_server_ciphers
+
+    - name: "HIGH | RHEL-09-255065 | PATCH | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | Correct if wrong"
+      when:
+        - rhel9stig_disruption_high
+        - "(rhel9stig_dod_ciphers | join (',')) not in discovered_openssh_server_ciphers.stdout"
+      ansible.builtin.debug:
+        msg: "Crypto policies being reinstalled as handler"
+      notify: Reinstall_crypto_policies
+
+    - name: "HIGH | RHEL-09-255065 | WARN | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+      when:
+        - not rhel9stig_disruption_high
+        - "(rhel9stig_dod_ciphers | join (',')) not in discovered_openssh_server_ciphers.stdout"
+      ansible.builtin.debug:
+        msg: "Warning!! Investigate /etc/crypto-policies/back-ends/openssh.config for correct IPS 140-3 ciphers and order"
+
+    - name: "HIGH | RHEL-09-255065 | WARN | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+      when:
+        - not rhel9stig_disruption_high
+        - "(rhel9stig_dod_ciphers | join (',')) not in discovered_openssh_server_ciphers.stdout"
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+      vars:
+        warn_control_id: "HIGH | RHEL-09-255065"
+
+- name: "HIGH | RHEL-09-255070 | PATCH | The RHEL 9 SSH client must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+  when:
+    - rhel_09_255070
+    - rhel9stig_sshd_required
+  tags:
+    - RHEL-09-255070
+    - CAT1
+    - CCI-001453
+    - SRG-OS-000250-GPOS-00093
+    - SV-270178r1184310_rule
+    - V-270178
+    - NIST800-53R4_AC-17
+  block:
+    - name: "HIGH | RHEL-09-255070 | AUDIT | The RHEL 9 SSH client must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | capture current"
+      ansible.builtin.command: grep -i MACs /etc/crypto-policies/back-ends/openssh.config
+      changed_when: false
+      register: discovered_openssh_macs
+
+    - name: "HIGH | RHEL-09-255070 | PATCH | The RHEL 9 SSH client must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | Correct if wrong"
+      when:
+        - rhel9stig_disruption_high
+        - "(rhel9stig_dod_macs | join (',')) not in discovered_openssh_macs.stdout"
+      ansible.builtin.debug:
+        msg: "Crypto policies being reinstalled as handler"
+      notify: Reinstall_crypto_policies
+
+    - name: "HIGH | RHEL-09-255070 | WARN | The RHEL 9 SSH client must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+      when:
+        - not rhel9stig_disruption_high
+        - "(rhel9stig_dod_macs | join (',')) not in discovered_openssh_macs.stdout"
+      ansible.builtin.debug:
+        msg: "Warning!! Investigate /etc/crypto-policies/back-ends/openssh.config for correct IPS 140-3 MACs and order"
+
+    - name: "HIGH | RHEL-09-255070 | WARN | The RHEL 9 SSH client must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+      when:
+        - not rhel9stig_disruption_high
+        - "(rhel9stig_dod_macs | join (',')) not in discovered_openssh_macs.stdout"
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+      vars:
+        warn_control_id: "HIGH | RHEL-09-255070"
+
+- name: "HIGH | RHEL-09-255075 | PATCH | The RHEL 9 SSH server must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+  when:
+    - rhel_09_255075
+    - rhel9stig_sshd_required
+  tags:
+    - RHEL-09-255075
+    - CAT1
+    - CCI-001453
+    - SRG-OS-000250-GPOS-00093
+    - SV-257991r1184311_rule
+    - V-257991
+    - NIST800-53R4_AC-17
+  block:
+    - name: "HIGH | RHEL-09-255075 | AUDIT | The RHEL 9 SSH server must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | capture current"
+      ansible.builtin.command: grep -i MACs /etc/crypto-policies/back-ends/opensshserver.config
+      changed_when: false
+      register: discovered_openssh_server_macs
+
+    - name: "HIGH | RHEL-09-255075 | PATCH | The RHEL 9 SSH server must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | Correct if wrong"
+      when:
+        - rhel9stig_disruption_high
+        - "(rhel9stig_dod_macs | join (',')) not in discovered_openssh_server_macs.stdout"
+      ansible.builtin.debug:
+        msg: "Crypto policies being reinstalled as handler"
+      notify: Reinstall_crypto_policies
+
+    - name: "HIGH | RHEL-09-255075 | WARN | The RHEL 9 SSH server must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+      when:
+        - not rhel9stig_disruption_high
+        - "(rhel9stig_dod_macs | join (',')) not in discovered_openssh_server_macs.stdout"
+      ansible.builtin.debug:
+        msg: "Warning!! Investigate /etc/crypto-policies/back-ends/openssh.config for correct IPS 140-3 MACs and order"
+
+    - name: "HIGH | RHEL-09-255075 | WARN | The RHEL 9 SSH server must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+      when:
+        - not rhel9stig_disruption_high
+        - "(rhel9stig_dod_macs | join (',')) not in discovered_openssh_server_macs.stdout"
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+      vars:
+        warn_control_id: "HIGH | RHEL-09-255075"
 
 - name: HIGH | RHEL-09-271040 | PATCH | RHEL 9 must not allow unattended or automatic logon via the graphical user interface.
   when: rhel_09_271040

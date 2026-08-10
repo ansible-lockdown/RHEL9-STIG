@@ -369,7 +369,7 @@
     - CAT2
     - CCI-001764
     - SRG-OS-000368-GPOS-00154
-    - SV-257862r1155661_rule
+    - SV-257862r1184295_rule
     - V-257862
     - NIST800-53R4_CM-7
   notify: Change_requires_reboot
@@ -395,10 +395,10 @@
     - CAT2
     - CCI-001764
     - SRG-OS-000368-GPOS-00154
-    - SV-257863r1155633_rule
+    - SV-257865r1184297_rule
     - SV-257864r1155639_rule
-    - SV-257865r1155636_rule
-    - V-257863
+    - SV-257865r1184297_rule
+    - V-257865
     - V-257864
     - V-257865
     - NIST800-53R4_CM-7
@@ -409,7 +409,11 @@
         "MEDIUM | RHEL-09-231110 | AUDIT | RHEL 9 must mount /dev/shm with the nodev option.
          MEDIUM | RHEL-09-231115 | AUDIT | RHEL 9 must mount /dev/shm with the noexec option.
          MEDIUM | RHEL-09-231120 | AUDIT | RHEL 9 must mount /dev/shm with the nosuid option."
-      ansible.builtin.shell: mount | grep /dev/shm  # noqa: command-instead-of-module
+      ansible.builtin.shell: |  # noqa: command-instead-of-module
+        set -o pipefail
+        mount | grep /dev/shm
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: false
       register: discovered_dev_shm_status
@@ -796,12 +800,16 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257881r1155663_rule
+    - SV-257881r1184299_rule
     - V-257881
     - NIST800-53R4_CM-6
   block:
     - name: "MEDIUM | RHEL-09-231200 | AUDIT | RHEL 9 must prevent special devices on non-root local partitions. | discover partition"
-      ansible.builtin.shell: mount | grep '^/dev\S* on /\S' | grep -Ev 'nodev|vfat' | awk -F" " '{print $3}'  # noqa: command-instead-of-module
+      ansible.builtin.shell: |  # noqa: command-instead-of-module
+        set -o pipefail
+        mount | grep '^/dev\S* on /\S' | grep -Ev 'nodev|vfat' | awk -F" " '{print $3}'
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_non_root_missing_nodev.rc not in [ 0, 1 ]
       register: discovered_non_root_missing_nodev

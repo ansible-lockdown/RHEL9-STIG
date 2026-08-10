@@ -1,8 +1,8 @@
 # RHEL 9 DISA STIG
 
-## Configure a RHEL9 based system to be complaint with DISA STIG
+## Configure a RHEL9 based system to be compliant with DISA STIG
 
-This role is based on RHEL 9 DISA STIG: [Version 2, Rel 7 released in January, 2026](https://dl.dod.cyber.mil/wp-content/uploads/stigs/U_RHEL_9_V2R7_STIG.zip).
+This role is based on RHEL 9 DISA STIG: [Version 2, Rel 8 released in April, 2026](https://dl.dod.cyber.mil/wp-content/uploads/stigs/U_RHEL_9_V2R8_STIG.zip).
 
 ---
 
@@ -83,7 +83,7 @@ This role **will make changes to the system** which may have unintended conseque
 
 ## Coming From A Previous Release ⏪
 
-STIG release always contains changes, it is highly recommended to review the new references and available variables. This have changed significantly since ansible-lockdown initial release.
+STIG release always contains changes, it is highly recommended to review the new references and available variables. This has changed significantly since ansible-lockdown initial release.
 This is now compatible with python3 if it is found to be the default interpreter. This does come with pre-requisites which it configures the system accordingly.
 
 Further details can be seen in the [Changelog](./ChangeLog.md)
@@ -99,7 +99,7 @@ This is managed using tags:
 - CAT2
 - CAT3
 
-The control found in defaults main also need to reflect this as this control the testing that takes place if you are using the audit component.
+The control found in defaults main also needs to reflect this as this controls the testing that takes place if you are using the audit component.
 
 ---
 
@@ -122,10 +122,10 @@ RHEL Family OS 9
 
 - Access to download or add the goss binary and content to the system if using auditing
 (other options are available on how to get the content to the system.)
-- Python3.8
-- Ansible 2.12+
-- python-def
-- libselinux-python
+- Python 3.9+
+- Ansible 2.16+
+- python3-dnf
+- python3-libselinux
 
 ---
 
@@ -135,7 +135,7 @@ This can be turned on or off within the defaults/main.yml file with the variable
 
 This is a much quicker, very lightweight, checking (where possible) config compliance and live/running settings.
 
-A new form of auditing has been developed, by using a small (12MB) go binary called [goss](https://github.com/goss-org/goss) along with the relevant configurations to check. Without the need for infrastructure or other tooling.
+A new form of auditing has been developed, by using a small (12MB) go binary called [goss](https://github.com/krameff/goss) along with the relevant configurations to check. Without the need for infrastructure or other tooling.
 This audit will not only check the config has the correct setting but aims to capture if it is running with that configuration also trying to remove [false positives](https://www.mindpointgroup.com/blog/is-compliance-scanning-still-relevant/) in the process.
 
 Refer to [RHEL9-STIG-Audit](https://github.com/ansible-lockdown/RHEL9-STIG-Audit).

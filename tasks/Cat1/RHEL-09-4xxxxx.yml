@@ -13,7 +13,11 @@
     - account
   block:
     - name: HIGH | RHEL-09-411100 | AUDIT | The root account must be the only account having unrestricted access to RHEL 9 system.
-      ansible.builtin.shell: "cat /etc/passwd | awk -F: '($3 == 0 && $1 != \"root\") {i++;print $1 } END {exit i}'"
+      ansible.builtin.shell: |
+        set -o pipefail
+        cat /etc/passwd | awk -F: '($3 == 0 && $1 != "root") {i++;print $1 } END {exit i}'
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       check_mode: false
       register: discovered_uid_zero_accounts_except_root

@@ -3,7 +3,7 @@
 {% if rhel9stig_resolv_domains is defined %}
 # Domains
 {% for domains in rhel9stig_resolv_domains %}
-domain {{ rhel9stig_resolv_domains }}
+domain {{ domains }}
 {% endfor %}
 {% endif %}
 {% if rhel9stig_resolv_search_options is defined %}
@@ -24,5 +24,5 @@ nameserver {{ nameserver }}
 {% endif %}
 {% if rhel9stig_resolv_dns_options is defined %}
 # Options
-options: rhel9stig_resolv_dns_options
+options {{ rhel9stig_resolv_dns_options }}
 {% endif %}

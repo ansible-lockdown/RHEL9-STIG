@@ -1,6 +1,6 @@
 ---
 
-- name: "MEDIUM | RHEL-09-431015 | PATCH | RHEL 9 must configure SELinux context type to allow the use of a nondefault faillock tally directory."
+- name: "MEDIUM | RHEL-09-431015 | PATCH | RHEL 9 must enable the SELinux targeted policy."
   when: rhel_09_431015
   tags:
     - RHEL-09-431015
@@ -19,7 +19,7 @@
   when:
     - rhel_09_431016
     - rhel9stig_disruption_high
-    - prelim_sudoers_files.files is defined
+    - prelim_sudoers_files.stdout_lines is defined
   tags:
     - RHEL-09-431016
     - CAT2
@@ -32,10 +32,10 @@
     - disruption_high
     - sudo
   ansible.builtin.replace:
-    path: "{{ item.path }}"
+    path: "{{ item }}"
     regexp: ^(%.*ALL=\(ALL\)) TYPE=sysadm_t ROLE=sysadm_r(.*)
     replace: \1 TYPE=sysadm_t ROLE=sysadm_r \2
-  loop: "{{ prelim_sudoers_files.files }}"
+  loop: "{{ prelim_sudoers_files.stdout_lines }}"
 
 - name: "MEDIUM | RHEL-09-431025 | PATCH | RHEL 9 must have policycoreutils package installed."
   when: rhel_09_431025

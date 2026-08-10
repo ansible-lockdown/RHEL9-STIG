@@ -15,6 +15,8 @@
       ansible.builtin.shell: |
         set -o pipefail
         rpm -qa | grep {{ os_gpg_key_pubkey_name }}  # noqa: command-instead-of-module
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: false
       register: discovered_os_installed_pub_keys
@@ -24,6 +26,8 @@
       ansible.builtin.shell: |
         set -o pipefail
         rpm -q --queryformat "%{PACKAGER} %{VERSION}\\n" {{ os_gpg_key_pubkey_name }} | grep "{{ os_gpg_key_pubkey_content }}"  # noqa: command-instead-of-module
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: false
       register: discovered_os_gpg_key_check
@@ -61,6 +65,8 @@
       ansible.builtin.shell: |
         set -o pipefail
         rpm -Va --noconfig | awk '$1 ~ /..5/ && $2 != "c"'  # noqa: command-instead-of-module
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_rpm_file_hash.rc not in [ 0, 1 ]
       register: discovered_rpm_file_hash

@@ -103,7 +103,7 @@
       ansible.builtin.command: firewall-cmd --reload
       changed_when: true
 
-- name: "MEDIUM | RHEL-09-251030 | PATCH | RHEL 9 must protect against or limit the effects of denial-of-service (DoS) attacks by ensuring rate-limiting measures on impacted network interfaces are implemented."
+- name: "MEDIUM | RHEL-09-251030 | PATCH |  RHEL 9 must protect against or limit the effects of denial-of-service (DoS) attacks by ensuring rate-limiting measures on impacted network interfaces are implemented."
   when: rhel_09_251030
   tags:
     - RHEL-09-251030
@@ -187,9 +187,7 @@
         warn_control_id: "MEDIUM | RHEL-09-251040"
 
 - name: "MEDIUM | RHEL-09-251045 | PATCH | RHEL 9 must enable hardening for the Berkeley Packet Filter just-in-time compiler."
-  when:
-    - rhel_09_251045
-    - not rhel9stig_nfs_utils_required
+  when: rhel_09_251045
   tags:
     - RHEL-09-251045
     - CAT2

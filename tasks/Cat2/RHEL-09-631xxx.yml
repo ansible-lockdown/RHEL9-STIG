@@ -14,7 +14,11 @@
     - NIST800-53R4_IA-5
   block:
     - name: "MEDIUM | RHEL-09-631010 | AUDIT | RHEL 9, for PKI-based authentication, must validate certificates by constructing a certification path (which includes status information) to an accepted trust anchor."
-      ansible.builtin.shell: "openssl x509 -text -in /etc/sssd/pki/sssd_auth_ca_db.pem | grep 'Issuer: C = US, O = U.S. Government, OU = DoD, OU = PKI, CN = DoD Root CA 3'"
+      ansible.builtin.shell: |
+        set -o pipefail
+        openssl x509 -text -in /etc/sssd/pki/sssd_auth_ca_db.pem | grep 'Issuer: C = US, O = U.S. Government, OU = DoD, OU = PKI, CN = DoD Root CA 3'
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_dod_cert_check.rc not in [ 0 , 1 ]
       register: discovered_dod_cert_check
@@ -40,7 +44,7 @@
     - CAT2
     - CCI-000187
     - SRG-OS-000068-GPOS-00036
-    - SV-258132r1045260_rule
+    - SV-258132r1134929_rule
     - V-258132
     - NIST800-53R4_IA-5
   ansible.builtin.blockinfile:

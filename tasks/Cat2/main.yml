@@ -109,7 +109,3 @@
 - name: Run Cat 2 STIG 671xxx FIPS tasks
   ansible.builtin.import_tasks:
     file: RHEL-09-671xxx.yml
-
-- name: Run Cat 2 STIG 672xxx cryptopolicy tasks
-  ansible.builtin.import_tasks:
-    file: RHEL-09-672xxx.yml

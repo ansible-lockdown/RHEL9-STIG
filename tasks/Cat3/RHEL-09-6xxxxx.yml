@@ -53,7 +53,11 @@
   notify: Change_requires_reboot
   block:
     - name: "LOW | RHEL-09-653120 | AUDIT | RHEL 9 must allocate an audit_backlog_limit of sufficient size to capture processes that start prior to the audit daemon. | Capture grubby"
-      ansible.builtin.shell: grubby --info=ALL | grep args | grep 'audit_backlog_limit'
+      ansible.builtin.shell: |
+        set -o pipefail
+        grubby --info=ALL | grep args | grep 'audit_backlog_limit'
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_grubby_audit_backlog_limit.rc not in [ 0, 1 ]
       register: discovered_grubby_audit_backlog_limit
@@ -64,7 +68,11 @@
       changed_when: true
 
     - name: "LOW | RHEL-09-653120 | AUDIT | RHEL 9 must allocate an audit_backlog_limit of sufficient size to capture processes that start prior to the audit daemon. | Capture default grub"
-      ansible.builtin.shell: grep "^GRUB_CMDLINE_LINUX=" /etc/default/grub | cut -f2 -d'"' | grep audit_backlog_limit
+      ansible.builtin.shell: |
+        set -o pipefail
+        grep "^GRUB_CMDLINE_LINUX=" /etc/default/grub | cut -f2 -d'"' | grep audit_backlog_limit
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_def_grub_audit_backlog_limit.rc not in [ 0, 1 ]
       register: discovered_def_grub_audit_backlog_limit

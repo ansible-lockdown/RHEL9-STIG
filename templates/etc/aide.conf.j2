@@ -4,7 +4,7 @@
 @@define LOGDIR /var/log/aide
 
 # The location of the database to be read.
-{% if discovered_aide_version is version_compare('0.18', '<=') %}
+{% if discovered_aide_version is version_compare('0.18', '<') %}
 # AIDE < 0.18 uses the legacy `database` directive.
 database=file:@@{DBDIR}/aide.db.gz
 {% else %}
@@ -21,7 +21,7 @@ database_out=file:@@{DBDIR}/aide.db.new.gz
 # Whether to gzip the output to database.
 gzip_dbout=yes
 
-{% if discovered_aide_version is version_compare('0.18', '<=') %}
+{% if discovered_aide_version is version_compare('0.18', '<') %}
 # Default verbosity (aide < 0.18; replaced by log_level/report_level in 0.18+).
 verbose=5
 

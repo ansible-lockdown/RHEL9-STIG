@@ -84,12 +84,16 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258044r1045135_rule
+    - SV-258044r1184313_rule
     - V-258044
     - NIST800-53R4_CM-6
   block:
     - name: "MEDIUM | RHEL-09-411025 | AUDIT | RHEL 9 must set the umask value to 077 for all local interactive user accounts."
-      ansible.builtin.shell: grep -ri umask {{ rhel9stig_home_filesystem }}/*/.[^.]*  # noqa: shell-instead-of-command
+      ansible.builtin.shell: |  # noqa: shell-instead-of-command
+        set -o pipefail
+        grep -ri umask {{ rhel9stig_home_filesystem }}/*/.[^.]*
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_homedirs_umasks_set.rc not in [ 0, 1 ]
       register: discovered_homedirs_umasks_set
@@ -126,7 +130,11 @@
     - NIST800-53R4_CM-6
   block:
     - name: "MEDIUM | RHEL-09-411030 | PATCH | RHEL 9 duplicate User IDs (UIDs) must not exist for interactive users."
-      ansible.builtin.shell: "cat /etc/passwd | awk -F: '{ print $3}' | sort -n | uniq -d"
+      ansible.builtin.shell: |
+        set -o pipefail
+        cat /etc/passwd | awk -F: '{ print $3}' | sort -n | uniq -d
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_duplicate_uids.rc not in [ 0, 1 ]
       register: discovered_duplicate_uids
@@ -218,7 +226,11 @@
       register: discovered_gid_exists
 
     - name: "MEDIUM | RHEL-09-411045 | AUDIT | All RHEL 9 interactive users must have a primary group that exists."
-      ansible.builtin.command: "cat /etc/passwd | awk -F: '{ print $4 }' | sort | uniq -d | awk '$1 > {{ min_int_uid }}' "
+      ansible.builtin.shell: |
+        set -o pipefail
+        cat /etc/passwd | awk -F: '{ print $4 }' | sort | uniq -d | awk '$1 > {{ min_int_uid }}'
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_duplicate_gids.rc not in [ 0, 1 ]
       register: discovered_duplicate_gids
@@ -250,7 +262,11 @@
     - NIST800-53R4_IA-4
   block:
     - name: "MEDIUM | RHEL-09-411050 | AUDIT | RHEL 9 must disable account identifiers (individuals, groups, roles, and devices) after 35 days of inactivity."
-      ansible.builtin.shell: grep -i inactive /etc/default/useradd | cut -f2 -d=
+      ansible.builtin.shell: |
+        set -o pipefail
+        grep -i inactive /etc/default/useradd | cut -f2 -d=
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_inactive_user_setting.rc not in [ 0, 1 ]
       check_mode: false
@@ -271,7 +287,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258050r991589_rule
+    - SV-258050r1045137_rule
     - V-258050
     - NIST800-53R4_CM-6
   block:
@@ -307,7 +323,7 @@
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
     - SV-258051r991589_rule
-    - SV-258052r1155588_rule
+    - SV-258052r1184315_rule
     - V-258051
     - V-258052
     - NIST800-53R4_CM-6
@@ -363,7 +379,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-258053r991589_rule
+    - SV-258053r1184318_rule
     - V-258053
     - NIST800-53R4_CM-6
   ansible.builtin.file:
@@ -551,7 +567,11 @@
     - NIST800-53R4_IA-2
   block:
     - name: "MEDIUM | RHEL-09-411110 | AUDIT | RHEL 9 groups must have unique Group ID (GID)."
-      ansible.builtin.shell: 'getent passwd | cut -d: -f1 | sort -n | uniq -d'
+      ansible.builtin.shell: |
+        set -o pipefail
+        getent passwd | cut -d: -f1 | sort -n | uniq -d
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_dup_group_check.rc not in [ 0, 1 ]
       check_mode: false
