@@ -1,5 +1,12 @@
 # RHEL9STIG
 
+## Based on STIG V2R8 April 2026 - Lint Suppression Cleanup
+
+- removed six dead `# noqa` directives that suppressed nothing. Five named `command-instead-of-module` (RHEL-09-214010 x2, RHEL-09-214030, RHEL-09-231110/231115/231120, RHEL-09-231200) and one named `shell-instead-of-command` (RHEL-09-411025). ansible-lint keys `command-instead-of-module` on the first word of the command, and the earlier shell/command pass prepended `set -o pipefail` to every shell task - so the first word became `set` rather than `mount` or `rpm`, the rule stopped matching, and the suppressions went silently dead. Verified by running ansible-lint with all six removed: still clean, zero `command-instead-of` findings
+- the RHEL-09-411025 directive was never valid: `shell-instead-of-command` is not an ansible-lint rule (the real id is `command-instead-of-shell`), so it suppressed nothing from the day it was added. Even the correctly spelled rule would not fire there, because it exempts tasks that set `executable` and the command contains shell metacharacters
+- three of the six sat inside the block scalar on the `rpm ...` line rather than on the module line, so they were part of the command string handed to the shell and ran as shell comments rather than as lint metadata
+- the `command-instead-of-module` directive on the `Restart_auditd` handler is retained: its command begins with `service`, which is in the rule's module map, so that one genuinely suppresses a finding
+
 ## Based on STIG V2R8 April 2026 - August Public Issue Fixes
 
 - templates/etc/aide.conf.j2: corrected the AIDE 0.18 version boundary. The input-database and verbosity gates tested `version_compare('0.18', '<=')` while the newer rule-syntax gates use `>=`, so at exactly AIDE 0.18.x the template rendered the legacy `database=` directive and `verbose=5` - both of which 0.18 removed - and `aide --init` failed. Both gates now use `<`, matching the comments already in the file and the `>=` gates further down. This is on the default path: `vars/main.yml` sets `aide_version_prechanges: '0.18'` as the fallback for `discovered_aide_version`, so any host where the aide package fact is unavailable rendered the broken config (addresses ansible-lockdown/RHEL9-STIG#182; thank you @pdlewisiw)

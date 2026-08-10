@@ -409,7 +409,7 @@
         "MEDIUM | RHEL-09-231110 | AUDIT | RHEL 9 must mount /dev/shm with the nodev option.
          MEDIUM | RHEL-09-231115 | AUDIT | RHEL 9 must mount /dev/shm with the noexec option.
          MEDIUM | RHEL-09-231120 | AUDIT | RHEL 9 must mount /dev/shm with the nosuid option."
-      ansible.builtin.shell: |  # noqa: command-instead-of-module
+      ansible.builtin.shell: |
         set -o pipefail
         mount | grep /dev/shm
       args:
@@ -805,7 +805,7 @@
     - NIST800-53R4_CM-6
   block:
     - name: "MEDIUM | RHEL-09-231200 | AUDIT | RHEL 9 must prevent special devices on non-root local partitions. | discover partition"
-      ansible.builtin.shell: |  # noqa: command-instead-of-module
+      ansible.builtin.shell: |
         set -o pipefail
         mount | grep '^/dev\S* on /\S' | grep -Ev 'nodev|vfat' | awk -F" " '{print $3}'
       args:

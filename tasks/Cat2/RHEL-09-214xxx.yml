@@ -14,7 +14,7 @@
     - name: "MEDIUM | RHEL-09-214010 | AUDIT | RHEL 9 must ensure cryptographic verification of vendor software packages. | find keys"
       ansible.builtin.shell: |
         set -o pipefail
-        rpm -qa | grep {{ os_gpg_key_pubkey_name }}  # noqa: command-instead-of-module
+        rpm -qa | grep {{ os_gpg_key_pubkey_name }}
       args:
         executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
@@ -25,7 +25,7 @@
       when: discovered_os_installed_pub_keys.rc == 0
       ansible.builtin.shell: |
         set -o pipefail
-        rpm -q --queryformat "%{PACKAGER} %{VERSION}\\n" {{ os_gpg_key_pubkey_name }} | grep "{{ os_gpg_key_pubkey_content }}"  # noqa: command-instead-of-module
+        rpm -q --queryformat "%{PACKAGER} %{VERSION}\\n" {{ os_gpg_key_pubkey_name }} | grep "{{ os_gpg_key_pubkey_content }}"
       args:
         executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
@@ -64,7 +64,7 @@
     - name: "MEDIUM | RHEL-09-214030 | AUDIT | RHEL 9 must be configured so that the cryptographic hashes of system files match vendor values."
       ansible.builtin.shell: |
         set -o pipefail
-        rpm -Va --noconfig | awk '$1 ~ /..5/ && $2 != "c"'  # noqa: command-instead-of-module
+        rpm -Va --noconfig | awk '$1 ~ /..5/ && $2 != "c"'
       args:
         executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
