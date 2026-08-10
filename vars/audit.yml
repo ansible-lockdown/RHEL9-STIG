@@ -8,6 +8,9 @@ audit_cmd_timeout: 120000
 # if get_audit_binary_method == download change accordingly
 audit_bin_url: "https://github.com/krameff/goss/releases/download/{{ audit_bin_version.release }}/goss-linux-"
 
+# Whether to validate TLS certificates when downloading the audit binary
+audit_bin_validate_certs: true
+
 ### Goss Audit Benchmark file ###
 ## managed by the control audit_content
 # git
