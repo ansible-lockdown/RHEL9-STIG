@@ -6,6 +6,10 @@
 - the RHEL-09-411025 directive was never valid: `shell-instead-of-command` is not an ansible-lint rule (the real id is `command-instead-of-shell`), so it suppressed nothing from the day it was added. Even the correctly spelled rule would not fire there, because it exempts tasks that set `executable` and the command contains shell metacharacters
 - three of the six sat inside the block scalar on the `rpm ...` line rather than on the module line, so they were part of the command string handed to the shell and ran as shell comments rather than as lint metadata
 - the `command-instead-of-module` directive on the `Restart_auditd` handler is retained: its command begins with `service`, which is in the rule's module map, so that one genuinely suppresses a finding
+- audited the role's remaining `# noqa` directives the same way, by stripping all of them and recording which rules then fired. Seven more were dead and are removed: two `name[template]` in tasks/pre_remediation_audit.yml, two `yaml[line-length]` on the pre/post remediation run_audit.sh invocations, two `no-changed-when` on the AIDE handler conditions, and one `template-instead-of-copy` on RHEL-09-211045
+- the `name[template]` result splits on where the Jinja expression sits, since the rule is "Jinja templates should only be at the end of 'name'": the two removed names end with `{{ audit_conf_dir }}` and `{{ benchmark }}` so the rule never fired, while the three retained ones place the template mid-string or leading and genuinely need the suppression
+- the two `yaml[line-length]` directives were inert because .yamllint disables the line-length rule outright, so there was nothing to suppress
+- nine directives are retained and verified load-bearing: three `name[template]`, five `no-handler`, and the `command-instead-of-module` on `Restart_auditd`. Removing all sixteen produced exactly nine findings; removing only the seven dead ones leaves ansible-lint clean
 
 ## Based on STIG V2R8 April 2026 - August Public Issue Fixes
 
