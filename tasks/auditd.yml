@@ -1,6 +1,6 @@
 ---
 
-- name: POST | AUDITD | Apply auditd template will only required rules will be added
+- name: POST | AUDITD | Apply auditd template - only required rules will be added
   notify: auditd_checks
   ansible.builtin.template:
     src: etc/audit/rules.d/audit.rules.j2

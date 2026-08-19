@@ -6,7 +6,7 @@
   ansible.builtin.include_tasks:
     file: LE_audit_setup.yml
 
-- name: Pre Audit Setup | Ensure existence of {{ audit_conf_dir }}  # noqa name[template]
+- name: Pre Audit Setup | Ensure existence of {{ audit_conf_dir }}
   ansible.builtin.file:
     path: "{{ audit_conf_dir }}"
     mode: 'go-w'
@@ -22,11 +22,9 @@
 
     - name: Pre Audit Setup | Retrieve audit content files from git
       ansible.builtin.git:
-        repo: "{{ self_hosted_audit_repo | default(audit_file_git) }}"
+        repo: "{{ audit_file_git }}"
         dest: "{{ audit_conf_dir }}"
         version: "{{ audit_git_version }}"
-        key_file: "{{ audit_content_key_file | default(omit) }}"
-      no_log: true
 
 - name: Pre Audit Setup | Copy to audit content files to server
   when: audit_content == 'copy'
@@ -69,15 +67,17 @@
     - goss_template
     - run_audit
   ansible.builtin.template:
-    src: ansible_vars_goss.yml.j2
+    src: lockdown_audit.yml.j2
     dest: "{{ audit_vars_path }}"
     mode: 'go-rwx'
 
-- name: Pre Audit | Run pre_remediation audit {{ benchmark }}  # noqa name[template]
+- name: Pre Audit | Run pre_remediation audit {{ benchmark }}
   ansible.builtin.shell: |
     set -o pipefail
     umask 0022
-    {{ audit_conf_dir }}/run_audit.sh -v {{ audit_vars_path }} -f {{ audit_format }} -m {{ audit_max_concurrent }} -o {{ pre_audit_outfile }} -g "{{ group_names }}"  # noqa yaml[line-length]
+    {{ audit_conf_dir }}/run_audit.sh -v {{ audit_vars_path }} -f {{ audit_format }} -m {{ audit_max_concurrent }} -o {{ pre_audit_outfile }} -g "{{ group_names }}"
+  args:
+    executable: "{{ rhel9stig_shell_executable }}"
   changed_when: true
   environment:
     AUDIT_BIN: "{{ audit_bin }}"
@@ -91,6 +91,8 @@
       ansible.builtin.shell: |
         set -o pipefail
         grep -E 'summary-line.*Count:.*Failed' "{{ pre_audit_outfile }}" | cut -d'"' -f4
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       register: pre_audit_summary_json
 
@@ -105,6 +107,8 @@
       ansible.builtin.shell: |
         set -o pipefail
         tail -2 "{{ pre_audit_outfile }}" | tac | tr '\n' ' '
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       register: pre_audit_summary_documentation
 

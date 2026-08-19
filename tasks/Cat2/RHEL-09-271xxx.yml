@@ -397,7 +397,7 @@
 
 - name: "MEDIUM | RHEL-09-271100 | PATCH | RHEL 9 must prevent a user from overriding the disable-restart-buttons setting for the graphical user interface."
   when:
-    - mrhel_09_271100
+    - rhel_09_271100
     - "'dconf' in ansible_facts.packages"
   tags:
     - RHEL-09-271100

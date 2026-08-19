@@ -17,7 +17,11 @@
     - users
   block:
     - name: "MEDIUM | RHEL-09-671015 | AUDIT | RHEL 9 must employ FIPS 140-3 approved cryptographic hashing algorithms for all stored passwords. | Get user accounts not using FIPS 140-2 hashing"
-      ansible.builtin.shell: 'cat /etc/shadow | grep -v "*" | grep -v "!" | grep -v ":$6$" | cut -f1 -d:'
+      ansible.builtin.shell: |
+        set -o pipefail
+        cat /etc/shadow | grep -v "*" | grep -v "!" | grep -v ":$6$" | cut -f1 -d:
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: false
       no_log: true
@@ -39,25 +43,6 @@
         msg:
           - "WARNING!! The following accounts do not have FIPS 140-2 hashing. Please review the accounts and correct to conform to control 010120 of the RHEL9 STIG"
           - "{{ discovered_non_fips_hashed_accounts.stdout_lines }}"
-
-- name: "MEDIUM | RHEL-09-671020 | PATCH | RHEL 9 IP tunnels must use FIPS 140-2/140-3 approved cryptographic algorithms."
-  when:
-    - rhel_09_671020
-    - "'ipsec' in ansible_facts.packages"
-  tags:
-    - RHEL-09-671020
-    - CAT2
-    - CCI-000068
-    - SRG-OS-000033-GPOS-00014
-    - SV-258232r1045440_rule
-    - V-258232
-    - NIST800-53R4_AC-17
-    - fips
-    - tunnel
-  ansible.builtin.lineinfile:
-    path: /etc/ipsec.conf
-    regexp: ^(#|)\s*include /etc/crypto-policies/back-ends
-    line: include /etc/crypto-policies/back-ends/libreswan.config
 
 - name: "MEDIUM | RHEL-09-671025 | PATCH |  RHEL 9 pam_unix.so module must be configured in the password-auth file to use a FIPS 140-3 approved cryptographic hashing algorithm for system authentication."
   when: rhel_09_671025

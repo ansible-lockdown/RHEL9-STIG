@@ -82,8 +82,7 @@
   block:
     - name: "MEDIUM | RHEL-09-252035 | PATCH | RHEL 9 systems using Domain Name Servers (DNS) resolution must have at least two name servers configured."
       when:
-        - discovered_dns_nm_set is defined or
-          prelim_network_manager_dns.stdout == 'none' or
+        - prelim_network_manager_dns.stdout == 'none' or
           prelim_network_manager_dns.stdout == 'unmanaged'
       ansible.builtin.template:
         src: etc/resolv.conf.j2
@@ -103,6 +102,19 @@
           - "{{ rhel9stig_dns_ip4_servers }}"
         state: present
 
+    - name: "MEDIUM | RHEL-09-252035 | PATCH | RHEL 9 systems using Domain Name Servers (DNS) resolution must have at least two name servers configured. | Set DNS servers when systemd-resolved manages resolution"
+      when:
+        - rhel9stig_dns_processing_mode == 'systemd-resolved'
+        - rhel9stig_dns_ip4_servers is defined or rhel9stig_dns_ip6_servers is defined
+      notify: Restart_systemd-resolved
+      community.general.ini_file:
+        path: /etc/systemd/resolved.conf
+        section: Resolve
+        option: DNS
+        value: "{{ (rhel9stig_dns_ip4_servers | default([]) + rhel9stig_dns_ip6_servers | default([])) | join(' ') }}"
+        no_extra_spaces: true
+        mode: 'u-x,go-wx'
+
 - name: "MEDIUM | RHEL-09-252045 | AUDIT | RHEL 9 must not have unauthorized IP tunnels configured."
   when:
     - rhel_09_252045
@@ -117,7 +129,11 @@
     - NIST800-53R4_CM-6
   block:
     - name: "MEDIUM | RHEL-09-252045 | AUDIT | RHEL 9 must not have unauthorized IP tunnels configured. | check ipsec connections"
-      ansible.builtin.shell: 'systemctl status ipsec | grep ": active" > /dev/null && grep -rni conn /etc/ipsec.conf /etc/ipsec.d/'
+      ansible.builtin.shell: |
+        set -o pipefail
+        systemctl status ipsec | grep ": active" > /dev/null && grep -rni conn /etc/ipsec.conf /etc/ipsec.d/
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_ipsec_connections.rc not in [ 0, 1, 2]
       register: discovered_ipsec_connections

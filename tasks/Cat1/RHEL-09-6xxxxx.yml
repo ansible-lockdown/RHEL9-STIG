@@ -37,7 +37,7 @@
     - SRG-OS-000396-GPOS-00176
     - SRG-OS-000423-GPOS-00187
     - SRG-OS-000478-GPOS-00223
-    - SV-258230r1155585_rule
+    - SV-258230r1184334_rule
     - V-258230
     - NIST800-53R4_AC-17
     - NIST800-53R4_MA-4
@@ -82,6 +82,25 @@
         file: warning_facts.yml
       vars:
         warn_control_id: "HIGH | RHEL-09-671010"
+
+- name: "HIGH | RHEL-09-671020 | PATCH | RHEL 9 IP tunnels must use FIPS 140-2/140-3 approved cryptographic algorithms."
+  when:
+    - rhel_09_671020
+    - "'ipsec' in ansible_facts.packages"
+  tags:
+    - RHEL-09-671020
+    - CAT1
+    - CCI-000068
+    - SRG-OS-000033-GPOS-00014
+    - SV-258232r1184335_rule
+    - V-258232
+    - NIST800-53R4_AC-17
+    - fips
+    - tunnel
+  ansible.builtin.lineinfile:
+    path: /etc/ipsec.conf
+    regexp: ^(#|)\s*include /etc/crypto-policies/back-ends
+    line: include /etc/crypto-policies/back-ends/libreswan.config
 
 - name: "HIGH | RHEL-09-672020 | PATCH | RHEL 9 crypto policy must not be overridden."
   when: rhel_09_672020
@@ -139,3 +158,24 @@
         file: warning_facts.yml
       vars:
         warn_control_id: "HIGH | RHEL-09-672020"
+
+- name: "HIGH | RHEL-09-672050 | PATCH | RHEL 9 must implement DOD-approved encryption in the bind package."
+  when:
+    - rhel_09_672050
+    - "'bind' in ansible_facts.packages"
+  tags:
+    - RHEL-09-672050
+    - CAT1
+    - CCI-002418
+    - CCI-002422
+    - SRG-OS-000423-GPOS-00187
+    - SRG-OS-000426-GPOS-00190
+    - SV-258242r1184336_rule
+    - V-258242
+    - NIST800-53R4_SC-8
+    - bind
+    - encryption
+  ansible.builtin.lineinfile:
+    path: /etc/named.conf
+    regexp: ^(#|)\s*include "/etc/crypto-policies/back-ends/bind.config"
+    line: 'include "/etc/crypto-policies/back-ends/bind.config";'

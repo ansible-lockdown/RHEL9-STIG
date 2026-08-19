@@ -1,0 +1,55 @@
+{
+  "tool_version": "2.8.1",
+  "date": "2026-08-10T11:19:28.732466",
+  "findings": [
+    {
+      "file": "defaults/main.yml",
+      "line": 101,
+      "description": "CHECK B: audit_bin_copy_location in defaults/main.yml (move to vars/audit.yml; role-internal constant)",
+      "severity": "warning",
+      "check": "audit_vars"
+    },
+    {
+      "file": "defaults/main.yml",
+      "line": 123,
+      "description": "CHECK B: audit_conf_dest in defaults/main.yml (move to vars/audit.yml; role-internal constant)",
+      "severity": "warning",
+      "check": "audit_vars"
+    },
+    {
+      "file": "defaults/main.yml",
+      "line": 119,
+      "description": "CHECK B: audit_conf_source in defaults/main.yml (move to vars/audit.yml; role-internal constant)",
+      "severity": "warning",
+      "check": "audit_vars"
+    },
+    {
+      "file": "defaults/main.yml",
+      "line": 113,
+      "description": "CHECK B: audit_content in defaults/main.yml (move to vars/audit.yml; role-internal constant)",
+      "severity": "warning",
+      "check": "audit_vars"
+    },
+    {
+      "file": "defaults/main.yml",
+      "line": 126,
+      "description": "CHECK B: audit_log_dir in defaults/main.yml (move to vars/audit.yml; role-internal constant)",
+      "severity": "warning",
+      "check": "audit_vars"
+    },
+    {
+      "file": "defaults/main.yml",
+      "line": 83,
+      "description": "CHECK B: audit_max_concurrent in defaults/main.yml (move to vars/audit.yml; role-internal constant)",
+      "severity": "warning",
+      "check": "audit_vars"
+    },
+    {
+      "file": "defaults/main.yml",
+      "line": 96,
+      "description": "CHECK B: get_audit_binary_method in defaults/main.yml (move to vars/audit.yml; role-internal constant)",
+      "severity": "warning",
+      "check": "audit_vars"
+    }
+  ]
+}

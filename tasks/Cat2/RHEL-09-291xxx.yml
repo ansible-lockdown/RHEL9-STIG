@@ -71,7 +71,11 @@
 
     - name: "MEDIUM | RHEL-09-291030 | PATCH | RHEL 9 must block unauthorized peripherals before establishing a connection."
       when: discovered_usbguard_rules.stdout | length > 0
-      ansible.builtin.shell: usbguard generate-policy --no-hash > /etc/usbguard/rules.conf
+      ansible.builtin.shell: |
+        set -o pipefail
+        usbguard generate-policy --no-hash > /etc/usbguard/rules.conf
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: true
       notify: Restart_usbguard
 
@@ -115,7 +119,11 @@
     - NIST800-53R4_AC-18
   block:
     - name: MEDIUM | RHEL-09-291040 | AUDIT | RHEL 9 wireless network adapters must be disabled.
-      ansible.builtin.shell: nmcli radio wifi | grep -i enabled
+      ansible.builtin.shell: |
+        set -o pipefail
+        nmcli radio wifi | grep -i enabled
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_wifi_enabled.rc not in [ 0, 1 ]
       register: discovered_wifi_enabled

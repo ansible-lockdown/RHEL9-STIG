@@ -6,7 +6,10 @@
   vars:
     setup_audit: true
     run_audit: true
-    audit_git_version: benchmark_v2r7
+    # audit_git_version intentionally omitted: vars/audit.yml derives it from
+    # benchmark_version via include_vars (which outranks play/host vars), so a
+    # value here is inert. Pin a QA branch at run time with:
+    #   molecule converge -- --extra-vars 'audit_git_version=<branch>'
     system_is_container: true
     skip_reboot: true
     # Molecule default - overrides role default (`false`) to exercise full code path

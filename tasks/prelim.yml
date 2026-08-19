@@ -9,6 +9,8 @@
       ansible.builtin.shell: |
         set -o pipefail
         grep -w "^UID_MIN" /etc/login.defs | awk '{print $NF}'
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       register: prelim_uid_min_id
 
@@ -16,6 +18,8 @@
       ansible.builtin.shell: |
         set -o pipefail
         grep -w "^UID_MAX" /etc/login.defs | awk '{print $NF}'
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       changed_when: false
       register: prelim_uid_max_id
 
@@ -34,11 +38,15 @@
   ansible.builtin.shell: |
     set -o pipefail
     grep -Ev 'nologin|/sbin' /etc/passwd | awk -F: '$3 >= {{ min_int_uid }} {print $1}'
+  args:
+    executable: "{{ rhel9stig_shell_executable }}"
   changed_when: false
   register: prelim_interactive_users
 
 - name: Include audit specific variables
-  when: run_audit or audit_only or setup_audit
+  when:
+    - run_audit or audit_only
+    - setup_audit
   tags:
     - setup_audit
     - run_audit
@@ -46,7 +54,9 @@
     file: audit.yml
 
 - name: Include pre-remediation audit tasks
-  when: run_audit or audit_only or setup_audit
+  when:
+    - run_audit or audit_only
+    - setup_audit
   tags: run_audit
   ansible.builtin.import_tasks:
     file: pre_remediation_audit.yml
@@ -56,6 +66,8 @@
   ansible.builtin.shell: |
     set -o pipefail
     cat /etc/passwd | grep -Ev "nologin|/sbin" | cut -d: -f6
+  args:
+    executable: "{{ rhel9stig_shell_executable }}"
   changed_when: false
   register: prelim_interactive_users_home
 
@@ -71,6 +83,8 @@
   ansible.builtin.shell: |
     set -o pipefail
     cat /etc/shadow | awk -F: '($2 == "" ) {j++;print $1; } END {exit j}'
+  args:
+    executable: "{{ rhel9stig_shell_executable }}"
   changed_when: false
   failed_when: prelim_empty_password_accounts.rc not in [ 0, 1 ]
   no_log: true
@@ -84,6 +98,8 @@
   ansible.builtin.shell: |
     set -o pipefail
     cat /etc/passwd | awk -F: '($3 == 0 && $1 != "root") {i++;print $1 } END {exit i}'
+  args:
+    executable: "{{ rhel9stig_shell_executable }}"
   changed_when: false
   check_mode: false
   register: prelim_uid_zero_accounts_except_root
@@ -167,6 +183,8 @@
   ansible.builtin.shell: |
     set -o pipefail
     grep ^log_file /etc/audit/auditd.conf | awk '{ print $NF }'
+  args:
+    executable: "{{ rhel9stig_shell_executable }}"
   changed_when: false
   register: discovered_auditd_logfile
 
@@ -176,7 +194,7 @@
     - rhel_09_653110
   tags: always
   ansible.builtin.find:
-    path: etc/audit/rules.d
+    path: /etc/audit/rules.d
     patterns: '*.rules'
   register: discovered_audit_rules
 
@@ -221,6 +239,8 @@
   ansible.builtin.shell: |
     set -o pipefail
     grep -E "dns\s*=" /etc/NetworkManager/NetworkManager.conf | cut -d = -f2 | sed s/" "//g
+  args:
+    executable: "{{ rhel9stig_shell_executable }}"
   changed_when: false
   failed_when: prelim_network_manager_dns.rc not in [ 0, 1, 2 ]
   register: prelim_network_manager_dns
@@ -236,6 +256,8 @@
   ansible.builtin.shell: |
     set -o pipefail
     grep system-db /etc/dconf/profile/user | cut -d ':' -f2
+  args:
+    executable: "{{ rhel9stig_shell_executable }}"
   changed_when: false
   failed_when: prelim_dconf_db.rc not in [ 0, 1 ]
   register: prelim_dconf_db
@@ -249,12 +271,13 @@
 
 - name: PRELIM | Find all sudoers files.
   when:
-    - rhel_09_432015 or
+    - rhel_09_431016 or
+      rhel_09_432015 or
       rhel_09_432020 or
       rhel_09_432025 or
       rhel_09_432030
   tags: always
-  ansible.builtin.shell: find /etc/sudoers /etc/sudoers.d/ -type f ! -name '*~' ! -name '*.*'
+  ansible.builtin.command: find /etc/sudoers /etc/sudoers.d/ -type f ! -name '*~' ! -name '*.*'
   changed_when: false
   failed_when: false
   check_mode: false
@@ -267,7 +290,11 @@
       rhel_09_611065 or
       rhel_09_611070
   tags: always
-  ansible.builtin.shell: find /etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf
+  ansible.builtin.shell: |
+    set -o pipefail
+    find /etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf
+  args:
+    executable: "{{ rhel9stig_shell_executable }}"
   check_mode: false
   changed_when: false
   failed_when: prelim_pwquality_conf_files.rc not in [ 0, 1 ]
@@ -285,6 +312,8 @@
       ansible.builtin.shell: |
         set -o pipefail
         authselect current | grep with-faillock
+      args:
+        executable: "{{ rhel9stig_shell_executable }}"
       failed_when: false
       changed_when: false
       check_mode: false

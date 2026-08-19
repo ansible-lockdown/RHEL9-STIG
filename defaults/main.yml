@@ -5,7 +5,7 @@
 # https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable
 
 ## metadata for Audit benchmark
-benchmark_version: 'v2r7'
+benchmark_version: 'v2r8'
 
 ## Benchmark name used by auditing control role
 # The audit variable found at the base
@@ -94,16 +94,6 @@ audit_only: false
 # - if 'download':
 #    - the GitHub Goss-releases URL will be used for a fresh-download, via 'audit_bin_url' and 'audit_pkg_arch_name' vars
 get_audit_binary_method: download
-
-## If downloading the audit binary(Goss)
-## Useful when self hosting the content
-## Enables the ability to not check ssl certificates using the get_url module
-audit_bin_validate_certs: true
-
-## Optional credentials for downloading the audit binary from a private location.
-## Uncomment and set; prefer a vault or alternative encryption for these values.
-# audit_bin_url_username:
-# audit_bin_url_password:
 
 ## if get_audit_binary_method - copy the following needs to be updated for your environment
 ## it is expected that it will be copied from somewhere accessible to the control node

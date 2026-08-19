@@ -64,7 +64,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257959r1155724_rule
+    - SV-257960r1155727_rule
     - V-257960
     - NIST800-53R4_CM-6
   ansible.builtin.template:

@@ -19,11 +19,6 @@
     name: /var
     state: remounted
 
-- name: Remount_var_log
-  ansible.posix.mount:
-    name: /var/log
-    state: remounted
-
 - name: Remount_var_log_audit
   ansible.posix.mount:
     name: /var/log/audit
@@ -35,7 +30,13 @@
     state: remounted
 
 - name: Rebuild_grub
-  ansible.builtin.command: grub2-mkconfig -o /boot/grub2/grub.cfg
+  # RHEL 9.3+ requires --update-bls-cmdline for the rebuild to reach the BLS entries'
+  # options= lines; without it GRUB_CMDLINE_LINUX edits never apply to the running kernel.
+  # DISA's fixtext splits on the same boundary, so the flag is version-gated rather than
+  # unconditional - it does not exist on 9.0-9.2.
+  ansible.builtin.command: >-
+    grub2-mkconfig -o /boot/grub2/grub.cfg
+    {{ '--update-bls-cmdline' if ansible_facts['distribution_version'] is version('9.3', '>=') else '' }}
   changed_when: true
 
 - name: Firewalld_reload
@@ -47,6 +48,12 @@
   when: not system_is_container
   ansible.builtin.systemd:
     name: NetworkManager
+    state: restarted
+
+- name: Restart_systemd-resolved
+  when: not system_is_container
+  ansible.builtin.systemd:
+    name: systemd-resolved
     state: restarted
 
 - name: Validate_sshd_config
@@ -72,7 +79,11 @@
 
 - name: "Get authselect faillock state"
   when: not rhel9stig_add_faillock_without_authselect
-  ansible.builtin.command: authselect current | grep failock
+  ansible.builtin.shell: |
+    set -o pipefail
+    authselect current | grep faillock
+  args:
+    executable: "{{ rhel9stig_shell_executable }}"
   changed_when: false
   failed_when: discovered_authselect_faillock_state.rc not in [ 0, 1 ]
   register: discovered_authselect_faillock_state
@@ -87,7 +98,6 @@
   listen: Authselect_enable_faillock
 
 - name: Restart_sssd
-  when: rhel9stig_sssd_configure
   ansible.builtin.systemd:
     name: sssd
     state: restarted
@@ -118,7 +128,6 @@
 - name: Reload_sysctl
   ansible.builtin.command: sysctl --system
   changed_when: true
-  listen: Restart_sysctl
 
 - name: AIDE - Check for DB file
   ansible.builtin.stat:
@@ -149,7 +158,7 @@
     - not discovered_aide_db_file.stat.exists or
       (discovered_aide_db_age.files | length > 0) or
       rhel9stig_aide_db_recreate
-    - discovered_new_aide_db_created.changed  # noqa: no-changed-when
+    - discovered_new_aide_db_created.changed
   ansible.builtin.command: "mv -f {{ rhel9stig_aide_db_new_file }} {{ rhel9stig_aide_db_file }}"
   changed_when: true
   listen: Build_aide_db
@@ -157,7 +166,7 @@
 - name: AIDE - If DB exists run check comparison
   when:
     - discovered_aide_db_file.stat.exists
-    - not discovered_new_aide_db_created.changed  # noqa: no-changed-when
+    - not discovered_new_aide_db_created.changed
   ansible.builtin.command: /usr/sbin/aide --check
   changed_when: true
   failed_when: discovered_aidedb_check.rc not in [ 0, 1, 4, 5, 7 ]
@@ -195,6 +204,7 @@
 ## Auditd tasks note order for handlers to run
 
 - name: Auditd uid immutable check
+  when: not system_is_container
   ansible.builtin.command: grep -ci immutable /etc/audit/audit.rules
   changed_when: false
   failed_when: discovered_auditd_uid_immutable_check.rc not in [ 0, 1 ]
@@ -202,6 +212,7 @@
   listen: auditd_checks
 
 - name: Auditd unauthorized check
+  when: not system_is_container
   ansible.builtin.command: grep -c "^-e 2" /etc/audit/rules.d/audit.rules
   changed_when: false
   failed_when: discovered_auditd_unauth_immutable_check.rc not in [ 0, 1 ]
@@ -210,15 +221,18 @@
 
 - name: Reload auditd rules
   when:
-    - discovered_auditd_uid_immutable_check == '0'
+    - not system_is_container
+    - discovered_auditd_uid_immutable_check.stdout == '0'
     - discovered_auditd_unauth_immutable_check.stdout == '0'
   ansible.builtin.command: augenrules --load
   changed_when: true
   listen: auditd_checks
 
 - name: Schedule auditd reboot
-  when: discovered_auditd_uid_immutable_check == '1' or
-        discovered_auditd_unauth_immutable_check.stdout == '1'
+  when:
+    - not system_is_container
+    - discovered_auditd_uid_immutable_check.stdout == '1' or
+      discovered_auditd_unauth_immutable_check.stdout == '1'
   notify:
     - Restart_auditd
     - Change_requires_reboot
@@ -227,11 +241,13 @@
   listen: auditd_checks
 
 - name: Restart_auditd
+  when: not system_is_container
   ansible.builtin.command: service auditd restart  # noqa: command-instead-of-module  # Note using service as not a systemd object
   changed_when: true
   listen: Restart_auditd
 
 - name: Start auditd process
+  when: not system_is_container
   ansible.builtin.systemd_service:
     name: auditd
     state: started
