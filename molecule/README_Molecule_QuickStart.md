@@ -137,7 +137,7 @@ None of these warrant fixing the role. They're the expected delta between a cont
 | Converge #2 fails on a task that passed in #1 | Ansible 2.19+ struct-vs-string type-check tripping a `when:` clause that's "lucky" on the first run | Inspect the offending task's `when:` - look for quoted-string-as-boolean bugs |
 | `Conditional result (True) was derived from value of type 'str'` | Ansible 2.19+ rejects when-clauses whose final value is a non-boolean string. Common bug: an `or "<some expression>"` where the RHS got wrapped in quotes by accident | Remove the quotes; the RHS should be a bare Jinja expression |
 | `verify` logs `Executed: Missing playbook` and exits 0 | The scenario has no `verify.yml`, so the ansible verifier asserts nothing and still reports green - a silent no-op, not a pass | Add a `verify.yml` to that scenario. Both `default/` and `ubi/` have one; `ubi/verify.yml` imports the default assertions so there is a single source of truth |
-| `verify` passes but asserts almost nothing | Expected in a container - nearly all of `verify.yml`'s assertions are gated to a real host so they skip rather than false-fail | See "What `verify.yml` actually covers in a container". Judge a run on converge `failed=0` and the goss deltas, not on a green `verify` |
+| `verify` passes but asserts almost nothing | Expected in a container - only one of `verify.yml`'s assertions fires there; the rest are gated to a real host so they skip rather than false-fail | See "What `verify.yml` actually covers in a container". Judge a run on converge `failed=0` and the goss deltas, not on a green `verify` |
 | `create` fails with "image ... was found but its platform ... does not match" | You set `MOLECULE_DOCKER_PLATFORM` to a non-native arch while the native image is still cached, and `pre_build_image: true` reuses the cache instead of pulling | `docker rmi <image>` first - see "Choosing the container architecture" |
 
 ## Choosing the container architecture
@@ -168,29 +168,31 @@ CI never hits this - a fresh runner has an empty image cache, so the pull resolv
 
 ## CI (GitHub Actions)
 
-`.github/workflows/molecule.yml` runs both scenarios on GitHub-hosted `ubuntu-latest` runners, in a `fail-fast: false` matrix, on pull requests to `main` and `devel`, on pushes to `devel`, weekly, and on demand. Because the runners are amd64, the workflow exports `MOLECULE_DOCKER_PLATFORM=linux/amd64`. The workflow file is intentionally byte-identical to the one on the V2R9 branch.
+`.github/workflows/molecule.yml` runs both scenarios on GitHub-hosted `ubuntu-latest` runners, in a `fail-fast: false` matrix, on pull requests to `latest` and `benchmark*`, on pushes to `latest`, weekly, and on demand. Because the runners are amd64, the workflow exports `MOLECULE_DOCKER_PLATFORM=linux/amd64`.
 
-This is a fast, secret-free gate that runs in front of the tofu/EC2 pipelines - it does not replace them. Three things about it differ from the local ritual above and are deliberate:
+This is a fast, secret-free gate that runs in front of the tofu/EC2 pipelines - it does not replace them. Two things about it differ from the local ritual above and are deliberate:
 
-- **It runs `create` -> `converge` -> `verify` -> `destroy`, not `molecule test`.** `molecule test` includes an `idempotence` step, and converge #2 for this role is a known non-zero-change run (the `rhel9stig_disruption_high`-gated 411090 pam_faillock/authselect settle, 252060 `/etc/aliases`, plus harness tasks that always report changed). Gating CI on it would be red for reasons that are not regressions. Keep running the double converge locally - that is still where idempotency drift gets caught.
+- **It runs `create` -> `converge` -> `verify` -> `destroy`, not `molecule test`.** `molecule test` includes an `idempotence` step, and converge #2 for this role is a known non-zero-change run: the `rhel9stig_disruption_high`-gated 411090 pam_faillock/authselect settle, 252060 `/etc/aliases`, plus the harness tasks that always report changed (root password, pre/post audit scans, fetch). Gating CI on it would be red for reasons that are not regressions. Keep running the double converge locally - that is still where idempotency drift gets caught.
 - **Goss results do not fail the build.** The post-remediation audit JSONs are uploaded as a `molecule-audit-<scenario>` artifact for inspection. See "Why some audit failures are expected" above.
-- **Where the CI signal actually comes from.** The gate is converge finishing `failed=0`, read alongside the goss deltas in the artifact. `verify.yml` is a narrow regression check layered on top, not the substance of the gate - see the next section.
+- **Where the CI signal actually comes from.** The gate is converge finishing `failed=0` across all 445 rules, read alongside the goss deltas in the artifact (on the runs to date: 112 -> 64 failed on `default`, 114 -> 88 on `ubi`). `verify.yml` is a narrow regression check layered on top, not the substance of the gate - see the next section for what it does and does not cover in a container.
 
 Note that `ansible-core` ships no bundled collections, so the workflow installs `community.docker` and `ansible.posix` explicitly - the molecule docker driver needs both, and `collections/requirements.yml` does not carry `community.docker`.
 
 ## What `verify.yml` actually covers in a container
 
-`verify.yml` is a targeted regression check, not a broad conformance test. Most of it is written to fire on a real host and skip cleanly in a container rather than false-fail, so under molecule the great majority of it skips: the audit-rule and 653110 assertions need auditd to be managed (it is not, per `vars/is_container.yml`), and 255120 needs SSH host keys, which a container does not have. Judge a run on converge `failed=0` and the goss deltas; a green `verify` step is close to no evidence on its own.
+`verify.yml` is a targeted regression check for the V2R9 audit-rule rewrite and the 211045 drop-in rename, not a broad conformance test. Most of it is written to fire on a real host and skip cleanly in a container rather than false-fail, so in molecule the great majority of it skips. Measured on a full local `converge` -> `verify` against the `default` scenario:
 
-**This branch's `verify.yml` encodes V2R8 semantics and is deliberately the inverse of the V2R9 branch's on two controls.** Do not copy either file across branches wholesale:
+| Assertion | In a container |
+|---|---|
+| 654215-654255 syscall identity/logins rules | skips - auditd is unmanaged via `vars/is_container.yml`, so the file stays the stock package default |
+| 654097 crond_t execve rules | skips, same reason |
+| Obsolete watch-style rules removed | skips, same reason |
+| 653110 audit config file modes | skips, same reason |
+| 211045 the old suffixless drop-in is absent | **runs** |
+| 211045 the `.conf` drop-in exists | skips - neither path is created in a container |
+| 255120 SSH private host keys are 0600 | skips - the container has no SSH host keys |
 
-| Control | V2R8 (this branch) asserts | V2R9 asserts |
-|---|---|---|
-| 654215-654255, 654097 | watch-style rules (`-w <path> -p wa -k <key>`) are **present** | syscall-form rules are present, watch-style **removed** |
-| 211045 | drop-in at the **suffixless** path; the `.conf` path must not exist | drop-in at the **`.conf`** path; suffixless must not exist |
-| 653110 | audit config modes no more permissive than **0640** | no more permissive than **0600** |
-
-The "must not exist" halves double as a guard: if a V2R9 change is ever back-ported here without its benchmark bump, verify goes red and says so.
+So exactly one assertion fires in CI. That is by design, but it means a green `verify` step is close to no evidence on its own - do not read it as "the role is conformant". The substantive signals are converge `failed=0` and the goss deltas in the uploaded artifact. `verify.yml` earns its place on a real host, and as the hook to extend when a control needs a container-safe regression guard.
 
 ## Why no Ansible pinning is needed (opposite of RHEL 8)
 

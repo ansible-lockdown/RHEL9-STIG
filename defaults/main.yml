@@ -5,7 +5,7 @@
 # https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable
 
 ## metadata for Audit benchmark
-benchmark_version: 'v2r8'
+benchmark_version: 'v2r9'
 
 ## Benchmark name used by auditing control role
 # The audit variable found at the base
@@ -79,51 +79,9 @@ setup_audit: false
 run_audit: false
 # Run heavy tests - some tests can have more impact on a system enabling these can have greater impact on a system
 audit_run_heavy_tests: true
-# Ability to limit the number of concurrent processes used by goss (default 50)
-audit_max_concurrent: 50
 
 ## Only run Audit do not remediate
 audit_only: false
-
-#############################
-
-## How to retrieve audit binary(Goss)
-# Options are 'copy' or 'download' - detailed settings at the bottom of this file
-# - if 'copy':
-#    - the filepath mentioned via the below 'audit_bin_copy_location' var will be used to access already downloaded Goss
-# - if 'download':
-#    - the GitHub Goss-releases URL will be used for a fresh-download, via 'audit_bin_url' and 'audit_pkg_arch_name' vars
-get_audit_binary_method: download
-
-## if get_audit_binary_method - copy the following needs to be updated for your environment
-## it is expected that it will be copied from somewhere accessible to the control node
-## e.g copy from ansible control node to remote host
-audit_bin_copy_location: /some/accessible/path
-
-## How to retrieve the audit role
-# The role for auditing is maintained separately.
-# This variable specifies the method of how to get the audit role
-# options are git/copy/archive/get_url other e.g. if you wish to run from already downloaded conf
-# onto the system. The options are as follows:
-# - 'git': clone audit content from GitHub REPOSITORY, set up via `audit_file_git` var, and
-#          VERSION(e.g. branch, tag name), set up via `audit_git_version` var.
-# - 'copy': copy from path as specified in variable `audit_conf_copy`.
-# - 'archive': same as 'copy', only that the specified filepath needs to be unpacked.
-# - 'get_url': Download from url as specified in variable `audit_files_url`
-audit_content: git
-
-# If using either archive, copy, get_url:
-## Note will work with .tar files - zip will require extra configuration
-### If using get_url this is expecting github url in tar.gz format e.g.
-### https://github.com/ansible-lockdown/{{ OS_TYPE }}-{{ BENCHMARK_TYPE }}-Audit/archive/refs/heads/benchmark-{{ benchmark_version }}.tar.gz
-audit_conf_source: "some path or url to copy from"
-
-# Destination for the audit content to be placed on managed node
-# note may not need full path e.g. /opt with the directory being the {{ benchmark }}-Audit directory
-audit_conf_dest: "/opt"
-
-# Where the audit logs are stored
-audit_log_dir: '/opt'
 
 ## Ability to collect and take audit files moving to a centralized location
 # This enables the collection of the files from the host
@@ -368,7 +326,6 @@ rhel_09_255110: true
 rhel_09_255115: true
 rhel_09_255120: true
 rhel_09_255125: true
-rhel_09_255130: true
 rhel_09_255135: true
 rhel_09_255140: true
 rhel_09_255145: true
@@ -627,7 +584,6 @@ rhel9stig_sshd_config_banner_file: /etc/issue
 rhel9stig_sshd_config_ciphers: "{{ rhel9stig_dod_ciphers }}"
 rhel9stig_sshd_config_clientalivecountmax: 1
 rhel9stig_sshd_config_clientaliveinterval: 600  # max 600
-rhel9stig_sshd_config_compress: 'no'
 rhel9stig_sshd_config_gssapiauth: 'no'
 rhel9stig_sshd_config_hostauth: 'no'
 rhel9stig_sshd_config_ignoreknownhosts: 'yes'

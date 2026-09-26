@@ -9,7 +9,7 @@
     - CAT2
     - CCI-000192
     - SRG-OS-000069-GPOS-00037
-    - SV-258091r1045185_rule
+    - SV-258091r1208774_rule
     - V-258091
     - NIST800-53R4_IA-5
   block:
@@ -837,7 +837,7 @@
     name: pcsc-lite
     state: present
 
-- name: "MEDIUM | RHEL-09-611180 | PATCH | The pcscd service on RHEL 9 must be active."
+- name: "MEDIUM | RHEL-09-611180 | PATCH | The pcscd socket on RHEL 9 must be active."
   when:
     - rhel_09_611180
     - rhel9stig_smartcard_reader
@@ -847,7 +847,7 @@
     - CCI-001948
     - CCI-004046
     - SRG-OS-000375-GPOS-00160
-    - SV-258125r1045253_rule
+    - SV-258125r1208775_rule
     - V-258125
     - NIST800-53R4_IA-2
   ansible.builtin.systemd:

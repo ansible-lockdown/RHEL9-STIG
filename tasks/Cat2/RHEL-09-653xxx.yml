@@ -236,7 +236,7 @@
     line: space_left = {{ rhel9stig_audit_conf_space_left }}
 
 - name: "MEDIUM | RHEL-09-653040 | PATCH | RHEL 9 must notify the system administrator (SA) and information system security officer (ISSO) (at a minimum) when allocated
-    audit record storage volume 75 percent utilization."
+    audit record storage volume reaches 75 percent utilization."
   when:
     - rhel_09_653040
     - rhel9stig_auditd_required
@@ -532,14 +532,14 @@
     - CAT2
     - CCI-000171
     - SRG-OS-000063-GPOS-00032
-    - SV-258171r1134934_rule
+    - SV-258171r1208777_rule
     - V-258171
     - NIST800-53R4_AU-12
     - auditd
   block:
     - name: "MEDIUM | RHEL-09-653110 | PATCH | RHEL 9 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM) to select which auditable events are to be audited."
       ansible.builtin.file:
-        mode: 'u-x,g-wx,o-rwx'
+        mode: 'u-x,g-rwx,o-rwx'
         path: "{{ item }}"
       loop:
         - /etc/audit/audit.rules
@@ -548,7 +548,7 @@
     - name: "MEDIUM | RHEL-09-653110 | PATCH | RHEL 9 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM) to select which auditable events are to be audited."
       ansible.builtin.file:
         path: "{{ item.path }}"
-        mode: 'u-x,g-wx,o-rwx'
+        mode: 'u-x,g-rwx,o-rwx'
       loop: "{{ discovered_audit_rules.files }}"
 
 - name: "MEDIUM | RHEL-09-653125 | PATCH | RHEL 9 must have mail aliases to notify the information system security officer (ISSO) and system administrator (SA) (at a minimum) in the event of an audit processing failure."

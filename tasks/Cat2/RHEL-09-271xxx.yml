@@ -151,9 +151,9 @@
   tags:
     - RHEL-09-271045
     - CAT2
-    - CCI-00056
-    - CCI-00057
-    - CCI-00058
+    - CCI-000056
+    - CCI-000057
+    - CCI-000058
     - SRG-OS-000028-GPOS-00009
     - SRG-OS-000030-GPOS-00011
     - SV-258019r1045092_rule
@@ -177,9 +177,9 @@
   tags:
     - RHEL-09-271050
     - CAT2
-    - CCI-00056
-    - CCI-00057
-    - CCI-00058
+    - CCI-000056
+    - CCI-000057
+    - CCI-000058
     - SRG-OS-000028-GPOS-00009
     - SRG-OS-000030-GPOS-00011
     - SV-258020r1045094_rule
@@ -200,9 +200,9 @@
   tags:
     - RHEL-09-271055
     - CAT2
-    - CCI-00056
-    - CCI-00057
-    - CCI-00058
+    - CCI-000056
+    - CCI-000057
+    - CCI-000058
     - SRG-OS-000028-GPOS-00009
     - SRG-OS-000030-GPOS-00011
     - SV-258021r1015088_rule
@@ -225,9 +225,9 @@
   tags:
     - RHEL-09-271060
     - CAT2
-    - CCI-00056
-    - CCI-00057
-    - CCI-00058
+    - CCI-000056
+    - CCI-000057
+    - CCI-000058
     - SRG-OS-000028-GPOS-00009
     - SRG-OS-000030-GPOS-00011
     - SV-258022r1045097_rule
@@ -248,8 +248,8 @@
   tags:
     - RHEL-09-271065
     - CAT2
-    - CCI-00057
-    - CCI-00060
+    - CCI-000057
+    - CCI-000060
     - SRG-OS-000029-GPOS-00010
     - SRG-OS-000031-GPOS-00012
     - SV-258023r1155656_rule
@@ -273,8 +273,8 @@
   tags:
     - RHEL-09-271070
     - CAT2
-    - CCI-00057
-    - CCI-00060
+    - CCI-000057
+    - CCI-000060
     - SRG-OS-000029-GPOS-00010
     - SRG-OS-000031-GPOS-00012
     - SV-258024r1045100_rule
@@ -295,7 +295,7 @@
   tags:
     - RHEL-09-271075
     - CAT2
-    - CCI-00057
+    - CCI-000057
     - SRG-OS-000029-GPOS-00010
     - SV-258025r958402_rule
     - V-258025
@@ -317,7 +317,7 @@
   tags:
     - RHEL-09-271080
     - CAT2
-    - CCI-00057
+    - CCI-000057
     - SRG-OS-000029-GPOS-00010
     - SV-258026r1045103_rule
     - V-258026
@@ -337,7 +337,7 @@
   tags:
     - RHEL-09-271085
     - CAT2
-    - CCI-00060
+    - CCI-000060
     - SRG-OS-000031-GPOS-00012
     - SV-258027r1045106_rule
     - V-258027
@@ -369,10 +369,10 @@
   tags:
     - RHEL-09-271090
     - CAT2
-    - CCI-00366
+    - CCI-000366
     - SRG-OS-000480-GPOS-00227
     - SV-258028r991589_rule
-    - V-258029
+    - V-258028
     - NIST800-53R4_AC-11
   notify: Update_dconf
   ansible.builtin.command: echo "Run dconf update"
@@ -385,7 +385,7 @@
   tags:
     - RHEL-09-271095
     - CAT2
-    - CCI-00366
+    - CCI-000366
     - SRG-OS-000480-GPOS-00227
     - SV-258029r1045109_rule
     - V-258029
@@ -402,7 +402,7 @@
   tags:
     - RHEL-09-271100
     - CAT2
-    - CCI-00366
+    - CCI-000366
     - SRG-OS-000480-GPOS-00227
     - SV-258030r1045112_rule
     - V-258030
@@ -422,7 +422,7 @@
   tags:
     - RHEL-09-271105
     - CAT2
-    - CCI-00366
+    - CCI-000366
     - SRG-OS-000480-GPOS-00227
     - SV-258031r1134920_rule
     - V-258031
@@ -446,7 +446,7 @@
   tags:
     - RHEL-09-271110
     - CAT2
-    - CCI-00366
+    - CCI-000366
     - SRG-OS-000480-GPOS-00227
     - SV-258032r1045117_rule
     - V-258032
@@ -466,7 +466,7 @@
   tags:
     - RHEL-09-271115
     - CAT2
-    - CCI-00366
+    - CCI-000366
     - SRG-OS-000480-GPOS-00227
     - SV-258033r1045120_rule
     - V-258033

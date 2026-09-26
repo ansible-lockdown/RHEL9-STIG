@@ -28,8 +28,8 @@
   tags:
     - RHEL-09-671010
     - CAT1
-    - CCI-00068
-    - CCI-00877
+    - CCI-000068
+    - CCI-000877
     - CCI-002418
     - CCI-002450
     - SRG-OS-000033-GPOS-00014
@@ -83,7 +83,7 @@
       vars:
         warn_control_id: "HIGH | RHEL-09-671010"
 
-- name: "HIGH | RHEL-09-671020 | PATCH | RHEL 9 IP tunnels must use FIPS 140-2/140-3 approved cryptographic algorithms."
+- name: "HIGH | RHEL-09-671020 | PATCH | RHEL 9 IP tunnels must use FIPS 140-3 approved cryptographic algorithms."
   when:
     - rhel_09_671020
     - "'ipsec' in ansible_facts.packages"

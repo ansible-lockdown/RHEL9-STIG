@@ -1,4 +1,5 @@
 ---
+
 dependency:
   name: galaxy
   options:
@@ -35,8 +36,8 @@ provisioner:
         setup_audit: true
         run_audit: true
         # audit_git_version intentionally omitted: vars/audit.yml derives it from
-        # benchmark_version via include_vars (which outranks play/host vars), so a
-        # value here is inert. Pin a QA branch at run time with:
+        # benchmark_version (loaded via include_vars, which outranks host vars),
+        # so a value here is inert. Pin a QA branch at run time instead:
         #   molecule converge -s ubi -- --extra-vars 'audit_git_version=<branch>'
         skip_reboot: true
         system_is_container: true

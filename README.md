@@ -2,7 +2,7 @@
 
 ## Configure a RHEL9 based system to be compliant with DISA STIG
 
-This role is based on RHEL 9 DISA STIG: [Version 2, Rel 8 released in April, 2026](https://dl.dod.cyber.mil/wp-content/uploads/stigs/U_RHEL_9_V2R8_STIG.zip).
+This role is based on RHEL 9 DISA STIG: [Version 2, Rel 9 released in July, 2026](https://dl.dod.cyber.mil/wp-content/uploads/stigs/U_RHEL_9_V2R9_STIG.zip).
 
 ---
 
@@ -12,7 +12,7 @@ This role is based on RHEL 9 DISA STIG: [Version 2, Rel 8 released in April, 202
 ![Stars](https://img.shields.io/github/stars/ansible-lockdown/RHEL9-STIG?label=Repo%20Stars&style=social)
 ![Forks](https://img.shields.io/github/forks/ansible-lockdown/RHEL9-STIG?style=social)
 ![Followers](https://img.shields.io/github/followers/ansible-lockdown?style=social)
-[![X URL](https://img.shields.io/twitter/url/https/twitter.com/AnsibleLockdown.svg?style=social&label=Follow%20%40AnsibleLockdown)](https://x.com/AnsibleLockdown)
+[![X URL](https://img.shields.io/badge/Follow-%40AnsibleLockdown-black?style=social&logo=x)](https://x.com/AnsibleLockdown)
 ![Discord Badge](https://img.shields.io/discord/925818806838919229?logo=discord)
 
 ![License](https://img.shields.io/github/license/ansible-lockdown/RHEL9-STIG?label=License)

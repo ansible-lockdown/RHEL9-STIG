@@ -22,7 +22,7 @@
     - CCI-002235
     - SRG-OS-000324-GPOS-00125
     - SRG-OS-000480-GPOS-00227
-    - SV-257784r1155651_rule
+    - SV-257784r1208766_rule
     - V-257784
     - NIST800-53R4_AC-6
   notify: Systemd_daemon_reload
@@ -37,15 +37,15 @@
 
     - name: HIGH | RHEL-09-211045 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled | ansible.builtin.lineinfile
       ansible.builtin.template:
-        src: etc/systemd/system.conf.d/55-CtrlAltDel-BurstAction.j2
-        dest: /etc/systemd/system.conf.d/55-CtrlAltDel-BurstAction
+        src: etc/systemd/system.conf.d/55-CtrlAltDel-BurstAction.conf.j2
+        dest: /etc/systemd/system.conf.d/55-CtrlAltDel-BurstAction.conf
         mode: 'go-wx'
         owner: root
         group: root
 
     - name: HIGH | RHEL-09-211045 | PATCH | The systemd Ctrl-Alt-Delete burst key sequence in RHEL 9 must be disabled | ansible.builtin.lineinfile
       ansible.builtin.lineinfile:
-        path: /etc/systemd/system.conf.d/55-CtrlAltDel-BurstAction
+        path: /etc/systemd/system.conf.d/55-CtrlAltDel-BurstAction.conf
         regexp: ^CtrlAltDelBurstAction=none
         line: CtrlAltDelBurstAction=none
         create: true
@@ -122,7 +122,7 @@
     regexp: ^gpgcheck
     line: gpgcheck=1
 
-- name: HIGH | RHEL-09-214020 | PATCH | RHEL 9 must have GPG signature verification enabled for all software repositories.
+- name: HIGH | RHEL-09-214020 | PATCH | RHEL 9 must check the GPG signature of locally installed software packages before installation.
   when: rhel_09_214020
   tags:
     - RHEL-09-214020
@@ -179,7 +179,7 @@
     - SRG-OS-000074-GPOS-00042
     - SRG-OS-000095-GPOS-00049
     - SRG-OS-000480-GPOS-00227
-    - SV-257826r1106299_rule
+    - SV-257826r1208770_rule
     - V-257826
     - NIST800-53R4_IA-5
     - NIST800-53R4_CM-6
@@ -506,7 +506,7 @@
       vars:
         warn_control_id: "HIGH | RHEL-09-255064"
 
-- name: "HIGH | RHEL-09-255065 | PATCH | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+- name: "HIGH | RHEL-09-255065 | PATCH | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH server connections."
   when:
     - rhel_09_255065
     - rhel9stig_sshd_required
@@ -519,12 +519,12 @@
     - V-257989
     - NIST800-53R4_AC-17
   block:
-    - name: "HIGH | RHEL-09-255065 | AUDIT | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | capture current"
+    - name: "HIGH | RHEL-09-255065 | AUDIT | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH server connections. | capture current"
       ansible.builtin.command: grep -i Ciphers /etc/crypto-policies/back-ends/opensshserver.config
       changed_when: false
       register: discovered_openssh_server_ciphers
 
-    - name: "HIGH | RHEL-09-255065 | PATCH | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | Correct if wrong"
+    - name: "HIGH | RHEL-09-255065 | PATCH | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH server connections. | Correct if wrong"
       when:
         - rhel9stig_disruption_high
         - "(rhel9stig_dod_ciphers | join (',')) not in discovered_openssh_server_ciphers.stdout"
@@ -532,14 +532,14 @@
         msg: "Crypto policies being reinstalled as handler"
       notify: Reinstall_crypto_policies
 
-    - name: "HIGH | RHEL-09-255065 | WARN | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+    - name: "HIGH | RHEL-09-255065 | WARN | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH server connections."
       when:
         - not rhel9stig_disruption_high
         - "(rhel9stig_dod_ciphers | join (',')) not in discovered_openssh_server_ciphers.stdout"
       ansible.builtin.debug:
         msg: "Warning!! Investigate /etc/crypto-policies/back-ends/openssh.config for correct IPS 140-3 ciphers and order"
 
-    - name: "HIGH | RHEL-09-255065 | WARN | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+    - name: "HIGH | RHEL-09-255065 | WARN | The RHEL 9 SSH server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH server connections."
       when:
         - not rhel9stig_disruption_high
         - "(rhel9stig_dod_ciphers | join (',')) not in discovered_openssh_server_ciphers.stdout"
@@ -590,7 +590,7 @@
       vars:
         warn_control_id: "HIGH | RHEL-09-255070"
 
-- name: "HIGH | RHEL-09-255075 | PATCH | The RHEL 9 SSH server must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+- name: "HIGH | RHEL-09-255075 | PATCH | The RHEL 9 SSH server must be configured to use only Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH server connections."
   when:
     - rhel_09_255075
     - rhel9stig_sshd_required
@@ -603,12 +603,12 @@
     - V-257991
     - NIST800-53R4_AC-17
   block:
-    - name: "HIGH | RHEL-09-255075 | AUDIT | The RHEL 9 SSH server must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | capture current"
+    - name: "HIGH | RHEL-09-255075 | AUDIT | The RHEL 9 SSH server must be configured to use only Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH server connections. | capture current"
       ansible.builtin.command: grep -i MACs /etc/crypto-policies/back-ends/opensshserver.config
       changed_when: false
       register: discovered_openssh_server_macs
 
-    - name: "HIGH | RHEL-09-255075 | PATCH | The RHEL 9 SSH server must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections. | Correct if wrong"
+    - name: "HIGH | RHEL-09-255075 | PATCH | The RHEL 9 SSH server must be configured to use only Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH server connections. | Correct if wrong"
       when:
         - rhel9stig_disruption_high
         - "(rhel9stig_dod_macs | join (',')) not in discovered_openssh_server_macs.stdout"
@@ -616,14 +616,14 @@
         msg: "Crypto policies being reinstalled as handler"
       notify: Reinstall_crypto_policies
 
-    - name: "HIGH | RHEL-09-255075 | WARN | The RHEL 9 SSH server must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+    - name: "HIGH | RHEL-09-255075 | WARN | The RHEL 9 SSH server must be configured to use only Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH server connections."
       when:
         - not rhel9stig_disruption_high
         - "(rhel9stig_dod_macs | join (',')) not in discovered_openssh_server_macs.stdout"
       ansible.builtin.debug:
         msg: "Warning!! Investigate /etc/crypto-policies/back-ends/openssh.config for correct IPS 140-3 MACs and order"
 
-    - name: "HIGH | RHEL-09-255075 | WARN | The RHEL 9 SSH server must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH client connections."
+    - name: "HIGH | RHEL-09-255075 | WARN | The RHEL 9 SSH server must be configured to use only Message Authentication Codes (MACs) employing FIPS 140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH server connections."
       when:
         - not rhel9stig_disruption_high
         - "(rhel9stig_dod_macs | join (',')) not in discovered_openssh_server_macs.stdout"

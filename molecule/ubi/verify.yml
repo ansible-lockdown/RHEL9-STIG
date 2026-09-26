@@ -1,13 +1,14 @@
 ---
 
-# Molecule verifier for the UBI 9 scenario, V2R8 branch.
+# Molecule verifier for the UBI 9 scenario.
 #
 # The assertions are identical to the default scenario's, so this imports them rather than
 # duplicating a file that would then drift. `default/verify.yml` is written to be tolerant of
 # a target where the audit rules file is absent entirely, which is the UBI case: the `audit`
 # and `aide` packages are subscription-gated, so `prepare.yml` stubs the directories but
 # /etc/audit/rules.d/audit.rules never gets created. The marker-gated audit assertions skip
-# cleanly there.
+# cleanly there, while the Ctrl-Alt-Del (211045) and SSH host key mode (255120) assertions
+# still fire - both of those controls do apply on UBI.
 #
 # Without this file `molecule verify -s ubi` is a silent no-op: the ansible verifier logs
 # "Executed: Missing playbook" and exits 0, so the scenario reports green having asserted

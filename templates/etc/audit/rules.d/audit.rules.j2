@@ -88,8 +88,10 @@
 {% endif %}
 {% if rhel_09_654097 %}
 # RHEL9-STIG rule 654097
--w /etc/cron.d -p wa -k cronjobs
--w /var/spool/cron -p wa -k cronjobs
+-a always,exit -F arch=b64 -S execve -F subj_type=crond_t -F euid=0 -k cron_exec
+-a always,exit -F arch=b32 -S execve -F subj_type=crond_t -F euid=0 -k cron_exec
+-a always,exit -F arch=b64 -S execve -F subj_type=crond_t -F auid>=1000 -F auid!=unset -k cron_exec
+-a always,exit -F arch=b32 -S execve -F subj_type=crond_t -F auid>=1000 -F auid!=unset -k cron_exec
 {% endif %}
 {% if rhel_09_654100 %}
 # RHEL9-STIG rule 654100
@@ -188,39 +190,48 @@
 {% endif %}
 {% if rhel_09_654215 %}
 # RHEL9-STIG rule 654215
--w /etc/sudoers -p wa -k identity
+-a always,exit -F arch=b32 -F path=/etc/sudoers -F perm=wa -k identity
+-a always,exit -F arch=b64 -F path=/etc/sudoers -F perm=wa -k identity
 {% endif %}
 {% if rhel_09_654220 %}
 # RHEL9-STIG rule 654220
--w /etc/sudoers.d/ -p wa -k identity
+-a always,exit -F arch=b32 -F path=/etc/sudoers.d -F perm=wa -k identity
+-a always,exit -F arch=b64 -F path=/etc/sudoers.d -F perm=wa -k identity
 {% endif %}
 {% if rhel_09_654225 %}
 # RHEL9-STIG rule 654225
--w /etc/group -p wa -k identity
+-a always,exit -F arch=b32 -F path=/etc/group -F perm=wa -k identity
+-a always,exit -F arch=b64 -F path=/etc/group -F perm=wa -k identity
 {% endif %}
 {% if rhel_09_654230 %}
 # RHEL9-STIG rule 654230
--w /etc/gshadow -p wa -k identity
+-a always,exit -F arch=b32 -F path=/etc/gshadow -F perm=wa -k identity
+-a always,exit -F arch=b64 -F path=/etc/gshadow -F perm=wa -k identity
 {% endif %}
 {% if rhel_09_654235 %}
 # RHEL9-STIG rule 654235
--w /etc/security/opasswd -p wa -k identity
+-a always,exit -F arch=b32 -F path=/etc/security/opasswd -F perm=wa -k identity
+-a always,exit -F arch=b64 -F path=/etc/security/opasswd -F perm=wa -k identity
 {% endif %}
 {% if rhel_09_654240 %}
 # RHEL9-STIG rule 654240
--w /etc/passwd -p wa -k identity
+-a always,exit -F arch=b32 -F path=/etc/passwd -F perm=wa -k identity
+-a always,exit -F arch=b64 -F path=/etc/passwd -F perm=wa -k identity
 {% endif %}
 {% if rhel_09_654245 %}
 # RHEL9-STIG rule 654245
--w /etc/shadow -p wa -k identity
+-a always,exit -F arch=b32 -F path=/etc/shadow -F perm=wa -k identity
+-a always,exit -F arch=b64 -F path=/etc/shadow -F perm=wa -k identity
 {% endif %}
 {% if rhel_09_654250 %}
 # RHEL9-STIG rule 654250
--w /var/log/faillock -p wa -k logins
+-a always,exit -F arch=b32 -F path=/var/log/faillock -F perm=wa -F auid>=1000 -F auid!=unset -k logins
+-a always,exit -F arch=b64 -F path=/var/log/faillock -F perm=wa -F auid>=1000 -F auid!=unset -k logins
 {% endif %}
 {% if rhel_09_654255 %}
 # RHEL9-STIG rule 654255
--w /var/log/lastlog -p wa -k logins
+-a always,exit -F arch=b32 -F path=/var/log/lastlog -F perm=wa -F auid>=1000 -F auid!=unset -k logins
+-a always,exit -F arch=b64 -F path=/var/log/lastlog -F perm=wa -F auid>=1000 -F auid!=unset -k logins
 {% endif %}
 {% if rhel_09_654265 %}
 # RHEL9-STIG rule 654265

@@ -182,8 +182,7 @@
   when:
     - fetch_audit_output
     - run_audit
-  tags:
-    - run_audit
+  tags: run_audit
   ansible.builtin.import_tasks:
     file: fetch_audit_output.yml
 

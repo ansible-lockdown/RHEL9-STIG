@@ -5,11 +5,11 @@ name: Repo QA
 on:  # yamllint disable-line rule:truthy
   push:
     branches:
-      - devel
+      - latest
   pull_request:
     branches:
-      - main
-      - devel
+      - latest
+      - benchmark*
   # The checker is pinned, but the role's own content and the pinned linters' rule sets do
   # not move in lock-step with PR activity. A weekly run surfaces drift as its own build
   # rather than on whatever unrelated PR is open at the time.
@@ -70,9 +70,14 @@ jobs:
 
       # --strict is load-bearing, not cosmetic: most findings here are WARN severity, and
       # without it a real regression (e.g. an unquoted file mode) exits 0 and passes silently.
-      # .qa_baseline.json absorbs the known pre-existing findings, keyed per finding on
-      # (file, description) - so a NEW finding in an already-baselined check still fails.
-      # Regenerate the baseline only deliberately, never to silence a fresh finding.
+      #
+      # NOTE - the one intended difference from the V2R8 branch's copy of this workflow: there
+      # is no `--baseline .qa_baseline.json` here. V2R8 needs one to absorb 8 pre-existing
+      # Audit Variable Placement findings (the audit-variable alignment that landed in V2R9 and
+      # was never back-ported). This branch has that alignment, so it runs clean with nothing
+      # suppressed, and an empty baseline file would only invite "just regenerate it" as a way
+      # to silence real findings. If this branch ever accrues debt worth deferring, add the
+      # flag and a generated baseline together - do not copy V2R8's.
       - name: Run Ansible Lockdown QA check
         working-directory: role
         run: |
@@ -82,5 +87,4 @@ jobs:
             --console \
             --no-progress \
             --no-report \
-            --skip spelling,grammar \
-            --baseline .qa_baseline.json
+            --skip spelling,grammar

@@ -149,7 +149,7 @@
     - CAT2
     - CCI-000366
     - SRG-OS-000480-GPOS-00227
-    - SV-257888r1134910_rule
+    - SV-257888r1208771_rule
     - V-257888
     - NIST800-53R4_CM-6
   block:
@@ -448,7 +448,7 @@
     - CCI-000162
     - SRG-OS-000080-GPOS-00048
     - SV-270176r1137691_rule
-    - V-270175
+    - V-270176
     - NIST800-53R4_AU-9
   ansible.builtin.file:
     path: /etc/audit
