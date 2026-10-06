@@ -238,6 +238,7 @@
     - Change_requires_reboot
   ansible.builtin.debug:
     msg: "Reboot required for auditd to apply new rules as immutable set"
+  changed_when: true
   listen: auditd_checks
 
 - name: Restart_auditd
