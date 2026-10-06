@@ -129,6 +129,7 @@
   ansible.builtin.meta: flush_handlers
 
 - name: Reboot system if changes require it and not skipped
+  when: change_requires_reboot
   block:
     - name: POST | Reboot system if changes require it and not skipped
       when: not skip_reboot
