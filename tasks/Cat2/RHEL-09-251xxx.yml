@@ -142,7 +142,7 @@
         msg:
           - "The following output is what firewalld is configured for {{ ansible_facts['hostname'] }}."
           - "{{ discovered_ppsm_clsa_zone_config.stdout_lines }}"
-      changed_when: true
+      changed_when: false
 
 - name: "MEDIUM | RHEL-09-251040 | AUDIT | RHEL 9 network interfaces must not be in promiscuous mode."
   when: rhel_09_251040
