@@ -1,0 +1,87 @@
+---
+
+#### Audit Configuration Settings ####
+
+# Timeout for those cmds that take longer to run where timeout set
+audit_cmd_timeout: 120000
+
+# Ability to limit the number of concurrent processes used by the audit binary (syver) (default 50)
+audit_max_concurrent: 50
+
+## How to retrieve the audit binary (syver)
+# Options are 'copy' or 'download'
+# - if 'copy':
+#    - the filepath mentioned via the below 'audit_bin_copy_location' var will be used to access an already downloaded syver binary
+# - if 'download':
+#    - the GitHub syver releases URL will be used for a fresh-download, via 'audit_bin_url' and 'audit_pkg_arch_name' vars
+get_audit_binary_method: download
+
+## if get_audit_binary_method - copy the following needs to be updated for your environment
+## it is expected that it will be copied from somewhere accessible to the control node
+## e.g copy from ansible control node to remote host
+audit_bin_copy_location: /some/accessible/path
+
+# if get_audit_binary_method == download change accordingly
+# Syver (https://github.com/krameff/syver) is the continuation of the krameff goss fork - a signed fork that is
+# regularly updated and reads the same goss.yml audit content
+audit_bin_url: "https://github.com/krameff/syver/releases/download/{{ audit_bin_version.release }}/syver-linux-"
+
+# Whether to validate TLS certificates when downloading the audit binary
+audit_bin_validate_certs: true
+
+## How to retrieve the audit role
+# The role for auditing is maintained separately.
+# This variable specifies the method of how to get the audit role
+# options are git/copy/archive/get_url other e.g. if you wish to run from already downloaded conf
+# onto the system. The options are as follows:
+# - 'git': clone audit content from GitHub REPOSITORY, set up via `audit_file_git` var, and
+#          VERSION(e.g. branch, tag name), set up via `audit_git_version` var.
+# - 'copy': copy from path as specified in variable `audit_conf_copy`.
+# - 'archive': same as 'copy', only that the specified filepath needs to be unpacked.
+# - 'get_url': Download from url as specified in variable `audit_files_url`
+audit_content: git
+
+# If using either archive, copy, get_url:
+## Note will work with .tar files - zip will require extra configuration
+### If using get_url this is expecting github url in tar.gz format e.g.
+### https://github.com/ansible-lockdown/{{ OS_TYPE }}-{{ BENCHMARK_TYPE }}-Audit/archive/refs/heads/benchmark-{{ benchmark_version }}.tar.gz
+audit_conf_source: "some path or url to copy from"
+
+# Destination for the audit content to be placed on managed node
+# note may not need full path e.g. /opt with the directory being the {{ benchmark }}-Audit directory
+audit_conf_dest: "/opt"
+
+# Where the audit logs are stored
+audit_log_dir: '/opt'
+
+### Audit Benchmark content ###
+## managed by the control audit_content
+# git
+audit_file_git: "https://github.com/ansible-lockdown/{{ benchmark }}-Audit.git"
+audit_git_version: "benchmark_{{ benchmark_version }}"
+
+## Audit configuration information
+# Where the audit configuration will be stored - NOTE benchmark-audit is expected
+audit_conf_dir: "{{ audit_conf_dest | default('/opt') }}/{{ benchmark }}-Audit"
+
+# If changed these can affect other products
+pre_audit_outfile: "{{ audit_log_dir }}/{{ ansible_facts.hostname }}-{{ benchmark }}-{{ benchmark_version }}_pre_scan_{{ ansible_facts.date_time.epoch }}.{{ audit_format }}"
+post_audit_outfile: "{{ audit_log_dir }}/{{ ansible_facts.hostname }}-{{ benchmark }}-{{ benchmark_version }}_post_scan_{{ ansible_facts.date_time.epoch }}.{{ audit_format }}"
+
+## The following should not need changing
+
+### Audit binary settings ###
+audit_bin_version:
+  release: v0.13.0
+  AMD64_checksum: 'sha256:8d1b210b6a9c4e24341e77cde11ed278f809b193a4368b0723e344c04111ae6e'
+  ARM64_checksum: 'sha256:c40886ee66b893276299a320abcd3c56b00b6e343ff5343e67cd3b348390a8a7'
+audit_bin_path: /usr/local/bin/
+audit_bin: "{{ audit_bin_path }}syver"
+audit_format: json
+
+audit_vars_path: "{{ audit_conf_dir }}/vars/{{ ansible_facts.hostname }}.yml"
+audit_results: |
+      The{% if not audit_only %} pre remediation{% endif %} audit results are: {{ pre_audit_results }}
+      {% if not audit_only %}The post remediation audit results are: {{ post_audit_results }}{% endif %}
+
+      Full breakdown can be found in {{ audit_log_dir }}

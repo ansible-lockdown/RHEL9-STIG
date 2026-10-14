@@ -29,11 +29,11 @@
     name: /var/tmp
     state: remounted
 
+# RHEL 9.3+ requires --update-bls-cmdline for the rebuild to reach the BLS entries'
+# options= lines; without it GRUB_CMDLINE_LINUX edits never apply to the running kernel.
+# DISA's fixtext splits on the same boundary, so the flag is version-gated rather than
+# unconditional - it does not exist on 9.0-9.2.
 - name: Rebuild_grub
-  # RHEL 9.3+ requires --update-bls-cmdline for the rebuild to reach the BLS entries'
-  # options= lines; without it GRUB_CMDLINE_LINUX edits never apply to the running kernel.
-  # DISA's fixtext splits on the same boundary, so the flag is version-gated rather than
-  # unconditional - it does not exist on 9.0-9.2.
   ansible.builtin.command: >-
     grub2-mkconfig -o /boot/grub2/grub.cfg
     {{ '--update-bls-cmdline' if ansible_facts['distribution_version'] is version('9.3', '>=') else '' }}
@@ -78,7 +78,7 @@
   listen: Reinstall_crypto_policies
 
 - name: "Get authselect faillock state"
-  when: not rhel9stig_add_faillock_without_authselect
+  when: rhel9stig_pam_via_authselect
   ansible.builtin.shell: |
     set -o pipefail
     authselect current | grep faillock
@@ -91,11 +91,16 @@
 
 - name: "Set authselect faillock state"
   when:
-    - not rhel9stig_add_faillock_without_authselect
+    - rhel9stig_pam_via_authselect
     - "'with-faillock' not in discovered_authselect_faillock_state.stdout"
   ansible.builtin.command: authselect enable-feature with-faillock
   changed_when: true
   listen: Authselect_enable_faillock
+
+- name: Authselect_apply_changes
+  when: rhel9stig_pam_via_authselect
+  ansible.builtin.command: authselect apply-changes
+  changed_when: true
 
 - name: Restart_sssd
   ansible.builtin.systemd:
@@ -228,6 +233,9 @@
   changed_when: true
   listen: auditd_checks
 
+# A debug task reports ok, never changed, so without `changed_when: true` the Restart_auditd and
+# Change_requires_reboot notifies never fire and the reboot-required signal is lost. No other
+# member of the auditd_checks group sets change_requires_reboot, so nothing else covers it.
 - name: Schedule auditd reboot
   when:
     - not system_is_container

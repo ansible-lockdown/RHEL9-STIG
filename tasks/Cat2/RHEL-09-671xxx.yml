@@ -1,6 +1,6 @@
 ---
 
-- name: "MEDIUM | RHEL-09-671015 | PATCH | RHEL 9 must employ FIPS 140-3 approved cryptographic hashing algorithms for all stored passwords."
+- name: "MEDIUM | RHEL-09-671015 | PATCH | RHEL 9 must employ FIPS 140-3-approved cryptographic hashing algorithms for all stored passwords."
   when: rhel_09_671015
   tags:
     - RHEL-09-671015
@@ -9,14 +9,14 @@
     - CCI-000196
     - SRG-OS-000073-GPOS-00041
     - SRG-OS-000120-GPOS-00061
-    - SV-258231r1069375_rule
+    - SV-258231r1208790_rule
     - V-258231
     - NIST800-53R4_IA-7
     - NIST800-53R4_IA-5
     - fips
     - users
   block:
-    - name: "MEDIUM | RHEL-09-671015 | AUDIT | RHEL 9 must employ FIPS 140-3 approved cryptographic hashing algorithms for all stored passwords. | Get user accounts not using FIPS 140-2 hashing"
+    - name: "MEDIUM | RHEL-09-671015 | AUDIT | RHEL 9 must employ FIPS 140-3-approved cryptographic hashing algorithms for all stored passwords. | Get user accounts not using FIPS 140-2 hashing"
       ansible.builtin.shell: |
         set -o pipefail
         cat /etc/shadow | grep -v "*" | grep -v "!" | grep -v ":$6$" | cut -f1 -d:
@@ -27,7 +27,7 @@
       no_log: true
       register: discovered_non_fips_hashed_accounts
 
-    - name: "MEDIUM | RHEL-09-671015 | PATCH | RHEL 9 must employ FIPS 140-3 approved cryptographic hashing algorithms for all stored passwords. | Lock user not using FIPS 140-3 hashing"
+    - name: "MEDIUM | RHEL-09-671015 | PATCH | RHEL 9 must employ FIPS 140-3-approved cryptographic hashing algorithms for all stored passwords. | Lock user not using FIPS 140-3 hashing"
       when:
         - discovered_non_fips_hashed_accounts.stdout | length > 0
         - rhel9stig_disruption_high
@@ -35,7 +35,7 @@
       changed_when: true
       loop: "{{ discovered_non_fips_hashed_accounts.stdout_lines }}"
 
-    - name: "MEDIUM | RHEL-09-671015 | AUDIT | RHEL 9 must employ FIPS 140-2 approved cryptographic hashing algorithms for all stored passwords. | Message out user accounts"
+    - name: "MEDIUM | RHEL-09-671015 | AUDIT | RHEL 9 must employ FIPS 140-3-approved cryptographic hashing algorithms for all stored passwords. | Message out user accounts"
       when:
         - not rhel9stig_disruption_high
         - discovered_non_fips_hashed_accounts.stdout | length > 0
@@ -44,7 +44,7 @@
           - "WARNING!! The following accounts do not have FIPS 140-2 hashing. Please review the accounts and correct to conform to control 010120 of the RHEL9 STIG"
           - "{{ discovered_non_fips_hashed_accounts.stdout_lines }}"
 
-- name: "MEDIUM | RHEL-09-671025 | PATCH |  RHEL 9 pam_unix.so module must be configured in the password-auth file to use a FIPS 140-3 approved cryptographic hashing algorithm for system authentication."
+- name: "MEDIUM | RHEL-09-671025 | PATCH | RHEL 9 pam_unix.so module must be configured in the password-auth file to use a FIPS 140-3 approved cryptographic hashing algorithm for system authentication."
   when: rhel_09_671025
   tags:
     - RHEL-09-671025
@@ -55,24 +55,27 @@
     - V-258233
     - NIST800-53R4_AC-5
     - pam
+  notify: Authselect_apply_changes
   block:
-    - name: "MEDIUM | RHEL-09-671025 | AUDIT |  RHEL 9 pam_unix.so module must be configured in the password-auth file to use a FIPS 140-3 approved cryptographic hashing algorithm for system authentication."
-      ansible.builtin.command: grep "password.*pam_unix.so" /etc/pam.d/password-auth
+    - name: "MEDIUM | RHEL-09-671025 | AUDIT | RHEL 9 pam_unix.so module must be configured in the password-auth file to use a FIPS 140-3 approved cryptographic hashing algorithm for system authentication."
+      ansible.builtin.command: grep "password.*pam_unix.so" {{ rhel9stig_pam_confd_dir }}/password-auth
       changed_when: false
       failed_when: discovered_fips_auth_status.rc not in [ 0, 1 ]
       register: discovered_fips_auth_status
 
-    - name: "MEDIUM | RHEL-09-671025 | PATCH |  RHEL 9 pam_unix.so module must be configured in the password-auth file to use a FIPS 140-3 approved cryptographic hashing algorithm for system authentication."
+    - name: "MEDIUM | RHEL-09-671025 | PATCH | RHEL 9 pam_unix.so module must be configured in the password-auth file to use a FIPS 140-3 approved cryptographic hashing algorithm for system authentication."
       when: discovered_fips_auth_status.stdout | length == 0
       ansible.builtin.lineinfile:
-        path: /etc/pam.d/password-auth
+        path: "{{ rhel9stig_pam_confd_dir }}/password-auth"
         regexp: '^(password\s+)(sufficient)(\s+pam_pwquality.so.*)\ssha512\d(.*)'
         line: '\1required\3 sha512"\4'
         insertafter: '^password'
         backrefs: true
 
-    - name: "MEDIUM | RHEL-09-671025 | PATCH |  RHEL 9 pam_unix.so module must be configured in the password-auth file to use a FIPS 140-3 approved cryptographic hashing algorithm for system authentication."
-      when: discovered_fips_auth_status.stdout | length > 0
+    - name: "MEDIUM | RHEL-09-671025 | PATCH | RHEL 9 pam_unix.so module must be configured in the password-auth file to use a FIPS 140-3 approved cryptographic hashing algorithm for system authentication."
+      when:
+        - discovered_fips_auth_status.stdout | length > 0
+        - not rhel9stig_pam_via_authselect
       community.general.pamd:
         name: password-auth
         type: password
@@ -80,3 +83,11 @@
         module_path: pam_unix.so
         module_arguments: 'sha512'
         state: args_present
+
+    - name: "MEDIUM | RHEL-09-671025 | PATCH | RHEL 9 pam_unix.so module must be configured in the password-auth file to use a FIPS 140-3 approved cryptographic hashing algorithm for system authentication. | Set sha512 in the authselect profile"
+      when: rhel9stig_pam_via_authselect
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_pam_confd_dir }}/password-auth"
+        regexp: '^(password\s+\S+\s+pam_unix\.so)(?!.*\ssha512(?:\s|$))(.*)$'
+        line: '\1 sha512\2'
+        backrefs: true

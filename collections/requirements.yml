@@ -2,13 +2,7 @@
 
 collections:
   - name: community.general
-    source: https://github.com/ansible-collections/community.general
-    type: git
-
-  - name: community.crypto
-    source: https://github.com/ansible-collections/community.crypto
-    type: git
+    version: ">=11.4.0"
 
   - name: ansible.posix
-    source: https://github.com/ansible-collections/ansible.posix
-    type: git
+    version: ">=2.2.2"

@@ -1,6 +1,226 @@
 # RHEL9STIG
 
-## Based on STIG V2R8 April 2026 - Lint Suppression Cleanup
+## Based on STIG V2R9 - 2026 October - Community updates
+
+- **the molecule workflow now gates on idempotence.** It previously ran
+  `create -> converge -> verify -> destroy`, deliberately skipping the idempotence step because
+  converge #2 was a known non-zero-change run. That note named four causes, and all four are fixed
+  in this release: the RHEL-09-411090 pam_faillock line layout, the RHEL-09-252060 package-facts
+  ordering, the harness setting the root password with an unpinned salt, and the audit scan and
+  fetch tasks carrying no exclusion tag. Measured from a cold `destroy` plus `converge`:
+  `ok=238 changed=72 failed=0`, then idempotence `ok=209 changed=0 failed=0`. A second converge
+  changing anything is now a regression rather than an expected outcome
+
+- **the Repo QA workflow now runs on the self-hosted runner.** On `ubuntu-latest` it depended on
+  GitHub-hosted runner minutes, and when those were unavailable the job was never started, so the
+  static QA gate silently stopped gating. It now selects the runner's own Python 3.12 or 3.11 and
+  installs the linters into a job-scoped virtualenv, as the Molecule workflow does, so nothing
+  leaks into the Python the tofu pipelines share
+
+- **the audit binary is now syver v0.13.0, replacing goss v0.5.0.** [syver](https://github.com/krameff/syver)
+  is the signed continuation of the krameff goss fork and reads the same goss audit content
+  unchanged. `audit_bin_url`, `audit_bin_version` and its checksums, and `audit_bin` now point at
+  syver, and the download URL lowercases the architecture to match syver's asset names. Both
+  checksums match the SHA-256 recorded for each binary in the release's SPDX SBOM
+
+- **RHEL-09-252060 never applied on a first run.** It is gated on `postfix` appearing in
+  `ansible_facts.packages`, but the role gathers those facts before prelim and installs postfix
+  later, in RHEL-09-215101. On a freshly provisioned host the gate was false and the control
+  silently skipped, applying only if the role was run a second time. Package facts are now refreshed
+  immediately after the install, and only when it reports changed
+
+- **RHEL-09-411090 and the pam_pwquality controls rewrote each other's formatting forever.** 411090
+  writes the `pam_faillock.so` lines with `lineinfile`, while the RHEL-09-611xxx controls manage the
+  same two files with `community.general.pamd`. The two modules agreed on the content and disagreed
+  only on whitespace: pamd pads the type field to eleven characters and uses a single space before
+  the module, `lineinfile` was writing wider padding. Each run, whichever went last reformatted the
+  other's lines. It looked like it settled, because pamd only rewrites the file when it has a change
+  of its own to make, so the conflict is invisible once everything else is stable - but a converge
+  immediately after a first run always reported these six lines as changed. The `line:` values now
+  use pamd's own layout, so both modules write byte-identical lines
+
+- **RHEL-09-211020 and RHEL-09-255025 fought over the ssh banner keyword every run.** 211020 wrote
+  `Banner` and 255025 wrote `banner` into the same `sshd_config`, and because both regexps are
+  case-insensitive each matched the other's line and rewrote it with its own capitalization, so the
+  file changed on every pass and neither control was ever idempotent
+  (ansible-lockdown/RHEL9-STIG#188). 255025 now writes `Banner`, which is the capitalization the
+  V2R9 fix text gives for this control. The paired audit test anchored on a lowercase `^banner` and
+  is updated alongside
+
+- **65 task names did not match the benchmark title.** The text after `PATCH |` or `AUDIT |` is what
+  an operator sees in playbook output and what a reviewer matches against the STIG, and it had
+  drifted across 27 controls: `FIPS 140-3 compliant` where V2R9 writes `FIPS 140-3-compliant`,
+  `crypto policy` for `cryptographic policy`, `discretionary access control` missing the `(DAC)`
+  the benchmark spells out, `'/etc/audit/'` carrying quote marks the benchmark does not use, and
+  dropped trailing periods. Names now carry the benchmark title with its quotation marks removed,
+  matching the audit content; the severity prefix, the `PATCH`/`AUDIT`/`WARN` verb and the trailing
+  step qualifiers that distinguish tasks within a block are all preserved. No task logic, tag,
+  condition or module argument is touched
+
+- `collections/requirements.yml` now pins version floors instead of cloning each collection from
+  git at whatever its default branch happens to be, matching the convention used across the fleet.
+  `community.crypto` is dropped: the role makes no use of it, as no `community.crypto.*` module
+  appears anywhere in `tasks/`, `handlers/` or `templates/`. The two that remain are used 32 and 37
+  times respectively
+
+- `.pre-commit-config.yaml`: gitleaks `v8.30.0` to `v8.30.1` and ansible-lint `v26.4.0` to
+  `v26.9.0`, bringing every hook to the same revision as RHEL 10
+
+- **two GNOME controls were applied through `gsettings` at run time.** RHEL-09-271095
+  (disable-restart-buttons) and RHEL-09-271105 (Ctrl-Alt-Del, ansible-lockdown/RHEL9-STIG#190,
+  Thank you @karlg100) ran `gsettings set` as a command. The
+  setting did not survive a reboot, the task re-applied an already-correct value every run, and it
+  fails once the key is locked. RHEL-09-271095 also carried a `loop` over the discovered dconf
+  databases while its command never referenced `item`, so it ran the identical command once per
+  database. Both now write into `/etc/dconf/db/<db>.d/` with `community.general.ini_file` and notify
+  the existing `Update_dconf` handler, matching RHEL-09-271010 and the lock tasks beside them. The
+  paired `locks/` entries that prevent a user overriding either setting were already correct and are
+  untouched
+
+- **the molecule idempotence gate could not pass** (ansible-lockdown/RHEL9-STIG#193, Thank you
+  @karlg100). Running the pre- and post-remediation audits
+  executes goss and the fetch step moves the resulting files, so they report changed on every pass,
+  and the benchmark facts template recomputes a timestamp each run. The exclusion tag is applied
+  where the audit stage is imported rather than on the individual commands: tagging only the
+  commands would skip the audit run while leaving its capture task to read an output file that was
+  never produced. `Show Audit Summary` is included because the `audit_results` default interpolates
+  `pre_audit_results`, which only the audit stage sets
+
+- **`rhel9stig_sssd` was referenced but never defined.** `rhel9stig_sssd_config_certmap` builds the
+  certmap stanza from `rhel9stig_sssd.domain` and `rhel9stig_sssd.rulename`, neither of which
+  existed anywhere in the role, so enabling `rhel9stig_sssd_configure` failed RHEL-09-631015 with an
+  undefined variable. The defect was invisible because the toggle defaults to false. The variable is
+  now defined with the benchmark's own example values, `domains` derives from it rather than being
+  hardcoded to a different domain, and a stray double quote that would have been written into
+  `/etc/sssd/sssd.conf` after the rule name is removed along with the quotes around `matchrule`,
+  which the benchmark does not use
+
+- **RHEL-09-231110, RHEL-09-231115 and RHEL-09-231120 were one task that discarded existing mount
+  options.** The three were folded into a single `ansible.posix.mount` whose `opts` were built as
+  `defaults` plus a ternary per control, which replaces the mount's current options rather than
+  adding to them, so anything already set on `/dev/shm` was silently dropped. Being one task also
+  meant disabling any one toggle still re-applied the other two and the task remounted on every run.
+  They are now three tasks, each gated on its own toggle and on the option not already being
+  present, each preserving `item.options` from `ansible_facts['mounts']`. The no-mount case keeps
+  its warning and warning count
+
+- **two display-only debug tasks reported changed on every run.** The reboot-skipped warning in
+  `tasks/main.yml` and the firewalld findings message in RHEL-09-251035
+  (ansible-lockdown/RHEL9-STIG#191, Thank you @karlg100) print configuration and
+  change nothing, so both are now `changed_when: false`. RHEL-09-433016 deliberately keeps
+  `changed_when: true`: it carries `notify: Restart fapolicyd`, and a debug task reports ok, so
+  without it the handler would never fire. A comment records that, since it is the obvious candidate
+  for a future sweep
+
+- **the benchmark version string moves from `v2r9` to `v2.9.0`.** `benchmark_version` in
+  `defaults/main/main.yml` is the single source: `audit_git_version` derives the audit branch from
+  it as `benchmark_{{ benchmark_version }}`, the goss bridge stamps it into every scan report, and
+  the pre- and post-scan filenames embed it. The paired audit content is published on a new
+  `benchmark_v2.9.0` branch; `benchmark_v2r9` is left in place, so a role still on the old string
+  keeps resolving. The benchmark revision is unchanged - this is a version string format change,
+  not a release upgrade
+- **RHEL-09-611050 and RHEL-09-611055 shipped the wrong hashing cost.** `rhel9stig_pam_rounds`
+  defaulted to `5000` where both fixtexts require `rounds=100000`. A site accepting the default got
+  a weaker password hash than the benchmark mandates
+- **PAM settings did not survive authselect** (ansible-lockdown/RHEL9-STIG#184). The pam_unix,
+  pam_pwquality and pam_faillock controls edited `/etc/pam.d` directly, which authselect generates,
+  so the next `authselect select` put back the stock lines. A new `rhel9stig_uses_authselect`
+  (default `false`) makes them write to `/etc/authselect/custom/<rhel9stig_authselect_custom_profile>`
+  and run `authselect apply-changes` instead, with nullok and faillock handled as authselect features.
+  A host on any other profile is copied onto the custom profile, keeping its features, only with
+  `rhel9stig_disruption_high` and outside check mode. authselect refuses that switch on a host whose
+  `/etc/pam.d` was edited directly, such as by an earlier run of this role, unless
+  `rhel9stig_authselect_force_select` is set. `rhel9stig_add_faillock_without_authselect: false` still
+  selects the authselect path. The old prelim also selected a custom profile it never created, and
+  re-selected it on every run
+- **RHEL-09-255045 could not correct an existing `prohibit-password`.** The lineinfile regexp
+  enumerated `(yes|no|true|false)`, so against a host already set to `prohibit-password` nothing
+  matched and the directive was appended rather than replaced, leaving two conflicting entries. The
+  regexp now matches the key and any value, and `\b` keeps it from matching longer key names
+- **the reboot block ran whenever handlers had flushed** (ansible-lockdown/RHEL9-STIG#192, Thank
+  you @karlg100). It carried no block-level condition, only
+  per-task `skip_reboot` guards, so with `skip_reboot: false` the role rebooted on every run whether
+  or not anything required it. It is now gated on `change_requires_reboot`
+- **the auditd reboot signal never fired** (ansible-lockdown/RHEL9-STIG#198, Thank you
+  @karlg100). `Schedule auditd reboot` is a debug handler notifying
+  `Restart_auditd` and `Change_requires_reboot`, and a debug task reports ok rather than changed, so
+  neither notify ran. No other member of the `auditd_checks` group sets `change_requires_reboot`, so
+  nothing else covered it. `changed_when: true` added
+- **the benchmark facts block guarded on a variable that is never set.** `tasks/main.yml` tested
+  `post_audit_summary`, which nothing in the role assigns; the template it renders consumes
+  `post_audit_results`. Both guard clauses collapsed to "run whenever the local audit fact is
+  absent", and the template then failed with `post_audit_results is undefined` on any host where the
+  post-remediation audit had not run. The guard now tests `post_audit_results`, and the template
+  omits the `audit_summary` line rather than failing when it is undefined
+
+- **audit configuration could not be overridden from inventory.** `vars/audit.yml` was loaded with
+  `include_vars`, which sits at precedence 18 and outranks inventory group vars, play vars and host
+  vars, so any value a user set for `audit_git_version` or the other audit settings was silently
+  discarded. `defaults/main.yml` is now the directory `defaults/main/`, the audit settings move to
+  `defaults/main/audit.yml` at defaults precedence, and the `include_vars` task is removed. Settings
+  are now overridable the way the documentation has always implied
+- the Repo QA workflow pin moves from checker release 2.8.1 to 2.8.4. 2.8.1 resolves the role's
+  defaults as the single path `defaults/main.yml` and exits 1 when that file is absent, so the
+  directory split above would fail the workflow before any check ran. 2.8.4 resolves either a
+  `main.yml` file or a `main/` directory
+- the parent company name is Quantum Sky, not Tyto Athene. Renamed in `LICENSE`, `meta/main.yml`
+  and the `company_title` in `vars/main.yml`. Checker release 2.8.4 flags the first two; the third
+  it does not check, and was found by scanning the rest of the repository for the same string.
+  Deliberately not renamed: existing entries in this file, which record what was true when written
+- `molecule/ubi/prepare.yml` used `ignore_errors: true` on the supporting-package install. A partial
+  install is the expected outcome on UBI, which does not carry every package in the list, so the
+  task now uses `failed_when: false`. `ignore_errors` marks the task failed and continues, which is
+  what ansible-lint's `ignore-errors` rule flags; this was the role's only lint finding
+
+- **molecule now runs on the self-hosted runner**, the same one the pipeline workflows already use,
+  rather than a GitHub-hosted one. Those pipelines are AWS and tofu runs that need no container
+  runtime, so the workflow probes for a usable Docker daemon with `docker info` and installs one
+  from the distribution's repositories only when that probe fails. A provisioned runner pays a
+  single extra command. The runner must still permit privileged containers with `cgroupns: host`
+  and a `/sys/fs/cgroup` bind mount, which no workflow step can grant
+- **`actions/setup-python` cannot resolve an interpreter on that runner.** It reads a tool cache or
+  `actions/python-versions`, and a self-hosted Rocky host has neither, so it fails with
+  `The version '3.12' with architecture 'x64' was not found for rocky 10.2` and the suite never
+  reaches molecule. The workflow now selects the interpreter the runner already ships and installs
+  into a job-scoped virtualenv, leaving the shared runner's system Python alone. The destroy step
+  is guarded on molecule being present, so a failure before the virtualenv exists no longer
+  surfaces as a misleading `command not found`
+- **the molecule prepare bootstrap was not idempotent, despite saying it was.** Both scenarios ran
+  `dnf install -y python3 sudo iproute openssh-server openssh-clients` through `raw` on every
+  create. On dnf5 that is not a no-op for an already installed package: when the repositories
+  carry a newer build than the image ships, it tries to resolve an upgrade, reports that it cannot
+  install the best candidate, and exits non-zero, which fails the whole create. The test images
+  track moving tags while repository metadata moves independently, so this surfaces on its own
+  schedule rather than in response to any change here. The bootstrap now asks dnf only for
+  packages `rpm -q` reports absent
+
+- **the pre-remediation audit checks named goss where the role means any audit binary.** The task
+  tests `audit_bin`, which is configurable, but the register, the assert message and two task names
+  all said "goss". `prelim_goss_available` is now `prelim_audit_bin_available` and the wording
+  refers to the audit binary. Deliberately unchanged: the `goss_template` tag, which is published
+  and would break `--tags goss_template` for anyone using it, and `goss.yml`, which is a real
+  filename
+
+## Based on STIG V2R9 - 2026 August - Contributing guide and README refresh
+
+- replaced `CONTRIBUTING.rst` with `CONTRIBUTING.md`, carrying the current Ansible-Lockdown
+  contributing guide. It adds the approved-contributor model for pull requests, keeps issues open to
+  everyone, and retains the DCO 1.1 text and the GPG plus Signed-off-by requirements
+- `README.md`: added a Contributing section pointing at `CONTRIBUTING.md`, and refreshed the
+  Community Contribution section, which still described the previous open pull request workflow and
+  so contradicted the new guide
+- `README.md`: removed the decorative emoji from headings, and switched the social badge from
+  `twitter.com` to `x.com`
+
+## Based on STIG V2R9 July 2026 - Fact Access Via ansible_facts
+
+- `tasks/main.yml` read one fact through the injected top-level name, `ansible_local`, in the `when:` of the task that writes the benchmark facts file. `INJECT_FACTS_AS_VARS` defaulting to `true` is deprecated and the behaviour is removed in ansible-core 2.24, at which point that name becomes undefined. It now reads `ansible_facts['local'][...]`, matching the eleven `ansible_facts[...]` references already in the same file
+- this was the only injected fact left in the role. The other `ansible_*` names here are deliberately untouched because they are not facts and have no `ansible_facts` equivalent: `ansible_version` and `ansible_run_tags` are magic variables, `ansible_connection` and `ansible_user` are connection variables, and `ansible_facts_path` is this role's own default variable despite the name. Converting `ansible_connection` in particular would disable container detection
+- the deprecation warning never appeared in CI for this line, and will not disappear now, because Jinja's `or` short-circuits: molecule runs with `run_audit: true`, so `post_audit_summary` is defined, the left operand is true and the operand holding `ansible_local` is never evaluated. The path that does evaluate it is the default one, since `run_audit` defaults to `false`, so this was only ever going to surface on ordinary consumer runs rather than in the pipeline
+- the failure mode at 2.24 would have been silent rather than loud. With a chainable undefined, which modern ansible-core uses, the nested subscript yields undefined, `is undefined` becomes true and the task starts running on every pass regardless of whether audit details already exist; with a strict undefined it raises instead. Verified both outcomes against Jinja directly
+- behaviour is unchanged today: rendered both the old and new expressions with local facts present and absent, and they agree in both cases
+
+## Based on STIG V2R9 July 2026 - Lint Suppression Cleanup
 
 - removed six dead `# noqa` directives that suppressed nothing. Five named `command-instead-of-module` (RHEL-09-214010 x2, RHEL-09-214030, RHEL-09-231110/231115/231120, RHEL-09-231200) and one named `shell-instead-of-command` (RHEL-09-411025). ansible-lint keys `command-instead-of-module` on the first word of the command, and the earlier shell/command pass prepended `set -o pipefail` to every shell task - so the first word became `set` rather than `mount` or `rpm`, the rule stopped matching, and the suppressions went silently dead. Verified by running ansible-lint with all six removed: still clean, zero `command-instead-of` findings
 - the RHEL-09-411025 directive was never valid: `shell-instead-of-command` is not an ansible-lint rule (the real id is `command-instead-of-shell`), so it suppressed nothing from the day it was added. Even the correctly spelled rule would not fire there, because it exempts tasks that set `executable` and the command contains shell metacharacters
@@ -11,7 +231,7 @@
 - the two `yaml[line-length]` directives were inert because .yamllint disables the line-length rule outright, so there was nothing to suppress
 - nine directives are retained and verified load-bearing: three `name[template]`, five `no-handler`, and the `command-instead-of-module` on `Restart_auditd`. Removing all sixteen produced exactly nine findings; removing only the seven dead ones leaves ansible-lint clean
 
-## Based on STIG V2R8 April 2026 - August Public Issue Fixes
+## Based on STIG V2R9 July 2026 - August Public Issue Fixes
 
 - templates/etc/aide.conf.j2: corrected the AIDE 0.18 version boundary. The input-database and verbosity gates tested `version_compare('0.18', '<=')` while the newer rule-syntax gates use `>=`, so at exactly AIDE 0.18.x the template rendered the legacy `database=` directive and `verbose=5` - both of which 0.18 removed - and `aide --init` failed. Both gates now use `<`, matching the comments already in the file and the `>=` gates further down. This is on the default path: `vars/main.yml` sets `aide_version_prechanges: '0.18'` as the fallback for `discovered_aide_version`, so any host where the aide package fact is unavailable rendered the broken config (addresses ansible-lockdown/RHEL9-STIG#182; thank you @pdlewisiw)
 - tasks/prelim.yml: `PRELIM | Discover auditd rules files` searched the relative path `etc/audit/rules.d` instead of `/etc/audit/rules.d`. `ansible.builtin.find` does not fail on a missing path - it warns and returns an empty list - so RHEL-09-653110's file-mode sub-task looped zero times and the audit config modes were silently never applied (addresses ansible-lockdown/RHEL9-STIG#177; thank you @mbc3)
@@ -20,29 +240,49 @@
 - handlers/main.yml: the auditd check, reload, reboot-schedule and restart handlers are now gated on `not system_is_container`. They previously ran in containers - reading `/etc/audit/audit.rules` and invoking `service auditd restart` - even though the auditd rules themselves are disabled there via vars/is_container.yml
 - RHEL-09-215060: the TFTP secure-mode setting is now written as a systemd drop-in at `/etc/systemd/system/tftp.service.d/tftp.service.conf` (new template) instead of a `lineinfile` edit to the RPM-owned `/usr/lib/systemd/system/tftp.service`. Modifying the vendor unit changes its hash and makes RHEL-09-214030's `rpm -Va` integrity check report a finding - the same conflict RHEL-09-611195/611200 were changed to avoid. Only applies when `rhel9stig_is_tftp_server` is true
 
-## Based on STIG V2R8 April 2026 - Repo QA CI
+## Based on STIG V2R9 July 2026 - Repo QA CI
 
-- added .github/workflows/repo_qa.yml: runs the Ansible-Lockdown QA checker as a pass/fail gate on pull requests to `main` and `devel`, pushes to `devel`, a weekly schedule and on demand. Roughly 90 seconds end to end, no secrets. Complements the Molecule workflow (which gates runtime behaviour) and runs in front of the tofu/EC2 pipelines rather than replacing them
+- added .github/workflows/repo_qa.yml: runs the Ansible-Lockdown QA checker as a pass/fail gate on pull requests to `latest` and `benchmark*`, pushes to `latest`, a weekly schedule and on demand. Roughly 90 seconds end to end, no secrets. Complements the Molecule workflow (which gates runtime behaviour) and runs in front of the tofu/EC2 pipelines rather than replacing them
 - the checker is **checked out at pinned tag 2.8.1**, not pip-installed: several checks load helpers from the tool's scripts/ directory at runtime via importlib and that directory is not packaged (no `__init__.py`, and its pyproject declares no packages/py-modules), so a module-only install would silently degrade the audit_vars, shell_pipefail and rule_coverage checks. Pinning also means a checker release cannot change this repo's CI result on its own
 - the workflow installs `yamllint==1.38.0` and `ansible-lint==26.4.0`, matching the versions pinned in .pre-commit-config.yaml so CI and the local hook agree. Both are optional dependencies of the checker guarded by `shutil.which`, so omitting them would leave those two checks reporting SKIP and quietly remove 2 of the checks capable of emitting FAIL
 - the run uses `--no-report` (nothing is written into the repo; results go to the build log via `--console`) and `--skip spelling,grammar` (the two prose checks are excluded from the gate)
 - the run uses `--strict`, which is load-bearing rather than cosmetic: most findings in this role are WARN severity, and a verified regression test showed an unquoted file mode exits 0 without `--strict` and 1 with it. Without the flag the gate would pass silently on that class of defect
-- added .qa_baseline.json capturing the 8 pre-existing `Audit Variable Placement` findings (the 7 role-internal audit constants in defaults/main.yml plus the absent `audit_bin_validate_certs`; these are the V2R9 audit-variable alignment, which was never back-ported to V2R8). The baseline is keyed per finding on (file, description) with no line number, so unrelated line churn does not invalidate it, and a NEW finding in an already-baselined check still fails the build - verified by dropping one entry and confirming that finding alone resurfaced. Regenerate the baseline only deliberately, never to silence a fresh finding
+- **no .qa_baseline.json on this branch, and that is the single intended difference from the V2R8 copy of this workflow.** V2R8 needs a baseline to absorb 8 pre-existing `Audit Variable Placement` findings; this branch already carries the audit-variable alignment that resolves them, so it runs clean with nothing suppressed (13 PASS, 2 SKIP, 0 WARN). An empty baseline file was deliberately not committed - it would suppress nothing while inviting "just regenerate the baseline" as a way to silence real findings. If this branch ever accrues debt worth deferring, add the `--baseline` flag and a freshly generated file together; never copy the V2R8 baseline, which records findings that do not exist here
 
-## Based on STIG V2R8 April 2026 - Molecule CI
+## Based on STIG V2R9 July 2026 - Molecule CI
 
-- added .github/workflows/molecule.yml: runs the `default` and `ubi` molecule scenarios on GitHub-hosted `ubuntu-latest` runners in a `fail-fast: false` matrix, on pull requests to `main` and `devel`, pushes to `devel`, a weekly schedule and on demand. A fast, secret-free gate in front of the existing tofu/EC2 pipelines, not a replacement for them. The workflow file is byte-identical to the one on the V2R9 branch
-- the workflow runs `create` -> `converge` -> `verify` -> `destroy` rather than `molecule test`, deliberately omitting the `idempotence` step: converge run 2 for this role is a known non-zero-change run (the `rhel9stig_disruption_high`-gated RHEL-09-411090 pam_faillock/authselect settle, RHEL-09-252060 /etc/aliases, and the harness tasks that always report changed), so gating on it would fail for reasons that are not regressions. The goss audit JSONs upload as a `molecule-audit-<scenario>` artifact for inspection but do not gate the build, since post-scan failures are expected in a container. The gate is converge finishing `failed=0`, read alongside the goss deltas
+- added .github/workflows/molecule.yml: runs the `default` and `ubi` molecule scenarios on GitHub-hosted `ubuntu-latest` runners in a `fail-fast: false` matrix, on pull requests to `latest` and `benchmark*`, pushes to `latest`, a weekly schedule and on demand. A fast, secret-free gate in front of the existing tofu/EC2 pipelines, not a replacement for them
+- the workflow runs `create` -> `converge` -> `verify` -> `destroy` rather than `molecule test`, deliberately omitting the `idempotence` step: converge #2 for this role is a known non-zero-change run (the `rhel9stig_disruption_high`-gated RHEL-09-411090 pam_faillock/authselect settle, RHEL-09-252060 /etc/aliases, and the harness tasks that always report changed), so gating on it would fail for reasons that are not regressions. The goss audit JSONs upload as a `molecule-audit-<scenario>` artifact for inspection but do not gate the build, since post-scan failures are expected in a container. The gate is converge finishing `failed=0` across all 445 rules, read alongside the goss deltas; verify.yml is a narrow regression check on top, and in a container all but one of its assertions skip by design (documented in molecule/README_Molecule_QuickStart.md)
 - the container platform in molecule/default/molecule.yml and molecule/ubi/molecule.yml now reads from `${MOLECULE_DOCKER_PLATFORM:-linux/arm64}` instead of a hardcoded `linux/arm64`. Unset it resolves to the previous value, so local Apple Silicon runs are unchanged; CI exports `linux/amd64` for the amd64 runners. Both images are multi-arch. Note that `pre_build_image: true` means a cached image of the wrong architecture fails container creation rather than re-pulling, so forcing a non-native arch locally needs a `docker rmi` first
 - the workflow installs `community.docker` and `ansible.posix` explicitly: the molecule docker driver requires both, `ansible-core` bundles no collections, and collections/requirements.yml does not carry `community.docker`. Python is pinned to 3.12 because the converge plays call `password_hash('sha512')`, which falls back to the stdlib `crypt` module removed in 3.13, and `passlib` is installed as it is declared nowhere in this repo
-- added molecule/default/verify.yml and molecule/ubi/verify.yml (the ansible verifier was previously a no-op on this branch - it logged `Executed: Missing playbook` and exited 0, so both scenarios reported green having asserted nothing). ubi/verify.yml imports the default file so the assertions have a single source of truth, and the default file stats /etc/audit/rules.d/audit.rules before slurping so it tolerates UBI, where the `audit` and `aide` packages are subscription-gated and the file is never created
-- **the V2R8 verify.yml is deliberately the inverse of the V2R9 branch's on three controls and must not be copied across branches wholesale**: RHEL-09-654215..654255 and RHEL-09-654097 assert the watch-style rules (`-w <path> -p wa -k <key>`) are PRESENT, where V2R9 asserts they are gone in favour of the syscall form; RHEL-09-211045 asserts the drop-in is at the suffixless /etc/systemd/system.conf.d/55-CtrlAltDel-BurstAction path, where V2R9 asserts the `.conf` suffix; RHEL-09-653110 asserts audit config modes no more permissive than 0640, where V2R9 tightened this to 0600. The paired "must not exist" assertions double as a guard - a V2R9 change back-ported here without its benchmark bump turns verify red and names itself
-- molecule/README_Molecule_QuickStart.md documents the architecture override, the CI sequence and why idempotence is not gated, what verify.yml does and does not cover in a container, and the V2R8-vs-V2R9 assertion inversions
+- added molecule/ubi/verify.yml, which imports molecule/default/verify.yml so the assertions have a single source of truth. Without it `molecule verify -s ubi` was a silent no-op - the ansible verifier logged `Executed: Missing playbook` and exited 0, so the scenario reported green having asserted nothing
+- molecule/default/verify.yml now tolerates an absent /etc/audit/rules.d/audit.rules: it stats the file before slurping and defaults the content to an empty string, so the marker-gated audit assertions skip cleanly on UBI (where the `audit` and `aide` packages are subscription-gated and the file is never created) instead of the ungated slurp failing the play outright on that target. Note that RHEL-09-211045's positive check and RHEL-09-255120 also skip in any container - the drop-in and the SSH host keys do not exist there - so exactly one assertion fires under molecule; see molecule/README_Molecule_QuickStart.md
+- molecule/README_Molecule_QuickStart.md documents the architecture override, the CI sequence and why idempotence is not gated, and corrects the gotcha table entry that described an empty `verify` step as expected - it is a missing-playbook defect, not a pass
+
+## Based on STIG V2R9 July 2026 - Benchmark V2R9 Upgrade
+
+- V2R9 benchmark bump (446 -> 445 rules; 1 rule removed, 0 added, 21 content changes, 5 metadata-only revision bumps), derived by diffing the V2R8 vs V2R9 XCCDF and cross-checked against the DISA V2R9 revision history
+- RHEL-09-252035 (V-257948): added systemd-resolved support (addresses ansible-lockdown/RHEL9-STIG-Audit#31). When `rhel9stig_dns_processing_mode` is `systemd-resolved` the role now writes the configured nameservers to the `DNS=` key of `/etc/systemd/resolved.conf` (`[Resolve]` section, via ini_file) and notifies a new `Restart_systemd-resolved` handler - under systemd-resolved `/etc/resolv.conf` holds only the 127.0.0.53 stub, so the servers must be set in resolved.conf. Also exposed `rhel9stig_dns_processing_mode` through the goss bridge template (templates/lockdown_audit.yml.j2) so the paired audit selects the correct file to check
+- benchmark_version bumped v2r8 -> v2r9 in defaults/main.yml
+- README banner updated V2R8 -> V2R9 with the new DISA download URL (01 July 2026)
+- RHEL-09-255130 (V-258002, SSH daemon compression) removed per V2R9 - dropped the task in tasks/Cat2/RHEL-09-255xxx.yml, the rhel_09_255130 toggle and the orphan rhel9stig_sshd_config_compress var in defaults/main.yml, and both entries in templates/ansible_vars_goss.yml.j2 (the shared Restart_sshd handler is retained for the surviving SSH controls)
+- RHEL-09-653110 (V-258171): audit config file mode tightened 0640 -> 0600 (symbolic `u-x,g-wx,o-rwx` -> `u-x,g-rwx,o-rwx`) on /etc/audit/audit.rules, /etc/audit/auditd.conf and the discovered rules files
+- RHEL-09-211045 (V-257784): the Ctrl-Alt-Del burst drop-in must now end in `.conf` - renamed templates/etc/systemd/system.conf.d/55-CtrlAltDel-BurstAction.j2 to `...BurstAction.conf.j2` and updated the template dest and lineinfile path to `/etc/systemd/system.conf.d/55-CtrlAltDel-BurstAction.conf`
+- Audit rule syntax modernized in templates/etc/audit/rules.d/audit.rules.j2 per V2R9 (watch -> syscall form): RHEL-09-654215/654220/654225/654230/654235/654240/654245 (identity) and RHEL-09-654250/654255 (logins) now emit b32+b64 `-a always,exit -F path=<path> -F perm=wa ... -k <key>` pairs; 654250/654255 also carry `-F auid>=1000 -F auid!=unset`; RHEL-09-654097 (V-279936) replaced its two cron watches with the four crond_t `execve` syscall rules. The opasswd rule keeps `/etc/security/opasswd` - the V2R9 fixtext path `/etc/opasswd` is a DISA typo and the V2R9 check-content agrees with `/etc/security/opasswd`
+- RHEL-09-255120 (V-258000) title corrected to "mode 0600 or less permissive" (the task already applied 0600; V2R9 reworded the title from 0640)
+- RHEL-09-611180 (V-258125) title updated "pcscd service" -> "pcscd socket" to match the V2R9 title change (the task already enables pcscd.socket)
+- Title reconciliation to V2R9 XCCDF: RHEL-09-214020 corrected from a copy of the 214025 title to "must check the GPG signature of locally installed software packages before installation" (the task configures localpkg_gpgcheck); RHEL-09-255065 "SSH client connections" -> "SSH server connections"; RHEL-09-255075 dropped "DOD-approved" and "client" -> "server" connections; RHEL-09-671020 "FIPS 140-2/140-3" -> "FIPS 140-3"; RHEL-09-653040 restored the dropped word "reaches"
+- 25 SV-* rule-revision tags updated to their V2R9 revisions (RHEL-09-211045, 213010/213015/213025/213070/213075/213080, 215015, 232040, 255120, 411070, 611010, 611180, 653110, 654097, 654215-654255, 671015)
+- restored the dropped RHEL-09-231110 identifiers `SV-257863r1155633_rule` + `V-257863` on the consolidated /dev/shm nodev/nosuid/noexec task (tasks/Cat2/RHEL-09-231xxx.yml); the block had duplicated 231120's `SV-257865`/`V-257865` and dropped 231110's own pair
+- fixed 3 pre-existing task-tag trifecta typos where the SV- number and V-number disagreed within one control (SV was correct, V was off by one), corrected against the V2R9 XCCDF: RHEL-09-271090 `V-258029` -> `V-258028`, RHEL-09-433015 `V-258089` -> `V-258090`, RHEL-09-232104 `V-270175` -> `V-270176`
+- zero-padded 34 malformed short CCI tags to their canonical six-digit form across tasks/Cat1/RHEL-09-4xxxxx.yml, tasks/Cat1/RHEL-09-6xxxxx.yml, tasks/Cat2/RHEL-09-271xxx.yml and tasks/Cat2/RHEL-09-433xxx.yml (e.g. `CCI-00366` -> `CCI-000366`); every padded value was verified present in the owning rule's V2R9 CCI set
+- added molecule/default/verify.yml (the ansible verifier was previously a no-op): container-aware assertions that check the V2R9 syscall audit rules and the 0600 audit-config modes on a managed host, verify the 211045 drop-in uses the `.conf` suffix (and the old suffixless path is gone), and confirm SSH private host keys are 0600 or less permissive; audit-rule assertions skip cleanly where auditd is unmanaged (containers) instead of false-failing
+- removed the hardcoded `audit_git_version` from both molecule scenarios (default, and the ubi scenario that had drifted to the stale benchmark_v2r7) in each scenario's molecule.yml host_vars and converge.yml. The value was inert there anyway: `vars/audit.yml` loads it via `include_vars` (precedence 18, which outranks molecule play/host vars) and already derives it as `benchmark_{{ benchmark_version }}`. Molecule now tracks the audit branch from the single `benchmark_version` source in defaults/main.yml with no drift; pin a QA branch at run time with `--extra-vars 'audit_git_version=<branch>'`. Verified: a converge with no pin resolves to and clones benchmark_v2r9
+- removed 6 phantom container-skip entries from vars/is_container.yml (rhel_09_232265, 251025, 652035, 654260, 672035, 672040) that map to no rule in the role or in any RHEL 9 STIG XCCDF (V2R7/V2R8/V2R9); they were inert (no matching toggle to override) and pre-dated this cycle
+- aligned the audit-variable layout to the RHEL10-STIG convention: moved 7 role-internal audit constants (audit_max_concurrent, get_audit_binary_method, audit_bin_copy_location, audit_content, audit_conf_source, audit_conf_dest, audit_log_dir) from defaults/main.yml to vars/audit.yml (they are not intended as user overrides); added audit_bin_validate_certs (default true) to vars/audit.yml and wired it into the audit-binary get_url task; renamed the goss bridge template templates/ansible_vars_goss.yml.j2 to templates/lockdown_audit.yml.j2 and updated its src reference. The user-facing audit toggles (run_audit, audit_only, audit_run_heavy_tests, fetch_audit_output, audit_output_collection_method, audit_output_destination) remain in defaults/main.yml
 
 ## Based on STIG V2R8 April 2026 - Benchmark V2R8 Upgrade
 
-- RHEL-09-252035 (V-257948): added systemd-resolved support (addresses ansible-lockdown/RHEL9-STIG-Audit#31). When `rhel9stig_dns_processing_mode` is `systemd-resolved` the role now writes the configured nameservers to the `DNS=` key of `/etc/systemd/resolved.conf` (`[Resolve]` section, via ini_file) and notifies a new `Restart_systemd-resolved` handler - under systemd-resolved `/etc/resolv.conf` holds only the 127.0.0.53 stub, so the servers must be set in resolved.conf. Also exposed `rhel9stig_dns_processing_mode` through the goss bridge template so the paired audit selects the correct file to check
-- renamed the goss bridge template `templates/ansible_vars_goss.yml.j2` -> `templates/lockdown_audit.yml.j2` to match the V2R9 New Alignment Strategy naming, and updated the `src:` reference in tasks/pre_remediation_audit.yml (rendered dest and `audit_vars_path` unchanged)
 - V2R8 benchmark bump (446 -> 446 rules; updates-only, no add/remove)
 - 8 rules severity-bumped medium -> high: RHEL-09-215100, 215105, 255064, 255065, 255070, 255075, 671020, 672050 (moved Cat2 -> Cat1 across grouped task files; tags updated to CAT1)
 - 27 SV-* tag revisions updated to V2R8 IDs (context-aware replacement anchored on RHEL-09-NNNNNN)
@@ -51,7 +291,6 @@
 - README banner updated V2R7 -> V2R8 with new DISA download URL
 - tasks/Cat2/RHEL-09-672xxx.yml removed (only rule 672050 lived there; emptied by sev-bump move) and corresponding import removed from tasks/Cat2/main.yml
 - molecule audit_git_version pinned to benchmark_v2r8 in default scenario
-- molecule hygiene (post-release fix): removed the inert `audit_git_version` pins from both scenarios - the ubi scenario had drifted to `benchmark_v2r7` while default was `benchmark_v2r8`, but neither actually took effect because `vars/audit.yml` loads `audit_git_version` via `include_vars` (precedence 18, which outranks molecule host/play vars) and derives it as `benchmark_{{ benchmark_version }}`. Both scenarios now track the single `benchmark_version` source; QuickStart README updated to match; override a QA branch at run time with `--extra-vars 'audit_git_version=<branch>'`
 - fixed templates/ansible_vars_goss.yml.j2 duplicate top-level rhel9stig_dns_servers key: IPv4 and IPv6 blocks merged into a single emit (dual-stack render previously produced invalid YAML)
 - removed orphan `listen: Restart_sysctl` alias on Reload_sysctl handler (dead code - all 17 notify refs target the handler name directly)
 - RHEL-09-611180: enable `pcscd.socket` instead of the `pcscd` service, per the V2R8 XCCDF fixtext (`systemctl enable --now pcscd.socket`); added the missing CCI-004046 tag. Aligns with the RHEL9-STIG-Audit socket check. Task title left as the DISA-verbatim "pcscd service".
@@ -69,8 +308,6 @@
 - fixed README Technical Dependencies section: Python3.8 -> Python 3.9+, Ansible 2.12+ -> Ansible 2.16+, python-def typo -> python3-dnf, libselinux-python -> python3-libselinux (matches meta/main.yml min_ansible_version 2.16.1 and current RHEL 9 default Python)
 - fixed templates/etc/aide.conf.j2 for aide >= 0.18 compatibility (addresses public issue #161): renamed `database=` to `database_in=` (input directive renamed in aide 0.18); removed `verbose=5` directive (replaced by log_level/report_level in aide 0.18). `file:` URL prefix retained on database_in / database_out / report_url (plain paths are rejected by aide >= 0.18). RHEL-09-651020 / RHEL-09-651025 templates affected; previously caused `aide --init` rc=17 with "unexpected character: ':'" on RHEL 9.8 / aide-0.19.2 hosts.
 - made templates/etc/aide.conf.j2 version-gated to support both AIDE < 0.18 (legacy `database=`, `verbose=5`) and AIDE >= 0.18 (`database_in=`, no verbose). Adds a post-install `package_facts` re-gather + `discovered_aide_version` set_fact in the RHEL-09-651010 block (`tasks/Cat2/RHEL-09-651xxx.yml`); `vars/main.yml` gets a safe `discovered_aide_version: '0.18'` default so the template renders correctly even when 651010 is disabled. `file:` URL prefix retained in both branches. Restores RHEL 9.0-9.3 (aide 0.16.x) host coverage while keeping the aide-0.18+ fix from the previous entry.
-- Thank you @hectoralicea for submitting issue ansible-lockdown/RHEL9-STIG#161
-- Thank you @uk-bolly for the review
 
 - templates/etc/aide.conf.j2 also drops the upcoming `+S` deprecation warning by emitting `+growing` for AIDE >= 0.18 in the ALL and FIPSR rule definitions; renamed the `CONTENT_EX` rule alias to `EXTCONTENT` throughout the template (no functional change; both identifiers are valid AIDE variable names).
 
@@ -80,7 +317,7 @@
 - renamed 2 further AUDIT-named sub-tasks that modified state to PATCH (read-only contract): RHEL-09-232260 "/ scan" -> "/ relabel" (`restorecon -v`, changed_when:true) and RHEL-09-611160 "get state" -> "set driver" (`opensc-tool --set-conf-entry`, changed_when:true). Both invoked state-mutating commands under an `| AUDIT |` name, so `--tags AUDIT` / `--check` runs silently relabeled SELinux contexts or rewrote the opensc card-driver config. The read-only first sub-task of each control (find scan / get-conf-entry, changed_when:false) remains AUDIT.
 - QA hygiene sweep (pre-existing defects surfaced by full QA, not from the V2R7 carry-forward): fixed RHEL-09-271100 toggle typo `mrhel_09_271100` -> `rhel_09_271100` (the control was unmanageable and referenced an undefined var in `when:`); fixed RHEL-09-231030 WARN sub-task name mislabeled as RHEL-09-231025 (tasks/Cat3/RHEL-09-2xxxxx.yml); restored RHEL-09-411060 identifiers `SV-258051r991589_rule` + `V-258051` on the consolidated 411060/411065 task (the V2R8 bump had wrongly duplicated 411065's `SV-258052`/`V-258052` in their place, dropping 411060's own SV/V tags); removed unused `Remount_var_log` handler (no /var/log mount-option control notifies it); fixed `templates/etc/resolv.conf.j2` optional-DNS path (loop var `{{ domains }}`, interpolated `options {{ rhel9stig_resolv_dns_options }}`); README typo fixes (compliant, has, controls/needs); aligned molecule QuickStart README to public-safe RHEL9-STIG naming.
 
-- updated the audit binary source in `vars/audit.yml` to the krameff goss fork and bumped the downloaded goss release `v0.4.8` -> `v0.5.0` (with the krameff v0.5.0 sha256 checksums), matching the paired RHEL9-STIG-Audit and the sibling Lockdown roles (RHEL9-CIS, RHEL10-STIG); the previous `goss-org/goss` v0.4.8 download no longer matched the audit content
+- updated the audit binary source in `vars/audit.yml` to the krameff goss fork and bumped the downloaded goss release `v0.4.8` -> `v0.5.0` (with the krameff v0.5.0 sha256 checksums), matching the paired RHEL9-STIG-Audit and the sibling Lockdown roles (Private-RHEL9-CIS, Private-RHEL10-STIG); the previous `goss-org/goss` v0.4.8 download no longer matched the audit content
 - Corrected the goss binary link in `README.md` and `molecule/README_Molecule_QuickStart.md` from `goss-org/goss` to the krameff fork (`krameff/goss`), matching the migrated audit binary source (the prose links were missed when the goss source moved to krameff)
 
 Public community issue fixes (July 2026):

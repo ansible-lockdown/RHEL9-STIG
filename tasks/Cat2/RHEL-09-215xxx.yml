@@ -279,3 +279,25 @@
   ansible.builtin.package:
     name: postfix
     state: present
+  register: discovered_postfix_install
+
+# RHEL-09-252060 is gated on postfix appearing in ansible_facts.packages, which are
+# gathered once before prelim and so predate the install above. Without this refresh
+# that control skips on a first run and only applies if the role is run again.
+- name: "MEDIUM | RHEL-09-215101 | PATCH | RHEL 9 must have the Postfix package installed. | Refresh package facts"
+  when:
+    - rhel_09_215101
+    - discovered_postfix_install is changed
+  tags:
+    - RHEL-09-215101
+    - CAT2
+    - CCI-000015
+    - SRG-OS-000304-GPOS-00121
+    - SRG-OS-000343-GPOS-00134
+    - SRG-OS-000363-GPOS-00150
+    - SRG-OS-000447-GPOS-00201
+    - SV-272488r1155665_rule
+    - V-272488
+    - NIST800-53R4_AC-2
+    - postfix
+  ansible.builtin.package_facts:

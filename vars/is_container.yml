@@ -72,13 +72,11 @@ rhel_09_232230: false
 rhel_09_232235: false
 rhel_09_232250: false
 rhel_09_232255: false
-rhel_09_232265: false
 
 # 251xxx - firewalld (managed by host OS / CNI)
 rhel_09_251010: false
 rhel_09_251015: false
 rhel_09_251020: false
-rhel_09_251025: false
 rhel_09_251030: false
 rhel_09_251035: false
 rhel_09_251040: false
@@ -167,7 +165,6 @@ rhel_09_652015: false
 rhel_09_652020: false
 rhel_09_652025: false
 rhel_09_652030: false
-rhel_09_652035: false
 rhel_09_652040: false
 rhel_09_652045: false
 rhel_09_652050: false
@@ -250,7 +247,6 @@ rhel_09_654240: false
 rhel_09_654245: false
 rhel_09_654250: false
 rhel_09_654255: false
-rhel_09_654260: false
 rhel_09_654265: false
 rhel_09_654270: false
 rhel_09_654275: false
@@ -263,6 +259,4 @@ rhel_09_671025: false
 
 # 672xxx - crypto (not required in base container image builds)
 rhel_09_672020: false
-rhel_09_672035: false
-rhel_09_672040: false
 rhel_09_672050: false
