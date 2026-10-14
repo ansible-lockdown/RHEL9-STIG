@@ -48,8 +48,8 @@
   tags:
     - RHEL-09-431010
     - CAT1
-    - CCI-01084
-    - CCI-02696
+    - CCI-001084
+    - CCI-002696
     - SRG-OS-000445-GPOS-00199
     - SRG-OS-000134-GPOS-00068
     - SV-258078r958944_rule

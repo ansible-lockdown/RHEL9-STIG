@@ -4,9 +4,24 @@
   hosts: all
   gather_facts: false
   tasks:
-    - name: Bootstrap python, sudo, iproute, openssh via raw (idempotent - skips if already installed)
+    - name: Bootstrap python, sudo, iproute, openssh via raw (installs only what is missing)
+      # Asks dnf only for packages that are genuinely absent. `dnf install <pkg>` on an already
+      # installed package is not a no-op on dnf5: when the repositories carry a newer build than
+      # the image ships, it tries to resolve an upgrade, finds it cannot install the best
+      # candidate, and exits non-zero. Both test images track moving tags while the repository
+      # metadata moves independently, so that drift is routine rather than exceptional.
       ansible.builtin.raw: |
-        dnf install -y python3 sudo iproute openssh-server openssh-clients procps-ng
+        set -e
+        missing=
+        for pkg in python3 sudo iproute openssh-server openssh-clients procps-ng; do
+          rpm -q "$pkg" >/dev/null 2>&1 || missing="$missing $pkg"
+        done
+        if [ -n "$missing" ]; then
+          echo "bootstrapping:$missing"
+          dnf install -y $missing
+        else
+          echo "bootstrap: all present"
+        fi
       changed_when: false
 
     - name: Gather facts now that python is present
@@ -35,7 +50,11 @@
           - tmux
           - git
         state: present
-      ignore_errors: true  # UBI repos may not include every package - capture which are missing rather than abort
+      # UBI repos do not carry every package in this list, so a partial install is the
+      # expected outcome here, not an error to swallow. failed_when: false states that
+      # directly; ignore_errors: true would mark the task failed and then continue,
+      # which is what ansible-lint's ignore-errors rule flags.
+      failed_when: false
 
     - name: Create directories that minimal images lack (UBI also stubs audit/aide dirs since those packages are subscription-gated)
       ansible.builtin.file:

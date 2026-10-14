@@ -47,19 +47,19 @@
     remote_src: "{{ (audit_conf_source is contains('http')) | ternary(true, false) }}"
     extra_opts: "{{ (audit_conf_source is contains('github')) | ternary('--strip-components=1', []) }}"
 
-- name: Pre Audit Setup | Check Goss is available
+- name: Pre Audit Setup | Check the audit binary is available
   when: run_audit
   block:
-    - name: Pre Audit Setup | Check for goss file
+    - name: Pre Audit Setup | Check for the audit binary
       ansible.builtin.stat:
         path: "{{ audit_bin }}"
-      register: prelim_goss_available
+      register: prelim_audit_bin_available
 
-    - name: Pre Audit Setup | If audit ensure goss is available
-      when: not prelim_goss_available.stat.exists
+    - name: Pre Audit Setup | If audit selected ensure the audit binary is available
+      when: not prelim_audit_bin_available.stat.exists
       ansible.builtin.assert:
-        that: prelim_goss_available['stat']['exists'] == true
-        msg: "Audit has been selected: unable to find goss binary at {{ audit_bin }}"
+        that: prelim_audit_bin_available['stat']['exists'] == true
+        msg: "Audit has been selected: unable to find the audit binary at {{ audit_bin }}"
 
 - name: Pre Audit Setup | Copy ansible default vars values to test audit
   when: run_audit

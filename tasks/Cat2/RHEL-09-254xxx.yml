@@ -110,7 +110,7 @@
     group: root
   notify: Reload_sysctl
 
-- name: "MEDIUM | RHEL-09-254040 | PATCH | RHEL 9 must not forward IPv6 source-routed packets by default"
+- name: "MEDIUM | RHEL-09-254040 | PATCH | RHEL 9 must not forward IPv6 source-routed packets by default."
   when: rhel_09_254040
   tags:
     - RHEL-09-254040

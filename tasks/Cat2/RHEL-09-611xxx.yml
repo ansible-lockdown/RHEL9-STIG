@@ -9,18 +9,19 @@
     - CAT2
     - CCI-000192
     - SRG-OS-000069-GPOS-00037
-    - SV-258091r1045185_rule
+    - SV-258091r1208774_rule
     - V-258091
     - NIST800-53R4_IA-5
+  notify: Authselect_apply_changes
   block:
     - name: "MEDIUM | RHEL-09-611010 | PATCH | RHEL 9 must ensure the password complexity module in the system-auth file is configured for three retries or less. | Check system-auth"
-      ansible.builtin.command: grep "password.*pam_pwquality.so" /etc/pam.d/system-auth
+      ansible.builtin.command: grep "password.*pam_pwquality.so" {{ rhel9stig_pam_confd_dir }}/system-auth
       changed_when: false
       failed_when: discovered_pwquality_system_auth_status.rc not in [ 0, 1 ]
       register: discovered_pwquality_system_auth_status
 
     - name: "MEDIUM | RHEL-09-611010 | PATCH | RHEL 9 must ensure the password complexity module in the system-auth file is configured for three retries or less. | Check password-auth"
-      ansible.builtin.command: grep "password.*pam_pwquality.so" /etc/pam.d/password-auth
+      ansible.builtin.command: grep "password.*pam_pwquality.so" {{ rhel9stig_pam_confd_dir }}/password-auth
       changed_when: false
       failed_when: discovered_pwquality_password_auth_status.rc not in [ 0, 1 ]
       register: discovered_pwquality_password_auth_status
@@ -28,7 +29,7 @@
     - name: "MEDIUM | RHEL-09-611010 | PATCH | RHEL 9 must ensure the password complexity module in the system-auth file is configured for three retries or less. | Set if no pw required system-auth"
       when: discovered_pwquality_system_auth_status.stdout | length == 0
       ansible.builtin.lineinfile:
-        path: /etc/pam.d/system-auth
+        path: "{{ rhel9stig_pam_confd_dir }}/system-auth"
         regexp: '^(password\s+)(required|requisite)(\s+pam_pwquality.so.*)\sretry=\d(.*)'
         line: '"\1required\3 retry={{ rhel9stig_pam_retry }}\4"'
         insertafter: '^password'
@@ -37,14 +38,16 @@
     - name: "MEDIUM | RHEL-09-611010 | PATCH | RHEL 9 must ensure the password complexity module in the system-auth file is configured for three retries or less. | Set if no pw required password-auth"
       when: discovered_pwquality_password_auth_status.stdout | length == 0
       ansible.builtin.lineinfile:
-        path: /etc/pam.d/password-auth
+        path: "{{ rhel9stig_pam_confd_dir }}/password-auth"
         regexp: '^(password\s+)(required|requisite)(\s+pam_pwquality.so.*)\sretry=\d(.*)'
         line: '"\1required\3 retry={{ rhel9stig_pam_retry }}\4"'
         insertafter: '^password'
         backrefs: true
 
     - name: "MEDIUM | RHEL-09-611010 | PATCH | RHEL 9 must ensure the password complexity module in the system-auth file is configured for three retries or less. | Replace if already exists system-auth"
-      when: discovered_pwquality_system_auth_status.stdout | length > 0
+      when:
+        - discovered_pwquality_system_auth_status.stdout | length > 0
+        - not rhel9stig_pam_via_authselect
       community.general.pamd:
         name: system-auth
         type: password
@@ -54,7 +57,9 @@
         state: args_present
 
     - name: "MEDIUM | RHEL-09-611010 | PATCH | RHEL 9 must ensure the password complexity module in the system-auth file is configured for three retries or less. | Replace if already exists password-auth"
-      when: discovered_pwquality_password_auth_status.stdout | length > 0
+      when:
+        - discovered_pwquality_password_auth_status.stdout | length > 0
+        - not rhel9stig_pam_via_authselect
       community.general.pamd:
         name: password-auth
         type: password
@@ -62,6 +67,19 @@
         module_path: pam_pwquality.so
         module_arguments: 'retry={{ rhel9stig_pam_retry }}'
         state: args_present
+
+    - name: "MEDIUM | RHEL-09-611010 | PATCH | RHEL 9 must ensure the password complexity module in the system-auth file is configured for three retries or less. | Set retry in the authselect profile"
+      when: rhel9stig_pam_via_authselect
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_pam_confd_dir }}/{{ item.file }}"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        backrefs: true
+      loop:
+        - { file: system-auth, regexp: '^(password\s+\S+\s+pam_pwquality\.so.*\s)retry=(?!{{ rhel9stig_pam_retry }}(?:\s|$))\d+(.*)$', line: '\1retry={{ rhel9stig_pam_retry }}\2' }
+        - { file: system-auth, regexp: '^(password\s+\S+\s+pam_pwquality\.so)(?!.*\sretry=)(.*)$', line: '\1 retry={{ rhel9stig_pam_retry }}\2' }
+        - { file: password-auth, regexp: '^(password\s+\S+\s+pam_pwquality\.so.*\s)retry=(?!{{ rhel9stig_pam_retry }}(?:\s|$))\d+(.*)$', line: '\1retry={{ rhel9stig_pam_retry }}\2' }
+        - { file: password-auth, regexp: '^(password\s+\S+\s+pam_pwquality\.so)(?!.*\sretry=)(.*)$', line: '\1 retry={{ rhel9stig_pam_retry }}\2' }
 
 - name: "MEDIUM | RHEL-09-611030 | PATCH | RHEL 9 must configure the use of the pam_faillock.so module in the /etc/pam.d/system-auth file."
   when:
@@ -80,6 +98,7 @@
     - Authselect_enable_faillock
   block:
     - name: "MEDIUM | RHEL-09-611030 | PATCH | RHEL 9 must configure the use of the pam_faillock.so module in the /etc/pam.d/system-auth file. | Set preauth"
+      when: not rhel9stig_pam_via_authselect
       community.general.pamd:
         name: system-auth
         type: auth
@@ -92,6 +111,7 @@
         module_arguments: 'preauth'
 
     - name: "MEDIUM | RHEL-09-611030 | PATCH | RHEL 9 must configure the use of the pam_faillock.so module in the /etc/pam.d/system-auth file. | Set authfail"
+      when: not rhel9stig_pam_via_authselect
       community.general.pamd:
         name: system-auth
         type: auth
@@ -104,6 +124,7 @@
         module_arguments: 'authfail'
 
     - name: "MEDIUM | RHEL-09-611030 | PATCH | RHEL 9 must configure the use of the pam_faillock.so module in the /etc/pam.d/system-auth file. | Set account faillock"
+      when: not rhel9stig_pam_via_authselect
       community.general.pamd:
         name: system-auth
         type: account
@@ -131,6 +152,7 @@
     - Authselect_enable_faillock
   block:
     - name: "MEDIUM | RHEL-09-611035 | PATCH | RHEL 9 must configure the use of the pam_faillock.so module in the /etc/pam.d/password-auth file. | Set preauth"
+      when: not rhel9stig_pam_via_authselect
       community.general.pamd:
         name: password-auth
         type: auth
@@ -143,6 +165,7 @@
         module_arguments: 'preauth'
 
     - name: "MEDIUM | RHEL-09-611035 | PATCH | RHEL 9 must configure the use of the pam_faillock.so module in the /etc/pam.d/password-auth file. | Set authfail"
+      when: not rhel9stig_pam_via_authselect
       community.general.pamd:
         name: password-auth
         type: auth
@@ -155,6 +178,7 @@
         module_arguments: 'authfail'
 
     - name: "MEDIUM | RHEL-09-611035 | PATCH | RHEL 9 must configure the use of the pam_faillock.so module in the /etc/pam.d/password-auth file. | Set account faillock"
+      when: not rhel9stig_pam_via_authselect
       community.general.pamd:
         name: password-auth
         type: account
@@ -180,15 +204,17 @@
     - SV-258097r1045193_rule
     - V-258097
     - NIST800-53R4_IA-5
+  notify: Authselect_apply_changes
   block:
     - name: "MEDIUM | RHEL-09-611040 | PATCH | RHEL 9 must ensure the password complexity module is enabled in the password-auth file."
       ansible.builtin.lineinfile:
-        path: /etc/pam.d/password-auth
-        regexp: ^(password\s+)requisite(.*)
+        path: "{{ rhel9stig_pam_confd_dir }}/password-auth"
+        regexp: ^(password\s+)requisite(\s+pam_pwquality\.so.*)
         line: '\1required\2'
         backrefs: true
 
     - name: "MEDIUM | RHEL-09-611040 | PATCH | RHEL 9 must ensure the password complexity module is enabled in the password-auth file."
+      when: not rhel9stig_pam_via_authselect
       community.general.pamd:
         name: password-auth
         type: password
@@ -211,15 +237,17 @@
     - SV-258098r1045195_rule
     - V-258098
     - NIST800-53R4_CM-6
+  notify: Authselect_apply_changes
   block:
     - name: "MEDIUM | RHEL-09-611045 | PATCH | RHEL 9 must ensure the password complexity module is enabled in the system-auth file."
       ansible.builtin.lineinfile:
-        path: /etc/pam.d/system-auth
-        regexp: ^(password\s+)requisite(.*)
+        path: "{{ rhel9stig_pam_confd_dir }}/system-auth"
+        regexp: ^(password\s+)requisite(\s+pam_pwquality\.so.*)
         line: '\1required\2'
         backrefs: true
 
     - name: "MEDIUM | RHEL-09-611045 | PATCH | RHEL 9 must ensure the password complexity module is enabled in the system-auth file."
+      when: not rhel9stig_pam_via_authselect
       community.general.pamd:
         name: system-auth
         type: password
@@ -245,13 +273,28 @@
     - V-258099
     - NIST800-53R4_IA-7
     - NIST800-53R4_IA-5
-  community.general.pamd:
-    name: password-auth
-    type: password
-    control: sufficient
-    module_path: pam_unix.so
-    module_arguments: 'sha512 rounds={{ rhel9stig_pam_rounds }}'
-    state: args_present
+  notify: Authselect_apply_changes
+  block:
+    - name: "MEDIUM | RHEL-09-611050 | PATCH | RHEL 9 password-auth must be configured to use a sufficient number of hashing rounds. | /etc/pam.d"
+      when: not rhel9stig_pam_via_authselect
+      community.general.pamd:
+        name: password-auth
+        type: password
+        control: sufficient
+        module_path: pam_unix.so
+        module_arguments: 'sha512 rounds={{ rhel9stig_pam_rounds }}'
+        state: args_present
+
+    - name: "MEDIUM | RHEL-09-611050 | PATCH | RHEL 9 password-auth must be configured to use a sufficient number of hashing rounds. | Set rounds in the authselect profile"
+      when: rhel9stig_pam_via_authselect
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_pam_confd_dir }}/{{ item.file }}"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        backrefs: true
+      loop:
+        - { file: password-auth, regexp: '^(password\s+\S+\s+pam_unix\.so.*\s)rounds=(?!{{ rhel9stig_pam_rounds }}(?:\s|$))\d+(.*)$', line: '\1rounds={{ rhel9stig_pam_rounds }}\2' }
+        - { file: password-auth, regexp: '^(password\s+\S+\s+pam_unix\.so)(?!.*\srounds=)(.*)$', line: '\1 rounds={{ rhel9stig_pam_rounds }}\2' }
 
 - name: "MEDIUM | RHEL-09-611055 | PATCH | RHEL 9 system-auth must be configured to use a sufficient number of hashing rounds."
   when:
@@ -268,13 +311,28 @@
     - V-258100
     - NIST800-53R4_IA-7
     - NIST800-53R4_IA-5
-  community.general.pamd:
-    name: system-auth
-    type: password
-    control: sufficient
-    module_path: pam_unix.so
-    module_arguments: 'sha512 rounds={{ rhel9stig_pam_rounds }}'
-    state: args_present
+  notify: Authselect_apply_changes
+  block:
+    - name: "MEDIUM | RHEL-09-611055 | PATCH | RHEL 9 system-auth must be configured to use a sufficient number of hashing rounds. | /etc/pam.d"
+      when: not rhel9stig_pam_via_authselect
+      community.general.pamd:
+        name: system-auth
+        type: password
+        control: sufficient
+        module_path: pam_unix.so
+        module_arguments: 'sha512 rounds={{ rhel9stig_pam_rounds }}'
+        state: args_present
+
+    - name: "MEDIUM | RHEL-09-611055 | PATCH | RHEL 9 system-auth must be configured to use a sufficient number of hashing rounds. | Set rounds in the authselect profile"
+      when: rhel9stig_pam_via_authselect
+      ansible.builtin.lineinfile:
+        path: "{{ rhel9stig_pam_confd_dir }}/{{ item.file }}"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        backrefs: true
+      loop:
+        - { file: system-auth, regexp: '^(password\s+\S+\s+pam_unix\.so.*\s)rounds=(?!{{ rhel9stig_pam_rounds }}(?:\s|$))\d+(.*)$', line: '\1rounds={{ rhel9stig_pam_rounds }}\2' }
+        - { file: system-auth, regexp: '^(password\s+\S+\s+pam_unix\.so)(?!.*\srounds=)(.*)$', line: '\1 rounds={{ rhel9stig_pam_rounds }}\2' }
 
 - name: "MEDIUM | RHEL-09-611060 | PATCH | RHEL 9 must enforce password complexity rules for the root account."
   when:
@@ -405,7 +463,7 @@
       changed_when: true
       loop: "{{ discovered_24hr_passwd_restrict.stdout_lines }}"
 
-- name: "MEDIUM | RHEL-09-611085 | PATCH | RHEL 9 must require users to provide a password for privilege escalation"
+- name: "MEDIUM | RHEL-09-611085 | PATCH | RHEL 9 must require users to provide a password for privilege escalation."
   when:
     - rhel_09_611085
     - rhel9stig_disruption_high
@@ -420,7 +478,7 @@
     - V-258106
     - NIST800-53R4_IA-11
   block:
-    - name: "MEDIUM | RHEL-09-611085 | AUDIT | RHEL 9 must require users to provide a password for privilege escalation"
+    - name: "MEDIUM | RHEL-09-611085 | AUDIT | RHEL 9 must require users to provide a password for privilege escalation."
       ansible.builtin.shell: |
         set -o pipefail
         grep -Ei '(nopasswd)' /etc/sudoers /etc/sudoers.d/* | cut -d':' -f1
@@ -430,14 +488,14 @@
       failed_when: discovered_sudoers_nopasswd.rc not in [ 0, 1, 2 ]  # rc=2 when /etc/sudoers.d is empty (glob unmatched) - now surfaced by set -o pipefail
       register: discovered_sudoers_nopasswd
 
-    - name: "MEDIUM | RHEL-09-611085 | PATCH | RHEL 9 must require users to provide a password for privilege escalation"
+    - name: "MEDIUM | RHEL-09-611085 | PATCH | RHEL 9 must require users to provide a password for privilege escalation."
       when:
         - discovered_sudoers_nopasswd.stdout | length > 0
         - not rhel9stig_disruption_high
       ansible.builtin.debug:
         msg: "Warning!! You have sudo commands that require NO Password Please Investigate"
 
-    - name: "MEDIUM | RHEL-09-611085 | PATCH | RHEL 9 must require users to provide a password for privilege escalation"
+    - name: "MEDIUM | RHEL-09-611085 | PATCH | RHEL 9 must require users to provide a password for privilege escalation."
       when:
         - discovered_sudoers_nopasswd | length > 0
         - not rhel9stig_disruption_high
@@ -446,7 +504,7 @@
       vars:
         warn_control_id: "MEDIUM | RHEL-09-611085"
 
-    - name: "MEDIUM | RHEL-09-611085 | PATCH | RHEL 9 must require users to provide a password for privilege escalation"
+    - name: "MEDIUM | RHEL-09-611085 | PATCH | RHEL 9 must require users to provide a password for privilege escalation."
       when:
         - discovered_sudoers_nopasswd.stdout | length > 0
         - rhel9stig_disruption_high
@@ -713,7 +771,7 @@
     name: opensc
     state: present
 
-- name: "MEDIUM | RHEL-09-611160 | PATCH | RHEL 9 must use the CAC smart card driver."
+- name: "MEDIUM | RHEL-09-611160 | PATCH | RHEL 9 must use the common access card (CAC) smart card driver."
   when:
     - rhel_09_611160
     - rhel9stig_disruption_high
@@ -740,12 +798,12 @@
     - V-258121
     - NIST800-53R4_IA-2
   block:
-    - name: "MEDIUM | RHEL-09-611160 | AUDIT | RHEL 9 must use the CAC smart card driver. | get state"
+    - name: "MEDIUM | RHEL-09-611160 | AUDIT | RHEL 9 must use the common access card (CAC) smart card driver. | get state"
       ansible.builtin.command: opensc-tool --get-conf-entry app:default:card_driver:cac
       changed_when: false
       register: discovered_opensc_loaded_card_driver
 
-    - name: "MEDIUM | RHEL-09-611160 | PATCH | RHEL 9 must use the CAC smart card driver. | set driver"
+    - name: "MEDIUM | RHEL-09-611160 | PATCH | RHEL 9 must use the common access card (CAC) smart card driver. | set driver"
       when: "'cac' not in discovered_opensc_loaded_card_driver.stdout"
       ansible.builtin.command: opensc-tool --set-conf-entry app:default:card_driver:cac
       changed_when: true
@@ -837,7 +895,7 @@
     name: pcsc-lite
     state: present
 
-- name: "MEDIUM | RHEL-09-611180 | PATCH | The pcscd service on RHEL 9 must be active."
+- name: "MEDIUM | RHEL-09-611180 | PATCH | The pcscd socket on RHEL 9 must be active."
   when:
     - rhel_09_611180
     - rhel9stig_smartcard_reader
@@ -847,7 +905,7 @@
     - CCI-001948
     - CCI-004046
     - SRG-OS-000375-GPOS-00160
-    - SV-258125r1045253_rule
+    - SV-258125r1208775_rule
     - V-258125
     - NIST800-53R4_IA-2
   ansible.builtin.systemd:
@@ -922,7 +980,7 @@
         mode: 'u-x,go-wx'
       notify: Systemd_daemon_reload
 
-- name: "MEDIUM | RHEL-09-611200 | PATCH | RHEL 9 must require authentication to access single-user mode"
+- name: "MEDIUM | RHEL-09-611200 | PATCH | RHEL 9 must require authentication to access single-user mode."
   when: rhel_09_611200
   tags:
     - RHEL-09-611200

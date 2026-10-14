@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: frederickw082922/Repo_QA_Checker
-          ref: "2.8.1"
+          ref: "2.8.4"
           path: qa-checker
 
       - name: Set up Python
@@ -70,9 +70,11 @@ jobs:
 
       # --strict is load-bearing, not cosmetic: most findings here are WARN severity, and
       # without it a real regression (e.g. an unquoted file mode) exits 0 and passes silently.
-      # .qa_baseline.json absorbs the known pre-existing findings, keyed per finding on
-      # (file, description) - so a NEW finding in an already-baselined check still fails.
-      # Regenerate the baseline only deliberately, never to silence a fresh finding.
+      #
+      # There is no `--baseline` here. The V2R8 baseline absorbed 7 pre-existing Audit Variable
+      # Placement findings, which the V2R9 move of the audit settings to defaults/main/audit.yml
+      # resolves, so this branch runs clean with nothing suppressed. If it ever accrues debt
+      # worth deferring, add the flag and a generated baseline together.
       - name: Run Ansible Lockdown QA check
         working-directory: role
         run: |
@@ -82,5 +84,4 @@ jobs:
             --console \
             --no-progress \
             --no-report \
-            --skip spelling,grammar \
-            --baseline .qa_baseline.json
+            --skip spelling,grammar

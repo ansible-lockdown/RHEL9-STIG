@@ -5,8 +5,8 @@
   tags:
     - RHEL-09-433010
     - CAT2
-    - CCI-01764
-    - CCI-01774
+    - CCI-001764
+    - CCI-001774
     - SRG-OS-000370-GPOS-00155
     - SRG-OS-000368-GPOS-00154
     - SV-258089r1045179_rule
@@ -23,12 +23,12 @@
   tags:
     - RHEL-09-433015
     - CAT2
-    - CCI-01764
-    - CCI-01774
+    - CCI-001764
+    - CCI-001774
     - SRG-OS-000370-GPOS-00155
     - SRG-OS-000368-GPOS-00154
     - SV-258090r958808_rule
-    - V-258089
+    - V-258090
     - NIST800-53R4_IA-11
     - NIST800-53R4_AC-3
   ansible.builtin.systemd:
@@ -41,7 +41,7 @@
   tags:
     - RHEL-09-433016
     - CAT2
-    - CCI-01764
+    - CCI-001764
     - SRG-OS-000370-GPOS-00155
     - SRG-OS-000368-GPOS-00154
     - SRG-OS-000480-GPOS-00232
@@ -131,6 +131,9 @@
             - "'Daemon config is OK' not in discovered_fapolicy_rule_addition_check.stdout"
           register: discovered_fapolicy_rule_addition_check
 
+        # Deliberately changed_when: true. A debug task reports ok, so without it the notify
+        # below never fires and fapolicyd is never restarted. Not a candidate for the
+        # display-only changed_when: false sweep.
         - name: "MEDIUM | RHEL-09-433016 | PATCH | The RHEL 9 fapolicy module must be configured to employ a deny-all, permit-by-exception policy to allow the execution of authorized software programs. | Reload rules"
           when:
             - discovered_deny_rule_added is defined

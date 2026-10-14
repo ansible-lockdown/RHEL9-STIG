@@ -43,21 +43,13 @@
   changed_when: false
   register: prelim_interactive_users
 
-- name: Include audit specific variables
-  when:
-    - run_audit or audit_only
-    - setup_audit
-  tags:
-    - setup_audit
-    - run_audit
-  ansible.builtin.include_vars:
-    file: audit.yml
-
 - name: Include pre-remediation audit tasks
   when:
     - run_audit or audit_only
     - setup_audit
-  tags: run_audit
+  tags:
+    - run_audit
+    - molecule-idempotence-notest
   ansible.builtin.import_tasks:
     file: pre_remediation_audit.yml
 
@@ -300,35 +292,70 @@
   failed_when: prelim_pwquality_conf_files.rc not in [ 0, 1 ]
   register: prelim_pwquality_conf_files
 
-- name: "PRELIM | RHEL-09-411080 | RHEL-09-411085 | RHEL-09-411090 | Setup authselect if setting allow"
+- name: "PRELIM | Discover the authselect profile and features in use"
+  tags: always
+  ansible.builtin.command: authselect current --raw
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  register: prelim_authselect_current
+
+- name: "PRELIM | Set authselect discovery facts"
+  tags: always
+  ansible.builtin.set_fact:
+    prelim_authselect_profile: "{{ (prelim_authselect_current.stdout | default('')).split() | first | default('') }}"
+    prelim_authselect_features: "{{ (prelim_authselect_current.stdout | default('')).split()[1:] }}"
+
+- name: "PRELIM | Decide whether PAM is configured through authselect"
+  tags: always
+  ansible.builtin.set_fact:
+    rhel9stig_pam_via_authselect: "{{ (rhel9stig_uses_authselect | bool or not rhel9stig_add_faillock_without_authselect | bool) and prelim_authselect_current.rc | default(1) == 0 and prelim_authselect_profile | length > 0 and (prelim_authselect_profile == 'custom/' ~ rhel9stig_authselect_custom_profile or (rhel9stig_disruption_high and not ansible_check_mode)) }}"
+
+- name: "PRELIM | Set the PAM configuration directory"
+  tags: always
+  ansible.builtin.set_fact:
+    rhel9stig_pam_confd_dir: "{{ ('/etc/authselect/custom/' ~ rhel9stig_authselect_custom_profile) if rhel9stig_pam_via_authselect else '/etc/pam.d' }}"
+
+- name: "PRELIM | AUDIT | Warn that authselect was requested but PAM is edited directly"
   when:
-    - rhel_09_411080 or rhel_09_411085 or rhel_09_411090
-    - rhel9stig_authselect_custom_profile is defined
-    - not rhel9stig_add_faillock_without_authselect
-    - rhel9stig_disruption_high
+    - rhel9stig_uses_authselect | bool or not rhel9stig_add_faillock_without_authselect | bool
+    - not rhel9stig_pam_via_authselect
+  tags: always
+  ansible.builtin.debug:
+    msg:
+      - "Warning!! rhel9stig_uses_authselect is true but PAM will be edited under /etc/pam.d"
+      - "Either authselect is not managing this host, or moving it onto custom/{{ rhel9stig_authselect_custom_profile }} needs rhel9stig_disruption_high and a run outside check mode"
+      - "authselect current reported: {{ prelim_authselect_current.stdout | default(prelim_authselect_current.msg | default('')) }}"
+
+- name: "PRELIM | Move PAM onto the authselect custom profile"
+  when:
+    - rhel9stig_pam_via_authselect
+    - prelim_authselect_profile != 'custom/' ~ rhel9stig_authselect_custom_profile
   tags: always
   block:
-    - name: "PRELIM | Setup authselect if setting allow"
-      ansible.builtin.shell: |
-        set -o pipefail
-        authselect current | grep with-faillock
-      args:
-        executable: "{{ rhel9stig_shell_executable }}"
-      failed_when: false
-      changed_when: false
-      check_mode: false
-      register: prelim_authselect_profiles_faillock
+    - name: "PRELIM | Move PAM onto the authselect custom profile | Check for the custom profile"
+      ansible.builtin.stat:
+        path: "/etc/authselect/custom/{{ rhel9stig_authselect_custom_profile }}"
+      register: prelim_authselect_custom_profile_dir
 
-    - name: "PRELIM | AUDIT | Setup authselect if setting allow"
-      ansible.builtin.debug:
-        msg:
-          - "Below are the current custom profiles"
-          - "{{ prelim_authselect_profiles_faillock.stdout_lines }}"
-
-    - name: "PRELIM | PATCH | Setup authselect if setting allow | Create custom profiles"
-      ansible.builtin.command: "authselect select custom/{{ rhel9stig_authselect_custom_profile }} with-faillock"
+    - name: "PRELIM | PATCH | Move PAM onto the authselect custom profile | Create it from the profile in use"
+      when: not prelim_authselect_custom_profile_dir.stat.exists
+      ansible.builtin.command: "authselect create-profile {{ rhel9stig_authselect_custom_profile }} -b {{ prelim_authselect_profile }} --symlink-meta"
       changed_when: true
-      check_mode: false
+
+    - name: "PRELIM | PATCH | Move PAM onto the authselect custom profile | Select it keeping the features in use"
+      ansible.builtin.command: "authselect select custom/{{ rhel9stig_authselect_custom_profile }} {{ prelim_authselect_features | join(' ') }}{{ ' --force' if rhel9stig_authselect_force_select else '' }}"
+      changed_when: true
+
+- name: "PRELIM | RHEL-09-411080 | RHEL-09-411085 | RHEL-09-411090 | RHEL-09-611030 | RHEL-09-611035 | PATCH | Enable the authselect faillock feature"
+  when:
+    - rhel_09_411080 or rhel_09_411085 or rhel_09_411090 or rhel_09_611030 or rhel_09_611035
+    - rhel9stig_pam_via_authselect
+    - rhel9stig_disruption_high
+    - "'with-faillock' not in prelim_authselect_features"
+  tags: always
+  ansible.builtin.command: authselect enable-feature with-faillock
+  changed_when: true
 
 - name: PRELIM | Discover removable devices
   when: item.value.removable == '1'

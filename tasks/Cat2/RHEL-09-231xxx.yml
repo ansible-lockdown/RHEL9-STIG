@@ -385,68 +385,95 @@
 
 - name: "MEDIUM | RHEL-09-231110 | PATCH | RHEL 9 must mount /dev/shm with the nodev option."
   when:
-    - rhel_09_231110 or
-      rhel_09_231115 or
-      rhel_09_231120
+    - rhel_09_231110
+    - item.mount == '/dev/shm'
+    - "'nodev' not in item.options"
+  notify: Change_requires_reboot
   tags:
     - RHEL-09-231110
+    - CAT2
+    - CCI-001764
+    - SRG-OS-000368-GPOS-00154
+    - SV-257863r1155633_rule
+    - V-257863
+    - NIST800-53R4_CM-7
+  ansible.posix.mount:
+    path: /dev/shm
+    src: "{{ item.device }}"
+    fstype: "{{ item.fstype }}"
+    opts: "{{ item.options }},nodev"
+    state: present
+  loop: "{{ ansible_facts['mounts'] }}"
+  loop_control:
+    label: "{{ item.device }}"
+
+- name: "MEDIUM | RHEL-09-231115 | PATCH | RHEL 9 must mount /dev/shm with the noexec option."
+  when:
+    - rhel_09_231115
+    - item.mount == '/dev/shm'
+    - "'noexec' not in item.options"
+  notify: Change_requires_reboot
+  tags:
     - RHEL-09-231115
+    - CAT2
+    - CCI-001764
+    - SRG-OS-000368-GPOS-00154
+    - SV-257864r1155639_rule
+    - V-257864
+    - NIST800-53R4_CM-7
+  ansible.posix.mount:
+    path: /dev/shm
+    src: "{{ item.device }}"
+    fstype: "{{ item.fstype }}"
+    opts: "{{ item.options }},noexec"
+    state: present
+  loop: "{{ ansible_facts['mounts'] }}"
+  loop_control:
+    label: "{{ item.device }}"
+
+- name: "MEDIUM | RHEL-09-231120 | PATCH | RHEL 9 must mount /dev/shm with the nosuid option."
+  when:
+    - rhel_09_231120
+    - item.mount == '/dev/shm'
+    - "'nosuid' not in item.options"
+  notify: Change_requires_reboot
+  tags:
     - RHEL-09-231120
     - CAT2
     - CCI-001764
     - SRG-OS-000368-GPOS-00154
     - SV-257865r1184297_rule
-    - SV-257864r1155639_rule
-    - SV-257865r1184297_rule
-    - V-257865
-    - V-257864
     - V-257865
     - NIST800-53R4_CM-7
-  notify:
-    - Change_requires_reboot
+  ansible.posix.mount:
+    path: /dev/shm
+    src: "{{ item.device }}"
+    fstype: "{{ item.fstype }}"
+    opts: "{{ item.options }},nosuid"
+    state: present
+  loop: "{{ ansible_facts['mounts'] }}"
+  loop_control:
+    label: "{{ item.device }}"
+
+- name: "MEDIUM | RHEL-09-231110 | WARN | RHEL 9 must mount /dev/shm with the nodev option. | No /dev/shm mount"
+  when:
+    - rhel_09_231110 or rhel_09_231115 or rhel_09_231120
+    - ansible_facts['mounts'] | selectattr('mount', 'equalto', '/dev/shm') | list | length == 0
+  tags:
+    - RHEL-09-231110
+    - RHEL-09-231115
+    - RHEL-09-231120
+    - CAT2
+  vars:
+    warn_control_id: "MEDIUM | RHEL-09-231110-231120"
   block:
-    - name: |
-        "MEDIUM | RHEL-09-231110 | AUDIT | RHEL 9 must mount /dev/shm with the nodev option.
-         MEDIUM | RHEL-09-231115 | AUDIT | RHEL 9 must mount /dev/shm with the noexec option.
-         MEDIUM | RHEL-09-231120 | AUDIT | RHEL 9 must mount /dev/shm with the nosuid option."
-      ansible.builtin.shell: |
-        set -o pipefail
-        mount | grep /dev/shm
-      args:
-        executable: "{{ rhel9stig_shell_executable }}"
-      changed_when: false
-      failed_when: false
-      register: discovered_dev_shm_status
-
-    - name: |
-        "MEDIUM | RHEL-09-231110 | PATCH | RHEL 9 must mount /dev/shm with the nodev option.
-         MEDIUM | RHEL-09-231115 | PATCH | RHEL 9 must mount /dev/shm with the noexec option.
-         MEDIUM | RHEL-09-231120 | PATCH | RHEL 9 must mount /dev/shm with the nosuid option."
-      when: discovered_dev_shm_status.stdout | length > 0
-      ansible.posix.mount:
-        path: /dev/shm
-        src: tmpfs
-        fstype: tmpfs
-        opts: "defaults{{ rhel_09_231110 | ternary(',nodev', '') }}{{ rhel_09_231115 | ternary(',noexec', '') }}{{ rhel_09_231120 | ternary(',nosuid', '') }}"
-        state: mounted
-
-    - name: |
-        "MEDIUM | RHEL-09-231110 | WARN | RHEL 9 must mount /dev/shm with the nodev option.
-         MEDIUM | RHEL-09-231115 | WARN | RHEL 9 must mount /dev/shm with the noexec option.
-         MEDIUM | RHEL-09-231120 | WARN | RHEL 9 must mount /dev/shm with the nosuid option."
-      when: discovered_dev_shm_status.stdout | length == 0
+    - name: "MEDIUM | RHEL-09-231110 | WARN | RHEL 9 must mount /dev/shm with the nodev option. | Warning"
       ansible.builtin.debug:
-        msg: "Warning!! You have no /dev/shm mount"
+        msg: "Warning!! You have no /dev/shm mount - the /dev/shm mount option controls cannot be applied"
 
-    - name: |
-        "MEDIUM | RHEL-09-231110 | WARN | RHEL 9 must mount /dev/shm with the nodev option.
-         MEDIUM | RHEL-09-231115 | WARN | RHEL 9 must mount /dev/shm with the noexec option.
-         MEDIUM | RHEL-09-231120 | WARN | RHEL 9 must mount /dev/shm with the nosuid option."
-      when: discovered_dev_shm_status.stdout | length == 0
+    - name: "MEDIUM | RHEL-09-231110 | WARN | RHEL 9 must mount /dev/shm with the nodev option. | Warning count"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
-      vars:
-        warn_control_id: "MEDIUM | RHEL-09-231110-231120"
 
 - name: "MEDIUM | RHEL-09-231125 | PATCH | RHEL 9 must mount /tmp with the nodev option."
   when:

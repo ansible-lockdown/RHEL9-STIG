@@ -96,10 +96,15 @@ jobs:
           molecule converge -s ${{ matrix.scenario }} -- \
             --extra-vars 'audit_output_destination=${{ github.workspace }}/molecule_audit_output/'
 
-      # Deliberately no idempotence step. Converge #2 is a known non-zero-change run: the
-      # disruption_high-gated 411090 pam_faillock/authselect settle, 252060 /etc/aliases, and
-      # the inherently-changed harness tasks (root password, pre/post audit scans, fetch).
-      # Gating on it here would be red for reasons that are not regressions.
+      # Converge #2 used to be a known non-zero-change run, so this workflow skipped the
+      # idempotence step entirely. All four causes named in that note are now fixed: 411090
+      # wrote its pam_faillock lines in a different layout to the pamd-managed controls around
+      # it, 252060 was gated on package facts gathered before postfix was installed, the harness
+      # set the root password with an unpinned salt, and the audit scan and fetch tasks carried
+      # no exclusion tag. The gate runs from cold at changed=0, so it is enforced here.
+      - name: Idempotence
+        run: molecule idempotence -s ${{ matrix.scenario }}
+
       - name: Verify
         run: molecule verify -s ${{ matrix.scenario }}
 
@@ -115,6 +120,14 @@ jobs:
           path: molecule_audit_output/
           if-no-files-found: ignore
 
+      # Guarded on molecule being present: when an earlier step fails before it is installed,
+      # an unguarded destroy exits 127 and that misleading error is what surfaces instead of
+      # the real one.
       - name: Destroy container
         if: always()
-        run: molecule destroy -s ${{ matrix.scenario }}
+        run: |
+          if command -v molecule >/dev/null 2>&1; then
+            molecule destroy -s ${{ matrix.scenario }}
+          else
+            echo "molecule was never installed; nothing to destroy."
+          fi
