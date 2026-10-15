@@ -1,6 +1,6 @@
 ---
 
-- name: HIGH | RHEL-09-611025 | PATCH |  RHEL 9 must not allow blank or null passwords.
+- name: HIGH | RHEL-09-611025 | PATCH | RHEL 9 must not allow blank or null passwords.
   when: rhel_09_611025
   tags:
     - RHEL-09-611025
@@ -11,15 +11,25 @@
     - V-258094
     - NIST800-53R4_CM-6
     - pam
-  ansible.builtin.replace:
-    path: "{{ null_pass }}"
-    regexp: (.*) nullok(.*)
-    replace: \1\2
-  loop:
-    - /etc/pam.d/system-auth
-    - /etc/pam.d/password-auth
-  loop_control:
-    loop_var: null_pass
+  block:
+    - name: HIGH | RHEL-09-611025 | PATCH | RHEL 9 must not allow blank or null passwords. | Remove nullok
+      when: not rhel9stig_pam_via_authselect
+      ansible.builtin.replace:
+        path: "{{ null_pass }}"
+        regexp: (.*) nullok(.*)
+        replace: \1\2
+      loop:
+        - /etc/pam.d/system-auth
+        - /etc/pam.d/password-auth
+      loop_control:
+        loop_var: null_pass
+
+    - name: HIGH | RHEL-09-611025 | PATCH | RHEL 9 must not allow blank or null passwords. | Enable the authselect without-nullok feature
+      when:
+        - rhel9stig_pam_via_authselect
+        - "'without-nullok' not in prelim_authselect_features"
+      ansible.builtin.command: authselect enable-feature without-nullok
+      changed_when: true
 
 - name: HIGH | RHEL-09-671010 | PATCH | RHEL 9 must enable FIPS mode.
   when:
@@ -28,8 +38,8 @@
   tags:
     - RHEL-09-671010
     - CAT1
-    - CCI-00068
-    - CCI-00877
+    - CCI-000068
+    - CCI-000877
     - CCI-002418
     - CCI-002450
     - SRG-OS-000033-GPOS-00014
@@ -83,7 +93,7 @@
       vars:
         warn_control_id: "HIGH | RHEL-09-671010"
 
-- name: "HIGH | RHEL-09-671020 | PATCH | RHEL 9 IP tunnels must use FIPS 140-2/140-3 approved cryptographic algorithms."
+- name: "HIGH | RHEL-09-671020 | PATCH | RHEL 9 IP tunnels must use FIPS 140-3 approved cryptographic algorithms."
   when:
     - rhel_09_671020
     - "'ipsec' in ansible_facts.packages"
@@ -102,7 +112,7 @@
     regexp: ^(#|)\s*include /etc/crypto-policies/back-ends
     line: include /etc/crypto-policies/back-ends/libreswan.config
 
-- name: "HIGH | RHEL-09-672020 | PATCH | RHEL 9 crypto policy must not be overridden."
+- name: "HIGH | RHEL-09-672020 | PATCH | RHEL 9 cryptographic policy must not be overridden."
   when: rhel_09_672020
   tags:
     - RHEL-09-672020
@@ -119,13 +129,13 @@
     - NIST800-53R4_MA-4
     - crypto
   block:
-    - name: "HIGH | RHEL-09-672020 | AUDIT | RHEL 9 crypto policy must not be overridden."
+    - name: "HIGH | RHEL-09-672020 | AUDIT | RHEL 9 cryptographic policy must not be overridden."
       ansible.builtin.command: update-crypto-policies --check
       changed_when: false
       failed_when: discovered_crypto_policies_fips.rc not in [ 0, 1 ]
       register: discovered_crypto_policies_fips
 
-    - name: "HIGH | RHEL-09-672020 | WARN | RHEL 9 crypto policy must not be overridden. | Re-Install Crypto-policies package"
+    - name: "HIGH | RHEL-09-672020 | WARN | RHEL 9 cryptographic policy must not be overridden. | Re-Install Crypto-policies package"
       when:
         - discovered_crypto_policies_fips is defined
         - "'PASS' not in discovered_crypto_policies_fips.stdout"
@@ -133,7 +143,7 @@
       ansible.builtin.command: dnf -y reinstall crypto-policies
       changed_when: true
 
-    - name: "HIGH | RHEL-09-672020 | WARN | RHEL 9 crypto policy must not be overridden. | ReEnable FIPS"
+    - name: "HIGH | RHEL-09-672020 | WARN | RHEL 9 cryptographic policy must not be overridden. | ReEnable FIPS"
       when:
         - discovered_crypto_policies_fips is defined
         - "'PASS' in discovered_crypto_policies_fips.stdout"
@@ -141,7 +151,7 @@
       ansible.builtin.command: update-crypto-policies --set FIPS
       changed_when: true
 
-    - name: "HIGH | RHEL-09-672020 | WARN | RHEL 9 crypto policy must not be overridden."
+    - name: "HIGH | RHEL-09-672020 | WARN | RHEL 9 cryptographic policy must not be overridden."
       when:
         - discovered_crypto_policies_fips is defined
         - discovered_crypto_policies_fips.stdout | length > 0
@@ -149,7 +159,7 @@
       ansible.builtin.debug:
         msg: "Warning!! Please Investigate 672020 - Crypto files not pointing to FIPS"
 
-    - name: "HIGH | RHEL-09-672020 | WARN | RHEL 9 crypto policy must not be overridden."
+    - name: "HIGH | RHEL-09-672020 | WARN | RHEL 9 cryptographic policy must not be overridden."
       when:
         - discovered_crypto_policies_fips is defined
         - discovered_crypto_policies_fips.stdout | length > 0

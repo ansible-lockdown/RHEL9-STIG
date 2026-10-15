@@ -52,7 +52,7 @@ rhel9stig_dod_macs:
   - hmac-sha2-256
   - hmac-sha2-512
 
-company_title: 'MindPoint Group - A Tyto Athene Company'
+company_title: 'MindPoint Group - A Quantum Sky Company'
 
 file_managed_by_ansible: |-
   # File managed by ansible as part of {{ benchmark }} benchmark

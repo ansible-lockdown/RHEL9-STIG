@@ -295,7 +295,6 @@ rhel_09_255110: {{ rhel_09_255110 }}
 rhel_09_255115: {{ rhel_09_255115 }}
 rhel_09_255120: {{ rhel_09_255120 }}
 rhel_09_255125: {{ rhel_09_255125 }}
-rhel_09_255130: {{ rhel_09_255130 }}
 rhel_09_255135: {{ rhel_09_255135 }}
 rhel_09_255140: {{ rhel_09_255140 }}
 rhel_09_255145: {{ rhel_09_255145 }}
@@ -636,7 +635,6 @@ rhel9stig_sshd_config:
 
   clientalivecountmax: {{ rhel9stig_sshd_config_clientalivecountmax }}
   clientaliveinterval: {{ rhel9stig_sshd_config_clientaliveinterval }}  # max 600
-  compress: {{ rhel9stig_sshd_config_compress }}
   gssapiauth: {{ rhel9stig_sshd_config_gssapiauth }}
   hostauth: {{ rhel9stig_sshd_config_hostauth }}
   ignoreknownhosts: {{ rhel9stig_sshd_config_ignoreknownhosts }}
@@ -680,7 +678,7 @@ rhel9stig_user_inactive_days: {{ rhel9stig_user_inactive_days }}  # must be 35 o
 
 # Authselect profile settings
 rhel9stig_authselect_custom_profile: {{ rhel9stig_authselect_custom_profile }}
-# If Set to false will use authselect - Can cause disruption to authentication
+# False when rhel9stig_uses_authselect is true and PAM is configured through authselect
 rhel9stig_add_faillock_without_authselect: {{ rhel9stig_add_faillock_without_authselect }}
 
 # Faillock settings

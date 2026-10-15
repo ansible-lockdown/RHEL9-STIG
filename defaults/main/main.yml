@@ -5,7 +5,7 @@
 # https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable
 
 ## metadata for Audit benchmark
-benchmark_version: 'v2r8'
+benchmark_version: 'v2.9.0'
 
 ## Benchmark name used by auditing control role
 # The audit variable found at the base
@@ -58,72 +58,30 @@ change_requires_reboot: false
 rhel9stig_system_is_router: false
 
 ###
-### Settings for associated Audit role using Goss
+### Settings for associated Audit role using syver
 ###
 
 ###########################################
-### Goss is required on the remote host ###
+### Syver is required on the remote host ###
 ### vars/auditd.yml for other settings  ###
 
 ## Audit setup
-# Audits are carried out using Goss. This variable
+# Audits are carried out using syver. This variable
 # determines whether execution of the role prepares for auditing
 # by installing the required binary.
 setup_audit: false
 
 ## Enable audits to run - this runs the audit and get the latest content
 # This variable governs whether the audit using the
-# separately maintained audit role using Goss
+# separately maintained audit role using syver
 # is carried out.
 # This runs the audit and gets the latest content
 run_audit: false
 # Run heavy tests - some tests can have more impact on a system enabling these can have greater impact on a system
 audit_run_heavy_tests: true
-# Ability to limit the number of concurrent processes used by goss (default 50)
-audit_max_concurrent: 50
 
 ## Only run Audit do not remediate
 audit_only: false
-
-#############################
-
-## How to retrieve audit binary(Goss)
-# Options are 'copy' or 'download' - detailed settings at the bottom of this file
-# - if 'copy':
-#    - the filepath mentioned via the below 'audit_bin_copy_location' var will be used to access already downloaded Goss
-# - if 'download':
-#    - the GitHub Goss-releases URL will be used for a fresh-download, via 'audit_bin_url' and 'audit_pkg_arch_name' vars
-get_audit_binary_method: download
-
-## if get_audit_binary_method - copy the following needs to be updated for your environment
-## it is expected that it will be copied from somewhere accessible to the control node
-## e.g copy from ansible control node to remote host
-audit_bin_copy_location: /some/accessible/path
-
-## How to retrieve the audit role
-# The role for auditing is maintained separately.
-# This variable specifies the method of how to get the audit role
-# options are git/copy/archive/get_url other e.g. if you wish to run from already downloaded conf
-# onto the system. The options are as follows:
-# - 'git': clone audit content from GitHub REPOSITORY, set up via `audit_file_git` var, and
-#          VERSION(e.g. branch, tag name), set up via `audit_git_version` var.
-# - 'copy': copy from path as specified in variable `audit_conf_copy`.
-# - 'archive': same as 'copy', only that the specified filepath needs to be unpacked.
-# - 'get_url': Download from url as specified in variable `audit_files_url`
-audit_content: git
-
-# If using either archive, copy, get_url:
-## Note will work with .tar files - zip will require extra configuration
-### If using get_url this is expecting github url in tar.gz format e.g.
-### https://github.com/ansible-lockdown/{{ OS_TYPE }}-{{ BENCHMARK_TYPE }}-Audit/archive/refs/heads/benchmark-{{ benchmark_version }}.tar.gz
-audit_conf_source: "some path or url to copy from"
-
-# Destination for the audit content to be placed on managed node
-# note may not need full path e.g. /opt with the directory being the {{ benchmark }}-Audit directory
-audit_conf_dest: "/opt"
-
-# Where the audit logs are stored
-audit_log_dir: '/opt'
 
 ## Ability to collect and take audit files moving to a centralized location
 # This enables the collection of the files from the host
@@ -139,7 +97,7 @@ audit_output_collection_method: fetch
 # Location to put the audit files
 audit_output_destination: /opt/audit_summaries/
 
-### Goss Settings ##
+### Audit Settings ##
 ####### END ########
 
 #### CAT 1
@@ -368,7 +326,6 @@ rhel_09_255110: true
 rhel_09_255115: true
 rhel_09_255120: true
 rhel_09_255125: true
-rhel_09_255130: true
 rhel_09_255135: true
 rhel_09_255140: true
 rhel_09_255145: true
@@ -627,7 +584,6 @@ rhel9stig_sshd_config_banner_file: /etc/issue
 rhel9stig_sshd_config_ciphers: "{{ rhel9stig_dod_ciphers }}"
 rhel9stig_sshd_config_clientalivecountmax: 1
 rhel9stig_sshd_config_clientaliveinterval: 600  # max 600
-rhel9stig_sshd_config_compress: 'no'
 rhel9stig_sshd_config_gssapiauth: 'no'
 rhel9stig_sshd_config_hostauth: 'no'
 rhel9stig_sshd_config_ignoreknownhosts: 'yes'
@@ -796,9 +752,21 @@ rhel9stig_user_inactive_days: '35'  # 35 or less is compliant
 rhel9stig_env_path: '$PATH:$HOME/.local/bin:$HOME/bin'
 
 # Authselect profile settings
+# Set to true when authselect manages PAM on the host. PAM changes are then written to the
+# custom profile below and applied with authselect apply-changes, so they survive authselect
+# regenerating /etc/pam.d. A host on any other profile is moved onto the custom profile, copied
+# from the profile in use with its features kept, only when rhel9stig_disruption_high is also true.
+# If false, or authselect is not in use on the host, the files under /etc/pam.d are edited directly
+rhel9stig_uses_authselect: false
+# Name of the custom profile created and selected under /etc/authselect/custom/
 rhel9stig_authselect_custom_profile: minimal
-# If Set to false will use authselect - Can cause disruption to authentication
-rhel9stig_add_faillock_without_authselect: true
+# authselect refuses to select the custom profile when /etc/pam.d was edited outside authselect,
+# for example by an earlier run of this role with rhel9stig_uses_authselect false. Set to true to
+# pass --force, which replaces those files with the profile before the role reapplies its settings.
+# Any other local PAM edits are lost
+rhel9stig_authselect_force_select: false
+# Earlier name for the same switch, inverted. Setting it to false still selects the authselect path
+rhel9stig_add_faillock_without_authselect: "{{ not rhel9stig_uses_authselect }}"
 
 # Faillock settings
 rhel9stig_faillock_deny: '3'  # 3 or less but not 0
@@ -816,7 +784,7 @@ rhel9stig_login_defs_fail_delay: '4'
 rhel9stig_logind_conf_stopsessionidle: '600'
 
 rhel9stig_pam_retry: '3'  # must be set between 1-3, anything else is a failure
-rhel9stig_pam_rounds: '5000'
+rhel9stig_pam_rounds: '100000'
 
 rhel9stig_pwquality_dcredit: -1
 rhel9stig_pwquality_dictcheck: 1
@@ -836,11 +804,16 @@ rhel9stig_smartcard_reader: false
 
 ### SSSD
 rhel9stig_sssd_configure: false
+# Consumed by RHEL-09-631015. Set these to the site's own domain and certmap rule
+# name before enabling rhel9stig_sssd_configure.
+rhel9stig_sssd:
+  domain: example.com
+  rulename: rule_name
 rhel9stig_sssd_config_certmap: |
-  [certmap/{{ rhel9stig_sssd.domain }}/{{ rhel9stig_sssd.rulename }}"]
-  matchrule ='.*example@mil'
+  [certmap/{{ rhel9stig_sssd.domain }}/{{ rhel9stig_sssd.rulename }}]
+  matchrule = .*example@mil
   maprule = (userCertificate;binary={cert!bin})
-  domains = example.com
+  domains = {{ rhel9stig_sssd.domain }}
 
 ### Rsyslog
 # Set the type either rsyslogd or syslog-ng this sets the audit tools binary as referred to controls

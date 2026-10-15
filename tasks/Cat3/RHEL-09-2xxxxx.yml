@@ -207,7 +207,7 @@
           vars:
             warn_control_id: "LOW | RHEL-09-231025"
 
-- name: "LOW | RHEL-09-231030 | AUDIT | RHEL 9 must use a separate file system for /var/log/audit."
+- name: "LOW | RHEL-09-231030 | AUDIT | RHEL 9 must use a separate file system for the system audit data path."
   when: rhel_09_231030
   tags:
     - RHEL-09-231030
@@ -219,19 +219,19 @@
     - NIST800-53R4_CM-6
     - filesystem
   block:
-    - name: "LOW | RHEL-09-231030 | WARN | RHEL 9 must use a separate file system for /var/log/audit."
+    - name: "LOW | RHEL-09-231030 | WARN | RHEL 9 must use a separate file system for the system audit data path."
       when: "rhel9stig_audit_log_filesystem in ansible_facts['mounts'] | map(attribute='mount') | list"
       ansible.builtin.debug:
         msg: "Congratulations /var/log/audit for audit logs is a separate filesystem"
 
-    - name: "LOW | RHEL-09-231030 | WARN | RHEL 9 must use a separate file system for /var/log/audit. | Warning"
+    - name: "LOW | RHEL-09-231030 | WARN | RHEL 9 must use a separate file system for the system audit data path. | Warning"
       when: "rhel9stig_audit_log_filesystem not in ansible_facts['mounts'] | map(attribute='mount') | list"
       block:
-        - name: "LOW | RHEL-09-231030 | WARN | RHEL 9 must use a separate file system for /var/log/audit."
+        - name: "LOW | RHEL-09-231030 | WARN | RHEL 9 must use a separate file system for the system audit data path."
           ansible.builtin.debug:
             msg: "Warning!! {{ rhel9stig_audit_log_filesystem }} for audit logs is not a separate filesystem"
 
-        - name: "LOW | RHEL-09-231030 | WARN | RHEL 9 must use a separate file system for /var/log/audit."
+        - name: "LOW | RHEL-09-231030 | WARN | RHEL 9 must use a separate file system for the system audit data path."
           ansible.builtin.import_tasks:
             file: warning_facts.yml
           vars:
